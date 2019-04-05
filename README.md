@@ -80,7 +80,7 @@ flutter packages pub run build_runner build
 
 ### Use it
 
-```
+```dart
 import 'package:retrofit_example/demo.dart';
 
 main(List<String> args) {
