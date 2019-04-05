@@ -1,0 +1,10 @@
+# Read about `build.yaml` at https://pub.dartlang.org/packages/build_config
+builders:
+  retrofit:
+    target: ":retrofit"
+    import: "package:retrofit_generator/builder.dart"
+    builder_factories: ["retrofitBuilder"]
+    build_extensions: { ".dart": [".retrofit.part"] }
+    auto_apply: root_package
+    build_to: source
+    applies_builders: ["source_gen|combining_builder"]
