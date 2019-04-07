@@ -5,7 +5,7 @@ part 'demo.retrofit.dart';
 
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class RestClient {
-  static final RestClient instance = _RestClient();
+  static RestClient instance([Dio dio]) => _RestClient(dio);
 
   @GET("/get")
   @Headers({

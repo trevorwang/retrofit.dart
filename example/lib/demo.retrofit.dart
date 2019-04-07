@@ -7,18 +7,22 @@ part of 'demo.dart';
 // **************************************************************************
 
 class _RestClient extends RestClient {
-  _RestClient() {
-    this.dio.options.baseUrl = 'https://httpbin.org/';
+  _RestClient([Dio dio]) {
+    _dio = dio;
+    if (_dio == null) {
+      _dio = Dio();
+    }
+    _dio.options.baseUrl = 'https://httpbin.org/';
   }
 
-  final dio = Dio();
+  Dio _dio;
 
   Future<Response<String>> ip(String query,
       {Map<String, dynamic> queryies = null, String header = null}) async {
     final queryParameters = <String, dynamic>{'query1': query};
     queryParameters.addAll(queryies ?? {});
     final data = <String, dynamic>{};
-    return dio.request<String>('/get',
+    return _dio.request<String>('/get',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
@@ -34,7 +38,7 @@ class _RestClient extends RestClient {
     queryParameters.addAll(map ?? {});
     final data = <String, dynamic>{};
     data.addAll(map2 ?? {});
-    return dio.request<String>('/profile/$id',
+    return _dio.request<String>('/profile/$id',
         queryParameters: queryParameters,
         options: RequestOptions(method: 'GET', headers: {}),
         data: data);
@@ -51,7 +55,7 @@ class _RestClient extends RestClient {
     final data = <String, dynamic>{};
     data.addAll(map2 ?? {});
     data.addAll({'field': field, 'field-g': ffff});
-    return dio.request<String>('/post',
+    return _dio.request<String>('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -68,7 +72,7 @@ class _RestClient extends RestClient {
     queryParameters.addAll(queryies ?? {});
     final data = <String, dynamic>{};
     data.addAll({'field': field, 'field-g': ffff});
-    return dio.request<String>('/put',
+    return _dio.request<String>('/put',
         queryParameters: queryParameters,
         options: RequestOptions(method: 'PUT', headers: {'Header-One': header}),
         data: data);
@@ -82,7 +86,7 @@ class _RestClient extends RestClient {
     queryParameters.addAll(queryies ?? {});
     final data = <String, dynamic>{};
     data.addAll({'field': field, 'field-g': ffff});
-    return dio.request<String>('/patch',
+    return _dio.request<String>('/patch',
         queryParameters: queryParameters,
         options: RequestOptions(method: 'PATCH', headers: {}),
         data: data);

@@ -14,6 +14,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   static const _queryParamsVar = "queryParameters";
   static const _optionsVar = "options";
   static const _dataVar = "data";
+  static const _dioVar = "_dio";
 
   @override
   String generateForAnnotatedElement(
@@ -47,12 +48,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   }
 
   Field _buildDefinitionTypeMethod(String superType) => Field((m) => m
-    ..name = 'dio'
-    ..modifier = FieldModifier.final$
-    ..assignment = refer('Dio').newInstance([]).code);
+    ..name = _dioVar
+    ..type = refer("Dio"));
 
   Constructor _generateConstructor(String baseUrl) => Constructor((c) {
-        c.body = Code("this.dio.options.baseUrl = '$baseUrl';");
+        c.optionalParameters.add(Parameter((p) => p
+          ..name = "dio"
+          ..type = refer("Dio")));
+        c.body = Block.of([
+          refer(_dioVar).assign(refer("dio")).statement,
+          Code("if ($_dioVar == null) {"),
+          refer(_dioVar).assign(refer("Dio").newInstance([])).statement,
+          Code("}"),
+          refer("$_dioVar.options.baseUrl").assign(literal(baseUrl)).statement
+        ]);
       });
 
   Iterable<Method> _parseMethods(ClassElement element) =>
@@ -182,7 +191,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
       typeArguments.add(refer(responseInnerType.displayName));
     }
     blocks.add(
-      refer("dio.request")
+      refer("$_dioVar.request")
           .call([path], namedArguments, typeArguments)
           .returned
           .statement,
