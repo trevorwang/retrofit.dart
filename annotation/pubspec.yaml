@@ -1,7 +1,7 @@
 name: retrofit
-version: 0.0.1
+version: 0.1.0
 author: Trevor Wang <trevor.wang@qq.com>
-homepage: http://mings.in/retrofit.dart/
+homepage: https://mings.in/retrofit.dart/
 description: retrofit.dart is an dio client generator using source_gen and inspired by Chopper and Retrofit.
 
 environment:
