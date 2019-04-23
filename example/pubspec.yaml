@@ -9,10 +9,12 @@ environment:
 
 dependencies:
   retrofit:
-
+  json_annotation:
+  
 dev_dependencies:
   retrofit_generator:
   build_runner:
+  json_serializable:
 
 dependency_overrides:
   retrofit:

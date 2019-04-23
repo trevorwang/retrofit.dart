@@ -187,7 +187,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     final responseInnerType =
         _getResponseInnerType(m.returnType) ?? responseType;
     final typeArguments = <Reference>[];
-    if (responseType != null) {
+    if (responseInnerType != null) {
       typeArguments.add(refer(responseInnerType.displayName));
     }
     blocks.add(

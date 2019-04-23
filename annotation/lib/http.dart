@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+/// A holder including all http methods which are supported by retrofit.
 class HttpMethod {
   static const String GET = "GET";
   static const String POST = "POST";
