@@ -8,16 +8,9 @@ jobs:
       dart: dev
       env: PKGS="example"
       script: ./tool/travis.sh dartanalyzer
-      script: ./tool/travis.sh dartfmt
-    - stage: unit_test
-      name: "SDK: dev; PKG: example; TASKS: `pub run test`"
-      dart: dev
-      env: PKGS="example"
-      script: ./tool/travis.sh test
 
 stages:
   - analyze
-  - unit_test
 
 # Only building master means that we don't run two builds for each pull request.
 branches:

@@ -25,16 +25,6 @@ for PKG in ${PKGS}; do
       echo -e 'dartanalyzer .'
       dartanalyzer . || EXIT_CODE=$?
       ;;
-    dartfmt) echo
-      echo -e '\033[1mTASK: dartfmt\033[22m'
-      echo -e 'dartfmt -n --set-exit-if-changed .'
-      dartfmt -n --set-exit-if-changed . || EXIT_CODE=$?
-      ;;
-    test) echo
-      echo -e '\033[1mTASK: test\033[22m'
-      echo -e 'pub run test'
-      pub run test || EXIT_CODE=$?
-      ;;
     *) echo -e "\033[31mNot expecting TASK '${TASK}'. Error!\033[0m"
       EXIT_CODE=1
       ;;
