@@ -5,9 +5,15 @@ jobs:
       - image: google/dart:2.2
     steps:
       - checkout
-      - run: 
-        cd example
-        pub run build_runner build
+      - run:
+          command: |
+            echo "Arbitrary multi-line bash"
+            echo "Probably copy-pasted from 'Execute Shell' on Jenkins"
+      - run:
+          command: |
+            cd example
+            pub get
+            pub run build_runner build --delete-conflicting-outputs
 workflows:
   version: 2
   build_and_test:
