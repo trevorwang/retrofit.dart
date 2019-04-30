@@ -1,3 +1,4 @@
+import 'package:dio/src/form_data.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
@@ -221,14 +222,24 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
   void _generateRequestBody(
       List<Code> blocks, String _dataVar, MethodElement m) {
-    blocks.add(literalMap({}, refer("String"), refer("dynamic"))
-        .assignFinal(_dataVar)
-        .statement);
-
     final _bodyName = _getAnnotation(m, http.Body)?.item1?.displayName;
     if (_bodyName != null) {
-      blocks.add(refer("$_dataVar.addAll")
-          .call([refer("$_bodyName ?? {}")]).statement);
+      if (_bodyName is FormData) {
+        blocks.add(refer("$_bodyName")
+          .assignFinal(_dataVar)
+          .statement);
+      } else {
+        blocks.add(literalMap({}, refer("String"), refer("dynamic"))
+          .assignFinal(_dataVar)
+          .statement);
+
+        blocks.add(refer("$_dataVar.addAll")
+            .call([refer("$_bodyName ?? {}")]).statement);
+      }
+    } else {
+      blocks.add(literalMap({}, refer("String"), refer("dynamic"))
+        .assignFinal(_dataVar)
+        .statement);
     }
 
     final fields = _getAnnotations(m, http.Field).map((p, r) {
