@@ -12,7 +12,7 @@ class HttpMethod {
 @immutable
 class RestApi {
   final String baseUrl;
-  const RestApi({this.baseUrl = "/"});
+  const RestApi({this.baseUrl = null});
 }
 
 @immutable

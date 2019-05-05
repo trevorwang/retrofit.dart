@@ -12,7 +12,10 @@ class _RestClient extends RestClient {
     if (_dio == null) {
       _dio = Dio();
     }
-    _dio.options.baseUrl = 'https://httpbin.org/';
+    final baseUrl = 'https://httpbin.org/';
+    if (baseUrl != null && baseUrl.isNotEmpty) {
+      _dio.options.baseUrl = baseUrl;
+    }
   }
 
   Dio _dio;

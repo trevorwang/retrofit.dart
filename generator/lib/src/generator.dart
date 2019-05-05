@@ -60,7 +60,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
           Code("if ($_dioVar == null) {"),
           refer(_dioVar).assign(refer("Dio").newInstance([])).statement,
           Code("}"),
-          refer("$_dioVar.options.baseUrl").assign(literal(baseUrl)).statement
+          literal(baseUrl).assignFinal(_baseUrlVar).statement,
+          Code("if ($_baseUrlVar != null && $_baseUrlVar.isNotEmpty) {"),
+          refer("$_dioVar.options.baseUrl")
+              .assign(refer(_baseUrlVar))
+              .statement,
+          Code("}"),
         ]);
       });
 
