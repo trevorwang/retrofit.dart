@@ -5,16 +5,14 @@ author: Trevor Wang <trevor.wang@qq.com>
 homepage:
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.1.0 <3.0.0'
 
 dependencies:
   retrofit:
-  json_annotation:
-  
+
 dev_dependencies:
   retrofit_generator:
-  build_runner:
-  json_serializable:
+  build_runner: 1.4.0
 
 dependency_overrides:
   retrofit:
