@@ -3,11 +3,10 @@ import 'package:dio/dio.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'demo.g.dart';
-part 'demo.retrofit.dart';
 
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class RestClient {
-  static RestClient instance([Dio dio]) => _RestClient(dio);
+  factory RestClient([Dio dio]) = _RestClient;
 
   @GET("/get")
   @Headers({

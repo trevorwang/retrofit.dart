@@ -41,7 +41,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
         ..fields.add(_buildDefinitionTypeMethod(className))
         ..constructors.addAll([_generateConstructor(baseUrl)])
         ..methods.addAll(_parseMethods(element))
-        ..extend = refer(className);
+        ..implements = ListBuilder([refer(className)]);
     });
 
     final emitter = new DartEmitter();
@@ -50,17 +50,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
   Field _buildDefinitionTypeMethod(String superType) => Field((m) => m
     ..name = _dioVar
-    ..type = refer("Dio"));
+    ..type = refer("Dio")
+    ..modifier = FieldModifier.final$);
 
   Constructor _generateConstructor(String baseUrl) => Constructor((c) {
         c.optionalParameters.add(Parameter((p) => p
-          ..name = "dio"
-          ..type = refer("Dio")));
+          ..name = _dioVar
+          ..toThis = true));
         c.body = Block.of([
-          refer(_dioVar).assign(refer("dio")).statement,
-          Code("if ($_dioVar == null) {"),
-          refer(_dioVar).assign(refer("Dio").newInstance([])).statement,
-          Code("}"),
+          Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
           literal(baseUrl).assignFinal(_baseUrlVar).statement,
           Code("if ($_baseUrlVar != null && $_baseUrlVar.isNotEmpty) {"),
           refer("$_dioVar.options.baseUrl")
@@ -230,21 +228,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     final _bodyName = _getAnnotation(m, http.Body)?.item1?.displayName;
     if (_bodyName != null) {
       if (_bodyName is FormData) {
-        blocks.add(refer("$_bodyName")
-          .assignFinal(_dataVar)
-          .statement);
+        blocks.add(refer("$_bodyName").assignFinal(_dataVar).statement);
       } else {
         blocks.add(literalMap({}, refer("String"), refer("dynamic"))
-          .assignFinal(_dataVar)
-          .statement);
+            .assignFinal(_dataVar)
+            .statement);
 
         blocks.add(refer("$_dataVar.addAll")
             .call([refer("$_bodyName ?? {}")]).statement);
       }
     } else {
       blocks.add(literalMap({}, refer("String"), refer("dynamic"))
-        .assignFinal(_dataVar)
-        .statement);
+          .assignFinal(_dataVar)
+          .statement);
     }
 
     final fields = _getAnnotations(m, http.Field).map((p, r) {
@@ -300,5 +296,4 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 }
 
 Builder generatorFactoryBuilder({String header}) =>
-    new PartBuilder([new RetrofitGenerator()], ".retrofit.dart",
-        header: header);
+    new SharedPartBuilder([new RetrofitGenerator()], "retrofit");
