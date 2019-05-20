@@ -132,31 +132,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
       mm
         ..name = m.displayName
         ..modifier = MethodModifier.async
-        ..returns = refer(m.returnType.displayName);
+        ..annotations = ListBuilder([CodeExpression(Code('override'))]);
 
       /// required parameters
       mm.requiredParameters.addAll(m.parameters
-          .where((it) => it.isNotOptional)
+          .where((it) => it.isRequiredPositional || it.isRequiredNamed)
           .map((it) => Parameter((p) => p
             ..name = it.name
-            ..type = Reference(it.type.displayName))));
+            ..named = it.isNamed)));
 
-      /// optional & positional parameters
-      mm.optionalParameters.addAll(m.parameters
-          .where((i) => i.isOptionalPositional)
-          .map((it) => Parameter((p) => p
-            ..name = it.name
-            ..type = Reference(it.type.displayName)
-            ..defaultTo = it.defaultValueCode == null
-                ? null
-                : Code(it.defaultValueCode))));
-
-      /// named parameters
-      mm.optionalParameters.addAll(m.parameters.where((i) => i.isNamed).map(
+      /// optional positional or named parameters
+      mm.optionalParameters.addAll(m.parameters.where((i) => i.isOptional).map(
           (it) => Parameter((p) => p
-            ..named = true
             ..name = it.name
-            ..type = Reference(it.type.displayName)
+            ..named = it.isNamed
             ..defaultTo = it.defaultValueCode == null
                 ? null
                 : Code(it.defaultValueCode))));
@@ -191,18 +180,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     namedArguments[_optionsVar] = options;
     namedArguments[_dataVar] = refer(_dataVar);
 
-    final responseType = _getResponseType(m.returnType);
-    final responseInnerType =
-        /* _getResponseInnerType(m.returnType) ?? */ responseType;
-    final typeArguments = <Reference>[];
-    if (responseInnerType != null) {
-      typeArguments.add(refer(responseInnerType.displayName));
-    }
     blocks.add(
-      refer("$_dioVar.request")
-          .call([path], namedArguments, typeArguments)
-          .returned
-          .statement,
+      refer("$_dioVar.request").call([path], namedArguments).returned.statement,
     );
 
     return Block.of(blocks);
