@@ -15,6 +15,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   static const _queryParamsVar = "queryParameters";
   static const _optionsVar = "options";
   static const _dataVar = "data";
+  static const _localDataVar = "_data";
   static const _dioVar = "_dio";
 
   @override
@@ -169,7 +170,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     final blocks = <Code>[];
     _generateQueries(m, blocks, _queryParamsVar);
     Map<Expression, Expression> headers = _generateHeaders(m);
-    _generateRequestBody(blocks, _dataVar, m);
+    _generateRequestBody(blocks, _localDataVar, m);
 
     final options = refer("RequestOptions").newInstance([], {
       "method": literal(httpMehod.peek("method").stringValue),
@@ -178,7 +179,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     final namedArguments = <String, Expression>{};
     namedArguments[_queryParamsVar] = refer(_queryParamsVar);
     namedArguments[_optionsVar] = options;
-    namedArguments[_dataVar] = refer(_dataVar);
+    namedArguments[_dataVar] = refer(_localDataVar);
 
     blocks.add(
       refer("$_dioVar.request").call([path], namedArguments).returned.statement,
@@ -208,32 +209,38 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
   void _generateRequestBody(
       List<Code> blocks, String _dataVar, MethodElement m) {
-    final _bodyName = _getAnnotation(m, http.Body)?.item1?.displayName;
+    final _bodyName = _getAnnotation(m, http.Body)?.item1;
     if (_bodyName != null) {
-      if (_bodyName is FormData) {
-        blocks.add(refer("$_bodyName").assignFinal(_dataVar).statement);
-      } else {
+      if (TypeChecker.fromRuntime(Map).isAssignableFromType(_bodyName.type)) {
         blocks.add(literalMap({}, refer("String"), refer("dynamic"))
             .assignFinal(_dataVar)
             .statement);
 
         blocks.add(refer("$_dataVar.addAll")
-            .call([refer("$_bodyName ?? {}")]).statement);
+            .call([refer("${_bodyName.displayName} ?? {}")]).statement);
+      } else {
+        /// @Body annotations with no type are assinged as is
+        blocks
+            .add(refer(_bodyName.displayName).assignFinal(_dataVar).statement);
       }
-    } else {
-      blocks.add(literalMap({}, refer("String"), refer("dynamic"))
-          .assignFinal(_dataVar)
-          .statement);
+
+      return;
     }
 
     final fields = _getAnnotations(m, http.Field).map((p, r) {
-      final value = r.peek("value")?.stringValue ?? p.displayName;
-      return MapEntry(literal(value), refer(p.displayName));
+      final fieldName = r.peek("value")?.stringValue ?? p.displayName;
+      return MapEntry(literal(fieldName), refer(p.displayName));
     });
     if (fields.isNotEmpty) {
-      blocks
-          .add(refer("$_dataVar.addAll").call([literalMap(fields)]).statement);
+      blocks.add(refer("FormData.from")
+          .call([literalMap(fields)])
+          .assignFinal(_dataVar)
+          .statement);
+      return;
     }
+
+    /// There is no body
+    blocks.add(refer("null").assignConst(_dataVar).statement);
   }
 
   Map<Expression, Expression> _generateHeaders(MethodElement m) {
