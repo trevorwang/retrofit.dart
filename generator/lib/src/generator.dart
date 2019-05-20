@@ -171,6 +171,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   Code _generateRequest(MethodElement m, ConstantReader httpMehod) {
     final path = _generatePath(m, httpMehod);
     final blocks = <Code>[];
+
+    for (var parameter in m.parameters.where((p) =>
+        p.isRequiredNamed ||
+        p.isRequiredPositional ||
+        p.metadata.firstWhere((meta) => meta.isRequired, orElse: () => null) !=
+            null)) {
+      blocks.add(Code(
+          "ArgumentError.checkNotNull(${parameter.displayName},'${parameter.displayName}');"));
+    }
+
     _generateQueries(m, blocks, _queryParamsVar);
     Map<Expression, Expression> headers = _generateHeaders(m);
     _generateRequestBody(blocks, _localDataVar, m);
