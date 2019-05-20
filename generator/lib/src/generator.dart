@@ -147,15 +147,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
           .map((it) => Parameter((p) => p
             ..name = it.name
             ..type = Reference(it.type.displayName)
-            ..defaultTo = Code(it.defaultValueCode))));
+            ..defaultTo = it.defaultValueCode == null
+                ? null
+                : Code(it.defaultValueCode))));
 
       /// named parameters
-      mm.optionalParameters.addAll(
-          m.parameters.where((i) => i.isNamed).map((it) => Parameter((p) => p
+      mm.optionalParameters.addAll(m.parameters.where((i) => i.isNamed).map(
+          (it) => Parameter((p) => p
             ..named = true
             ..name = it.name
             ..type = Reference(it.type.displayName)
-            ..defaultTo = Code(it.defaultValueCode))));
+            ..defaultTo = it.defaultValueCode == null
+                ? null
+                : Code(it.defaultValueCode))));
 
       mm.body = _generateRequest(m, httpMehod);
     });
