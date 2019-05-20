@@ -58,15 +58,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
         c.optionalParameters.add(Parameter((p) => p
           ..name = _dioVar
           ..toThis = true));
-        c.body = Block.of([
+
+        final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
-          literal(baseUrl).assignFinal(_baseUrlVar).statement,
-          Code("if ($_baseUrlVar != null && $_baseUrlVar.isNotEmpty) {"),
-          refer("$_dioVar.options.baseUrl")
-              .assign(refer(_baseUrlVar))
-              .statement,
-          Code("}"),
-        ]);
+        ];
+
+        if (baseUrl != null && baseUrl.isNotEmpty) {
+          block.add(refer("$_dioVar.options.baseUrl")
+              .assign(literal(baseUrl))
+              .statement);
+        }
+
+        c.body = Block.of(block);
       });
 
   Iterable<Method> _parseMethods(ClassElement element) =>
