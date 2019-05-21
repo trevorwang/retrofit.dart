@@ -9,6 +9,7 @@ import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
 
 import 'package:retrofit/http.dart' as http;
+import 'package:retrofit/dio.dart' as dio;
 
 class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   static const String _baseUrlVar = 'baseUrl';
@@ -17,6 +18,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   static const _dataVar = "data";
   static const _localDataVar = "_data";
   static const _dioVar = "_dio";
+  static const _extraVar = 'extra';
+  static const _localExtraVar = '_extra';
 
   @override
   String generateForAnnotatedElement(
@@ -181,13 +184,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
           "ArgumentError.checkNotNull(${parameter.displayName},'${parameter.displayName}');"));
     }
 
+    _generateExtra(m, blocks, _localExtraVar);
+
     _generateQueries(m, blocks, _queryParamsVar);
     Map<Expression, Expression> headers = _generateHeaders(m);
     _generateRequestBody(blocks, _localDataVar, m);
 
     final options = refer("RequestOptions").newInstance([], {
       "method": literal(httpMehod.peek("method").stringValue),
-      "headers": literalMap(headers)
+      "headers": literalMap(headers),
+      _extraVar: refer(_localExtraVar),
     });
     final namedArguments = <String, Expression>{};
     namedArguments[_queryParamsVar] = refer(_queryParamsVar);
@@ -295,6 +301,49 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
         _typeChecker(BuiltList).isExactlyType(type)) return generic;
 
     return _getResponseInnerType(generic);
+  }
+
+  void _generateExtra(
+      MethodElement m, List<Code> blocks, String localExtraVar) {
+    final extra =
+        _typeChecker(dio.Extra).firstAnnotationOf(m, throwOnUnresolved: false);
+
+    if (extra != null) {
+      final c = ConstantReader(extra);
+      blocks.add(literalMap(
+        c.peek('data')?.mapValue?.map((k, v) {
+              return MapEntry(
+                k.toBoolValue() ??
+                    k.toDoubleValue() ??
+                    k.toIntValue() ??
+                    k.toStringValue() ??
+                    k.toListValue() ??
+                    k.toMapValue() ??
+                    k.toSetValue() ??
+                    k.toSymbolValue() ??
+                    k.toTypeValue(),
+                v.toBoolValue() ??
+                    v.toDoubleValue() ??
+                    v.toIntValue() ??
+                    v.toStringValue() ??
+                    v.toListValue() ??
+                    v.toMapValue() ??
+                    v.toSetValue() ??
+                    v.toSymbolValue() ??
+                    v.toTypeValue(),
+              );
+            }) ??
+            {},
+        refer('String'),
+        refer('dynamic'),
+      ).assignConst(localExtraVar).statement);
+    } else {
+      blocks.add(literalMap(
+        {},
+        refer('String'),
+        refer('dynamic'),
+      ).assignConst(localExtraVar).statement);
+    }
   }
 }
 
