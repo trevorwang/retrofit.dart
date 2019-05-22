@@ -5,7 +5,7 @@ author: Trevor Wang <trevor.wang@qq.com>
 homepage: https://mings.in/retrofit.dart/
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.1.0 <3.0.0'
 
 dependencies:
   dio: ^2.1.0
