@@ -16,7 +16,7 @@ dependencies:
   retrofit: ^0.1.2
 
 dev_dependencies:
-   retrofit: ^0.1.2
+
 dependency_overrides:
   retrofit:
     path: ../annotation
