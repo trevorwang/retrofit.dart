@@ -1,4 +1,3 @@
-import 'package:dio/src/form_data.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
@@ -215,7 +214,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
       return MapEntry(literal(value), refer(p.displayName));
     });
 
-    final queryMap = _getAnnotations(m, http.QueryMap);
+    final queryMap = _getAnnotations(m, http.Queries);
     blocks.add(literalMap(queryParameters, refer("String"), refer("dynamic"))
         .assignFinal(_queryParamsVar)
         .statement);

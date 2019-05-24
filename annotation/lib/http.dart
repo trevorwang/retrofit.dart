@@ -155,7 +155,7 @@ class Query {
 ///
 /// A `null` value for the map, as a key, or as a value is not allowed.
 @immutable
-class QueryMap {
+class Queries {
   final bool encoded;
-  const QueryMap({this.encoded = false});
+  const Queries({this.encoded = false});
 }
