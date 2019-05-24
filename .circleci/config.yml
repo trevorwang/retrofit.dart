@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: google/dart:2.2
+      - image: google/dart
     steps:
       - checkout
       - run:
