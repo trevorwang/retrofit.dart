@@ -9,13 +9,17 @@ import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
 
 import 'package:retrofit/http.dart' as http;
+import 'package:retrofit/dio.dart' as dio;
 
 class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   static const String _baseUrlVar = 'baseUrl';
   static const _queryParamsVar = "queryParameters";
   static const _optionsVar = "options";
   static const _dataVar = "data";
+  static const _localDataVar = "_data";
   static const _dioVar = "_dio";
+  static const _extraVar = 'extra';
+  static const _localExtraVar = '_extra';
 
   @override
   String generateForAnnotatedElement(
@@ -41,7 +45,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
         ..fields.add(_buildDefinitionTypeMethod(className))
         ..constructors.addAll([_generateConstructor(baseUrl)])
         ..methods.addAll(_parseMethods(element))
-        ..extend = refer(className);
+        ..implements = ListBuilder([refer(className)]);
     });
 
     final emitter = new DartEmitter();
@@ -50,24 +54,25 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
   Field _buildDefinitionTypeMethod(String superType) => Field((m) => m
     ..name = _dioVar
-    ..type = refer("Dio"));
+    ..type = refer("Dio")
+    ..modifier = FieldModifier.final$);
 
   Constructor _generateConstructor(String baseUrl) => Constructor((c) {
         c.optionalParameters.add(Parameter((p) => p
-          ..name = "dio"
-          ..type = refer("Dio")));
-        c.body = Block.of([
-          refer(_dioVar).assign(refer("dio")).statement,
-          Code("if ($_dioVar == null) {"),
-          refer(_dioVar).assign(refer("Dio").newInstance([])).statement,
-          Code("}"),
-          literal(baseUrl).assignFinal(_baseUrlVar).statement,
-          Code("if ($_baseUrlVar != null && $_baseUrlVar.isNotEmpty) {"),
-          refer("$_dioVar.options.baseUrl")
-              .assign(refer(_baseUrlVar))
-              .statement,
-          Code("}"),
-        ]);
+          ..name = _dioVar
+          ..toThis = true));
+
+        final block = [
+          Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
+        ];
+
+        if (baseUrl != null && baseUrl.isNotEmpty) {
+          block.add(refer("$_dioVar.options.baseUrl")
+              .assign(literal(baseUrl))
+              .statement);
+        }
+
+        c.body = Block.of(block);
       });
 
   Iterable<Method> _parseMethods(ClassElement element) =>
@@ -134,30 +139,23 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
       mm
         ..name = m.displayName
         ..modifier = MethodModifier.async
-        ..returns = refer(m.returnType.displayName);
+        ..annotations = ListBuilder([CodeExpression(Code('override'))]);
 
       /// required parameters
       mm.requiredParameters.addAll(m.parameters
-          .where((it) => it.isNotOptional)
+          .where((it) => it.isRequiredPositional || it.isRequiredNamed)
           .map((it) => Parameter((p) => p
             ..name = it.name
-            ..type = Reference(it.type.displayName))));
+            ..named = it.isNamed)));
 
-      /// optional & positional parameters
-      mm.optionalParameters.addAll(m.parameters
-          .where((i) => i.isOptionalPositional)
-          .map((it) => Parameter((p) => p
+      /// optional positional or named parameters
+      mm.optionalParameters.addAll(m.parameters.where((i) => i.isOptional).map(
+          (it) => Parameter((p) => p
             ..name = it.name
-            ..type = Reference(it.type.displayName)
-            ..defaultTo = Code(it.defaultValueCode))));
-
-      /// named parameters
-      mm.optionalParameters.addAll(
-          m.parameters.where((i) => i.isNamed).map((it) => Parameter((p) => p
-            ..named = true
-            ..name = it.name
-            ..type = Reference(it.type.displayName)
-            ..defaultTo = Code(it.defaultValueCode))));
+            ..named = it.isNamed
+            ..defaultTo = it.defaultValueCode == null
+                ? null
+                : Code(it.defaultValueCode))));
 
       mm.body = _generateRequest(m, httpMehod);
     });
@@ -176,31 +174,34 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   Code _generateRequest(MethodElement m, ConstantReader httpMehod) {
     final path = _generatePath(m, httpMehod);
     final blocks = <Code>[];
+
+    for (var parameter in m.parameters.where((p) =>
+        p.isRequiredNamed ||
+        p.isRequiredPositional ||
+        p.metadata.firstWhere((meta) => meta.isRequired, orElse: () => null) !=
+            null)) {
+      blocks.add(Code(
+          "ArgumentError.checkNotNull(${parameter.displayName},'${parameter.displayName}');"));
+    }
+
+    _generateExtra(m, blocks, _localExtraVar);
+
     _generateQueries(m, blocks, _queryParamsVar);
     Map<Expression, Expression> headers = _generateHeaders(m);
-    _generateRequestBody(blocks, _dataVar, m);
+    _generateRequestBody(blocks, _localDataVar, m);
 
     final options = refer("RequestOptions").newInstance([], {
       "method": literal(httpMehod.peek("method").stringValue),
-      "headers": literalMap(headers)
+      "headers": literalMap(headers),
+      _extraVar: refer(_localExtraVar),
     });
     final namedArguments = <String, Expression>{};
     namedArguments[_queryParamsVar] = refer(_queryParamsVar);
     namedArguments[_optionsVar] = options;
-    namedArguments[_dataVar] = refer(_dataVar);
+    namedArguments[_dataVar] = refer(_localDataVar);
 
-    final responseType = _getResponseType(m.returnType);
-    final responseInnerType =
-        _getResponseInnerType(m.returnType) ?? responseType;
-    final typeArguments = <Reference>[];
-    if (responseInnerType != null) {
-      typeArguments.add(refer(responseInnerType.displayName));
-    }
     blocks.add(
-      refer("$_dioVar.request")
-          .call([path], namedArguments, typeArguments)
-          .returned
-          .statement,
+      refer("$_dioVar.request").call([path], namedArguments).returned.statement,
     );
 
     return Block.of(blocks);
@@ -227,34 +228,38 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
   void _generateRequestBody(
       List<Code> blocks, String _dataVar, MethodElement m) {
-    final _bodyName = _getAnnotation(m, http.Body)?.item1?.displayName;
+    final _bodyName = _getAnnotation(m, http.Body)?.item1;
     if (_bodyName != null) {
-      if (_bodyName is FormData) {
-        blocks.add(refer("$_bodyName")
-          .assignFinal(_dataVar)
-          .statement);
-      } else {
+      if (TypeChecker.fromRuntime(Map).isAssignableFromType(_bodyName.type)) {
         blocks.add(literalMap({}, refer("String"), refer("dynamic"))
-          .assignFinal(_dataVar)
-          .statement);
+            .assignFinal(_dataVar)
+            .statement);
 
         blocks.add(refer("$_dataVar.addAll")
-            .call([refer("$_bodyName ?? {}")]).statement);
+            .call([refer("${_bodyName.displayName} ?? {}")]).statement);
+      } else {
+        /// @Body annotations with no type are assinged as is
+        blocks
+            .add(refer(_bodyName.displayName).assignFinal(_dataVar).statement);
       }
-    } else {
-      blocks.add(literalMap({}, refer("String"), refer("dynamic"))
-        .assignFinal(_dataVar)
-        .statement);
+
+      return;
     }
 
     final fields = _getAnnotations(m, http.Field).map((p, r) {
-      final value = r.peek("value")?.stringValue ?? p.displayName;
-      return MapEntry(literal(value), refer(p.displayName));
+      final fieldName = r.peek("value")?.stringValue ?? p.displayName;
+      return MapEntry(literal(fieldName), refer(p.displayName));
     });
     if (fields.isNotEmpty) {
-      blocks
-          .add(refer("$_dataVar.addAll").call([literalMap(fields)]).statement);
+      blocks.add(refer("FormData.from")
+          .call([literalMap(fields)])
+          .assignFinal(_dataVar)
+          .statement);
+      return;
     }
+
+    /// There is no body
+    blocks.add(refer("null").assignConst(_dataVar).statement);
   }
 
   Map<Expression, Expression> _generateHeaders(MethodElement m) {
@@ -297,8 +302,50 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
     return _getResponseInnerType(generic);
   }
+
+  void _generateExtra(
+      MethodElement m, List<Code> blocks, String localExtraVar) {
+    final extra =
+        _typeChecker(dio.Extra).firstAnnotationOf(m, throwOnUnresolved: false);
+
+    if (extra != null) {
+      final c = ConstantReader(extra);
+      blocks.add(literalMap(
+        c.peek('data')?.mapValue?.map((k, v) {
+              return MapEntry(
+                k.toBoolValue() ??
+                    k.toDoubleValue() ??
+                    k.toIntValue() ??
+                    k.toStringValue() ??
+                    k.toListValue() ??
+                    k.toMapValue() ??
+                    k.toSetValue() ??
+                    k.toSymbolValue() ??
+                    k.toTypeValue(),
+                v.toBoolValue() ??
+                    v.toDoubleValue() ??
+                    v.toIntValue() ??
+                    v.toStringValue() ??
+                    v.toListValue() ??
+                    v.toMapValue() ??
+                    v.toSetValue() ??
+                    v.toSymbolValue() ??
+                    v.toTypeValue(),
+              );
+            }) ??
+            {},
+        refer('String'),
+        refer('dynamic'),
+      ).assignConst(localExtraVar).statement);
+    } else {
+      blocks.add(literalMap(
+        {},
+        refer('String'),
+        refer('dynamic'),
+      ).assignConst(localExtraVar).statement);
+    }
+  }
 }
 
 Builder generatorFactoryBuilder({String header}) =>
-    new PartBuilder([new RetrofitGenerator()], ".retrofit.dart",
-        header: header);
+    new SharedPartBuilder([new RetrofitGenerator()], "retrofit");

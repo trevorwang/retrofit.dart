@@ -1,13 +1,11 @@
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 part 'demo.g.dart';
-part 'demo.retrofit.dart';
 
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class RestClient {
-  static RestClient instance([Dio dio]) => _RestClient(dio);
+  factory RestClient([Dio dio]) = _RestClient;
 
   @GET("/get")
   @Headers({
@@ -46,15 +44,4 @@ abstract class RestClient {
       {@QueryMap() Map<String, dynamic> queryies,
       @Field() int field,
       @Field("field-g") String ffff});
-}
-
-@JsonSerializable()
-class Result {
-  Map<String, dynamic> args;
-  Map<String, dynamic> headers;
-  String origin;
-  String url;
-  Result({this.args, this.headers, this.origin, this.url});
-
-  factory Result.fromJson(Map<String, dynamic> json) => _$ResultFromJson(json);
 }
