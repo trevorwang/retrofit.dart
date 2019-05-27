@@ -17,7 +17,7 @@ dependencies:
   built_collection: ^4.2.0
   code_builder: ^3.2.0
   tuple: ^1.0.2
-  retrofit: ^0.1.2
+  retrofit: ^0.2.0
 
 dev_dependencies:
 
