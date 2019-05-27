@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1
+* Fixed pub upload issue
+
 ## 0.2.0
 
 * Added `@Extra` to pass extra options to dio requests, response, transformer and interceptors.
