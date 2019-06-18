@@ -9,7 +9,7 @@ authors:
 homepage: https://mings.in/retrofit.dart/
 
 environment:
-  sdk: '>=2.1.0 <3.0.0'
+  sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
   dio: ^2.1.0
@@ -18,3 +18,7 @@ dependencies:
   code_builder: ^3.2.0
   tuple: ^1.0.2
   retrofit: ^0.2.0
+
+dev_dependencies:
+  test:
+  source_gen_test: any
