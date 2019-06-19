@@ -1,4 +1,7 @@
 # Changelog
+## 0.2.2
+
+* add example
 
 ## 0.2.0
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.2
+* bump to 0.2.2
+
 ## 0.2.1
 * Fixed pub upload issue
 
