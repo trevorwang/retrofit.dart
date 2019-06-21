@@ -7,7 +7,7 @@ part of 'example.dart';
 // **************************************************************************
 
 class _RestClient implements RestClient {
-  _RestClient([this._dio]) {
+  _RestClient(this._dio) {
     ArgumentError.checkNotNull(_dio, '_dio');
     _dio.options.baseUrl = 'https://httpbin.org/';
   }

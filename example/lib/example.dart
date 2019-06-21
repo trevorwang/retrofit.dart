@@ -1,11 +1,11 @@
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart';
 
-part 'demo.g.dart';
+part 'example.g.dart';
 
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class RestClient {
-  factory RestClient([Dio dio]) = _RestClient;
+  factory RestClient(Dio dio) = _RestClient;
 
   @GET("/get")
   @Headers({

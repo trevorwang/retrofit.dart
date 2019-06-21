@@ -4,7 +4,7 @@ import 'package:retrofit/http.dart';
 @ShouldGenerate(
   r'''
 class _RestClient implements RestClient {
-  _RestClient([this._dio]) {
+  _RestClient(this._dio) {
     ArgumentError.checkNotNull(_dio, '_dio');
   }
 
@@ -18,7 +18,7 @@ abstract class RestClient {}
 @ShouldGenerate(
   r'''
 class _BaseUrl implements BaseUrl {
-  _BaseUrl([this._dio]) {
+  _BaseUrl(this._dio) {
     ArgumentError.checkNotNull(_dio, '_dio');
     _dio.options.baseUrl = 'http://httpbin.org/';
   }

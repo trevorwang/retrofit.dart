@@ -1,4 +1,4 @@
-import 'package:retrofit_example/demo.dart';
+import 'package:retrofit_example/example.dart';
 import 'package:dio/dio.dart';
 
 main(List<String> args) {

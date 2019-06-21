@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'demo.dart';
+part of 'example.dart';
 
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
 
 class _RestClient implements RestClient {
-  _RestClient([this._dio]) {
+  _RestClient(this._dio) {
     ArgumentError.checkNotNull(_dio, '_dio');
     _dio.options.baseUrl = 'https://httpbin.org/';
   }

@@ -57,7 +57,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     ..modifier = FieldModifier.final$);
 
   Constructor _generateConstructor(String baseUrl) => Constructor((c) {
-        c.optionalParameters.add(Parameter((p) => p
+        c.requiredParameters.add(Parameter((p) => p
           ..name = _dioVar
           ..toThis = true));
 
