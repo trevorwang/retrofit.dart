@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
@@ -329,7 +330,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
                     v.toMapValue() ??
                     v.toSetValue() ??
                     v.toSymbolValue() ??
-                    v.toTypeValue(),
+                    v.toTypeValue() ??
+                    Code(revivedLiteral(v)),
               );
             }) ??
             {},
@@ -348,3 +350,120 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
 Builder generatorFactoryBuilder({String header}) =>
     new SharedPartBuilder([new RetrofitGenerator()], "retrofit");
+
+// TODO(devkabiir): move this to a new package source_gen_utls
+/// Returns `$revived($args $kwargs)`, this won't have ending semi-colon (`;`).
+/// [object] must not be null.
+/// [object] is assumed to be a constant.
+String revivedLiteral(
+  Object object, {
+  DartEmitter dartEmitter,
+}) {
+  dartEmitter ??= DartEmitter();
+
+  ArgumentError.checkNotNull(object, 'object');
+
+  Revivable revived;
+  if (object is Revivable) {
+    revived = object;
+  }
+  if (object is DartObject) {
+    revived = ConstantReader(object).revive();
+  }
+  if (object is ConstantReader) {
+    revived = object.revive();
+  }
+  if (revived == null) {
+    throw ArgumentError.value(object, 'object',
+        'Only `Revivable`, `DartObject`, `ConstantReader` are supported values');
+  }
+
+  String instantiation = '';
+  final location = revived.source.toString().split('#');
+
+  /// If this is a class instantiation then `location[1]` will be populated
+  /// with the class name
+  if (location.length > 1) {
+    instantiation = location[1] +
+        (revived.accessor.isNotEmpty ? '.${revived.accessor}' : '');
+  } else {
+    /// Getters, Setters, Methods can't be declared as constants so this
+    /// literal must either be a top-level constant or a static constant and
+    /// can be directly accessed by `revived.accessor`
+    return revived.accessor;
+  }
+
+  final args = StringBuffer();
+  final kwargs = StringBuffer();
+  Spec objectToSpec(DartObject object) {
+    final constant = ConstantReader(object);
+    if (constant.isNull) {
+      return literalNull;
+    }
+
+    if (constant.isBool) {
+      return literal(constant.boolValue);
+    }
+
+    if (constant.isDouble) {
+      return literal(constant.doubleValue);
+    }
+
+    if (constant.isInt) {
+      return literal(constant.intValue);
+    }
+
+    if (constant.isString) {
+      return literal(constant.stringValue);
+    }
+
+    if (constant.isList) {
+      return literalList(constant.listValue.map(objectToSpec));
+      // return literal(constant.listValue);
+    }
+
+    if (constant.isMap) {
+      return literalMap(Map.fromIterables(
+          constant.mapValue.keys.map(objectToSpec),
+          constant.mapValue.values.map(objectToSpec)));
+      // return literal(constant.mapValue);
+    }
+
+    if (constant.isSymbol) {
+      return Code('Symbol(${constant.symbolValue.toString()})');
+      // return literal(constant.symbolValue);
+    }
+
+    if (constant.isNull) {
+      return literalNull;
+    }
+
+    if (constant.isType) {
+      return refer(constant.typeValue.name);
+    }
+
+    if (constant.isLiteral) {
+      return literal(constant.literalValue);
+    }
+
+    /// Perhaps an object instantiation?
+    /// In that case, try initializing it and remove `const` to reduce noise
+    final revived = revivedLiteral(constant.revive(), dartEmitter: dartEmitter)
+        .replaceFirst('const ', '');
+    return Code(revived);
+  }
+
+  for (var arg in revived.positionalArguments) {
+    final literalValue = objectToSpec(arg);
+
+    args.write('${literalValue.accept(dartEmitter)},');
+  }
+
+  for (var arg in revived.namedArguments.keys) {
+    final literalValue = objectToSpec(revived.namedArguments[arg]);
+
+    kwargs.write('$arg:${literalValue.accept(dartEmitter)},');
+  }
+
+  return '$instantiation($args $kwargs)';
+}
