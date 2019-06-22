@@ -333,8 +333,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
               );
             }) ??
             {},
-        refer('String'),
-        refer('dynamic'),
+        refer('Object'),
+        refer('Object'),
       ).assignConst(localExtraVar).statement);
     } else {
       blocks.add(literalMap(
