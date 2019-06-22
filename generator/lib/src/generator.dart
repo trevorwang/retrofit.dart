@@ -313,15 +313,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
       blocks.add(literalMap(
         c.peek('data')?.mapValue?.map((k, v) {
               return MapEntry(
-                k.toBoolValue() ??
-                    k.toDoubleValue() ??
-                    k.toIntValue() ??
-                    k.toStringValue() ??
-                    k.toListValue() ??
-                    k.toMapValue() ??
-                    k.toSetValue() ??
-                    k.toSymbolValue() ??
-                    k.toTypeValue(),
+                k.toStringValue() ??
+                    (throw InvalidGenerationSourceError(
+                      'Invalid key for extra Map, only `String` keys are supported',
+                      element: m,
+                      todo: 'Make sure all keys are of string type',
+                    )),
                 v.toBoolValue() ??
                     v.toDoubleValue() ??
                     v.toIntValue() ??
@@ -351,7 +348,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 Builder generatorFactoryBuilder({String header}) =>
     new SharedPartBuilder([new RetrofitGenerator()], "retrofit");
 
-// TODO(devkabiir): move this to a new package source_gen_utls
 /// Returns `$revived($args $kwargs)`, this won't have ending semi-colon (`;`).
 /// [object] must not be null.
 /// [object] is assumed to be a constant.
