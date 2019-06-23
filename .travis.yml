@@ -4,17 +4,22 @@ language: dart
 jobs:
   include:
     - stage: analyze
-      name: "SDK: dev; PKG: example; TASKS: `dartanalyzer .`"
-      dart: stable
-      env: PKGS="example"
+      name: "SDK: dev; PKG: all; TASKS: `dartanalyzer .`"
+      dart: dev
+      env: PKGS="example annotation generator"
       script: ./tool/travis.sh dartanalyzer
-    - test:
-      name: "test generator"
-      dart: stable
+    - stage: formatting
+      name: "Checking code style"
+      dart: dev
+      scripts: dartfmt . -n --set-exit-if-changed --fix
+    - stage: test
+      name: "Test generator"
+      dart: dev
       script: "cd generator && pub get && pub run test"
 
 stages:
   - analyze
+  - formatting
   - test
 
 # Only building master means that we don't run two builds for each pull request.
