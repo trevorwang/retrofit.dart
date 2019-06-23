@@ -5,12 +5,17 @@ jobs:
   include:
     - stage: analyze
       name: "SDK: dev; PKG: example; TASKS: `dartanalyzer .`"
-      dart: dev
+      dart: stable
       env: PKGS="example"
       script: ./tool/travis.sh dartanalyzer
+    - test:
+      name: "test generator"
+      dart: stable
+      script: "cd generator && pub get && pub run test"
 
 stages:
   - analyze
+  - test
 
 # Only building master means that we don't run two builds for each pull request.
 branches:
