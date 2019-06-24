@@ -1,7 +1,8 @@
-nalyzer:
+analyzer:
 #   exclude:
 #     - path/to/excluded/files/**
-
+  exclude:
+    - example/**
 # Lint rules and documentation, see http://dart-lang.github.io/linter/lints
 linter:
   rules:
