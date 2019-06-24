@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
@@ -276,31 +275,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     });
     headers.addAll(headersInParams);
     return headers;
-  }
-
-  DartType _genericOf(DartType type) {
-    return type is InterfaceType && type.typeArguments.isNotEmpty
-        ? type.typeArguments.first
-        : null;
-  }
-
-  DartType _getResponseType(DartType type) {
-    return _genericOf(_genericOf(type));
-  }
-
-  DartType _getResponseInnerType(DartType type) {
-    final generic = _genericOf(type);
-
-    if (generic == null ||
-        _typeChecker(Map).isExactlyType(type) ||
-        _typeChecker(BuiltMap).isExactlyType(type)) return type;
-
-    if (generic.isDynamic) return null;
-
-    if (_typeChecker(List).isExactlyType(type) ||
-        _typeChecker(BuiltList).isExactlyType(type)) return generic;
-
-    return _getResponseInnerType(generic);
   }
 
   void _generateExtra(
