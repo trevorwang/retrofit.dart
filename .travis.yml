@@ -1,20 +1,21 @@
 # Created with package:mono_repo v2.0.0
 language: dart
 
+dart: 
+  - stable
+  - dev
+
 jobs:
   include:
     - stage: analyze
       name: "SDK: dev; PKG: all; TASKS: `dartanalyzer .`"
-      dart: dev
       env: PKGS="example annotation generator"
       script: ./tool/travis.sh dartanalyzer
     - stage: formatting
       name: "Checking code style"
-      dart: dev
       scripts: dartfmt . -n --set-exit-if-changed --fix
     - stage: test
       name: "Test generator"
-      dart: dev
       script: "cd generator && pub get && pub run test"
 
 stages:
