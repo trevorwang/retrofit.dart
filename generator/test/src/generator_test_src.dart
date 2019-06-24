@@ -1,6 +1,7 @@
 import 'package:source_gen_test/annotations.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/dio.dart' as dio;
+import 'package:dio/dio.dart';
 
 @ShouldGenerate(
   r'''
@@ -72,4 +73,31 @@ abstract class ExtrasWithCustomConstant {
 
 class CustomConstant {
   const CustomConstant();
+}
+
+@ShouldGenerate(r'''
+class _HttpGetTest implements HttpGetTest {
+  _HttpGetTest(this._dio) {
+    ArgumentError.checkNotNull(_dio, '_dio');
+    _dio.options.baseUrl = 'https://httpbin.org/';
+  }
+
+  final Dio _dio;
+
+  @override
+  ip() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    const _data = null;
+    return _dio.request('/get',
+        queryParameters: queryParameters,
+        options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
+        data: _data);
+  }
+}
+''')
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class HttpGetTest {
+  @GET("/get")
+  Future<Response<String>> ip();
 }
