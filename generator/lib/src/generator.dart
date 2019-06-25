@@ -19,6 +19,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   static const _dioVar = "_dio";
   static const _extraVar = 'extra';
   static const _localExtraVar = '_extra';
+  static const _contentType = 'contentType';
 
   @override
   String generateForAnnotatedElement(
@@ -108,6 +109,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     return null;
   }
 
+  ConstantReader _getFormUrlEncodedAnnotation(MethodElement method) {
+    final annotation = _typeChecker(http.FormUrlEncoded)
+        .firstAnnotationOf(method, throwOnUnresolved: false);
+    if (annotation != null) return new ConstantReader(annotation);
+    return null;
+  }
+
   Map<ParameterElement, ConstantReader> _getAnnotations(
       MethodElement m, Type type) {
     var annot = <ParameterElement, ConstantReader>{};
@@ -189,11 +197,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     Map<Expression, Expression> headers = _generateHeaders(m);
     _generateRequestBody(blocks, _localDataVar, m);
 
-    final options = refer("RequestOptions").newInstance([], {
+    final extraOptions = {
       "method": literal(httpMehod.peek("method").stringValue),
       "headers": literalMap(headers),
       _extraVar: refer(_localExtraVar),
-    });
+    };
+    final contentType = _getFormUrlEncodedAnnotation(m);
+    if (contentType != null) {
+      final lll = literal(contentType.peek("mime").stringValue);
+      extraOptions[_contentType] = refer("ContentType.parse").call([lll]);
+    }
+    final options = refer("RequestOptions").newInstance([], extraOptions);
+
     final namedArguments = <String, Expression>{};
     namedArguments[_queryParamsVar] = refer(_queryParamsVar);
     namedArguments[_optionsVar] = options;

@@ -209,3 +209,36 @@ abstract class HttpPatchTest {
   @PATCH("/delete")
   Future<Response<String>> ip();
 }
+
+@ShouldGenerate(r'''
+class _FormUrlEncodedTest implements FormUrlEncodedTest {
+  _FormUrlEncodedTest(this._dio) {
+    ArgumentError.checkNotNull(_dio, '_dio');
+    _dio.options.baseUrl = 'https://httpbin.org/';
+  }
+
+  final Dio _dio;
+
+  @override
+  ip() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    const _data = null;
+    return _dio.request('/get',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: {},
+            extra: _extra,
+            contentType:
+                ContentType.parse('application/x-www-form-urlencoded')),
+        data: _data);
+  }
+}
+''')
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class FormUrlEncodedTest {
+  @POST("/get")
+  @FormUrlEncoded()
+  Future<Response<String>> ip();
+}

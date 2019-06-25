@@ -159,3 +159,15 @@ class Queries {
   final bool encoded;
   const Queries({this.encoded = false});
 }
+
+/// Denotes that the request body will use form URL encoding. Fields should be declared as
+/// parameters and annotated with [Field].
+///
+/// Requests made with this annotation will have `application/x-www-form-urlencoded` MIME
+/// type. Field names and values will be UTF-8 encoded before being URI-encoded in accordance to
+/// [RFC-3986](http://tools.ietf.org/html/rfc3986)
+@immutable
+class FormUrlEncoded {
+  final mime = 'application/x-www-form-urlencoded';
+  const FormUrlEncoded();
+}
