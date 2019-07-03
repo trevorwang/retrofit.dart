@@ -68,19 +68,19 @@ abstract class RestClient {
       @Field("field-g") String ffff});
 
   /// Do not forget to add the appropriate headers
-  @Header('Content-Type: multipart/form-data')
+  @Headers({'Content-Type': 'multipart/form-data'})
   @POST("/profile")
   Future<Response<String>> setProfile(
       @Field('image', 'my_profile_image.jpg') File image);
 
   /// Do not forget to add the appropriate headers
-  @Header('Content-Type: multipart/form-data')
+  @Headers({'Content-Type': 'multipart/form-data'})
   @POST("/profile")
   /// This will add the image name from `image.path.split(Platform.pathSeperator).last`
   Future<Response<String>> setProfileImage(@Field() File image);
 
   /// Do not forget to add the appropriate headers
-  @Header('Content-Type: multipart/form-data')
+  @Headers({'Content-Type': 'multipart/form-data'})
   @POST("/profile")
   /// This will automatically work too.
   Future<Response<String>> setProfileImageWithInfo(@Field() UploadFileInfo image);
