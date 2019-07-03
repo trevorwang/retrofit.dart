@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:source_gen_test/annotations.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/dio.dart' as dio;
@@ -241,4 +243,33 @@ abstract class FormUrlEncodedTest {
   @POST("/get")
   @FormUrlEncoded()
   Future<Response<String>> ip();
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = FormData.from({
+      'image':
+          UploadFileInfo(image, image.path.split(Platform.pathSeparator).last)
+    });
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class FileFieldTest {
+  @POST("/profile")
+  Future<Response<String>> setProfile(@Field() File image);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data =
+        FormData.from({'image': UploadFileInfo(image, 'my_profile_image.jpg')});
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class FileFieldWithCustomNameTest {
+  @POST("/profile")
+  Future<Response<String>> setProfile(
+      @Field('image', 'my_profile_image.jpg') File image);
 }
