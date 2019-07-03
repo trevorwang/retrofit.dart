@@ -1,4 +1,9 @@
 # Changelog
+
+## 0.2.3
+
+* Added optional parameter `fileName` in `@Field` annotation for custom file name
+
 ## 0.2.2
 
 * add example
