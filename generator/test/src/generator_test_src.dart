@@ -273,3 +273,15 @@ abstract class FileFieldWithCustomNameTest {
   Future<Response<String>> setProfile(
       @Field('image', 'my_profile_image.jpg') File image);
 }
+
+@ShouldGenerate(
+  r'''
+    final _data = FormData.from({'image': image});
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class UploadFileInfoFieldTest {
+  @POST("/profile")
+  Future<Response<String>> setProfile(@Field() UploadFileInfo image);
+}
