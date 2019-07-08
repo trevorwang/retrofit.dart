@@ -97,10 +97,7 @@ class _RestClient implements RestClient {
         FormData.from({'image': UploadFileInfo(image, 'my_profile_image.jpg')});
     return _dio.request('/profile',
         queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: {'Content-Type': 'multipart/form-data'},
-            extra: _extra),
+        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
         data: _data);
   }
 
@@ -115,10 +112,7 @@ class _RestClient implements RestClient {
     });
     return _dio.request('/profile',
         queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: {'Content-Type': 'multipart/form-data'},
-            extra: _extra),
+        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
         data: _data);
   }
 
@@ -130,10 +124,7 @@ class _RestClient implements RestClient {
     final _data = FormData.from({'image': image});
     return _dio.request('/profile',
         queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: {'Content-Type': 'multipart/form-data'},
-            extra: _extra),
+        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
         data: _data);
   }
 }
