@@ -123,7 +123,11 @@ class Body {
 @immutable
 class Field {
   final String value;
-  const Field([this.value]);
+
+  /// If this field is a file, optionally specify it's name. otherwise the name
+  /// will be derived from the actual file.
+  final String fileName;
+  const Field([this.value, this.fileName]);
 }
 
 /// Named replacement in a URL path segment.

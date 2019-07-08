@@ -87,4 +87,44 @@ class _RestClient implements RestClient {
         options: RequestOptions(method: 'PATCH', headers: {}, extra: _extra),
         data: _data);
   }
+
+  @override
+  setProfile(image) async {
+    ArgumentError.checkNotNull(image, 'image');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data =
+        FormData.from({'image': UploadFileInfo(image, 'my_profile_image.jpg')});
+    return _dio.request('/profile',
+        queryParameters: queryParameters,
+        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        data: _data);
+  }
+
+  @override
+  setProfileImage(image) async {
+    ArgumentError.checkNotNull(image, 'image');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = FormData.from({
+      'image':
+          UploadFileInfo(image, image.path.split(Platform.pathSeparator).last)
+    });
+    return _dio.request('/profile',
+        queryParameters: queryParameters,
+        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        data: _data);
+  }
+
+  @override
+  setProfileImageWithInfo(image) async {
+    ArgumentError.checkNotNull(image, 'image');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = FormData.from({'image': image});
+    return _dio.request('/profile',
+        queryParameters: queryParameters,
+        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        data: _data);
+  }
 }

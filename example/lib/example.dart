@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart';
 
@@ -44,4 +46,17 @@ abstract class RestClient {
       {@Queries() Map<String, dynamic> queryies,
       @Field() int field,
       @Field("field-g") String ffff});
+
+  @POST("/profile")
+  Future<Response<String>> setProfile(
+      @Field('image', 'my_profile_image.jpg') File image);
+
+  /// This will add the image name from `image.path.split(Platform.pathSeperator).last`
+  @POST("/profile")
+  Future<Response<String>> setProfileImage(@Field() File image);
+
+  /// This will automatically work too.
+  @POST("/profile")
+  Future<Response<String>> setProfileImageWithInfo(
+      @Field() UploadFileInfo image);
 }

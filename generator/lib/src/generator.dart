@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:dio/dio.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
 
@@ -262,7 +265,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
     final fields = _getAnnotations(m, http.Field).map((p, r) {
       final fieldName = r.peek("value")?.stringValue ?? p.displayName;
-      return MapEntry(literal(fieldName), refer(p.displayName));
+
+      final isFileField = _typeChecker(File).isAssignableFromType(p.type);
+      final fileName = r.peek("fileName")?.stringValue != null
+          ? literalString(r.peek("fileName")?.stringValue)
+          : refer(p.displayName)
+              .property('path.split(Platform.pathSeparator).last');
+
+      final uploadFileInfo = refer('$UploadFileInfo')
+          .newInstance([refer(p.displayName), fileName]);
+
+      return MapEntry(literal(fieldName),
+          isFileField ? uploadFileInfo : refer(p.displayName));
     });
     if (fields.isNotEmpty) {
       blocks.add(refer("FormData.from")

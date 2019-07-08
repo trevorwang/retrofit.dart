@@ -1,9 +1,15 @@
 # Changelog
 
+## 0.2.3
+
+* Added support for `File` form fields. See example in `retrofit.dart` readme.
+
 ## 0.2.2
+
 * bump to 0.2.2
 
 ## 0.2.1
+
 * Fixed pub upload issue
 
 ## 0.2.0
