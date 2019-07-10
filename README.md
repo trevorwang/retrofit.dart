@@ -23,10 +23,13 @@ dev_dependencies:
 ### Define and Generate your API
 
 ```dart
+import 'dart:io';
+
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart';
+import 'package:retrofit_example/http_get.dart';
 
-part 'demo.retrofit.dart';
+part 'example.g.dart';
 
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class RestClient {
@@ -36,40 +39,22 @@ abstract class RestClient {
   @Headers({
     "Header-One": " header 1",
   })
-  Future<Response<String>> ip(@Query('query1') String query,
+  Future<HttpGet> ip(@Query('query1') String query,
       {@Queries() Map<String, dynamic> queryies,
       @Header("Header-Two") String header});
-
-  @GET("/profile/{id}")
-  Future<Response<String>> profile(@Path("id") String id,
-      {@Query("role") String role = "user",
-      @Queries() Map<String, dynamic> map = const {},
-      @Body() Map<String, dynamic> map2});
-
-  @POST("/post")
-  @Headers({
-    "Accept": "application/json",
-  })
-  Future<Response<String>> createProfile(@Query('query2') String query,
-      {@Queries() Map<String, dynamic> queryies,
-      @Header("Header-One") String header,
-      @Body() Map<String, dynamic> map2,
-      @Field() int field,
-      @Field("field-g") String ffff});
-
-  @PUT("/put")
-  Future<Response<String>> updateProfile2(@Query('query3') String query,
-      {@Queries() Map<String, dynamic> queryies,
-      @Header("Header-One") String header,
-      @Field() int field,
-      @Field("field-g") String ffff});
-
-  @PATCH("/patch")
-  Future<Response<String>> updateProfile(@Query('query4') String query,
-      {@Queries() Map<String, dynamic> queryies,
-      @Field() int field,
-      @Field("field-g") String ffff});
 }
+
+@JsonSerializable()
+class HttpGet {
+  final Map<String, String> headers;
+  final String origin;
+  final String url;
+
+  HttpGet({this.headers, this.origin, this.url});
+  // There must be a [fromJson] factory method in model class. 
+  factory HttpGet.fromJson(Map<String, dynamic> json) =>
+      _$HttpGetFromJson(json);
+  Map<String, dynamic> toJson() => _$HttpGetToJson(this);
 ```
 
 then run the generator
@@ -84,15 +69,13 @@ flutter packages pub run build_runner build
 ### Use it
 
 ```dart
-import 'package:retrofit_example/demo.dart';
-import 'package:dio/dio.dart';
-
 main(List<String> args) {
   final dio = Dio();
   dio.options.headers["Demo-Header"] = "demo header";
-  final client = RestClient.instance(dio);
-
-  client.ip("trevor").then((it) => print(it));
+  dio.options.headers["Content-Type"] = "application/json";
+  final client = RestClient(dio);
+  client.ip("trevor").then((it) => print(it.toJson()));
 }
-
 ```
+
+[More details](example/lib/example.dart)
