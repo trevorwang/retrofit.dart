@@ -6,6 +6,5 @@ main(List<String> args) {
   dio.options.headers["Demo-Header"] = "demo header";
   dio.options.headers["Content-Type"] = "application/json";
   final client = RestClient(dio);
-
-  client.ip("trevor").then((it) => print(it));
+  client.ip("trevor").then((it) => print(it.toJson()));
 }
