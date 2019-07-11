@@ -60,9 +60,10 @@ class HttpGet {
 then run the generator
 
 ```sh
+# dart
 pub run build_runner build
 
-#flutter
+# flutter
 flutter packages pub run build_runner build
 ```
 

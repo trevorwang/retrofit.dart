@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0
+
+Added support for generic serilization. 
+> Please note:
+>
+> It doesn't support nested generics.
+
 ## 0.2.3
 
 * Added support for `File` form fields. See example in `retrofit.dart` readme.
