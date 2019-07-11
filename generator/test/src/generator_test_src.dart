@@ -77,172 +77,78 @@ class CustomConstant {
   const CustomConstant();
 }
 
-@ShouldGenerate(r'''
-class _HttpGetTest implements HttpGetTest {
-  _HttpGetTest(this._dio) {
-    ArgumentError.checkNotNull(_dio, '_dio');
-    _dio.options.baseUrl = 'https://httpbin.org/';
-  }
-
-  final Dio _dio;
-
-  @override
-  ip() async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    const _data = null;
-    return _dio.request('/get',
-        queryParameters: queryParameters,
-        options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
-        data: _data);
-  }
-}
-''')
+@ShouldGenerate(
+  r'''
+options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
+''',
+  contains: true,
+)
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpGetTest {
   @GET("/get")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
-@ShouldGenerate(r'''
-class _HttpPostTest implements HttpPostTest {
-  _HttpPostTest(this._dio) {
-    ArgumentError.checkNotNull(_dio, '_dio');
-    _dio.options.baseUrl = 'https://httpbin.org/';
-  }
-
-  final Dio _dio;
-
-  @override
-  ip() async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    const _data = null;
-    return _dio.request('/post',
-        queryParameters: queryParameters,
-        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
-        data: _data);
-  }
-}
-''')
+@ShouldGenerate(
+  r'''
+options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+''',
+  contains: true,
+)
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpPostTest {
   @POST("/post")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
-@ShouldGenerate(r'''
-class _HttpPutTest implements HttpPutTest {
-  _HttpPutTest(this._dio) {
-    ArgumentError.checkNotNull(_dio, '_dio');
-    _dio.options.baseUrl = 'https://httpbin.org/';
-  }
-
-  final Dio _dio;
-
-  @override
-  ip() async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    const _data = null;
-    return _dio.request('/put',
-        queryParameters: queryParameters,
-        options: RequestOptions(method: 'PUT', headers: {}, extra: _extra),
-        data: _data);
-  }
-}
-''')
+@ShouldGenerate(
+  r'''
+options: RequestOptions(method: 'PUT', headers: {}, extra: _extra),
+''',
+  contains: true,
+)
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpPutTest {
   @PUT("/put")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
-@ShouldGenerate(r'''
-class _HttpDeleteTest implements HttpDeleteTest {
-  _HttpDeleteTest(this._dio) {
-    ArgumentError.checkNotNull(_dio, '_dio');
-    _dio.options.baseUrl = 'https://httpbin.org/';
-  }
-
-  final Dio _dio;
-
-  @override
-  ip() async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    const _data = null;
-    return _dio.request('/delete',
-        queryParameters: queryParameters,
-        options: RequestOptions(method: 'DELETE', headers: {}, extra: _extra),
-        data: _data);
-  }
-}
-''')
+@ShouldGenerate(
+  r'''
+options: RequestOptions(method: 'DELETE', headers: {}, extra: _extra),
+''',
+  contains: true,
+)
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpDeleteTest {
   @DELETE("/delete")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
-@ShouldGenerate(r'''
-class _HttpPatchTest implements HttpPatchTest {
-  _HttpPatchTest(this._dio) {
-    ArgumentError.checkNotNull(_dio, '_dio');
-    _dio.options.baseUrl = 'https://httpbin.org/';
-  }
-
-  final Dio _dio;
-
-  @override
-  ip() async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    const _data = null;
-    return _dio.request('/delete',
-        queryParameters: queryParameters,
-        options: RequestOptions(method: 'PATCH', headers: {}, extra: _extra),
-        data: _data);
-  }
-}
-''')
+@ShouldGenerate(
+  r'''
+options: RequestOptions(method: 'PATCH', headers: {}, extra: _extra),
+''',
+  contains: true,
+)
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpPatchTest {
   @PATCH("/delete")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
-@ShouldGenerate(r'''
-class _FormUrlEncodedTest implements FormUrlEncodedTest {
-  _FormUrlEncodedTest(this._dio) {
-    ArgumentError.checkNotNull(_dio, '_dio');
-    _dio.options.baseUrl = 'https://httpbin.org/';
-  }
-
-  final Dio _dio;
-
-  @override
-  ip() async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    const _data = null;
-    return _dio.request('/get',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: {},
-            extra: _extra,
+@ShouldGenerate(
+  r'''
             contentType:
                 ContentType.parse('application/x-www-form-urlencoded')),
-        data: _data);
-  }
-}
-''')
+''',
+  contains: true,
+)
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class FormUrlEncodedTest {
   @POST("/get")
   @FormUrlEncoded()
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
 @ShouldGenerate(
@@ -257,7 +163,7 @@ abstract class FormUrlEncodedTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class FileFieldTest {
   @POST("/profile")
-  Future<Response<String>> setProfile(@Field() File image);
+  Future<String> setProfile(@Field() File image);
 }
 
 @ShouldGenerate(
@@ -270,8 +176,7 @@ abstract class FileFieldTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class FileFieldWithCustomNameTest {
   @POST("/profile")
-  Future<Response<String>> setProfile(
-      @Field('image', 'my_profile_image.jpg') File image);
+  Future<String> setProfile(@Field('image', 'my_profile_image.jpg') File image);
 }
 
 @ShouldGenerate(
@@ -283,5 +188,35 @@ abstract class FileFieldWithCustomNameTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class UploadFileInfoFieldTest {
   @POST("/profile")
-  Future<Response<String>> setProfile(@Field() UploadFileInfo image);
+  Future<String> setProfile(@Field() UploadFileInfo image);
+}
+
+@ShouldGenerate(
+  r'''
+    var value = User.fromJson(_result.data);
+    return Future.value(value);
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class GenericCast {
+  @POST("/users/1")
+  Future<User> getUser();
+}
+
+class User {
+  factory User.fromJson(Map<String, dynamic> json) {}
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data;
+    return Future.value(value);
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class GenericCastBasicType {
+  @POST("/users/1")
+  Future<String> getUser();
 }

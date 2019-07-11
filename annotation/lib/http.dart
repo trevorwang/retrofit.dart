@@ -52,7 +52,7 @@ class Method {
 ///
 /// ```
 /// @GET("ip")
-/// Future<Response<String>> ip(@Query('query1') String query)
+/// Future<String> ip(@Query('query1') String query)
 /// ```
 @immutable
 class GET extends Method {
@@ -113,7 +113,7 @@ class Body {
 ///
 /// ```
 /// @POST("/post")
-/// Future<Response<String>> example(
+/// Future<String> example(
 ///   @Field() int foo,
 ///   @Field("bar") String barbar},
 /// )
@@ -145,7 +145,7 @@ class Path {
 ///
 ///```
 /// @GET("/get")
-/// Future<Response<String>> foo(@Query('bar') String query)
+/// Future<String> foo(@Query('bar') String query)
 ///```
 /// Calling with `foo.friends(1)` yields `/get?bar=1`.
 @immutable

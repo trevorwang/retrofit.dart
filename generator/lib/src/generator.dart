@@ -1,7 +1,9 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
@@ -23,6 +25,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   static const _extraVar = 'extra';
   static const _localExtraVar = '_extra';
   static const _contentType = 'contentType';
+  static const _resultVar = "_result";
 
   @override
   String generateForAnnotatedElement(
@@ -142,6 +145,31 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     return null;
   }
 
+  DartType _genericOf(DartType type) {
+    return type is InterfaceType && type.typeArguments.isNotEmpty
+        ? type.typeArguments.first
+        : null;
+  }
+
+  DartType _getResponseType(DartType type) {
+    return _genericOf(type);
+  }
+
+  DartType _getResponseInnerType(DartType type) {
+    final generic = _genericOf(type);
+
+    if (generic == null ||
+        _typeChecker(Map).isExactlyType(type) ||
+        _typeChecker(BuiltMap).isExactlyType(type)) return type;
+
+    if (generic.isDynamic) return null;
+
+    if (_typeChecker(List).isExactlyType(type) ||
+        _typeChecker(BuiltList).isExactlyType(type)) return generic;
+
+    return _getResponseInnerType(generic);
+  }
+
   Method _generateMethod(MethodElement m) {
     final httpMehod = _getMethodAnnotation(m);
 
@@ -166,7 +194,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
             ..defaultTo = it.defaultValueCode == null
                 ? null
                 : Code(it.defaultValueCode))));
-
       mm.body = _generateRequest(m, httpMehod);
     });
   }
@@ -218,10 +245,45 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     namedArguments[_dataVar] = refer(_localDataVar);
 
     blocks.add(
-      refer("$_dioVar.request").call([path], namedArguments).returned.statement,
+      refer("await $_dioVar.request")
+          .call([path], namedArguments)
+          .assignFinal(_resultVar)
+          .statement,
     );
 
+    final returnType = _getResponseType(m.returnType);
+    if (returnType == null || "void" == returnType.toString()) {
+      blocks.add(Code("return Future.value(null);"));
+    } else {
+      final innerReturnType = _getResponseInnerType(returnType);
+      if (_typeChecker(List).isExactlyType(returnType) ||
+          _typeChecker(BuiltList).isExactlyType(returnType)) {
+        if (_isBasicType(returnType)) {
+          blocks.add(Code("var value = $_resultVar.data;"));
+        } else {
+          blocks.add(Code(
+              "var value = ($_resultVar.data as List).map((i) => $innerReturnType.fromJson(i)).toList();"));
+        }
+      } else {
+        if (_isBasicType(returnType)) {
+          blocks.add(Code("var value = $_resultVar.data;"));
+        } else {
+          blocks
+              .add(Code("var value = $returnType.fromJson($_resultVar.data);"));
+        }
+      }
+      blocks.add(Code("return Future.value(value);"));
+    }
+
     return Block.of(blocks);
+  }
+
+  bool _isBasicType(DartType returnType) {
+    return _typeChecker(String).isExactlyType(returnType) ||
+        _typeChecker(bool).isExactlyType(returnType) ||
+        _typeChecker(int).isExactlyType(returnType) ||
+        _typeChecker(Double).isExactlyType(returnType) ||
+        _typeChecker(Float).isExactlyType(returnType);
   }
 
   void _generateQueries(
