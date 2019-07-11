@@ -190,3 +190,33 @@ abstract class UploadFileInfoFieldTest {
   @POST("/profile")
   Future<String> setProfile(@Field() UploadFileInfo image);
 }
+
+@ShouldGenerate(
+  r'''
+    var value = User.fromJson(_result.data);
+    return Future.value(value);
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class GenericCast {
+  @POST("/users/1")
+  Future<User> getUser();
+}
+
+class User {
+  factory User.fromJson(Map<String, dynamic> json) {}
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data;
+    return Future.value(value);
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class GenericCastBasicType {
+  @POST("/users/1")
+  Future<String> getUser();
+}
