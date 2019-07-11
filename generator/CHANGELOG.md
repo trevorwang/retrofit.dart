@@ -21,7 +21,7 @@
     ```dart
     @http.POST('/path/')
     @dio.Extra({'my_key':'my_value'})
-    Future<Response<String>>> myMethod();
+    Future<String>> myMethod();
     ```
 
 * Fixed general dart style and code conventions

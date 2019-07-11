@@ -86,7 +86,7 @@ options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpGetTest {
   @GET("/get")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
 @ShouldGenerate(
@@ -98,7 +98,7 @@ options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpPostTest {
   @POST("/post")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
 @ShouldGenerate(
@@ -110,7 +110,7 @@ options: RequestOptions(method: 'PUT', headers: {}, extra: _extra),
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpPutTest {
   @PUT("/put")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
 @ShouldGenerate(
@@ -122,7 +122,7 @@ options: RequestOptions(method: 'DELETE', headers: {}, extra: _extra),
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpDeleteTest {
   @DELETE("/delete")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
 @ShouldGenerate(
@@ -134,7 +134,7 @@ options: RequestOptions(method: 'PATCH', headers: {}, extra: _extra),
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class HttpPatchTest {
   @PATCH("/delete")
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
 @ShouldGenerate(
@@ -148,7 +148,7 @@ abstract class HttpPatchTest {
 abstract class FormUrlEncodedTest {
   @POST("/get")
   @FormUrlEncoded()
-  Future<Response<String>> ip();
+  Future<String> ip();
 }
 
 @ShouldGenerate(
@@ -163,7 +163,7 @@ abstract class FormUrlEncodedTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class FileFieldTest {
   @POST("/profile")
-  Future<Response<String>> setProfile(@Field() File image);
+  Future<String> setProfile(@Field() File image);
 }
 
 @ShouldGenerate(
@@ -176,8 +176,7 @@ abstract class FileFieldTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class FileFieldWithCustomNameTest {
   @POST("/profile")
-  Future<Response<String>> setProfile(
-      @Field('image', 'my_profile_image.jpg') File image);
+  Future<String> setProfile(@Field('image', 'my_profile_image.jpg') File image);
 }
 
 @ShouldGenerate(
@@ -189,5 +188,5 @@ abstract class FileFieldWithCustomNameTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class UploadFileInfoFieldTest {
   @POST("/profile")
-  Future<Response<String>> setProfile(@Field() UploadFileInfo image);
+  Future<String> setProfile(@Field() UploadFileInfo image);
 }
