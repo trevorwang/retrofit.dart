@@ -205,7 +205,10 @@ abstract class GenericCast {
 }
 
 class User {
-  factory User.fromJson(Map<String, dynamic> json) {}
+  User();
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User();
+  }
 }
 
 @ShouldGenerate(
