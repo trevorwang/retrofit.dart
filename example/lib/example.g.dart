@@ -3,6 +3,16 @@
 part of 'example.dart';
 
 // **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+User _$UserFromJson(Map<String, dynamic> json) {
+  return User();
+}
+
+Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{};
+
+// **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
 
@@ -137,6 +147,21 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{};
     final _data = FormData.from({'image': image});
     final _result = await _dio.request('/profile',
+        queryParameters: queryParameters,
+        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        data: _data);
+    var value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
+  createUser(user) async {
+    ArgumentError.checkNotNull(user, 'user');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(user.toJson() ?? {});
+    final _result = await _dio.request('/users',
         queryParameters: queryParameters,
         options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
         data: _data);

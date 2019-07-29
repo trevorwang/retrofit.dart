@@ -209,6 +209,9 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User();
   }
+  Map<String, dynamic> toJson() {
+    return {};
+  }
 }
 
 @ShouldGenerate(
@@ -222,4 +225,17 @@ class User {
 abstract class GenericCastBasicType {
   @POST("/users/1")
   Future<String> getUser();
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = <String, dynamic>{};
+    _data.addAll(user.toJson() ?? {});
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestObjectBody {
+  @POST("/users")
+  Future<String> createUser(@Body() User user);
 }
