@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0
+
+Added bean class support for `@Body()` annotation.
+
+Here's the example.
+```
+    Future<String> createUser(@Body() User user);
+```
+```
+    class User {
+        Map<String, dynamic> toJson() => {};
+    }
+```
+> please notice that:
+> You have to provide a `toJson()` method to the bean classes to return a `Map<String, dynamic>`.
+
+
 ## 0.3.0
 
 Added support for generic serilization. 
