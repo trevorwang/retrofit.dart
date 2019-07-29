@@ -316,6 +316,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
         blocks.add(refer("$_dataVar.addAll")
             .call([refer("${_bodyName.displayName} ?? {}")]).statement);
+      } else if (_bodyName.type.element is ClassElement) {
+        final ele = _bodyName.type.element as ClassElement;
+        final toJson = ele.methods.firstWhere((i) => i.displayName == "toJson");
+        if (toJson == null) {
+          log.severe(
+              "${_bodyName.type} must provide a `toJson()` method which return a Map.");
+        }
+        blocks.add(literalMap({}, refer("String"), refer("dynamic"))
+            .assignFinal(_dataVar)
+            .statement);
+        blocks.add(refer("$_dataVar.addAll").call(
+            [refer("${_bodyName.displayName}.toJson() ?? {}")]).statement);
       } else {
         /// @Body annotations with no type are assinged as is
         blocks

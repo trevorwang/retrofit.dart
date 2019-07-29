@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit_example/http_get.dart';
@@ -58,4 +59,15 @@ abstract class RestClient {
   /// This will automatically work too.
   @POST("/profile")
   Future<String> setProfileImageWithInfo(@Field() UploadFileInfo image);
+
+  @POST("/users")
+  Future<String> createUser(@Body() User user);
+}
+
+@JsonSerializable()
+class User {
+  User();
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 }
