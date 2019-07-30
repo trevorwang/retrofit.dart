@@ -145,6 +145,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
     return null;
   }
 
+  List<DartType> _genericListOf(DartType type) {
+    return type is ParameterizedType && type.typeArguments.isNotEmpty
+        ? type.typeArguments
+        : null;
+  }
+
   DartType _genericOf(DartType type) {
     return type is InterfaceType && type.typeArguments.isNotEmpty
         ? type.typeArguments.first
@@ -153,6 +159,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
   DartType _getResponseType(DartType type) {
     return _genericOf(type);
+  }
+
+  /// get types for `Map<String, List<User>>`, `A<B,C,D>`
+  List<DartType> _getResponseInnerTypes(DartType type) {
+    final genericList = _genericListOf(type);
+    return genericList;
   }
 
   DartType _getResponseInnerType(DartType type) {
@@ -263,6 +275,30 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
         } else {
           blocks.add(Code(
               "var value = ($_resultVar.data as List).map((i) => $innerReturnType.fromJson(i)).toList();"));
+        }
+      } else if (_typeChecker(Map).isExactlyType(returnType) ||
+          _typeChecker(BuiltMap).isExactlyType(returnType)) {
+        final types = _getResponseInnerTypes(returnType);
+
+        /// assume the first type is a basic type
+        if (types.length > 1) {
+          final secondType = types[1];
+          if (_typeChecker(List).isExactlyType(secondType) ||
+              _typeChecker(BuiltList).isExactlyType(secondType)) {
+            final type = _getResponseType(secondType);
+            blocks.add(Code("""
+            var value = ($_resultVar.data as Map<String, dynamic>)
+              .map((k, v) =>
+                MapEntry(
+                  k, (v as List)
+                    .map((i) => $type.fromJson(i))
+                    .toList()
+                )
+              );  
+            """));
+          }
+        } else {
+          blocks.add(Code("var value = $_resultVar.data;"));
         }
       } else {
         if (_isBasicType(returnType)) {
