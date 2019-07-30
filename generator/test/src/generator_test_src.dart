@@ -239,3 +239,16 @@ abstract class TestObjectBody {
   @POST("/users")
   Future<String> createUser(@Body() User user);
 }
+
+@ShouldGenerate(
+  r'''
+    var value = (_result.data as Map<String, dynamic>).map((k, v) =>
+        MapEntry(k, (v as List).map((i) => User.fromJson(i)).toList()));
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestMapBody {
+  @GET("/xx")
+  Future<Map<String, List<User>>> getResult();
+}
