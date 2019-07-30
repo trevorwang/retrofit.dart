@@ -296,6 +296,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
                 )
               );  
             """));
+          } else if (!_isBasicType(secondType)) {
+            blocks.add(Code("""
+            var value = ($_resultVar.data as Map<String, dynamic>)
+              .map((k, v) =>
+                MapEntry(k, $secondType.fromJson(v))
+              );  
+            """));
           }
         } else {
           blocks.add(Code("var value = $_resultVar.data;"));

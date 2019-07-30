@@ -183,4 +183,19 @@ class _RestClient implements RestClient {
 
     return Future.value(value);
   }
+
+  @override
+  groupedUser() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    const _data = null;
+    final _result = await _dio.request('/users',
+        queryParameters: queryParameters,
+        options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
+        data: _data);
+    var value = (_result.data as Map<String, dynamic>)
+        .map((k, v) => MapEntry(k, User.fromJson(v)));
+
+    return Future.value(value);
+  }
 }

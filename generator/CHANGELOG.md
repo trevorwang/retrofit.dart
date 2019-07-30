@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+* Added generic auto casting for `Map<String, List<Model>>` or `Map<String, Model>`
+
 ## 0.4.0
 
 Added bean class support for `@Body()` annotation.

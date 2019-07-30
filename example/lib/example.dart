@@ -65,6 +65,9 @@ abstract class RestClient {
 
   @GET("/users")
   Future<Map<String, List<User>>> groupedUsers();
+
+  @GET("/users")
+  Future<Map<String, User>> groupedUser();
 }
 
 @JsonSerializable()
