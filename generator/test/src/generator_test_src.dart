@@ -153,7 +153,7 @@ abstract class FormUrlEncodedTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.from({
+    final _data = FormData.from(<String, dynamic>{
       'image':
           UploadFileInfo(image, image.path.split(Platform.pathSeparator).last)
     });
@@ -168,8 +168,9 @@ abstract class FileFieldTest {
 
 @ShouldGenerate(
   r'''
-    final _data =
-        FormData.from({'image': UploadFileInfo(image, 'my_profile_image.jpg')});
+    final _data = FormData.from(<String, dynamic>{
+      'image': UploadFileInfo(image, 'my_profile_image.jpg')
+    });
 ''',
   contains: true,
 )
@@ -181,7 +182,7 @@ abstract class FileFieldWithCustomNameTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.from({'image': image});
+    final _data = FormData.from(<String, dynamic>{'image': image});
 ''',
   contains: true,
 )
@@ -193,7 +194,7 @@ abstract class UploadFileInfoFieldTest {
 
 @ShouldGenerate(
   r'''
-    var value = User.fromJson(_result.data);
+    final value = User.fromJson(_result.data);
     return Future.value(value);
 ''',
   contains: true,
@@ -216,7 +217,7 @@ class User {
 
 @ShouldGenerate(
   r'''
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
 ''',
   contains: true,
@@ -230,7 +231,7 @@ abstract class GenericCastBasicType {
 @ShouldGenerate(
   r'''
     final _data = <String, dynamic>{};
-    _data.addAll(user.toJson() ?? {});
+    _data.addAll(user.toJson() ?? <String, dynamic>{});
 ''',
   contains: true,
 )
@@ -242,7 +243,7 @@ abstract class TestObjectBody {
 
 @ShouldGenerate(
   r'''
-    var value = (_result.data as Map<String, dynamic>).map((k, v) =>
+    var value = _result.data.map((k, v) =>
         MapEntry(k, (v as List).map((i) => User.fromJson(i)).toList()));
 ''',
   contains: true,
@@ -255,8 +256,7 @@ abstract class TestMapBody {
 
 @ShouldGenerate(
   r'''
-    var value = (_result.data as Map<String, dynamic>)
-        .map((k, v) => MapEntry(k, User.fromJson(v)));
+    var value = _result.data.map((k, v) => MapEntry(k, User.fromJson(v)));
 ''',
   contains: true,
 )
