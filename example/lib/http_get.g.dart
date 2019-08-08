@@ -9,7 +9,7 @@ part of 'http_get.dart';
 HttpGet _$HttpGetFromJson(Map<String, dynamic> json) {
   return HttpGet(
       headers: (json['headers'] as Map<String, dynamic>)?.map(
-        (k, e) => MapEntry(k, e as String),
+        (k, dynamic e) => MapEntry(k, e as String),
       ),
       origin: json['origin'] as String,
       url: json['url'] as String);

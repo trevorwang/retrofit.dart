@@ -79,7 +79,8 @@ class CustomConstant {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -91,7 +92,8 @@ abstract class HttpGetTest {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -103,7 +105,8 @@ abstract class HttpPostTest {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'PUT', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'PUT', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -115,7 +118,8 @@ abstract class HttpPutTest {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'DELETE', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'DELETE', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -127,7 +131,8 @@ abstract class HttpDeleteTest {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'PATCH', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'PATCH', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -153,7 +158,7 @@ abstract class FormUrlEncodedTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.from({
+    final _data = FormData.from(<String, dynamic>{
       'image':
           UploadFileInfo(image, image.path.split(Platform.pathSeparator).last)
     });
@@ -168,8 +173,9 @@ abstract class FileFieldTest {
 
 @ShouldGenerate(
   r'''
-    final _data =
-        FormData.from({'image': UploadFileInfo(image, 'my_profile_image.jpg')});
+    final _data = FormData.from(<String, dynamic>{
+      'image': UploadFileInfo(image, 'my_profile_image.jpg')
+    });
 ''',
   contains: true,
 )
@@ -181,7 +187,7 @@ abstract class FileFieldWithCustomNameTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.from({'image': image});
+    final _data = FormData.from(<String, dynamic>{'image': image});
 ''',
   contains: true,
 )
@@ -193,7 +199,7 @@ abstract class UploadFileInfoFieldTest {
 
 @ShouldGenerate(
   r'''
-    var value = User.fromJson(_result.data);
+    final value = User.fromJson(_result.data);
     return Future.value(value);
 ''',
   contains: true,
@@ -216,7 +222,7 @@ class User {
 
 @ShouldGenerate(
   r'''
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
 ''',
   contains: true,
@@ -230,7 +236,7 @@ abstract class GenericCastBasicType {
 @ShouldGenerate(
   r'''
     final _data = <String, dynamic>{};
-    _data.addAll(user.toJson() ?? {});
+    _data.addAll(user.toJson() ?? <String, dynamic>{});
 ''',
   contains: true,
 )
@@ -242,8 +248,12 @@ abstract class TestObjectBody {
 
 @ShouldGenerate(
   r'''
-    var value = (_result.data as Map<String, dynamic>).map((k, v) =>
-        MapEntry(k, (v as List).map((i) => User.fromJson(i)).toList()));
+    var value = _result.data.map((k, dynamic v) => MapEntry(
+        k,
+        (v as List)
+            .map((i) => User.fromJson(i as Map<String, dynamic>))
+            .toList()));
+
 ''',
   contains: true,
 )
@@ -255,8 +265,8 @@ abstract class TestMapBody {
 
 @ShouldGenerate(
   r'''
-    var value = (_result.data as Map<String, dynamic>)
-        .map((k, v) => MapEntry(k, User.fromJson(v)));
+    var value = _result.data.map((k, dynamic v) =>
+        MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
 ''',
   contains: true,
 )

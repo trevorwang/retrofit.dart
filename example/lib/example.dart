@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart';
-import 'package:retrofit_example/http_get.dart';
+import 'http_get.dart';
 
 part 'example.g.dart';
 
@@ -12,7 +12,7 @@ abstract class RestClient {
   factory RestClient(Dio dio) = _RestClient;
 
   @GET("/get")
-  @Headers({
+  @Headers(<String, dynamic>{
     "Header-One": " header 1",
   })
   Future<HttpGet> ip(@Query('query1') String query,
@@ -22,11 +22,11 @@ abstract class RestClient {
   @GET("/profile/{id}")
   Future<String> profile(@Path("id") String id,
       {@Query("role") String role = "user",
-      @Queries() Map<String, dynamic> map = const {},
+      @Queries() Map<String, dynamic> map = const <String, dynamic>{},
       @Body() Map<String, dynamic> map2});
 
   @POST("/post")
-  @Headers({
+  @Headers(<String, dynamic>{
     "Accept": "application/json",
   })
   Future<String> createProfile(@Query('query2') String query,

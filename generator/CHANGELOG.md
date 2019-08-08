@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2
+
+* Added support to generate strong mode compatible source code
+
 ## 0.4.1
 
 * Added generic auto casting for `Map<String, List<Model>>` or `Map<String, Model>`

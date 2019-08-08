@@ -29,32 +29,36 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(query, 'query');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{'query1': query};
-    queryParameters.addAll(queryies ?? {});
-    const _data = null;
-    final _result = await _dio.request('/get',
+    queryParameters.addAll(queryies ?? <String, dynamic>{});
+    final _data = <String, dynamic>{};
+    final Response<Map<String, dynamic>> _result = await _dio.request('/get',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
-            headers: {'Header-One': ' header 1', 'Header-Two': header},
+            headers: <String, dynamic>{
+              'Header-One': ' header 1',
+              'Header-Two': header
+            },
             extra: _extra),
         data: _data);
-    var value = HttpGet.fromJson(_result.data);
+    final value = HttpGet.fromJson(_result.data);
     return Future.value(value);
   }
 
   @override
-  profile(id, {role = "user", map = const {}, map2}) async {
+  profile(id, {role = "user", map = const <String, dynamic>{}, map2}) async {
     ArgumentError.checkNotNull(id, 'id');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{'role': role};
-    queryParameters.addAll(map ?? {});
+    queryParameters.addAll(map ?? <String, dynamic>{});
     final _data = <String, dynamic>{};
-    _data.addAll(map2 ?? {});
-    final _result = await _dio.request('/profile/$id',
+    _data.addAll(map2 ?? <String, dynamic>{});
+    final Response<String> _result = await _dio.request('/profile/$id',
         queryParameters: queryParameters,
-        options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
   }
 
@@ -63,17 +67,20 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(query, 'query');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{'query2': query};
-    queryParameters.addAll(queryies ?? {});
+    queryParameters.addAll(queryies ?? <String, dynamic>{});
     final _data = <String, dynamic>{};
-    _data.addAll(map2 ?? {});
-    final _result = await _dio.request('/post',
+    _data.addAll(map2 ?? <String, dynamic>{});
+    final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
-            headers: {'Accept': 'application/json', 'Header-One': header},
+            headers: <String, dynamic>{
+              'Accept': 'application/json',
+              'Header-One': header
+            },
             extra: _extra),
         data: _data);
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
   }
 
@@ -82,14 +89,17 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(query, 'query');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{'query3': query};
-    queryParameters.addAll(queryies ?? {});
-    final _data = FormData.from({'field': field, 'field-g': ffff});
-    final _result = await _dio.request('/put',
+    queryParameters.addAll(queryies ?? <String, dynamic>{});
+    final _data =
+        FormData.from(<String, dynamic>{'field': field, 'field-g': ffff});
+    final Response<String> _result = await _dio.request('/put',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'PUT', headers: {'Header-One': header}, extra: _extra),
+            method: 'PUT',
+            headers: <String, dynamic>{'Header-One': header},
+            extra: _extra),
         data: _data);
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
   }
 
@@ -98,13 +108,15 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(query, 'query');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{'query4': query};
-    queryParameters.addAll(queryies ?? {});
-    final _data = FormData.from({'field': field, 'field-g': ffff});
-    final _result = await _dio.request('/patch',
+    queryParameters.addAll(queryies ?? <String, dynamic>{});
+    final _data =
+        FormData.from(<String, dynamic>{'field': field, 'field-g': ffff});
+    final Response<String> _result = await _dio.request('/patch',
         queryParameters: queryParameters,
-        options: RequestOptions(method: 'PATCH', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'PATCH', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
   }
 
@@ -113,13 +125,15 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(image, 'image');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data =
-        FormData.from({'image': UploadFileInfo(image, 'my_profile_image.jpg')});
-    final _result = await _dio.request('/profile',
+    final _data = FormData.from(<String, dynamic>{
+      'image': UploadFileInfo(image, 'my_profile_image.jpg')
+    });
+    final Response<String> _result = await _dio.request('/profile',
         queryParameters: queryParameters,
-        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
   }
 
@@ -128,15 +142,16 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(image, 'image');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = FormData.from({
+    final _data = FormData.from(<String, dynamic>{
       'image':
           UploadFileInfo(image, image.path.split(Platform.pathSeparator).last)
     });
-    final _result = await _dio.request('/profile',
+    final Response<String> _result = await _dio.request('/profile',
         queryParameters: queryParameters,
-        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
   }
 
@@ -145,12 +160,13 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(image, 'image');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = FormData.from({'image': image});
-    final _result = await _dio.request('/profile',
+    final _data = FormData.from(<String, dynamic>{'image': image});
+    final Response<String> _result = await _dio.request('/profile',
         queryParameters: queryParameters,
-        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
   }
 
@@ -160,12 +176,13 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(user.toJson() ?? {});
-    final _result = await _dio.request('/users',
+    _data.addAll(user.toJson() ?? <String, dynamic>{});
+    final Response<String> _result = await _dio.request('/users',
         queryParameters: queryParameters,
-        options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    var value = _result.data;
+    final value = _result.data;
     return Future.value(value);
   }
 
@@ -173,13 +190,17 @@ class _RestClient implements RestClient {
   groupedUsers() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    const _data = null;
-    final _result = await _dio.request('/users',
+    final _data = <String, dynamic>{};
+    final Response<Map<String, dynamic>> _result = await _dio.request('/users',
         queryParameters: queryParameters,
-        options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    var value = (_result.data as Map<String, dynamic>).map((k, v) =>
-        MapEntry(k, (v as List).map((i) => User.fromJson(i)).toList()));
+    var value = _result.data.map((k, dynamic v) => MapEntry(
+        k,
+        (v as List)
+            .map((dynamic i) => User.fromJson(i as Map<String, dynamic>))
+            .toList()));
 
     return Future.value(value);
   }
@@ -188,13 +209,14 @@ class _RestClient implements RestClient {
   groupedUser() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    const _data = null;
-    final _result = await _dio.request('/users',
+    final _data = <String, dynamic>{};
+    final Response<Map<String, dynamic>> _result = await _dio.request('/users',
         queryParameters: queryParameters,
-        options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    var value = (_result.data as Map<String, dynamic>)
-        .map((k, v) => MapEntry(k, User.fromJson(v)));
+    var value = _result.data.map((k, dynamic v) =>
+        MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
 
     return Future.value(value);
   }
