@@ -286,7 +286,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
                 .statement,
           );
           blocks.add(Code(
-              "var value = ($_resultVar.data as List).map((i) => $innerReturnType.fromJson(i)).toList();"));
+              "var value = $_resultVar.data.map((dynamic i) => $innerReturnType.fromJson(i as Map<String,dynamic>)).toList();"));
         }
       } else if (_typeChecker(Map).isExactlyType(returnType) ||
           _typeChecker(BuiltMap).isExactlyType(returnType)) {
