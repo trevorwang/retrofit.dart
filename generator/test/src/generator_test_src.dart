@@ -79,7 +79,8 @@ class CustomConstant {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'GET', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -91,7 +92,8 @@ abstract class HttpGetTest {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'POST', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -103,7 +105,8 @@ abstract class HttpPostTest {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'PUT', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'PUT', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -115,7 +118,8 @@ abstract class HttpPutTest {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'DELETE', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'DELETE', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -127,7 +131,8 @@ abstract class HttpDeleteTest {
 
 @ShouldGenerate(
   r'''
-options: RequestOptions(method: 'PATCH', headers: {}, extra: _extra),
+        options: RequestOptions(
+            method: 'PATCH', headers: <String, dynamic>{}, extra: _extra),
 ''',
   contains: true,
 )
@@ -243,8 +248,12 @@ abstract class TestObjectBody {
 
 @ShouldGenerate(
   r'''
-    var value = _result.data.map((k, v) =>
-        MapEntry(k, (v as List).map((i) => User.fromJson(i)).toList()));
+    var value = _result.data.map((k, dynamic v) => MapEntry(
+        k,
+        (v as List)
+            .map((i) => User.fromJson(i as Map<String, dynamic>))
+            .toList()));
+
 ''',
   contains: true,
 )
@@ -256,7 +265,8 @@ abstract class TestMapBody {
 
 @ShouldGenerate(
   r'''
-    var value = _result.data.map((k, v) => MapEntry(k, User.fromJson(v)));
+    var value = _result.data.map((k, dynamic v) =>
+        MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
 ''',
   contains: true,
 )

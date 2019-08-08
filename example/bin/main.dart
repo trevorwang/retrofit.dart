@@ -1,7 +1,7 @@
 import 'package:retrofit_example/example.dart';
 import 'package:dio/dio.dart';
 
-main(List<String> args) {
+void main(List<String> args) {
   final dio = Dio();
   dio.options.headers["Demo-Header"] = "demo header";
   dio.options.headers["Content-Type"] = "application/json";

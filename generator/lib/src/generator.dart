@@ -241,7 +241,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
     final extraOptions = {
       "method": literal(httpMehod.peek("method").stringValue),
-      "headers": literalMap(headers),
+      "headers": literalMap(headers, refer("String"), refer("dynamic")),
       _extraVar: refer(_localExtraVar),
     };
     final contentType = _getFormUrlEncodedAnnotation(m);
@@ -306,10 +306,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
             final type = _getResponseType(secondType);
             blocks.add(Code("""
             var value = $_resultVar.data
-              .map((k, v) =>
+              .map((k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
-                    .map((i) => $type.fromJson(i))
+                    .map((i) => $type.fromJson(i as Map<String,dynamic>))
                     .toList()
                 )
               );  
@@ -317,8 +317,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
           } else if (!_isBasicType(secondType)) {
             blocks.add(Code("""
             var value = $_resultVar.data
-              .map((k, v) =>
-                MapEntry(k, $secondType.fromJson(v))
+              .map((k, dynamic v) =>
+                MapEntry(k, $secondType.fromJson(v as Map<String, dynamic>))
               );  
             """));
           }
