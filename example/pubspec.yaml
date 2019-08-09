@@ -10,6 +10,7 @@ environment:
 dependencies:
   retrofit:
   json_annotation:
+  logger:
 
 dev_dependencies:
   retrofit_generator:

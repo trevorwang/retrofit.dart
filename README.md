@@ -14,11 +14,11 @@ Add the generator to your dev dependencies
 
 ```yaml
 dependencies:
-  retrofit:
+  retrofit: any
 
 dev_dependencies:
-  retrofit_generator:
-  build_runner:
+  retrofit_generator: any
+  build_runner: any
 ```
 
 ### Define and Generate your API
