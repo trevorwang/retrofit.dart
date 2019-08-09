@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="generator" content="made with love by dartdoc 0.28.2">
+  <meta name="description" content="retrofit API docs, for the Dart programming language.">
+  <title>retrofit - Dart API docs</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="static-assets/github.css">
+  <link rel="stylesheet" href="static-assets/styles.css">
+  <link rel="icon" href="static-assets/favicon.png">
+  
+</head>
+
+<body>
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="https://mings.in/retrofit.dart/">retrofit package</a></li>
+  </ol>
+  <div class="self-name">retrofit</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+  <div id="dartdoc-sidebar-left" class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+      <form class="search-sidebar" role="search">
+        <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+      </form>
+    </header>
+    
+    <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+      <li><a href="https://mings.in/retrofit.dart/">retrofit package</a></li>
+    </ol>
+    
+    <h5 class="hidden-xs"><span class="package-name">retrofit</span> <span class="package-kind">package</span></h5>
+    <ol>
+          <li class="section-title">Libraries</li>
+          <li><a href="dio/dio-library.html">dio</a></li>
+          <li><a href="http/http-library.html">http</a></li>
+    </ol>
+  </div>
+
+  <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
+      <section class="desc markdown">
+        <h1 id="retrofit-for-dart">Retrofit For Dart</h1>
+<p><a href="https://circleci.com/gh/trevorwang/retrofit.dart"><img src="https://circleci.com/gh/trevorwang/retrofit.dart.svg?style=svg" alt="CircleCI"></a>
+<a href="https://travis-ci.org/trevorwang/retrofit.dart"><img src="https://travis-ci.org/trevorwang/retrofit.dart.svg?branch=master" alt="Build Status"></a>
+<a href="https://cloud.drone.io/trevorwang/retrofit.dart"><img src="https://cloud.drone.io/api/badges/trevorwang/retrofit.dart/status.svg" alt="Build Status"></a></p>
+<p>retrofit.dart is an <a href="https://github.com/flutterchina/dio/">dio</a> client generator using <a href="https://github.com/dart-lang/source_gen">source_gen</a> and inspired by <a href="https://github.com/lejard-h/chopper">Chopper</a> and <a href="https://github.com/square/retrofit">Retrofit</a>.</p>
+<h2 id="usage">Usage</h2>
+<h3 id="generator">Generator</h3>
+<p>Add the generator to your dev dependencies</p>
+<pre class="language-yaml"><code class="language-yaml">dependencies:
+  retrofit: any
+  logger: any  #for logging purpose
+
+dev_dependencies:
+  retrofit_generator: any
+  build_runner: any
+</code></pre>
+<h3 id="define-and-generate-your-api">Define and Generate your API</h3>
+<pre class="language-dart"><code class="language-dart">import 'package:json_annotation/json_annotation.dart';
+import 'package:retrofit/http.dart';
+import 'package:dio/dio.dart';
+
+part 'example.g.dart';
+
+@RestApi(baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/")
+abstract class RestClient {
+  factory RestClient(Dio dio) = _RestClient;
+
+  @GET("/tasks")
+  Future&lt;List&lt;Task&gt;&gt; getTasks();
+
+  @GET("/tasks/{id}")
+  Future&lt;Task&gt; getTask(@Path("id") String id);
+
+  @PATCH("/tasks/{id}")
+  Future&lt;Task&gt; updateTaskPart(
+      @Path() String id, @Body() Map&lt;String, dynamic&gt; map);
+
+  @PUT("/tasks/{id}")
+  Future&lt;Task&gt; updateTask(@Path() String id, @Body() Task task);
+
+  @DELETE("/tasks/{id}")
+  Future&lt;void&gt; deleteTask(@Path() String id);
+
+  @POST("/tasks")
+  Future&lt;Task&gt; createTask(@Body() Task task);
+}
+
+@JsonSerializable()
+class Task {
+  String id;
+  String name;
+  String avatar;
+  String createdAt;
+
+  Task({this.id, this.name, this.avatar, this.createdAt});
+
+  factory Task.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$TaskFromJson(json);
+  Map&lt;String, dynamic&gt; toJson() =&gt; _$TaskToJson(this);
+}
+
+</code></pre>
+<p>then run the generator</p>
+<pre class="language-sh"><code class="language-sh"># dart
+pub run build_runner build
+
+# flutter	
+flutter pub run build_runner build
+</code></pre>
+<h3 id="use-it">Use it</h3>
+<pre class="language-dart"><code class="language-dart">import 'package:logger/logger.dart';
+import 'package:retrofit_example/example.dart';
+import 'package:dio/dio.dart';
+
+final logger = Logger();
+void main(List&lt;String&gt; args) {
+  final dio = Dio();   // Provide a dio instance
+  dio.options.headers["Demo-Header"] = "demo header";   // config your dio headers globally
+  dio.options.headers["Content-Type"] = "application/json";
+  final client = RestClient(dio);
+  
+  client.getTask("2").then((it) =&gt; logger.i(it)).catchError((Object obj) {
+    // non-200 error goes here.
+    switch (obj.runtimeType) {
+      case DioError:
+        // Here's the sample to get the failed response error code and message
+        final res = (obj as DioError).response;
+        logger.e("Got error : ${res.statusCode} -&gt; ${res.statusMessage}");
+        break;
+      default:
+    }
+  });
+
+}
+</code></pre>
+<p><a href="example/lib/example.dart">More details</a></p>
+      </section>
+      
+        <section class="summary">
+            <h2>Libraries</h2>
+          <dl>
+            <dt id="dio">
+              <span class="name"><a href="dio/dio-library.html">dio</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="http">
+              <span class="name"><a href="http/http-library.html">http</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>          </dl>
+        </section>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-right" class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+  </div>
+
+</main>
+
+<footer>
+  <span class="no-break">
+    retrofit 0.3.0
+  </span>
+
+  
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="static-assets/typeahead.bundle.min.js"></script>
+<script src="static-assets/highlight.pack.js"></script>
+<script src="static-assets/URI.js"></script>
+<script src="static-assets/script.js"></script>
+
+
+</body>
+
+</html>

@@ -11,10 +11,12 @@ void main(List<String> args) {
 
   client.getTasks().then((it) => print(it));
 
-  client.getTask("3").then((it) => print(it)).catchError((Object obj) {
+  client.getTask("2").then((it) => print(it)).catchError((Object obj) {
+    // non-200 error goes here.
     switch (obj.runtimeType) {
       case DioError:
-        logger.e((obj as DioError).message);
+        final res = (obj as DioError).response;
+        logger.e("Got error : ${res.statusCode} -> ${res.statusMessage}");
         break;
       default:
     }
