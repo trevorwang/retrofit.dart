@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.3
+
+* Minor fix
+
 ## 0.4.2
 
 * Added support to generate strong mode compatible source code
