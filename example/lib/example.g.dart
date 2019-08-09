@@ -6,11 +6,21 @@ part of 'example.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) {
-  return User();
+Task _$TaskFromJson(Map<String, dynamic> json) {
+  return Task(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    avatar: json['avatar'] as String,
+    createdAt: json['createdAt'] as String,
+  );
 }
 
-Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{};
+Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'avatar': instance.avatar,
+      'createdAt': instance.createdAt,
+    };
 
 // **************************************************************************
 // RetrofitGenerator
@@ -19,205 +29,107 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{};
 class _RestClient implements RestClient {
   _RestClient(this._dio) {
     ArgumentError.checkNotNull(_dio, '_dio');
-    _dio.options.baseUrl = 'https://httpbin.org/';
+    _dio.options.baseUrl =
+        'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/';
   }
 
   final Dio _dio;
 
   @override
-  ip(query, {queryies, header}) async {
-    ArgumentError.checkNotNull(query, 'query');
+  getTasks() async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{'query1': query};
-    queryParameters.addAll(queryies ?? <String, dynamic>{});
+    final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final Response<Map<String, dynamic>> _result = await _dio.request('/get',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'GET',
-            headers: <String, dynamic>{
-              'Header-One': ' header 1',
-              'Header-Two': header
-            },
-            extra: _extra),
-        data: _data);
-    final value = HttpGet.fromJson(_result.data);
-    return Future.value(value);
-  }
-
-  @override
-  profile(id, {role = "user", map = const <String, dynamic>{}, map2}) async {
-    ArgumentError.checkNotNull(id, 'id');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{'role': role};
-    queryParameters.addAll(map ?? <String, dynamic>{});
-    final _data = <String, dynamic>{};
-    _data.addAll(map2 ?? <String, dynamic>{});
-    final Response<String> _result = await _dio.request('/profile/$id',
+    final Response<List<dynamic>> _result = await _dio.request('/tasks',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    final value = _result.data;
+    var value = _result.data
+        .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
+        .toList();
     return Future.value(value);
   }
 
   @override
-  createProfile(query, {queryies, header, map2, field, ffff}) async {
-    ArgumentError.checkNotNull(query, 'query');
+  getTask(id) async {
+    ArgumentError.checkNotNull(id, 'id');
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{'query2': query};
-    queryParameters.addAll(queryies ?? <String, dynamic>{});
+    final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(map2 ?? <String, dynamic>{});
-    final Response<String> _result = await _dio.request('/post',
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/tasks/$id',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'POST',
-            headers: <String, dynamic>{
-              'Accept': 'application/json',
-              'Header-One': header
-            },
-            extra: _extra),
+            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    final value = _result.data;
+    final value = Task.fromJson(_result.data);
     return Future.value(value);
   }
 
   @override
-  updateProfile2(query, {queryies, header, field, ffff}) async {
-    ArgumentError.checkNotNull(query, 'query');
+  updateTaskPart(id, map) async {
+    ArgumentError.checkNotNull(id, 'id');
+    ArgumentError.checkNotNull(map, 'map');
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{'query3': query};
-    queryParameters.addAll(queryies ?? <String, dynamic>{});
-    final _data =
-        FormData.from(<String, dynamic>{'field': field, 'field-g': ffff});
-    final Response<String> _result = await _dio.request('/put',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'PUT',
-            headers: <String, dynamic>{'Header-One': header},
-            extra: _extra),
-        data: _data);
-    final value = _result.data;
-    return Future.value(value);
-  }
-
-  @override
-  updateProfile(query, {queryies, field, ffff}) async {
-    ArgumentError.checkNotNull(query, 'query');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{'query4': query};
-    queryParameters.addAll(queryies ?? <String, dynamic>{});
-    final _data =
-        FormData.from(<String, dynamic>{'field': field, 'field-g': ffff});
-    final Response<String> _result = await _dio.request('/patch',
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(map ?? <String, dynamic>{});
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/tasks/$id',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'PATCH', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    final value = _result.data;
+    final value = Task.fromJson(_result.data);
     return Future.value(value);
   }
 
   @override
-  setProfile(image) async {
-    ArgumentError.checkNotNull(image, 'image');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = FormData.from(<String, dynamic>{
-      'image': UploadFileInfo(image, 'my_profile_image.jpg')
-    });
-    final Response<String> _result = await _dio.request('/profile',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
-        data: _data);
-    final value = _result.data;
-    return Future.value(value);
-  }
-
-  @override
-  setProfileImage(image) async {
-    ArgumentError.checkNotNull(image, 'image');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = FormData.from(<String, dynamic>{
-      'image':
-          UploadFileInfo(image, image.path.split(Platform.pathSeparator).last)
-    });
-    final Response<String> _result = await _dio.request('/profile',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
-        data: _data);
-    final value = _result.data;
-    return Future.value(value);
-  }
-
-  @override
-  setProfileImageWithInfo(image) async {
-    ArgumentError.checkNotNull(image, 'image');
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = FormData.from(<String, dynamic>{'image': image});
-    final Response<String> _result = await _dio.request('/profile',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
-        data: _data);
-    final value = _result.data;
-    return Future.value(value);
-  }
-
-  @override
-  createUser(user) async {
-    ArgumentError.checkNotNull(user, 'user');
+  updateTask(id, task) async {
+    ArgumentError.checkNotNull(id, 'id');
+    ArgumentError.checkNotNull(task, 'task');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(user.toJson() ?? <String, dynamic>{});
-    final Response<String> _result = await _dio.request('/users',
+    _data.addAll(task.toJson() ?? <String, dynamic>{});
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/tasks/$id',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'PUT', headers: <String, dynamic>{}, extra: _extra),
+        data: _data);
+    final value = Task.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  deleteTask(id) async {
+    ArgumentError.checkNotNull(id, 'id');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<void> _result = await _dio.request('/tasks/$id',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'DELETE', headers: <String, dynamic>{}, extra: _extra),
+        data: _data);
+    return Future.value(null);
+  }
+
+  @override
+  createTask(task) async {
+    ArgumentError.checkNotNull(task, 'task');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(task.toJson() ?? <String, dynamic>{});
+    final Response<Map<String, dynamic>> _result = await _dio.request('/tasks',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST', headers: <String, dynamic>{}, extra: _extra),
         data: _data);
-    final value = _result.data;
-    return Future.value(value);
-  }
-
-  @override
-  groupedUsers() async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final Response<Map<String, dynamic>> _result = await _dio.request('/users',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
-        data: _data);
-    var value = _result.data.map((k, dynamic v) => MapEntry(
-        k,
-        (v as List)
-            .map((dynamic i) => User.fromJson(i as Map<String, dynamic>))
-            .toList()));
-
-    return Future.value(value);
-  }
-
-  @override
-  groupedUser() async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final Response<Map<String, dynamic>> _result = await _dio.request('/users',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
-        data: _data);
-    var value = _result.data.map((k, dynamic v) =>
-        MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
-
+    final value = Task.fromJson(_result.data);
     return Future.value(value);
   }
 }

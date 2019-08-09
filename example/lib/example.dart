@@ -1,79 +1,42 @@
-import 'dart:io';
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart';
-import 'http_get.dart';
 
 part 'example.g.dart';
 
-@RestApi(baseUrl: "https://httpbin.org/")
+@RestApi(baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/")
 abstract class RestClient {
   factory RestClient(Dio dio) = _RestClient;
 
-  @GET("/get")
-  @Headers(<String, dynamic>{
-    "Header-One": " header 1",
-  })
-  Future<HttpGet> ip(@Query('query1') String query,
-      {@Queries() Map<String, dynamic> queryies,
-      @Header("Header-Two") String header});
+  @GET("/tasks")
+  Future<List<Task>> getTasks();
 
-  @GET("/profile/{id}")
-  Future<String> profile(@Path("id") String id,
-      {@Query("role") String role = "user",
-      @Queries() Map<String, dynamic> map = const <String, dynamic>{},
-      @Body() Map<String, dynamic> map2});
+  @GET("/tasks/{id}")
+  Future<Task> getTask(@Path("id") String id);
 
-  @POST("/post")
-  @Headers(<String, dynamic>{
-    "Accept": "application/json",
-  })
-  Future<String> createProfile(@Query('query2') String query,
-      {@Queries() Map<String, dynamic> queryies,
-      @Header("Header-One") String header,
-      @Body() Map<String, dynamic> map2,
-      @Field() int field,
-      @Field("field-g") String ffff});
+  @PATCH("/tasks/{id}")
+  Future<Task> updateTaskPart(
+      @Path() String id, @Body() Map<String, dynamic> map);
 
-  @PUT("/put")
-  Future<String> updateProfile2(@Query('query3') String query,
-      {@Queries() Map<String, dynamic> queryies,
-      @Header("Header-One") String header,
-      @Field() int field,
-      @Field("field-g") String ffff});
+  @PUT("/tasks/{id}")
+  Future<Task> updateTask(@Path() String id, @Body() Task task);
 
-  @PATCH("/patch")
-  Future<String> updateProfile(@Query('query4') String query,
-      {@Queries() Map<String, dynamic> queryies,
-      @Field() int field,
-      @Field("field-g") String ffff});
+  @DELETE("/tasks/{id}")
+  Future<void> deleteTask(@Path() String id);
 
-  @POST("/profile")
-  Future<String> setProfile(@Field('image', 'my_profile_image.jpg') File image);
-
-  /// This will add the image name from `image.path.split(Platform.pathSeperator).last`
-  @POST("/profile")
-  Future<String> setProfileImage(@Field() File image);
-
-  /// This will automatically work too.
-  @POST("/profile")
-  Future<String> setProfileImageWithInfo(@Field() UploadFileInfo image);
-
-  @POST("/users")
-  Future<String> createUser(@Body() User user);
-
-  @GET("/users")
-  Future<Map<String, List<User>>> groupedUsers();
-
-  @GET("/users")
-  Future<Map<String, User>> groupedUser();
+  @POST("/tasks")
+  Future<Task> createTask(@Body() Task task);
 }
 
 @JsonSerializable()
-class User {
-  User();
+class Task {
+  String id;
+  String name;
+  String avatar;
+  String createdAt;
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+  Task({this.id, this.name, this.avatar, this.createdAt});
+
+  factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
+  Map<String, dynamic> toJson() => _$TaskToJson(this);
 }
