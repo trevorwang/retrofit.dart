@@ -58,7 +58,7 @@
 <p><a href="https://circleci.com/gh/trevorwang/retrofit.dart"><img src="https://circleci.com/gh/trevorwang/retrofit.dart.svg?style=svg" alt="CircleCI"></a>
 <a href="https://travis-ci.org/trevorwang/retrofit.dart"><img src="https://travis-ci.org/trevorwang/retrofit.dart.svg?branch=master" alt="Build Status"></a>
 <a href="https://cloud.drone.io/trevorwang/retrofit.dart"><img src="https://cloud.drone.io/api/badges/trevorwang/retrofit.dart/status.svg" alt="Build Status"></a></p>
-<p>retrofit.dart is an <a href="https://github.com/flutterchina/dio/">dio</a> client generator using <a href="https://github.com/dart-lang/source_gen">source_gen</a> and inspired by <a href="https://github.com/lejard-h/chopper">Chopper</a> and <a href="https://github.com/square/retrofit">Retrofit</a>.</p>
+<p>retrofit.dart is a type conversion <a href="https://github.com/flutterchina/dio/">dio</a> client generator using <a href="https://github.com/dart-lang/source_gen">source_gen</a> and inspired by <a href="https://github.com/lejard-h/chopper">Chopper</a> and <a href="https://github.com/square/retrofit">Retrofit</a>.</p>
 <h2 id="usage">Usage</h2>
 <h3 id="generator">Generator</h3>
 <p>Add the generator to your dev dependencies</p>
@@ -83,22 +83,6 @@ abstract class RestClient {
 
   @GET("/tasks")
   Future&lt;List&lt;Task&gt;&gt; getTasks();
-
-  @GET("/tasks/{id}")
-  Future&lt;Task&gt; getTask(@Path("id") String id);
-
-  @PATCH("/tasks/{id}")
-  Future&lt;Task&gt; updateTaskPart(
-      @Path() String id, @Body() Map&lt;String, dynamic&gt; map);
-
-  @PUT("/tasks/{id}")
-  Future&lt;Task&gt; updateTask(@Path() String id, @Body() Task task);
-
-  @DELETE("/tasks/{id}")
-  Future&lt;void&gt; deleteTask(@Path() String id);
-
-  @POST("/tasks")
-  Future&lt;Task&gt; createTask(@Body() Task task);
 }
 
 @JsonSerializable()
@@ -134,7 +118,60 @@ void main(List&lt;String&gt; args) {
   dio.options.headers["Content-Type"] = "application/json";
   final client = RestClient(dio);
   
-  client.getTask("2").then((it) =&gt; logger.i(it)).catchError((Object obj) {
+  client.getTasks().then((it) =&gt; logger.i(it));
+</code></pre>
+<h2 id="more">More</h2>
+<h3 id="type-conversion">Type Conversion</h3>
+<blockquote>
+<p>Before you use the type conversion, please make sure that a <code>factory Task.fromJson(Map&lt;String, dynamic&gt; json)</code> must be provided for each model class. <code>json_serializable</code> is the recommanded to be used as the serialization tool.</p></blockquote>
+<pre class="language-dart"><code class="language-dart">...
+@GET("/tasks")
+  Future&lt;List&lt;Task&gt;&gt; getTasks();
+}
+
+@JsonSerializable()
+class Task {
+  String name;
+  Task({this.name});
+  factory Task.fromJson(Map&lt;String, dynamic&gt; json) =&gt; _$TaskFromJson(json);
+}
+</code></pre>
+<h3 id="http-methods">HTTP Methods</h3>
+<p>The HTTP methods in the below sample are supported.</p>
+<pre class="language-dart"><code class="language-dart">  @GET("/tasks/{id}")
+  Future&lt;Task&gt; getTask(@Path("id") String id);
+
+  @PATCH("/tasks/{id}")
+  Future&lt;Task&gt; updateTaskPart(
+      @Path() String id, @Body() Map&lt;String, dynamic&gt; map);
+
+  @PUT("/tasks/{id}")
+  Future&lt;Task&gt; updateTask(@Path() String id, @Body() Task task);
+
+  @DELETE("/tasks/{id}")
+  Future&lt;void&gt; deleteTask(@Path() String id);
+
+  @POST("/tasks")
+  Future&lt;Task&gt; createTask(@Body() Task task);
+</code></pre>
+<h3 id="http-header">HTTP Header</h3><ul><li>
+<p>Add a HTTP header from the parameter of the method</p>
+<pre class="language-dart"><code class="language-dart">  @GET("/tasks")
+  Future&lt;Task&gt; getTasks(@Header("Content-Type") String contentType );
+</code></pre></li></ul><ul><li>
+<p>Add staitc HTTP headers</p>
+<pre class="language-dart"><code class="language-dart">  @GET("/tasks")
+  @Headers(&lt;String, dynamic&gt;{
+      "Content-Type" : "application/json",
+      "Custom-Header" : "Your header"
+  })
+  Future&lt;Task&gt; getTasks();
+</code></pre></li></ul>
+<h3 id="error-handling">Error Handling</h3>
+<p><code>catchError(Object)</code> should be used for capturing the exception and failed response. You can get the detailed response info from <code>DioError.response</code>.</p>
+<pre class="language-dart"><code class="language-dart"> client.getTask("2").then((it){
+   logger.i(it);
+ }).catchError((Object obj) {
     // non-200 error goes here.
     switch (obj.runtimeType) {
       case DioError:
@@ -148,7 +185,6 @@ void main(List&lt;String&gt; args) {
 
 }
 </code></pre>
-<p><a href="example/lib/example.dart">More details</a></p>
       </section>
       
         <section class="summary">
@@ -176,7 +212,7 @@ void main(List&lt;String&gt; args) {
 
 <footer>
   <span class="no-break">
-    retrofit 0.3.0
+    retrofit 0.3.1
   </span>
 
   
