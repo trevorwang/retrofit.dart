@@ -9,9 +9,9 @@ void main(List<String> args) {
   dio.options.headers["Content-Type"] = "application/json";
   final client = RestClient(dio);
 
-  client.getTasks().then((it) => print(it));
+  client.getTasks().then((it) => logger.i(it));
 
-  client.getTask("2").then((it) => print(it)).catchError((Object obj) {
+  client.getTask("2").then((it) => logger.i(it)).catchError((Object obj) {
     // non-200 error goes here.
     switch (obj.runtimeType) {
       case DioError:
