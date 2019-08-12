@@ -12,10 +12,9 @@ import 'package:dio/dio.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
 
-import 'package:retrofit/http.dart' as http;
-import 'package:retrofit/dio.dart' as dio;
+import 'package:retrofit/retrofit.dart' as retrofit;
 
-class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
+class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const String _baseUrlVar = 'baseUrl';
   static const _queryParamsVar = "queryParameters";
   static const _optionsVar = "options";
@@ -90,12 +89,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
       }).map((m) => _generateMethod(m));
 
   final _methodsAnnotations = const [
-    http.GET,
-    http.POST,
-    http.DELETE,
-    http.PUT,
-    http.PATCH,
-    http.Method
+    retrofit.GET,
+    retrofit.POST,
+    retrofit.DELETE,
+    retrofit.PUT,
+    retrofit.PATCH,
+    retrofit.Method
   ];
 
   TypeChecker _typeChecker(Type type) => new TypeChecker.fromRuntime(type);
@@ -109,14 +108,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   }
 
   ConstantReader _getHeadersAnnotation(MethodElement method) {
-    final annot = _typeChecker(http.Headers)
+    final annot = _typeChecker(retrofit.Headers)
         .firstAnnotationOf(method, throwOnUnresolved: false);
     if (annot != null) return new ConstantReader(annot);
     return null;
   }
 
   ConstantReader _getFormUrlEncodedAnnotation(MethodElement method) {
-    final annotation = _typeChecker(http.FormUrlEncoded)
+    final annotation = _typeChecker(retrofit.FormUrlEncoded)
         .firstAnnotationOf(method, throwOnUnresolved: false);
     if (annotation != null) return new ConstantReader(annotation);
     return null;
@@ -211,7 +210,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
   }
 
   Expression _generatePath(MethodElement m, ConstantReader method) {
-    final paths = _getAnnotations(m, http.Path);
+    final paths = _getAnnotations(m, retrofit.Path);
     String definePath = method.peek("path").stringValue;
     paths.forEach((k, v) {
       final value = v.peek("value")?.stringValue ?? k.displayName;
@@ -361,13 +360,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
   void _generateQueries(
       MethodElement m, List<Code> blocks, String _queryParamsVar) {
-    final queries = _getAnnotations(m, http.Query);
+    final queries = _getAnnotations(m, retrofit.Query);
     final queryParameters = queries.map((p, ConstantReader r) {
       final value = r.peek("value")?.stringValue ?? p.displayName;
       return MapEntry(literal(value), refer(p.displayName));
     });
 
-    final queryMap = _getAnnotations(m, http.Queries);
+    final queryMap = _getAnnotations(m, retrofit.Queries);
     blocks.add(literalMap(queryParameters, refer("String"), refer("dynamic"))
         .assignFinal(_queryParamsVar)
         .statement);
@@ -380,7 +379,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
   void _generateRequestBody(
       List<Code> blocks, String _dataVar, MethodElement m) {
-    final _bodyName = _getAnnotation(m, http.Body)?.item1;
+    final _bodyName = _getAnnotation(m, retrofit.Body)?.item1;
     if (_bodyName != null) {
       if (TypeChecker.fromRuntime(Map).isAssignableFromType(_bodyName.type)) {
         blocks.add(literalMap({}, refer("String"), refer("dynamic"))
@@ -412,7 +411,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
       return;
     }
 
-    final fields = _getAnnotations(m, http.Field).map((p, r) {
+    final fields = _getAnnotations(m, retrofit.Field).map((p, r) {
       final fieldName = r.peek("value")?.stringValue ?? p.displayName;
 
       final isFileField = _typeChecker(File).isAssignableFromType(p.type);
@@ -448,7 +447,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
       return MapEntry(literal(k.toStringValue()), literal(v.toStringValue()));
     });
 
-    final annosInParam = _getAnnotations(m, http.Header);
+    final annosInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annosInParam.map((k, v) {
       final value = v.peek("value")?.stringValue ?? k.displayName;
       return MapEntry(literal(value), refer(k.displayName));
@@ -459,8 +458,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<http.RestApi> {
 
   void _generateExtra(
       MethodElement m, List<Code> blocks, String localExtraVar) {
-    final extra =
-        _typeChecker(dio.Extra).firstAnnotationOf(m, throwOnUnresolved: false);
+    final extra = _typeChecker(retrofit.Extra)
+        .firstAnnotationOf(m, throwOnUnresolved: false);
 
     if (extra != null) {
       final c = ConstantReader(extra);

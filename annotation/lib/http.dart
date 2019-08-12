@@ -32,7 +32,7 @@ class RestApi {
   /// Otherwise the `path` field of any [HttpMethod]  like [@POST()] should have the full URL.
 
   final String baseUrl;
-  const RestApi({this.baseUrl = null});
+  const RestApi({this.baseUrl});
 }
 
 @immutable

@@ -1,4 +1,8 @@
 # Changelog
+## 0.5.0
+
+* Fixed analysis report
+  use `retrofit.dart` instead of `http.dart` and `dio.dart` to import classes 
 
 ## 0.4.3
 * Updated docs and sample code
