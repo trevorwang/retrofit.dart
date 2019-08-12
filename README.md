@@ -26,7 +26,7 @@ dev_dependencies:
 
 ```dart
 import 'package:json_annotation/json_annotation.dart';
-import 'package:retrofit/http.dart';
+import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 
 part 'example.g.dart';
