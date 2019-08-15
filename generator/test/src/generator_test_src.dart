@@ -19,18 +19,10 @@ class _RestClient implements RestClient {
 @RestApi()
 abstract class RestClient {}
 
-@ShouldGenerate(
-  r'''
-class _BaseUrl implements BaseUrl {
-  _BaseUrl(this._dio) {
-    ArgumentError.checkNotNull(_dio, '_dio');
-    _dio.options.baseUrl = 'http://httpbin.org/';
-  }
-
-  final Dio _dio;
+@ShouldGenerate(r'''
+ final String baseUrl = 'http://httpbin.org/';
 }
-''',
-)
+''', contains: true)
 @RestApi(baseUrl: "http://httpbin.org/")
 abstract class BaseUrl {}
 
@@ -80,7 +72,7 @@ class CustomConstant {
 @ShouldGenerate(
   r'''
         options: RequestOptions(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
+            method: 'GET',
 ''',
   contains: true,
 )
@@ -93,7 +85,7 @@ abstract class HttpGetTest {
 @ShouldGenerate(
   r'''
         options: RequestOptions(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
+            method: 'POST',
 ''',
   contains: true,
 )
@@ -106,7 +98,7 @@ abstract class HttpPostTest {
 @ShouldGenerate(
   r'''
         options: RequestOptions(
-            method: 'PUT', headers: <String, dynamic>{}, extra: _extra),
+            method: 'PUT',
 ''',
   contains: true,
 )
@@ -119,7 +111,7 @@ abstract class HttpPutTest {
 @ShouldGenerate(
   r'''
         options: RequestOptions(
-            method: 'DELETE', headers: <String, dynamic>{}, extra: _extra),
+            method: 'DELETE',
 ''',
   contains: true,
 )
@@ -132,7 +124,7 @@ abstract class HttpDeleteTest {
 @ShouldGenerate(
   r'''
         options: RequestOptions(
-            method: 'PATCH', headers: <String, dynamic>{}, extra: _extra),
+            method: 'PATCH',
 ''',
   contains: true,
 )
@@ -144,8 +136,7 @@ abstract class HttpPatchTest {
 
 @ShouldGenerate(
   r'''
-            contentType:
-                ContentType.parse('application/x-www-form-urlencoded')),
+contentType: ContentType.parse('application/x-www-form-urlencoded'),
 ''',
   contains: true,
 )

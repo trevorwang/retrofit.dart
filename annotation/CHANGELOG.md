@@ -1,4 +1,10 @@
 # Changelog
+
+## 0.6.0
+
+* [BREAKING CHANGE] only works dart 2.2.2 and above
+* Added support to multiple clients with different base urls.
+
 ## 0.5.0
 
 * Fixed analysis report

@@ -29,11 +29,11 @@ Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
 class _RestClient implements RestClient {
   _RestClient(this._dio) {
     ArgumentError.checkNotNull(_dio, '_dio');
-    _dio.options.baseUrl =
-        'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/';
   }
 
   final Dio _dio;
+
+  final String baseUrl = 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/';
 
   @override
   getTasks() async {
@@ -43,7 +43,10 @@ class _RestClient implements RestClient {
     final Response<List<dynamic>> _result = await _dio.request('/tasks',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
         data: _data);
     var value = _result.data
         .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
@@ -61,7 +64,10 @@ class _RestClient implements RestClient {
         '/tasks/$id',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra),
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
         data: _data);
     final value = Task.fromJson(_result.data);
     return Future.value(value);
@@ -79,7 +85,10 @@ class _RestClient implements RestClient {
         '/tasks/$id',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'PATCH', headers: <String, dynamic>{}, extra: _extra),
+            method: 'PATCH',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
         data: _data);
     final value = Task.fromJson(_result.data);
     return Future.value(value);
@@ -97,7 +106,10 @@ class _RestClient implements RestClient {
         '/tasks/$id',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'PUT', headers: <String, dynamic>{}, extra: _extra),
+            method: 'PUT',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
         data: _data);
     final value = Task.fromJson(_result.data);
     return Future.value(value);
@@ -112,7 +124,10 @@ class _RestClient implements RestClient {
     final Response<void> _result = await _dio.request('/tasks/$id',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'DELETE', headers: <String, dynamic>{}, extra: _extra),
+            method: 'DELETE',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
         data: _data);
     return Future.value(null);
   }
@@ -127,7 +142,10 @@ class _RestClient implements RestClient {
     final Response<Map<String, dynamic>> _result = await _dio.request('/tasks',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra),
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
         data: _data);
     final value = Task.fromJson(_result.data);
     return Future.value(value);

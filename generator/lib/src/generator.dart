@@ -26,6 +26,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const _contentType = 'contentType';
   static const _resultVar = "_result";
 
+  var _customBaseUrl = false;
+
   @override
   String generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
@@ -43,12 +45,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final className = element.name;
     final name = '_$className';
     final baseUrl = annotation?.peek(_baseUrlVar)?.stringValue ?? '';
-
+    _customBaseUrl = _isValidBaseUrl(baseUrl);
     final classBuilder = new Class((c) {
       c
         ..name = name
-        ..fields.add(_buildDefinitionTypeMethod(className))
-        ..constructors.addAll([_generateConstructor(baseUrl)])
+        ..fields.addAll([
+          _buildDioFiled(),
+          if (_customBaseUrl) _buildBaseUrlFiled(baseUrl),
+        ])
+        ..constructors.addAll([_generateConstructor()])
         ..methods.addAll(_parseMethods(element))
         ..implements = ListBuilder([refer(className)]);
     });
@@ -57,12 +62,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return new DartFormatter().format('${classBuilder.accept(emitter)}');
   }
 
-  Field _buildDefinitionTypeMethod(String superType) => Field((m) => m
+  Field _buildDioFiled() => Field((m) => m
     ..name = _dioVar
     ..type = refer("Dio")
     ..modifier = FieldModifier.final$);
 
-  Constructor _generateConstructor(String baseUrl) => Constructor((c) {
+  Field _buildBaseUrlFiled(String url) => Field((m) => m
+    ..name = _baseUrlVar
+    ..type = refer("String")
+    ..assignment = (literal(url)).code
+    ..modifier = FieldModifier.final$);
+
+  bool _isValidBaseUrl(String baseUrl) => baseUrl != null && baseUrl.isNotEmpty;
+
+  Constructor _generateConstructor() => Constructor((c) {
         c.requiredParameters.add(Parameter((p) => p
           ..name = _dioVar
           ..toThis = true));
@@ -70,12 +83,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
         ];
-
-        if (baseUrl != null && baseUrl.isNotEmpty) {
-          block.add(refer("$_dioVar.options.baseUrl")
-              .assign(literal(baseUrl))
-              .statement);
-        }
 
         c.body = Block.of(block);
       });
@@ -248,6 +255,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final lll = literal(contentType.peek("mime").stringValue);
       extraOptions[_contentType] = refer("ContentType.parse").call([lll]);
     }
+    if (_customBaseUrl) {
+      extraOptions[_baseUrlVar] = refer(_baseUrlVar);
+    }
+
     final options = refer("RequestOptions").newInstance([], extraOptions);
 
     final namedArguments = <String, Expression>{};
