@@ -17,10 +17,11 @@ dependencies:
   built_collection: ^4.2.0
   code_builder: ^3.2.0
   tuple: ^1.0.2
-  retrofit: ^0.5.0
+  retrofit: ^0.6.0
 dev_dependencies:
   test:
   source_gen_test: any
+  retrofit: ^0.6.0
   
 dependency_overrides:
   retrofit:
