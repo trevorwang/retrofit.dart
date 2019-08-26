@@ -266,3 +266,55 @@ abstract class TestMapBody2 {
   @GET("/xx")
   Future<Map<String, User>> getResult();
 }
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data;
+    return Future.value(value);
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestBasicListString {
+  @GET("/xx")
+  Future<List<String>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data;
+    return Future.value(value);
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestBasicListBool {
+  @GET("/xx")
+  Future<List<bool>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data;
+    return Future.value(value);
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestBasicListInt {
+  @GET("/xx")
+  Future<List<int>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data;
+    return Future.value(value);
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestBasicListDouble {
+  @GET("/xx")
+  Future<List<double>> getResult();
+}
