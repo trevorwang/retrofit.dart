@@ -280,11 +280,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final innerReturnType = _getResponseInnerType(returnType);
       if (_typeChecker(List).isExactlyType(returnType) ||
           _typeChecker(BuiltList).isExactlyType(returnType)) {
-        if (_isBasicType(returnType)) {
+        if (_isBasicType(innerReturnType)) {
           blocks.add(
             refer("await $_dioVar.request")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<List<$returnType>>"))
+                .assignFinal(_resultVar, refer("Response<List<$innerReturnType>>"))
                 .statement,
           );
           blocks.add(Code("final value = $_resultVar.data;"));
@@ -322,14 +322,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     .map((i) => $type.fromJson(i as Map<String,dynamic>))
                     .toList()
                 )
-              );  
+              );
             """));
           } else if (!_isBasicType(secondType)) {
             blocks.add(Code("""
             var value = $_resultVar.data
               .map((k, dynamic v) =>
                 MapEntry(k, $secondType.fromJson(v as Map<String, dynamic>))
-              );  
+              );
             """));
           }
         } else {
@@ -365,6 +365,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return _typeChecker(String).isExactlyType(returnType) ||
         _typeChecker(bool).isExactlyType(returnType) ||
         _typeChecker(int).isExactlyType(returnType) ||
+        _typeChecker(double).isExactlyType(returnType) ||
         _typeChecker(Double).isExactlyType(returnType) ||
         _typeChecker(Float).isExactlyType(returnType);
   }
