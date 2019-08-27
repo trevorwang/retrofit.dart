@@ -1,6 +1,6 @@
 name: retrofit_generator
 description: retrofit generator is an dio client generator using source_gen and inspired by Chopper and Retrofit.
-version: 0.6.0
+version: 0.6.2
 
 authors:
   - Trevor Wang <trevor.wang@qq.com>
@@ -22,7 +22,7 @@ dev_dependencies:
   test:
   source_gen_test: any
   retrofit: ^0.6.0
-  
+
 dependency_overrides:
   retrofit:
     path: ../annotation
