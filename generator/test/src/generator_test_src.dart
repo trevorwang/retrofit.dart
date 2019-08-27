@@ -318,3 +318,33 @@ abstract class TestBasicListDouble {
   @GET("/xx")
   Future<List<double>> getResult();
 }
+
+@ShouldGenerate(
+  "cancelToken: cancelToken",
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestCancelToken {
+  @POST("/users")
+  Future<String> createUser(@Body() User user, @dio.CancelRequest() CancelToken cancelToken );
+}
+
+@ShouldGenerate(
+  "onSendProgress: onSendProgress",
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestSendProgress {
+  @POST("/users")
+  Future<String> createUser(@Body() User user, @dio.SendProgress() ProgressCallback onSendProgress );
+}
+
+@ShouldGenerate(
+  "onReceiveProgress: onReceiveProgress",
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestReceiveProgress {
+  @POST("/users")
+  Future<String> createUser(@Body() User user, @dio.ReceiveProgress() ProgressCallback onReceiveProgress );
+}

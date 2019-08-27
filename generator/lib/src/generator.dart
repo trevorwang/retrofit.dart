@@ -25,6 +25,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const _localExtraVar = '_extra';
   static const _contentType = 'contentType';
   static const _resultVar = "_result";
+  static const _cancelToken = "cancelToken";
+  static const _onSendProgress = "onSendProgress";
+  static const _onReceiveProgress = "onReceiveProgress";
 
   var _customBaseUrl = false;
 
@@ -265,6 +268,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     namedArguments[_queryParamsVar] = refer(_queryParamsVar);
     namedArguments[_optionsVar] = options;
     namedArguments[_dataVar] = refer(_localDataVar);
+
+    final cancelToken = _getAnnotation(m, retrofit.CancelRequest);
+    if ( cancelToken != null ) namedArguments[_cancelToken] = refer(cancelToken.item1.displayName);
+
+    final sendProgress = _getAnnotation(m, retrofit.SendProgress);
+    if ( sendProgress != null ) namedArguments[_onSendProgress] = refer(sendProgress.item1.displayName);
+
+    final receiveProgress = _getAnnotation(m, retrofit.ReceiveProgress);
+    if ( receiveProgress != null ) namedArguments[_onReceiveProgress] = refer(receiveProgress.item1.displayName);
 
     final returnType = _getResponseType(m.returnType);
     if (returnType == null || "void" == returnType.toString()) {
