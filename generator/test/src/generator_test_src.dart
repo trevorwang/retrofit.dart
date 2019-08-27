@@ -269,7 +269,7 @@ abstract class TestMapBody2 {
 
 @ShouldGenerate(
   r'''
-    final value = _result.data;
+    final value = _result.data.cast<String>();
     return Future.value(value);
 ''',
   contains: true,
@@ -282,7 +282,7 @@ abstract class TestBasicListString {
 
 @ShouldGenerate(
   r'''
-    final value = _result.data;
+    final value = _result.data.cast<bool>();
     return Future.value(value);
 ''',
   contains: true,
@@ -295,7 +295,7 @@ abstract class TestBasicListBool {
 
 @ShouldGenerate(
   r'''
-    final value = _result.data;
+    final value = _result.data.cast<int>();
     return Future.value(value);
 ''',
   contains: true,
@@ -308,7 +308,7 @@ abstract class TestBasicListInt {
 
 @ShouldGenerate(
   r'''
-    final value = _result.data;
+    final value = _result.data.cast<double>();
     return Future.value(value);
 ''',
   contains: true,

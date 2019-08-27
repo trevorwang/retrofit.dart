@@ -284,10 +284,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           blocks.add(
             refer("await $_dioVar.request")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<List<$innerReturnType>>"))
+                .assignFinal(_resultVar, refer("Response<List<dynamic>>"))
                 .statement,
           );
-          blocks.add(Code("final value = $_resultVar.data;"));
+          blocks.add(Code("final value = $_resultVar.data.cast<$innerReturnType>();"));
         } else {
           blocks.add(
             refer("await $_dioVar.request")
