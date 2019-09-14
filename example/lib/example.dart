@@ -8,23 +8,23 @@ part 'example.g.dart';
 abstract class RestClient {
   factory RestClient(Dio dio) = _RestClient;
 
-  @GET("/tasks")
+  @GET("/tasks", autoCastResponse: true)
   Future<List<Task>> getTasks();
 
-  @GET("/tasks/{id}")
+  @GET("/tasks/{id}", autoCastResponse: true)
   Future<Task> getTask(@Path("id") String id);
 
-  @PATCH("/tasks/{id}")
+  @PATCH("/tasks/{id}", autoCastResponse: true)
   Future<Task> updateTaskPart(
       @Path() String id, @Body() Map<String, dynamic> map);
 
-  @PUT("/tasks/{id}")
+  @PUT("/tasks/{id}", autoCastResponse: true)
   Future<Task> updateTask(@Path() String id, @Body() Task task);
 
-  @DELETE("/tasks/{id}")
+  @DELETE("/tasks/{id}", autoCastResponse: true)
   Future<void> deleteTask(@Path() String id);
 
-  @POST("/tasks")
+  @POST("/tasks", autoCastResponse: true)
   Future<Task> createTask(@Body() Task task);
 }
 
