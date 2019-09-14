@@ -236,6 +236,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     for (var parameter in m.parameters.where((p) =>
         p.isRequiredNamed ||
         p.isRequiredPositional ||
+        // TODO: remove this after requried syntax is available https://github.com/dart-lang/language/issues/15
+        // ignore: deprecated_member_use
+        p.isRequired ||
         p.metadata.firstWhere((meta) => meta.isRequired, orElse: () => null) !=
             null)) {
       blocks.add(Code(
