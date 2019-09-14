@@ -270,13 +270,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     namedArguments[_dataVar] = refer(_localDataVar);
 
     final cancelToken = _getAnnotation(m, retrofit.CancelRequest);
-    if ( cancelToken != null ) namedArguments[_cancelToken] = refer(cancelToken.item1.displayName);
+    if (cancelToken != null)
+      namedArguments[_cancelToken] = refer(cancelToken.item1.displayName);
 
     final sendProgress = _getAnnotation(m, retrofit.SendProgress);
-    if ( sendProgress != null ) namedArguments[_onSendProgress] = refer(sendProgress.item1.displayName);
+    if (sendProgress != null)
+      namedArguments[_onSendProgress] = refer(sendProgress.item1.displayName);
 
     final receiveProgress = _getAnnotation(m, retrofit.ReceiveProgress);
-    if ( receiveProgress != null ) namedArguments[_onReceiveProgress] = refer(receiveProgress.item1.displayName);
+    if (receiveProgress != null)
+      namedArguments[_onReceiveProgress] =
+          refer(receiveProgress.item1.displayName);
 
     final returnType = _getResponseType(m.returnType);
     if (returnType == null || "void" == returnType.toString()) {
@@ -299,7 +303,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar, refer("Response<List<dynamic>>"))
                 .statement,
           );
-          blocks.add(Code("final value = $_resultVar.data.cast<$innerReturnType>();"));
+          blocks.add(
+              Code("final value = $_resultVar.data.cast<$innerReturnType>();"));
         } else {
           blocks.add(
             refer("await $_dioVar.request")
@@ -415,17 +420,23 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ]).statement);
       } else if (_bodyName.type.element is ClassElement) {
         final ele = _bodyName.type.element as ClassElement;
-        final toJson = ele.methods.firstWhere((i) => i.displayName == "toJson");
+        final toJson = ele.methods
+            .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
         if (toJson == null) {
           log.severe(
               "${_bodyName.type} must provide a `toJson()` method which return a Map.");
+          log.severe(
+              "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
+          blocks.add(
+              refer(_bodyName.displayName).assignFinal(_dataVar).statement);
+        } else {
+          blocks.add(literalMap({}, refer("String"), refer("dynamic"))
+              .assignFinal(_dataVar)
+              .statement);
+          blocks.add(refer("$_dataVar.addAll").call([
+            refer("${_bodyName.displayName}.toJson() ?? <String,dynamic>{}")
+          ]).statement);
         }
-        blocks.add(literalMap({}, refer("String"), refer("dynamic"))
-            .assignFinal(_dataVar)
-            .statement);
-        blocks.add(refer("$_dataVar.addAll").call([
-          refer("${_bodyName.displayName}.toJson() ?? <String,dynamic>{}")
-        ]).statement);
       } else {
         /// @Body annotations with no type are assinged as is
         blocks

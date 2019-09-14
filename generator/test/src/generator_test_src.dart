@@ -237,6 +237,26 @@ abstract class TestObjectBody {
   Future<String> createUser(@Body() User user);
 }
 
+class CustomObject {
+  final String id;
+  CustomObject(this.id);
+}
+
+@ShouldGenerate(
+    r'''
+    final _data = customObject;
+''',
+    contains: true,
+    expectedLogItems: [
+      "CustomObject must provide a `toJson()` method which return a Map.",
+      "It is programmer's responsibility to make sure the CustomObject is properly serialized",
+    ])
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestCustomObjectBody {
+  @POST("/custom-object")
+  Future<String> createCustomObject(@Body() CustomObject customObject);
+}
+
 @ShouldGenerate(
   r'''
     var value = _result.data.map((k, dynamic v) => MapEntry(
@@ -326,7 +346,8 @@ abstract class TestBasicListDouble {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestCancelToken {
   @POST("/users")
-  Future<String> createUser(@Body() User user, @dio.CancelRequest() CancelToken cancelToken );
+  Future<String> createUser(
+      @Body() User user, @dio.CancelRequest() CancelToken cancelToken);
 }
 
 @ShouldGenerate(
@@ -336,7 +357,8 @@ abstract class TestCancelToken {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestSendProgress {
   @POST("/users")
-  Future<String> createUser(@Body() User user, @dio.SendProgress() ProgressCallback onSendProgress );
+  Future<String> createUser(
+      @Body() User user, @dio.SendProgress() ProgressCallback onSendProgress);
 }
 
 @ShouldGenerate(
@@ -346,5 +368,6 @@ abstract class TestSendProgress {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestReceiveProgress {
   @POST("/users")
-  Future<String> createUser(@Body() User user, @dio.ReceiveProgress() ProgressCallback onReceiveProgress );
+  Future<String> createUser(@Body() User user,
+      @dio.ReceiveProgress() ProgressCallback onReceiveProgress);
 }
