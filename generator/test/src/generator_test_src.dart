@@ -197,7 +197,7 @@ abstract class UploadFileInfoFieldTest {
 )
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class GenericCast {
-  @POST("/users/1")
+  @POST("/users/1", autoCastResponse: true)
   Future<User> getUser();
 }
 
@@ -220,7 +220,7 @@ class User {
 )
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class GenericCastBasicType {
-  @POST("/users/1")
+  @POST("/users/1", autoCastResponse: true)
   Future<String> getUser();
 }
 
@@ -270,7 +270,7 @@ abstract class TestCustomObjectBody {
 )
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestMapBody {
-  @GET("/xx")
+  @GET("/xx", autoCastResponse: true)
   Future<Map<String, List<User>>> getResult();
 }
 
@@ -283,7 +283,7 @@ abstract class TestMapBody {
 )
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestMapBody2 {
-  @GET("/xx")
+  @GET("/xx", autoCastResponse: true)
   Future<Map<String, User>> getResult();
 }
 
@@ -296,7 +296,7 @@ abstract class TestMapBody2 {
 )
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestBasicListString {
-  @GET("/xx")
+  @GET("/xx", autoCastResponse: true)
   Future<List<String>> getResult();
 }
 
@@ -309,7 +309,7 @@ abstract class TestBasicListString {
 )
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestBasicListBool {
-  @GET("/xx")
+  @GET("/xx", autoCastResponse: true)
   Future<List<bool>> getResult();
 }
 
@@ -322,7 +322,7 @@ abstract class TestBasicListBool {
 )
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestBasicListInt {
-  @GET("/xx")
+  @GET("/xx", autoCastResponse: true)
   Future<List<int>> getResult();
 }
 
@@ -335,7 +335,7 @@ abstract class TestBasicListInt {
 )
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestBasicListDouble {
-  @GET("/xx")
+  @GET("/xx", autoCastResponse: true)
   Future<List<double>> getResult();
 }
 

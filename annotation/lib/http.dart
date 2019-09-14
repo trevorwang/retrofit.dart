@@ -45,7 +45,17 @@ class Method {
   /// See [RestApi.baseUrl] for details of how this is resolved against a base URL
   /// to create the full endpoint URL.
   final String path;
-  const Method(this.method, this.path);
+  const Method(
+    this.method,
+    this.path, {
+    this.autoCastResponse: false,
+  });
+
+  /// Automatically cast response to proper type
+  ///
+  /// This is experimental, Currently there's no perfect solution for this.
+  @experimental
+  final bool autoCastResponse;
 }
 
 /// Make a `GET` request
@@ -56,31 +66,36 @@ class Method {
 /// ```
 @immutable
 class GET extends Method {
-  const GET(String path) : super(HttpMethod.GET, path);
+  const GET(String path, {bool autoCastResponse})
+      : super(HttpMethod.GET, path, autoCastResponse: autoCastResponse);
 }
 
 /// Make a `POST` request
 @immutable
 class POST extends Method {
-  const POST(String path) : super(HttpMethod.POST, path);
+  const POST(String path, {bool autoCastResponse})
+      : super(HttpMethod.POST, path, autoCastResponse: autoCastResponse);
 }
 
 /// Make a `PATCH` request
 @immutable
 class PATCH extends Method {
-  const PATCH(final String path) : super(HttpMethod.PATCH, path);
+  const PATCH(final String path, {bool autoCastResponse})
+      : super(HttpMethod.PATCH, path, autoCastResponse: autoCastResponse);
 }
 
 /// Make a `PUT` request
 @immutable
 class PUT extends Method {
-  const PUT(final String path) : super(HttpMethod.PUT, path);
+  const PUT(final String path, {bool autoCastResponse})
+      : super(HttpMethod.PUT, path, autoCastResponse: autoCastResponse);
 }
 
 /// Make a `DELETE` request
 @immutable
 class DELETE extends Method {
-  const DELETE(final String path) : super(HttpMethod.DELETE, path);
+  const DELETE(final String path, {bool autoCastResponse})
+      : super(HttpMethod.DELETE, path, autoCastResponse: autoCastResponse);
 }
 
 /// Adds headers specified in the [value] map.

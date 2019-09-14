@@ -286,6 +286,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           refer(receiveProgress.item1.displayName);
 
     final returnType = _getResponseType(m.returnType);
+
+    /// If autoCastResponse is false, return the response as it is
+    if (!(httpMehod.peek('autoCastResponse')?.boolValue ?? false)) {
+      blocks.add(
+        refer("$_dioVar.request")
+            .call([path], namedArguments)
+            .returned
+            .statement,
+      );
+      return Block.of(blocks);
+    }
+
     if (returnType == null || "void" == returnType.toString()) {
       blocks.add(
         refer("await $_dioVar.request")
@@ -426,9 +438,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         final toJson = ele.methods
             .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
         if (toJson == null) {
-          log.severe(
+          log.warning(
               "${_bodyName.type} must provide a `toJson()` method which return a Map.");
-          log.severe(
+          log.warning(
               "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
           blocks.add(
               refer(_bodyName.displayName).assignFinal(_dataVar).statement);
