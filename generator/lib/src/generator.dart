@@ -439,8 +439,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
         if (toJson == null) {
           log.warning(
-              "${_bodyName.type} must provide a `toJson()` method which return a Map.");
-          log.warning(
+              "${_bodyName.type} must provide a `toJson()` method which return a Map.\n"
               "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
           blocks.add(
               refer(_bodyName.displayName).assignFinal(_dataVar).statement);

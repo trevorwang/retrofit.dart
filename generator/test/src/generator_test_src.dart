@@ -248,8 +248,8 @@ class CustomObject {
 ''',
     contains: true,
     expectedLogItems: [
-      "CustomObject must provide a `toJson()` method which return a Map.",
-      "It is programmer's responsibility to make sure the CustomObject is properly serialized",
+      "CustomObject must provide a `toJson()` method which return a Map.\n"
+          "It is programmer's responsibility to make sure the CustomObject is properly serialized",
     ])
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestCustomObjectBody {
