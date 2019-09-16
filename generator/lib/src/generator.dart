@@ -21,7 +21,7 @@ class RetrofitOptions {
 
   RetrofitOptions.fromOptions([BuilderOptions options])
       : autoCastResponse =
-            (options?.config['auto_cast_response']?.toString() ?? 'true') ==
+            (options?.config['auto_cast_response']?.toString() ?? 'false') ==
                 'true';
 }
 
