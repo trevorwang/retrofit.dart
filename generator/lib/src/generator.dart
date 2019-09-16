@@ -67,8 +67,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final className = element.name;
     final name = '_$className';
     clientAnnotation = retrofit.RestApi(
-      autoCastResponse:
-          (annotation?.peek('autoCastResponse')?.boolValue ?? true),
+      autoCastResponse: (annotation?.peek('autoCastResponse')?.boolValue),
       baseUrl: (annotation?.peek(_baseUrlVar)?.stringValue ?? ''),
     );
     final baseUrl = clientAnnotation.baseUrl;
@@ -311,10 +310,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final returnType = _getResponseType(m.returnType);
 
-    final autoCastResponse =
-        (httpMehod.peek('autoCastResponse')?.boolValue ?? true) ||
-            clientAnnotation.autoCastResponse ||
-            globalOptions.autoCastResponse;
+    final autoCastResponse = ((globalOptions.autoCastResponse ?? false) ||
+        (clientAnnotation.autoCastResponse ?? false) ||
+        (httpMehod.peek('autoCastResponse')?.boolValue ?? true));
 
     /// If autoCastResponse is false, return the response as it is
     if (!autoCastResponse) {
