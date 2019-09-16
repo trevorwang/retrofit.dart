@@ -21,7 +21,7 @@ class RetrofitOptions {
 
   RetrofitOptions.fromOptions([BuilderOptions options])
       : autoCastResponse =
-            (options?.config['auto_cast_response']?.toString() ?? 'false') ==
+            (options?.config['auto_cast_response']?.toString() ?? 'true') ==
                 'true';
 }
 
@@ -310,8 +310,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final returnType = _getResponseType(m.returnType);
 
-    final autoCastResponse = ((globalOptions.autoCastResponse ?? false) ||
-        (clientAnnotation.autoCastResponse ?? false) ||
+    final autoCastResponse = (globalOptions.autoCastResponse ??
+        (clientAnnotation.autoCastResponse ?? true) ??
         (httpMehod.peek('autoCastResponse')?.boolValue ?? true));
 
     /// If autoCastResponse is false, return the response as it is
