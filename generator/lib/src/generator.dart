@@ -14,6 +14,17 @@ import 'package:tuple/tuple.dart';
 
 import 'package:retrofit/retrofit.dart' as retrofit;
 
+class RetrofitOptions {
+  final bool autoCastResponse;
+
+  RetrofitOptions({this.autoCastResponse});
+
+  RetrofitOptions.fromOptions([BuilderOptions options])
+      : autoCastResponse =
+            (options?.config['auto_cast_response']?.toString() ?? 'true') ==
+                'true';
+}
+
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const String _baseUrlVar = 'baseUrl';
   static const _queryParamsVar = "queryParameters";
@@ -31,6 +42,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   var _customBaseUrl = false;
 
+  /// Global options sepcefied in the `build.yaml`
+  final RetrofitOptions globalOptions;
+
+  RetrofitGenerator(this.globalOptions);
+
+  /// Annotation details for [RestApi]
+  retrofit.RestApi clientAnnotation;
+
   @override
   String generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
@@ -47,7 +66,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   String _implementClass(ClassElement element, ConstantReader annotation) {
     final className = element.name;
     final name = '_$className';
-    final baseUrl = annotation?.peek(_baseUrlVar)?.stringValue ?? '';
+    clientAnnotation = retrofit.RestApi(
+      autoCastResponse:
+          (annotation?.peek('autoCastResponse')?.boolValue ?? true),
+      baseUrl: (annotation?.peek(_baseUrlVar)?.stringValue ?? ''),
+    );
+    final baseUrl = clientAnnotation.baseUrl;
     _customBaseUrl = _isValidBaseUrl(baseUrl);
     final classBuilder = new Class((c) {
       c
@@ -287,8 +311,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final returnType = _getResponseType(m.returnType);
 
+    final autoCastResponse =
+        (httpMehod.peek('autoCastResponse')?.boolValue ?? true) ||
+            clientAnnotation.autoCastResponse ||
+            globalOptions.autoCastResponse;
+
     /// If autoCastResponse is false, return the response as it is
-    if (!(httpMehod.peek('autoCastResponse')?.boolValue ?? false)) {
+    if (!autoCastResponse) {
       blocks.add(
         refer("$_dioVar.request")
             .call([path], namedArguments)
@@ -547,8 +576,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 }
 
-Builder generatorFactoryBuilder({String header}) =>
-    new SharedPartBuilder([new RetrofitGenerator()], "retrofit");
+Builder generatorFactoryBuilder(BuilderOptions options) =>
+    new SharedPartBuilder(
+        [new RetrofitGenerator(RetrofitOptions.fromOptions(options))],
+        "retrofit");
 
 /// Returns `$revived($args $kwargs)`, this won't have ending semi-colon (`;`).
 /// [object] must not be null.
