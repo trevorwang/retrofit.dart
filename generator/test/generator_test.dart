@@ -10,5 +10,6 @@ Future<void> main() async {
   final reader = await initializeLibraryReaderForDirectory(
       'test/src', 'generator_test_src.dart');
   initializeBuildLogTracking();
-  testAnnotatedElements<http.RestApi>(reader, RetrofitGenerator());
+  testAnnotatedElements<http.RestApi>(
+      reader, RetrofitGenerator(RetrofitOptions()));
 }

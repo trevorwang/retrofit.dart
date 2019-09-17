@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.3
+
+- [BREAKING CHANGE] Requires `retrofit: ^0.6.3`
+- Respect user option `autoCastResponse` (this will skip `.fromJson`)
+- Allow custom classes without `.toJson` method (generator will throw warning)
+
 ## 0.6.2
 
 - fix: fix bad cast exception (#47)
@@ -49,7 +55,7 @@ Here's the example.
 
 ## 0.3.0
 
-Added support for generic serilization.
+Added support for generic serialization.
 
 > Please note:
 >

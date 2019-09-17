@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.6.3
+
+- Added `autoCastResponse` option to `RestApi` and all `Method` annotations (default : `true`)
+- Added `auto_cast_response` to builder options.
+  - Users can specify this in `build.yaml` as global default
+
+    ```yaml
+    targets:
+      $default:
+        sources: ['lib/**']
+        builders:
+          retrofit_generator|retrofit:
+            enabled: true
+            options:
+              auto_cast_response: true
+
+    ```
+
 ## 0.6.2
 
 - fix: fix bad cast exception (#47)
