@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3+1
+
+- Fix #53, Pin version of `dio` to `2.1.16`
+
 ## 0.6.3
 
 - [BREAKING CHANGE] Requires `retrofit: ^0.6.3`
