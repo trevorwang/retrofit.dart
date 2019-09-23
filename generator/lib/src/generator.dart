@@ -496,14 +496,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           : refer(p.displayName)
               .property('path.split(Platform.pathSeparator).last');
 
-      final uploadFileInfo = refer('$UploadFileInfo')
-          .newInstance([refer(p.displayName), fileName]);
+      final uploadFileInfo = refer('$MultipartFile.fromFile').call(
+          [refer(p.displayName).property('path')], {'filename': fileName});
 
       return MapEntry(literal(fieldName),
           isFileField ? uploadFileInfo : refer(p.displayName));
     });
     if (fields.isNotEmpty) {
-      blocks.add(refer("FormData.from")
+      blocks.add(refer("FormData.fromMap")
           .call([literalMap(fields, refer("String"), refer("dynamic"))])
           .assignFinal(_dataVar)
           .statement);

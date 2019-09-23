@@ -150,4 +150,24 @@ class _RestClient implements RestClient {
     final value = Task.fromJson(_result.data);
     return Future.value(value);
   }
+
+  @override
+  createNewTaskFromFile(file) async {
+    ArgumentError.checkNotNull(file, 'file');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = FormData.fromMap(<String, dynamic>{
+      'file': MultipartFile.fromFile(file.path,
+          filename: file.path.split(Platform.pathSeparator).last)
+    });
+    final Response<void> _result = await _dio.request('http://httpbin.org/post',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    return Future.value(null);
+  }
 }
