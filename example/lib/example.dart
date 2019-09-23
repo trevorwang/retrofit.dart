@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
+import 'dart:io';
 
 part 'example.g.dart';
 
@@ -26,6 +27,9 @@ abstract class RestClient {
 
   @POST("/tasks")
   Future<Task> createTask(@Body() Task task);
+
+  @POST("http://httpbin.org/post")
+  Future<void> createNewTaskFromFile(@Field() File file);
 }
 
 @JsonSerializable()

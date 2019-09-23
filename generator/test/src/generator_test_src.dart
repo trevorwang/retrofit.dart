@@ -149,9 +149,9 @@ abstract class FormUrlEncodedTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.from(<String, dynamic>{
+    final _data = FormData.fromMap(<String, dynamic>{
       'image':
-          UploadFileInfo(image, image.path.split(Platform.pathSeparator).last)
+          MultipleFile.fromFile(image.path, image.path.split(Platform.pathSeparator).last)
     });
 ''',
   contains: true,
@@ -164,8 +164,8 @@ abstract class FileFieldTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.from(<String, dynamic>{
-      'image': UploadFileInfo(image, 'my_profile_image.jpg')
+    final _data = FormData.fromMap(<String, dynamic>{
+      'image': MultipleFile.fromFile(image.path, 'my_profile_image.jpg')
     });
 ''',
   contains: true,
@@ -178,14 +178,14 @@ abstract class FileFieldWithCustomNameTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.from(<String, dynamic>{'image': image});
+    final _data = FormData.fromMap(<String, dynamic>{'image': image});
 ''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class UploadFileInfoFieldTest {
   @POST("/profile")
-  Future<String> setProfile(@Field() UploadFileInfo image);
+  Future<String> setProfile(@Field() File image);
 }
 
 @ShouldGenerate(
