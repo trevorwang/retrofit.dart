@@ -1,4 +1,7 @@
 # Changelog
+## 1.0.0
+
+- Support dio 3.0
 
 ## 0.6.3+1
 
