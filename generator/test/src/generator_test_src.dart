@@ -150,8 +150,8 @@ abstract class FormUrlEncodedTest {
 @ShouldGenerate(
   r'''
     final _data = FormData.fromMap(<String, dynamic>{
-      'image':
-          MultipleFile.fromFile(image.path, image.path.split(Platform.pathSeparator).last)
+      'image': MultipartFile.fromFile(image.path,
+          filename: image.path.split(Platform.pathSeparator).last)
     });
 ''',
   contains: true,
@@ -165,7 +165,8 @@ abstract class FileFieldTest {
 @ShouldGenerate(
   r'''
     final _data = FormData.fromMap(<String, dynamic>{
-      'image': MultipleFile.fromFile(image.path, 'my_profile_image.jpg')
+      'image':
+          MultipartFile.fromFile(image.path, filename: 'my_profile_image.jpg')
     });
 ''',
   contains: true,
@@ -178,7 +179,10 @@ abstract class FileFieldWithCustomNameTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.fromMap(<String, dynamic>{'image': image});
+    final _data = FormData.fromMap(<String, dynamic>{
+      'image': MultipartFile.fromFile(image.path,
+          filename: image.path.split(Platform.pathSeparator).last)
+    });
 ''',
   contains: true,
 )

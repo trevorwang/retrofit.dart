@@ -8,4 +8,4 @@ steps:
       - PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
       - cd generator
       - pub get
-    # - pub run test  # FIMXME: temporarily disable gen test since it doesn't work on dart 2.5
+      - pub run test # FIMXME: temporarily disable gen test since it doesn't work on dart 2.5

@@ -12,7 +12,10 @@ jobs:
     # scripts: dartfmt . -n --set-exit-if-changed --fix
     - stage: test
       name: "Test generator"
-      script: "cd generator && pub get" # && pub run test"  # FIMXME: temporarily disable gen test
+      script: |
+        cd generator 
+        pub get
+        pub run test  # FIMXME: temporarily disable gen test
 
 stages:
   - analyze
