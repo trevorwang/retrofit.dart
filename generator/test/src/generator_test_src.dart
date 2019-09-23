@@ -136,7 +136,7 @@ abstract class HttpPatchTest {
 
 @ShouldGenerate(
   r'''
-contentType: ContentType.parse('application/x-www-form-urlencoded'),
+    contentType: 'application/x-www-form-urlencoded',
 ''',
   contains: true,
 )
@@ -150,7 +150,7 @@ abstract class FormUrlEncodedTest {
 @ShouldGenerate(
   r'''
     final _data = FormData.fromMap(<String, dynamic>{
-      'image': MultipartFile.fromFile(image.path,
+      'image': MultipartFile.fromFileSync(image.path,
           filename: image.path.split(Platform.pathSeparator).last)
     });
 ''',
@@ -165,8 +165,8 @@ abstract class FileFieldTest {
 @ShouldGenerate(
   r'''
     final _data = FormData.fromMap(<String, dynamic>{
-      'image':
-          MultipartFile.fromFile(image.path, filename: 'my_profile_image.jpg')
+      'image': MultipartFile.fromFileSync(image.path,
+          filename: 'my_profile_image.jpg')
     });
 ''',
   contains: true,
@@ -180,7 +180,7 @@ abstract class FileFieldWithCustomNameTest {
 @ShouldGenerate(
   r'''
     final _data = FormData.fromMap(<String, dynamic>{
-      'image': MultipartFile.fromFile(image.path,
+      'image': MultipartFile.fromFileSync(image.path,
           filename: image.path.split(Platform.pathSeparator).last)
     });
 ''',
