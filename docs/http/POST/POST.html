@@ -59,6 +59,7 @@
       <li class="section-title inherited">
         <a href="http/POST-class.html#instance-properties">Properties</a>
       </li>
+      <li class="inherited"><a href="http/Method/autoCastResponse.html">autoCastResponse</a></li>
       <li class="inherited"><a href="http/Method/hashCode.html">hashCode</a></li>
       <li class="inherited"><a href="http/Method/method.html">method</a></li>
       <li class="inherited"><a href="http/Method/path.html">path</a></li>
@@ -81,13 +82,14 @@
 
     <section class="multi-line-signature">
       const
-      <span class="name ">POST</span>(<wbr><span class="parameter" id="-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span></span>)
+      <span class="name ">POST</span>(<wbr><span class="parameter" id="-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span> <span class="parameter" id="-param-autoCastResponse"><span class="type-annotation">bool</span> <span class="parameter-name">autoCastResponse</span>: <span class="default-value">true</span></span> })
     </section>
 
     
     <section class="summary source-code" id="source">
       <h2><span>Implementation</span></h2>
-      <pre class="language-dart"><code class="language-dart">const POST(String path) : super(HttpMethod.POST, path);</code></pre>
+      <pre class="language-dart"><code class="language-dart">const POST(String path, {bool autoCastResponse: true})
+    : super(HttpMethod.POST, path, autoCastResponse: autoCastResponse);</code></pre>
     </section>
 
   </div> <!-- /.main-content -->
@@ -99,7 +101,7 @@
 
 <footer>
   <span class="no-break">
-    retrofit 0.5.0
+    retrofit 1.0.0
   </span>
 
   
