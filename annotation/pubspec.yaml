@@ -1,5 +1,5 @@
 name: retrofit
-version: 1.0.0
+version: 1.0.1
 
 authors:
   - Trevor Wang <trevor.wang@qq.com>
@@ -13,3 +13,4 @@ environment:
 
 dependencies:
   meta: ^1.1.6
+  dio: ^3.0.1

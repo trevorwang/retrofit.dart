@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' hide Headers;
 import 'dart:io';
 
 part 'example.g.dart';
@@ -30,6 +30,11 @@ abstract class RestClient {
 
   @POST("http://httpbin.org/post")
   Future<void> createNewTaskFromFile(@Field() File file);
+
+  @Headers(<String, String>{"accept": "image/jpeg"})
+  @GET("http://httpbin.org/image/jpeg")
+  @DioResponseType(ResponseType.bytes)
+  Future<List<int>> getFile();
 }
 
 @JsonSerializable()
