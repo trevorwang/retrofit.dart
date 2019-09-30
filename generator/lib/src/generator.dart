@@ -516,7 +516,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           : refer(p.displayName)
               .property('path.split(Platform.pathSeparator).last');
 
-      final uploadFileInfo = refer('$MultipartFile.fromFile').call(
+      final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
           [refer(p.displayName).property('path')], {'filename': fileName});
 
       return MapEntry(literal(fieldName),
