@@ -154,6 +154,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
+  ConstantReader _getResponseTypeAnnotation(MethodElement method) {
+    final annotation = _typeChecker(retrofit.DioResponseType)
+        .firstAnnotationOf(method, throwOnUnresolved: false);
+    if (annotation != null) return new ConstantReader(annotation);
+    return null;
+  }
+
   Map<ParameterElement, ConstantReader> _getAnnotations(
       MethodElement m, Type type) {
     var annot = <ParameterElement, ConstantReader>{};
@@ -286,6 +293,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
     if (_customBaseUrl) {
       extraOptions[_baseUrlVar] = refer(_baseUrlVar);
+    }
+
+    final responseType = _getResponseTypeAnnotation(m);
+    if (responseType != null) {
+      final rsType = ResponseType.values.firstWhere((it) {
+        return responseType
+            .peek("responseType")
+            .objectValue
+            .toString()
+            .contains(it.toString().split(".")[1]);
+      });
+
+      extraOptions["responseType"] = refer(rsType.toString());
     }
 
     final options = refer("RequestOptions").newInstance([], extraOptions);

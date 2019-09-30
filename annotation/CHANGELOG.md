@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Add dio response type support
+
 ## 1.0.0
 
 - Support dio 3.0

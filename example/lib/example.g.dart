@@ -170,4 +170,23 @@ class _RestClient implements RestClient {
         data: _data);
     return Future.value(null);
   }
+
+  @override
+  getFile() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<List<dynamic>> _result = await _dio.request(
+        'http://httpbin.org/image/jpeg',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{'accept': 'image/jpeg'},
+            extra: _extra,
+            baseUrl: baseUrl,
+            responseType: ResponseType.bytes),
+        data: _data);
+    final value = _result.data.cast<int>();
+    return Future.value(value);
+  }
 }
