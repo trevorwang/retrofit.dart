@@ -157,7 +157,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = FormData.fromMap(<String, dynamic>{
-      'file': MultipartFile.fromFile(file.path,
+      'file': MultipartFile.fromFileSync(file.path,
           filename: file.path.split(Platform.pathSeparator).last)
     });
     final Response<void> _result = await _dio.request('http://httpbin.org/post',
@@ -187,6 +187,24 @@ class _RestClient implements RestClient {
             responseType: ResponseType.bytes),
         data: _data);
     final value = _result.data.cast<int>();
+    return Future.value(value);
+  }
+
+  @override
+  postFormData() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<String> _result = await _dio.request('/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
     return Future.value(value);
   }
 }

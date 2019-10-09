@@ -288,8 +288,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     };
     final contentType = _getFormUrlEncodedAnnotation(m);
     if (contentType != null) {
-      final lll = literal(contentType.peek("mime").stringValue);
-      extraOptions[_contentType] = refer("ContentType.parse").call([lll]);
+      extraOptions[_contentType] =
+          literal(contentType.peek("mime").stringValue);
     }
     if (_customBaseUrl) {
       extraOptions[_baseUrlVar] = refer(_baseUrlVar);
