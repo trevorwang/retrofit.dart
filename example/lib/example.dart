@@ -35,6 +35,10 @@ abstract class RestClient {
   @GET("http://httpbin.org/image/jpeg")
   @DioResponseType(ResponseType.bytes)
   Future<List<int>> getFile();
+
+  @POST('/')
+  @FormUrlEncoded()
+  Future<String> postFormData();
 }
 
 @JsonSerializable()
