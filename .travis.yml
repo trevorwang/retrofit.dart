@@ -15,7 +15,7 @@ jobs:
       script: |
         cd generator 
         pub get
-        pub run test  # FIMXME: temporarily disable gen test
+        pub run test
 
 stages:
   - analyze
