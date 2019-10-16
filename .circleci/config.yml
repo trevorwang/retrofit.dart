@@ -14,7 +14,7 @@ jobs:
           command: |
             cd generator
             pub get
-            # pub run test  # FIMXME: temporarily disable gen test since it doesn't work on dart 2.5
+            pub run test
 
 workflows:
   version: 2
