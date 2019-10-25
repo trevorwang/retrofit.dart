@@ -154,6 +154,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
+  ConstantReader _getResponseTypeAnnotation(MethodElement method) {
+    final annotation = _typeChecker(retrofit.DioResponseType)
+        .firstAnnotationOf(method, throwOnUnresolved: false);
+    if (annotation != null) return new ConstantReader(annotation);
+    return null;
+  }
+
   Map<ParameterElement, ConstantReader> _getAnnotations(
       MethodElement m, Type type) {
     var annot = <ParameterElement, ConstantReader>{};
@@ -281,11 +288,24 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     };
     final contentType = _getFormUrlEncodedAnnotation(m);
     if (contentType != null) {
-      final lll = literal(contentType.peek("mime").stringValue);
-      extraOptions[_contentType] = refer("ContentType.parse").call([lll]);
+      extraOptions[_contentType] =
+          literal(contentType.peek("mime").stringValue);
     }
     if (_customBaseUrl) {
       extraOptions[_baseUrlVar] = refer(_baseUrlVar);
+    }
+
+    final responseType = _getResponseTypeAnnotation(m);
+    if (responseType != null) {
+      final rsType = ResponseType.values.firstWhere((it) {
+        return responseType
+            .peek("responseType")
+            .objectValue
+            .toString()
+            .contains(it.toString().split(".")[1]);
+      });
+
+      extraOptions["responseType"] = refer(rsType.toString());
     }
 
     final options = refer("RequestOptions").newInstance([], extraOptions);
@@ -496,7 +516,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           : refer(p.displayName)
               .property('path.split(Platform.pathSeparator).last');
 
-      final uploadFileInfo = refer('$MultipartFile.fromFile').call(
+      final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
           [refer(p.displayName).property('path')], {'filename': fileName});
 
       return MapEntry(literal(fieldName),
