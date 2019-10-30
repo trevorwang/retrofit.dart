@@ -2,10 +2,9 @@ name: retrofit_example
 description: Retrofit generator
 version: 0.0.1
 author: Trevor Wang <trevor.wang@qq.com>
-homepage:
 
 environment:
-  sdk: '>=2.1.0 <3.0.0'
+  sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
   retrofit:

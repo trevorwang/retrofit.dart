@@ -97,7 +97,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ..name = _baseUrlVar
     ..type = refer("String")
     ..assignment = (literal(url)).code
-    ..modifier = FieldModifier.final$);
+    ..modifier = FieldModifier.var$);
 
   bool _isValidBaseUrl(String baseUrl) => baseUrl != null && baseUrl.isNotEmpty;
 
@@ -105,7 +105,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         c.requiredParameters.add(Parameter((p) => p
           ..name = _dioVar
           ..toThis = true));
-
+        c.optionalParameters.add(Parameter((p) => p
+          ..named = true
+          ..name = _baseUrlVar
+          ..toThis = true));
         final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
         ];

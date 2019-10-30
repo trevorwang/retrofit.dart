@@ -8,7 +8,7 @@ import 'package:dio/dio.dart';
 @ShouldGenerate(
   r'''
 class _RestClient implements RestClient {
-  _RestClient(this._dio) {
+  _RestClient(this._dio, {this.baseUrl}) {
     ArgumentError.checkNotNull(_dio, '_dio');
   }
 
@@ -20,7 +20,7 @@ class _RestClient implements RestClient {
 abstract class RestClient {}
 
 @ShouldGenerate(r'''
- final String baseUrl = 'http://httpbin.org/';
+String baseUrl = 'http://httpbin.org/';
 }
 ''', contains: true)
 @RestApi(baseUrl: "http://httpbin.org/")
