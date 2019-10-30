@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.2
+
+- Add `baseUrl` as a parameter of `RestClient`'s conductor
+- Add base test for task api
 
 ## 1.0.1
 

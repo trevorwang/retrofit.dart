@@ -97,7 +97,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ..name = _baseUrlVar
     ..type = refer("String")
     ..assignment = (literal(url)).code
-    ..modifier = FieldModifier.final$);
+    ..modifier = FieldModifier.var$);
 
   bool _isValidBaseUrl(String baseUrl) => baseUrl != null && baseUrl.isNotEmpty;
 
@@ -105,7 +105,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         c.requiredParameters.add(Parameter((p) => p
           ..name = _dioVar
           ..toThis = true));
-
+        c.optionalParameters.add(Parameter((p) => p
+          ..named = true
+          ..name = _baseUrlVar
+          ..toThis = true));
         final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
         ];
@@ -266,9 +269,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     for (var parameter in m.parameters.where((p) =>
         p.isRequiredNamed ||
         p.isRequiredPositional ||
-        // TODO: remove this after requried syntax is available https://github.com/dart-lang/language/issues/15
-        // ignore: deprecated_member_use
-        p.isRequired ||
         p.metadata.firstWhere((meta) => meta.isRequired, orElse: () => null) !=
             null)) {
       blocks.add(Code(
