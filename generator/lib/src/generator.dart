@@ -341,8 +341,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     if (returnType == null || "void" == returnType.toString()) {
       blocks.add(
         refer("await $_dioVar.request")
-            .call([path], namedArguments)
-            .assignFinal(_resultVar, refer("Response<void>"))
+            .call([path], namedArguments, [refer("void")])
             .statement,
       );
 
