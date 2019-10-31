@@ -40,8 +40,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const _onSendProgress = "onSendProgress";
   static const _onReceiveProgress = "onReceiveProgress";
 
-  var _customBaseUrl = false;
-
   /// Global options sepcefied in the `build.yaml`
   final RetrofitOptions globalOptions;
 
@@ -71,13 +69,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       baseUrl: (annotation?.peek(_baseUrlVar)?.stringValue ?? ''),
     );
     final baseUrl = clientAnnotation.baseUrl;
-    _customBaseUrl = _isValidBaseUrl(baseUrl);
     final classBuilder = new Class((c) {
       c
         ..name = name
         ..fields.addAll([
           _buildDioFiled(),
-          if (_customBaseUrl) _buildBaseUrlFiled(baseUrl),
+          _buildBaseUrlFiled(baseUrl),
         ])
         ..constructors.addAll([_generateConstructor()])
         ..methods.addAll(_parseMethods(element))
@@ -98,8 +95,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ..type = refer("String")
     ..assignment = (literal(url)).code
     ..modifier = FieldModifier.var$);
-
-  bool _isValidBaseUrl(String baseUrl) => baseUrl != null && baseUrl.isNotEmpty;
 
   Constructor _generateConstructor() => Constructor((c) {
         c.requiredParameters.add(Parameter((p) => p
@@ -291,9 +286,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       extraOptions[_contentType] =
           literal(contentType.peek("mime").stringValue);
     }
-    if (_customBaseUrl) {
-      extraOptions[_baseUrlVar] = refer(_baseUrlVar);
-    }
+    extraOptions[_baseUrlVar] = refer(_baseUrlVar);
 
     final responseType = _getResponseTypeAnnotation(m);
     if (responseType != null) {
