@@ -121,7 +121,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final Response<void> _result = await _dio.request('/tasks/$id',
+    await _dio.request<void>('/tasks/$id',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'DELETE',
@@ -160,7 +160,7 @@ class _RestClient implements RestClient {
       'file': MultipartFile.fromFileSync(file.path,
           filename: file.path.split(Platform.pathSeparator).last)
     });
-    final Response<void> _result = await _dio.request('http://httpbin.org/post',
+    await _dio.request<void>('http://httpbin.org/post',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
