@@ -54,7 +54,7 @@ class Method {
   const Method(
     this.method,
     this.path, {
-    this.autoCastResponse: true,
+    this.autoCastResponse = true,
   });
 
   /// Automatically cast response to proper type for this method only
@@ -72,35 +72,35 @@ class Method {
 /// ```
 @immutable
 class GET extends Method {
-  const GET(String path, {bool autoCastResponse: true})
+  const GET(String path, {bool autoCastResponse = true})
       : super(HttpMethod.GET, path, autoCastResponse: autoCastResponse);
 }
 
 /// Make a `POST` request
 @immutable
 class POST extends Method {
-  const POST(String path, {bool autoCastResponse: true})
+  const POST(String path, {bool autoCastResponse = true})
       : super(HttpMethod.POST, path, autoCastResponse: autoCastResponse);
 }
 
 /// Make a `PATCH` request
 @immutable
 class PATCH extends Method {
-  const PATCH(final String path, {bool autoCastResponse: true})
+  const PATCH(final String path, {bool autoCastResponse = true})
       : super(HttpMethod.PATCH, path, autoCastResponse: autoCastResponse);
 }
 
 /// Make a `PUT` request
 @immutable
 class PUT extends Method {
-  const PUT(final String path, {bool autoCastResponse: true})
+  const PUT(final String path, {bool autoCastResponse = true})
       : super(HttpMethod.PUT, path, autoCastResponse: autoCastResponse);
 }
 
 /// Make a `DELETE` request
 @immutable
 class DELETE extends Method {
-  const DELETE(final String path, {bool autoCastResponse: true})
+  const DELETE(final String path, {bool autoCastResponse = true})
       : super(HttpMethod.DELETE, path, autoCastResponse: autoCastResponse);
 }
 
