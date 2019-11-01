@@ -14,7 +14,7 @@ class _RestClient implements RestClient {
 
   final Dio _dio;
 
-  String baseUrl = '';
+  String baseUrl;
 }
 ''',
 )
@@ -22,7 +22,15 @@ class _RestClient implements RestClient {
 abstract class RestClient {}
 
 @ShouldGenerate(r'''
-String baseUrl = 'http://httpbin.org/';
+class _BaseUrl implements BaseUrl {
+  _BaseUrl(this._dio, {this.baseUrl}) {
+    ArgumentError.checkNotNull(_dio, '_dio');
+    this.baseUrl ??= 'http://httpbin.org/';
+  }
+
+  final Dio _dio;
+
+  String baseUrl;
 }
 ''', contains: true)
 @RestApi(baseUrl: "http://httpbin.org/")

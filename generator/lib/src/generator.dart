@@ -105,7 +105,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ..toThis = true));
         final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
-          Code("this.${_baseUrlVar} ??= ${literal(url)};"),
+          if (url != null && url.isNotEmpty)
+            Code("this.${_baseUrlVar} ??= ${literal(url)};"),
         ];
 
         c.body = Block.of(block);

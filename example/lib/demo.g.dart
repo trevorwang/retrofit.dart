@@ -45,7 +45,6 @@ Map<String, dynamic> _$TvToJson(Tv instance) => <String, dynamic>{
 class _DemoClient implements DemoClient {
   _DemoClient(this._dio, {this.baseUrl}) {
     ArgumentError.checkNotNull(_dio, '_dio');
-    this.baseUrl ??= '';
   }
 
   final Dio _dio;
