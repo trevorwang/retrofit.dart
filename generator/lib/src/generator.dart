@@ -76,7 +76,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           _buildDioFiled(),
           _buildBaseUrlFiled(baseUrl),
         ])
-        ..constructors.addAll([_generateConstructor()])
+        ..constructors.addAll([_generateConstructor(baseUrl)])
         ..methods.addAll(_parseMethods(element))
         ..implements = ListBuilder([refer(className)]);
     });
@@ -93,10 +93,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   Field _buildBaseUrlFiled(String url) => Field((m) => m
     ..name = _baseUrlVar
     ..type = refer("String")
-    ..assignment = (literal(url)).code
     ..modifier = FieldModifier.var$);
 
-  Constructor _generateConstructor() => Constructor((c) {
+  Constructor _generateConstructor(String url) => Constructor((c) {
         c.requiredParameters.add(Parameter((p) => p
           ..name = _dioVar
           ..toThis = true));
@@ -106,6 +105,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ..toThis = true));
         final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
+          if (url != null && url.isNotEmpty)
+            Code("this.${_baseUrlVar} ??= ${literal(url)};"),
         ];
 
         c.body = Block.of(block);

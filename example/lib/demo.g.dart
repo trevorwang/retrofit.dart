@@ -49,7 +49,7 @@ class _DemoClient implements DemoClient {
 
   final Dio _dio;
 
-  String baseUrl = '';
+  String baseUrl;
 
   @override
   getData() async {
