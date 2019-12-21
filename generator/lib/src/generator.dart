@@ -112,13 +112,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         c.body = Block.of(block);
       });
 
-  Iterable<Method> _parseMethods(ClassElement element) =>
-      element.methods.where((MethodElement m) {
-        final methodAnnot = _getMethodAnnotation(m);
-        return methodAnnot != null &&
-            m.isAbstract &&
-            m.returnType.isDartAsyncFuture;
-      }).map((m) => _generateMethod(m));
+  Iterable<Method> _parseMethods(ClassElement element) {
+    List<MethodElement> methods = element.methods;
+    for (var mixin in element.mixins) {
+      methods.addAll(mixin.element.methods);
+    }
+    return methods.where((MethodElement m) {
+      final methodAnnot = _getMethodAnnotation(m);
+      return methodAnnot != null &&
+          m.isAbstract &&
+          m.returnType.isDartAsyncFuture;
+    }).map((m) => _generateMethod(m));
+  }
 
   final _methodsAnnotations = const [
     retrofit.GET,
