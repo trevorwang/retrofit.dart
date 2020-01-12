@@ -70,8 +70,12 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = Task.fromJson(_result.data);
+    final value = await run_background(_$getTask_converter, _result.data);
     return Future.value(value);
+  }
+
+  static Task _$getTask_converter(Map<String, dynamic> response) {
+    return Task.fromJson(response);
   }
 
   @override
@@ -91,8 +95,13 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = Task.fromJson(_result.data);
+    final value =
+        await run_background(_$updateTaskPart_converter, _result.data);
     return Future.value(value);
+  }
+
+  static Task _$updateTaskPart_converter(Map<String, dynamic> response) {
+    return Task.fromJson(response);
   }
 
   @override
@@ -112,8 +121,12 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = Task.fromJson(_result.data);
+    final value = await run_background(_$updateTask_converter, _result.data);
     return Future.value(value);
+  }
+
+  static Task _$updateTask_converter(Map<String, dynamic> response) {
+    return Task.fromJson(response);
   }
 
   @override
@@ -148,8 +161,12 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = Task.fromJson(_result.data);
+    final value = await run_background(_$createTask_converter, _result.data);
     return Future.value(value);
+  }
+
+  static Task _$createTask_converter(Map<String, dynamic> response) {
+    return Task.fromJson(response);
   }
 
   @override

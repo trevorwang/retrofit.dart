@@ -204,8 +204,16 @@ abstract class UploadFileInfoFieldTest {
 
 @ShouldGenerate(
   r'''
-    final value = User.fromJson(_result.data);
+    final value = await run_background(_$getUser_converter, _result.data);
     return Future.value(value);
+''',
+  contains: true,
+)
+@ShouldGenerate(
+  r'''
+  static _$getUser_converter(response) {
+    return User.fromJson(response);
+  }
 ''',
   contains: true,
 )
@@ -273,12 +281,20 @@ abstract class TestCustomObjectBody {
 
 @ShouldGenerate(
   r'''
-    var value = _result.data.map((k, dynamic v) => MapEntry(
+    final value = await run_background(_$getResult_converter, _result.data);
+    return Future.value(value);
+''',
+  contains: true,
+)
+@ShouldGenerate(
+  r'''
+  static _$getResult_converter(response) {
+    return response.map((k, dynamic v) => MapEntry(
         k,
         (v as List)
             .map((i) => User.fromJson(i as Map<String, dynamic>))
             .toList()));
-
+  }
 ''',
   contains: true,
 )
@@ -290,8 +306,17 @@ abstract class TestMapBody {
 
 @ShouldGenerate(
   r'''
-    var value = _result.data.map((k, dynamic v) =>
+    final value = await run_background(_$getResult_converter, _result.data);
+    return Future.value(value);
+''',
+  contains: true,
+)
+@ShouldGenerate(
+  r'''
+  static _$getResult_converter(response) {
+    return response.map((k, dynamic v) =>
         MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
+  }
 ''',
   contains: true,
 )

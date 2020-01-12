@@ -64,7 +64,11 @@ class _DemoClient implements DemoClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = Result.fromJson(_result.data);
+    final value = await run_background(_$getData_converter, _result.data);
     return Future.value(value);
+  }
+
+  static Result _$getData_converter(Map<String, dynamic> response) {
+    return Result.fromJson(response);
   }
 }

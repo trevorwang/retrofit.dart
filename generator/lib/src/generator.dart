@@ -118,7 +118,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         return methodAnnot != null &&
             m.isAbstract &&
             m.returnType.isDartAsyncFuture;
-      }).map((m) => _generateMethod(m));
+      }).expand((m) => _generateMethod(m));
 
   final _methodsAnnotations = const [
     retrofit.GET,
@@ -220,10 +220,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return _getResponseInnerType(generic);
   }
 
-  Method _generateMethod(MethodElement m) {
+  Iterable<Method> _generateMethod(MethodElement m) {
     final httpMehod = _getMethodAnnotation(m);
-
-    return Method((mm) {
+    final r = _generateRequest(m, httpMehod);
+    final body = r[0];
+    final converter = r[1];
+    return [Method((mm) {
       mm
         ..name = m.displayName
         ..modifier = MethodModifier.async
@@ -244,8 +246,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ..defaultTo = it.defaultValueCode == null
                 ? null
                 : Code(it.defaultValueCode))));
-      mm.body = _generateRequest(m, httpMehod);
-    });
+      mm.body = body;
+    })] + converter;
   }
 
   Expression _generatePath(MethodElement m, ConstantReader method) {
@@ -258,7 +260,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return literal(definePath);
   }
 
-  Code _generateRequest(MethodElement m, ConstantReader httpMehod) {
+  List<dynamic> _generateRequest(MethodElement m, ConstantReader httpMehod) {
     final path = _generatePath(m, httpMehod);
     final blocks = <Code>[];
 
@@ -336,9 +338,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .returned
             .statement,
       );
-      return Block.of(blocks);
+      return [Block.of(blocks), null];
     }
 
+    Code converterBody = null;
+    final converterName = '_\$${m.displayName}_converter';
     if (returnType == null || "void" == returnType.toString()) {
       blocks.add(
         refer("await $_dioVar.request")
@@ -386,8 +390,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           if (_typeChecker(List).isExactlyType(secondType) ||
               _typeChecker(BuiltList).isExactlyType(secondType)) {
             final type = _getResponseType(secondType);
-            blocks.add(Code("""
-            var value = $_resultVar.data
+            converterBody = Code("""
+            return response
               .map((k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
@@ -395,14 +399,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     .toList()
                 )
               );
-            """));
+            """);
+            blocks.add(Code(
+                "final value = await run_background($converterName, $_resultVar.data);"));
           } else if (!_isBasicType(secondType)) {
-            blocks.add(Code("""
-            var value = $_resultVar.data
+            converterBody = Code("""
+            return response
               .map((k, dynamic v) =>
                 MapEntry(k, $secondType.fromJson(v as Map<String, dynamic>))
               );
-            """));
+            """);
+            blocks.add(Code(
+                "final value = await run_background($converterName, $_resultVar.data);"));
           }
         } else {
           blocks.add(Code("final value = $_resultVar.data;"));
@@ -423,14 +431,29 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar, refer("Response<Map<String,dynamic>>"))
                 .statement,
           );
-          blocks.add(
-              Code("final value = $returnType.fromJson($_resultVar.data);"));
+          converterBody = Code("return $returnType.fromJson(response);");
+          blocks.add(Code(
+              "final value = await run_background($converterName, $_resultVar.data);"));
         }
       }
       blocks.add(Code("return Future.value(value);"));
     }
 
-    return Block.of(blocks);
+    List<Method> converter = [];
+    if (converterBody != null) {
+      converter.add(Method((mm) {
+        mm
+          ..name = converterName
+          ..static = true
+          ..requiredParameters.add(Parameter((p) => {
+            p..name = 'response',
+            p..type = refer("Map<String,dynamic>")
+          }))
+          ..returns = refer(returnType.element.name)
+          ..body = converterBody;
+      }));
+    }
+    return [Block.of(blocks), converter];
   }
 
   bool _isBasicType(DartType returnType) {

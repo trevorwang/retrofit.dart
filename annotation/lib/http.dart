@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:isolate/isolate_runner.dart';
 import 'package:meta/meta.dart';
 
 /// A holder that includs all http methods which are supported by retrofit.
@@ -195,4 +198,15 @@ class Queries {
 class FormUrlEncoded {
   final mime = 'application/x-www-form-urlencoded';
   const FormUrlEncoded();
+}
+
+/// Runs the given function with the passed argument in a new isolate and returns
+/// its result. The isolate will be stopped afterwards.
+Future<R> run_background<R, P> (FutureOr<R> function(P argument), P argument) async {
+  IsolateRunner iso = await IsolateRunner.spawn();
+  try {
+    return await iso.run(function, argument);
+  } finally {
+    await iso.close();
+  }
 }
