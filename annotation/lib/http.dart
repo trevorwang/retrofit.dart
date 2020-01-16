@@ -7,6 +7,8 @@ class HttpMethod {
   static const String PATCH = "PATCH";
   static const String PUT = "PUT";
   static const String DELETE = "DELETE";
+  static const String HEAD = "HEAD";
+  static const String OPTIONS = "OPTIONS";
 }
 
 /// Define an API.
@@ -102,6 +104,20 @@ class PUT extends Method {
 class DELETE extends Method {
   const DELETE(final String path, {bool autoCastResponse = true})
       : super(HttpMethod.DELETE, path, autoCastResponse: autoCastResponse);
+}
+
+/// Make a `HEAD` request
+@immutable
+class HEAD extends Method {
+  const HEAD(String path, {bool autoCastResponse = true})
+      : super(HttpMethod.HEAD, path, autoCastResponse: autoCastResponse);
+}
+
+/// Make a `OPTIONS` request
+@immutable
+class OPTIONS extends Method {
+  const OPTIONS(String path, {bool autoCastResponse = true})
+      : super(HttpMethod.OPTIONS, path, autoCastResponse: autoCastResponse);
 }
 
 /// Adds headers specified in the [value] map.
