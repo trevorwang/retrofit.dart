@@ -385,3 +385,23 @@ abstract class TestReceiveProgress {
   Future<String> createUser(@Body() User user,
       @dio.ReceiveProgress() ProgressCallback onReceiveProgress);
 }
+
+@ShouldGenerate(r'''
+        options: RequestOptions(
+            method: 'HEAD',
+''', contains: true)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestHeadMethod {
+  @HEAD("/")
+  Future<String> testHeadMethod();
+}
+
+@ShouldGenerate(r'''
+        options: RequestOptions(
+            method: 'OPTIONS',
+''', contains: true)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestOptionsMethod {
+  @OPTIONS("/")
+  Future<String> testOptionsMethod();
+}
