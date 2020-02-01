@@ -39,6 +39,9 @@ abstract class RestClient {
   @POST('/')
   @FormUrlEncoded()
   Future<String> postFormData();
+
+  @HEAD('/')
+  Future<String> headRequest();
 }
 
 @JsonSerializable()

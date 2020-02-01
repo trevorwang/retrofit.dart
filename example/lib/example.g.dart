@@ -225,4 +225,21 @@ class _RestClient implements RestClient {
     final value = _result.data;
     return Future.value(value);
   }
+
+  @override
+  headRequest() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<String> _result = await _dio.request('/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'HEAD',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
 }

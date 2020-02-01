@@ -23,6 +23,6 @@ dev_dependencies:
   source_gen_test: any
   mock_web_server: ^4.1.1
   resource:
-# dependency_overrides:
-#   retrofit:
-#     path: ../annotation
+dependency_overrides:
+  retrofit:
+    path: ../annotation
