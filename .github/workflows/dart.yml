@@ -1,0 +1,20 @@
+name: Dart CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    container:
+      image:  google/dart:latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Analyze packages
+      run: PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
+    - name: Install dependencies
+      run: cd generator && pub get
+    - name: Run tests
+      run: cd generator && pub run test
