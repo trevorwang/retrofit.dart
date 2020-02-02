@@ -1,0 +1,5 @@
+annotation: annotation/**/*
+generator: generator/**/*
+docs: 
+  - docs/**/*
+  - ./**/*.md
