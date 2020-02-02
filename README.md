@@ -8,6 +8,10 @@ retrofit.dart is a type conversion [dio](https://github.com/flutterchina/dio/) c
 
 ## Usage
 
+### [Breaking Changes]
+
+* Add new `Part` annotation to send `multipart/form-data` request. `Field` will not be used in the future, please use `Part` instead.
+
 ### Generator
 
 Add the generator to your dev dependencies
@@ -75,7 +79,6 @@ final logger = Logger();
 void main(List<String> args) {
   final dio = Dio();   // Provide a dio instance
   dio.options.headers["Demo-Header"] = "demo header";   // config your dio headers globally
-  dio.options.headers["Content-Type"] = "application/json";
   final client = RestClient(dio);
   
   client.getTasks().then((it) => logger.i(it));
@@ -125,6 +128,13 @@ The HTTP methods in the below sample are supported.
 
   @POST("/tasks")
   Future<Task> createTask(@Body() Task task);
+
+  @POST("http://httpbin.org/post")
+  Future<void> createNewTaskFromFile(@Part() File file);
+
+  @POST("http://httpbin.org/post")
+  @FormUrlEncoded()
+  Future<String> postUrlEncodedFormData(@Field() String hello);
 ```
 
 

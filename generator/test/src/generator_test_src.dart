@@ -167,7 +167,7 @@ abstract class FormUrlEncodedTest {
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
-abstract class FileFieldTest {
+abstract class FilePartTest {
   @POST("/profile")
   Future<String> setProfile(@Part() File image);
 }
@@ -182,7 +182,7 @@ abstract class FileFieldTest {
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
-abstract class FileFieldWithCustomNameTest {
+abstract class FilePartWithCustomNameTest {
   @POST("/profile")
   Future<String> setProfile(@Part('image', 'my_profile_image.jpg') File image);
 }
@@ -197,7 +197,7 @@ abstract class FileFieldWithCustomNameTest {
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
-abstract class UploadFileInfoFieldTest {
+abstract class UploadFileInfoPartTest {
   @POST("/profile")
   Future<String> setProfile(@Part() File image);
 }
