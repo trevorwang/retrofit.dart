@@ -31,7 +31,7 @@ class RestApi {
   /// * Result: `http://example.com/foo/bar/`
   ///
   /// When you don't specify the [baseUrl]. The [dio] instance passed to the constructor should have it defined.
-  /// Otherwise the `path` field of any [HttpMethod]  like [@POST()] should have the full URL.
+  /// Otherwise the `path` field of any [HttpMethod] like [POST] should have the full URL.
 
   final String baseUrl;
   const RestApi({this.baseUrl, this.autoCastResponse});

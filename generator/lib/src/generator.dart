@@ -53,7 +53,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       Element element, ConstantReader annotation, BuildStep buildStep) {
     if (element is! ClassElement) {
       final name = element.displayName;
-      throw new InvalidGenerationSourceError(
+      throw InvalidGenerationSourceError(
         'Generator cannot target `$name`.',
         todo: 'Remove the [RestApi] annotation from `$name`.',
       );
@@ -69,7 +69,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       baseUrl: (annotation?.peek(_baseUrlVar)?.stringValue ?? ''),
     );
     final baseUrl = clientAnnotation.baseUrl;
-    final classBuilder = new Class((c) {
+    final classBuilder = Class((c) {
       c
         ..name = name
         ..fields.addAll([
@@ -81,8 +81,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ..implements = ListBuilder([refer(className)]);
     });
 
-    final emitter = new DartEmitter();
-    return new DartFormatter().format('${classBuilder.accept(emitter)}');
+    final emitter = DartEmitter();
+    return DartFormatter().format('${classBuilder.accept(emitter)}');
   }
 
   Field _buildDioFiled() => Field((m) => m
@@ -131,12 +131,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     retrofit.Method
   ];
 
-  TypeChecker _typeChecker(Type type) => new TypeChecker.fromRuntime(type);
+  TypeChecker _typeChecker(Type type) => TypeChecker.fromRuntime(type);
   ConstantReader _getMethodAnnotation(MethodElement method) {
     for (final type in _methodsAnnotations) {
       final annot = _typeChecker(type)
           .firstAnnotationOf(method, throwOnUnresolved: false);
-      if (annot != null) return new ConstantReader(annot);
+      if (annot != null) return ConstantReader(annot);
     }
     return null;
   }
@@ -144,21 +144,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   ConstantReader _getHeadersAnnotation(MethodElement method) {
     final annot = _typeChecker(retrofit.Headers)
         .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annot != null) return new ConstantReader(annot);
+    if (annot != null) return ConstantReader(annot);
     return null;
   }
 
   ConstantReader _getFormUrlEncodedAnnotation(MethodElement method) {
     final annotation = _typeChecker(retrofit.FormUrlEncoded)
         .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return new ConstantReader(annotation);
+    if (annotation != null) return ConstantReader(annotation);
     return null;
   }
 
   ConstantReader _getResponseTypeAnnotation(MethodElement method) {
     final annotation = _typeChecker(retrofit.DioResponseType)
         .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return new ConstantReader(annotation);
+    if (annotation != null) return ConstantReader(annotation);
     return null;
   }
 
@@ -168,7 +168,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     for (final p in m.parameters) {
       final a = _typeChecker(type).firstAnnotationOf(p);
       if (a != null) {
-        annot[p] = new ConstantReader(a);
+        annot[p] = ConstantReader(a);
       }
     }
     return annot;
@@ -605,10 +605,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 }
 
-Builder generatorFactoryBuilder(BuilderOptions options) =>
-    new SharedPartBuilder(
-        [new RetrofitGenerator(RetrofitOptions.fromOptions(options))],
-        "retrofit");
+Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
+    [RetrofitGenerator(RetrofitOptions.fromOptions(options))], "retrofit");
 
 /// Returns `$revived($args $kwargs)`, this won't have ending semi-colon (`;`).
 /// [object] must not be null.
