@@ -160,11 +160,7 @@ class Body {
 @immutable
 class Field {
   final String value;
-
-  /// If this field is a file, optionally specify it's name. otherwise the name
-  /// will be derived from the actual file.
-  final String fileName;
-  const Field([this.value, this.fileName]);
+  const Field([this.value]);
 }
 
 /// Named replacement in a URL path segment.
@@ -211,4 +207,31 @@ class Queries {
 class FormUrlEncoded {
   final mime = 'application/x-www-form-urlencoded';
   const FormUrlEncoded();
+}
+
+// Denotes that the request body is multi-part. Parts should be declared as parameters and
+// annotated with [Part].
+@immutable
+class MultiPart {
+  const MultiPart();
+}
+
+// Denotes a single part of a multi-part request.
+// Part parameters may not be null.
+/// ```
+/// @POST("/post")
+/// @MultiPart()
+/// Future<String> example(
+///   @Part() int foo,
+///   @Part("bar") String barbar},
+/// )
+/// ```
+@immutable
+class Part {
+  final String value;
+
+  /// If this field is a file, optionally specify it's name. otherwise the name
+  /// will be derived from the actual file.
+  final String fileName;
+  const Part([this.value, this.fileName]);
 }
