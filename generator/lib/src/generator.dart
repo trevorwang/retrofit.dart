@@ -126,6 +126,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     retrofit.DELETE,
     retrofit.PUT,
     retrofit.PATCH,
+    retrofit.HEAD,
+    retrofit.OPTIONS,
     retrofit.Method
   ];
 
@@ -502,22 +504,38 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final fields = _getAnnotations(m, retrofit.Field).map((p, r) {
       final fieldName = r.peek("value")?.stringValue ?? p.displayName;
-
       final isFileField = _typeChecker(File).isAssignableFromType(p.type);
-      final fileName = r.peek("fileName")?.stringValue != null
-          ? literalString(r.peek("fileName")?.stringValue)
-          : refer(p.displayName)
-              .property('path.split(Platform.pathSeparator).last');
-
-      final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
-          [refer(p.displayName).property('path')], {'filename': fileName});
-
-      return MapEntry(literal(fieldName),
-          isFileField ? uploadFileInfo : refer(p.displayName));
+      if (isFileField) {
+        log.severe(
+            'File is not support by @Field(). Please use @Part() instead.');
+      }
+      return MapEntry(literal(fieldName), refer(p.displayName));
     });
+
     if (fields.isNotEmpty) {
+      blocks.add(literalMap(fields).assignFinal(_dataVar).statement);
+      return;
+    }
+
+    final parts = _getAnnotations(m, retrofit.Part).map((p, r) {
+      final fieldName = r.peek("value")?.stringValue ?? p.displayName;
+      final isFileField = _typeChecker(File).isAssignableFromType(p.type);
+      if (isFileField) {
+        final fileName = r.peek("fileName")?.stringValue != null
+            ? literalString(r.peek("fileName")?.stringValue)
+            : refer(p.displayName)
+                .property('path.split(Platform.pathSeparator).last');
+
+        final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
+            [refer(p.displayName).property('path')], {'filename': fileName});
+        return MapEntry(literal(fieldName), uploadFileInfo);
+      } else {
+        return MapEntry(literal(fieldName), refer(p.displayName));
+      }
+    });
+    if (parts.isNotEmpty) {
       blocks.add(refer("FormData.fromMap")
-          .call([literalMap(fields, refer("String"), refer("dynamic"))])
+          .call([literalMap(parts, refer("String"), refer("dynamic"))])
           .assignFinal(_dataVar)
           .statement);
       return;
@@ -679,7 +697,7 @@ String revivedLiteral(
     }
 
     if (constant.isType) {
-      return refer(constant.typeValue.name);
+      return refer(constant.typeValue.getDisplayString());
     }
 
     if (constant.isLiteral) {

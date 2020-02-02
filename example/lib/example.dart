@@ -29,16 +29,16 @@ abstract class RestClient {
   Future<Task> createTask(@Body() Task task);
 
   @POST("http://httpbin.org/post")
-  Future<void> createNewTaskFromFile(@Field() File file);
+  Future<void> createNewTaskFromFile(@Part() File file);
 
   @Headers(<String, String>{"accept": "image/jpeg"})
   @GET("http://httpbin.org/image/jpeg")
   @DioResponseType(ResponseType.bytes)
   Future<List<int>> getFile();
 
-  @POST('/')
+  @POST("http://httpbin.org/post")
   @FormUrlEncoded()
-  Future<String> postFormData();
+  Future<String> postUrlEncodedFormData(@Field() String hello);
 
   @HEAD('/')
   Future<String> headRequest();

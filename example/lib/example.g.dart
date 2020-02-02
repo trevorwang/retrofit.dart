@@ -192,11 +192,13 @@ class _RestClient implements RestClient {
   }
 
   @override
-  postFormData() async {
+  postUrlEncodedFormData(hello) async {
+    ArgumentError.checkNotNull(hello, 'hello');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final Response<String> _result = await _dio.request('/',
+    final _data = {'hello': hello};
+    final Response<String> _result = await _dio.request(
+        'http://httpbin.org/post',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',

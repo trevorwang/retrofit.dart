@@ -169,7 +169,7 @@ abstract class FormUrlEncodedTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class FileFieldTest {
   @POST("/profile")
-  Future<String> setProfile(@Field() File image);
+  Future<String> setProfile(@Part() File image);
 }
 
 @ShouldGenerate(
@@ -184,7 +184,7 @@ abstract class FileFieldTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class FileFieldWithCustomNameTest {
   @POST("/profile")
-  Future<String> setProfile(@Field('image', 'my_profile_image.jpg') File image);
+  Future<String> setProfile(@Part('image', 'my_profile_image.jpg') File image);
 }
 
 @ShouldGenerate(
@@ -199,7 +199,7 @@ abstract class FileFieldWithCustomNameTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class UploadFileInfoFieldTest {
   @POST("/profile")
-  Future<String> setProfile(@Field() File image);
+  Future<String> setProfile(@Part() File image);
 }
 
 @ShouldGenerate(
