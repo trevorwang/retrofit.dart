@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+* [BREAKING CHANGE] Add new `Part` annotation to send `multipart/form-data` request. `Field` will not be used in the future, please use `Part` instead.
+
 ## 1.0.1
 
 - Add dio response type support

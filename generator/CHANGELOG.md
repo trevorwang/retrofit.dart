@@ -1,4 +1,9 @@
 # Changelog
+
+## 1.1.0
+
+- fix `FormUrlEncoded` issue
+
 ## 1.0.2
 
 - Add `baseUrl` as a parameter of `RestClient`'s conductor

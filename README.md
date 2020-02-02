@@ -8,10 +8,6 @@ retrofit.dart is a type conversion [dio](https://github.com/flutterchina/dio/) c
 
 ## Usage
 
-### [Breaking Changes]
-
-* Add new `Part` annotation to send `multipart/form-data` request. `Field` will not be used in the future, please use `Part` instead.
-
 ### Generator
 
 Add the generator to your dev dependencies
