@@ -86,7 +86,9 @@
       <div><h1><span class="kind-class">Part</span> class </h1></div>
 
     <section class="desc markdown">
-      <pre class="language-dart"><code>@POST("/post")
+      <p>Denotes a single part of a multi-part request.
+Part parameters may not be null.</p>
+<pre class="language-dart"><code>@POST("/post")
 @MultiPart()
 Future&lt;String&gt; example(
   @Part() int foo,

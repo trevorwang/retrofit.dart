@@ -130,7 +130,8 @@ parameters and annotated with <a href="../http/Field-class.html">Field</a>. <a h
           <span class="name "><a href="../http/MultiPart-class.html">MultiPart</a></span>         
         </dt>
         <dd>
-           
+          Denotes that the request body is multi-part. Parts should be declared as parameters and
+annotated with <a href="../http/Part-class.html">Part</a>. 
         </dd>
         <dt id="OPTIONS">
           <span class="name "><a href="../http/OPTIONS-class.html">OPTIONS</a></span>         
@@ -142,13 +143,8 @@ parameters and annotated with <a href="../http/Field-class.html">Field</a>. <a h
           <span class="name "><a href="../http/Part-class.html">Part</a></span>         
         </dt>
         <dd>
-          <code>@POST("/post")
-@MultiPart()
-Future&lt;String&gt; example(
-  @Part() int foo,
-  @Part("bar") String barbar},
-)
-</code> 
+          Denotes a single part of a multi-part request.
+Part parameters may not be null. <a href="../http/Part-class.html">[...]</a>
         </dd>
         <dt id="PATCH">
           <span class="name "><a href="../http/PATCH-class.html">PATCH</a></span>         

@@ -209,15 +209,15 @@ class FormUrlEncoded {
   const FormUrlEncoded();
 }
 
-// Denotes that the request body is multi-part. Parts should be declared as parameters and
-// annotated with [Part].
+/// Denotes that the request body is multi-part. Parts should be declared as parameters and
+/// annotated with [Part].
 @immutable
 class MultiPart {
   const MultiPart();
 }
 
-// Denotes a single part of a multi-part request.
-// Part parameters may not be null.
+/// Denotes a single part of a multi-part request.
+/// Part parameters may not be null.
 /// ```
 /// @POST("/post")
 /// @MultiPart()
