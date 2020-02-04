@@ -42,6 +42,9 @@ abstract class RestClient {
 
   @HEAD('/')
   Future<String> headRequest();
+
+  @GET("/task/group")
+  Future<List<TaskGroup>> grouppedTaskByDate();
 }
 
 @JsonSerializable()
@@ -55,4 +58,18 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
   Map<String, dynamic> toJson() => _$TaskToJson(this);
+}
+
+@JsonSerializable()
+class TaskGroup {
+  DateTime date;
+  List<Task> todos;
+  List<Task> completed;
+  List<Task> inProgress;
+
+  TaskGroup({this.date, this.todos, this.completed, this.inProgress});
+
+  factory TaskGroup.fromJson(Map<String, dynamic> json) =>
+      _$TaskGroupFromJson(json);
+  Map<String, dynamic> toJson() => _$TaskGroupToJson(this);
 }

@@ -22,6 +22,31 @@ Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
       'createdAt': instance.createdAt,
     };
 
+TaskGroup _$TaskGroupFromJson(Map<String, dynamic> json) {
+  return TaskGroup(
+    date: json['date'] == null ? null : DateTime.parse(json['date'] as String),
+    todos: (json['todos'] as List)
+        ?.map(
+            (e) => e == null ? null : Task.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    completed: (json['completed'] as List)
+        ?.map(
+            (e) => e == null ? null : Task.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    inProgress: (json['inProgress'] as List)
+        ?.map(
+            (e) => e == null ? null : Task.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$TaskGroupToJson(TaskGroup instance) => <String, dynamic>{
+      'date': instance.date?.toIso8601String(),
+      'todos': instance.todos,
+      'completed': instance.completed,
+      'inProgress': instance.inProgress,
+    };
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -102,7 +127,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(task.toJson() ?? <String, dynamic>{});
+    _data.addAll(task?.toJson() ?? <String, dynamic>{});
     final Response<Map<String, dynamic>> _result = await _dio.request(
         '/tasks/$id',
         queryParameters: queryParameters,
@@ -139,7 +164,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(task.toJson() ?? <String, dynamic>{});
+    _data.addAll(task?.toJson() ?? <String, dynamic>{});
     final Response<Map<String, dynamic>> _result = await _dio.request('/tasks',
         queryParameters: queryParameters,
         options: RequestOptions(
@@ -225,6 +250,25 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
+  grouppedTaskByDate() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<List<dynamic>> _result = await _dio.request('/task/group',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    var value = _result.data
+        .map((dynamic i) => TaskGroup.fromJson(i as Map<String, dynamic>))
+        .toList();
     return Future.value(value);
   }
 }
