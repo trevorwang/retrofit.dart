@@ -9,7 +9,16 @@ final demoTask = Task(
     createdAt: "2017/09/08 21:35:19");
 
 final demoTaskJson = jsonEncode(demoTask);
-final demoTaskList = []..add(demoTask);
+final List<Task> demoTaskList = []..add(demoTask);
 final demoTaskListJson = jsonEncode(demoTaskList);
-final demoEmptyList = [];
+final List<Task> demoEmptyList = [];
 final demoEmptyListJson = jsonEncode(demoEmptyList);
+
+final groupTask = TaskGroup(
+    date: DateTime.now(),
+    todos: demoTaskList,
+    completed: demoTaskList,
+    inProgress: demoEmptyList);
+
+final groupTaskList = []..add(groupTask);
+final groupTaskListJson = jsonEncode(groupTaskList);

@@ -87,4 +87,12 @@ void main() {
       expect(null, null);
     });
   });
+
+  test("Test group list task", () async {
+    _server.enqueue(headers: _headers, body: groupTaskListJson);
+    final result = await _client.grouppedTaskByDate();
+    expect(result, isNotNull);
+    expect(result.first.todos, isNotEmpty);
+    expect(result.first.todos.first.avatar, demoTask.avatar);
+  });
 }
