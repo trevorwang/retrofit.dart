@@ -241,7 +241,7 @@ abstract class GenericCastBasicType {
 @ShouldGenerate(
   r'''
     final _data = <String, dynamic>{};
-    _data.addAll(user.toJson() ?? <String, dynamic>{});
+    _data.addAll(user?.toJson() ?? <String, dynamic>{});
 ''',
   contains: true,
 )

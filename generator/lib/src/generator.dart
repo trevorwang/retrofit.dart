@@ -490,7 +490,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               .assignFinal(_dataVar)
               .statement);
           blocks.add(refer("$_dataVar.addAll").call([
-            refer("${_bodyName.displayName}.toJson() ?? <String,dynamic>{}")
+            refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
           ]).statement);
         }
       } else {
