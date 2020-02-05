@@ -52,37 +52,36 @@ class _DemoClient implements DemoClient {
   String baseUrl;
 
   @override
-  deleteTask(id) async {
-    ArgumentError.checkNotNull(id, 'id');
+  getData() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    await _dio.request<void>('/tasks/$id',
+    final Response<Map<String, dynamic>> _result = await _dio.request('/demo',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'DELETE',
+            method: 'GET',
             headers: <String, dynamic>{},
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    return Future.value(null);
+    final value = Result.fromJson(_result.data);
+    return Future.value(value);
   }
 
   @override
-  deleteTaskWithRes(id) async {
-    ArgumentError.checkNotNull(id, 'id');
+  getData2() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.request<void>('/tasks/$id',
+    final Response<Map<String, dynamic>> _result = await _dio.request('/demo',
         queryParameters: queryParameters,
         options: RequestOptions(
-            method: 'DELETE',
+            method: 'GET',
             headers: <String, dynamic>{},
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final retrofitResponse = RetrofitResponse(null, _result);
-    return Future.value(retrofitResponse);
+    final value = dynamic.fromJson(_result.data);
+    return Future.value(value);
   }
 }

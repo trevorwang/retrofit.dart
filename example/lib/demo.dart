@@ -17,16 +17,10 @@ final data = {
 abstract class DemoClient {
   factory DemoClient(Dio dio, {String baseUrl}) = _DemoClient;
 
-  // @GET('/demo')
-  // Future<Result> getData();
-  // @GET('/demo')
-  // Future<RetrofitResponse<Result>> getData2();
-
-  @DELETE("/tasks/{id}")
-  Future<void> deleteTask(@Path() String id);
-
-  @DELETE("/tasks/{id}")
-  Future<RetrofitResponse<void>> deleteTaskWithRes(@Path() String id);
+  @GET('/demo')
+  Future<Result> getData();
+  @GET('/demo')
+  Future<HttpResponse<Result>> getData2();
 }
 
 @JsonSerializable()

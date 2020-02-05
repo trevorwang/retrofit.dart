@@ -277,7 +277,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final Response<List<dynamic>> _result = await _dio.request('/task',
+    final Response<Map<String, dynamic>> _result = await _dio.request('/task',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
@@ -285,10 +285,26 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    var value = _result.data
-        .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
-        .toList();
-    final retrofitResponse = RetrofitResponse(value, _result);
-    return Future.value(retrofitResponse);
+    final value = dynamic.fromJson(_result.data);
+    return Future.value(value);
+  }
+
+  @override
+  deleteTaskWithResponse(id) async {
+    ArgumentError.checkNotNull(id, 'id');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<Map<String, dynamic>> _result = await _dio.request(
+        '/tasks/$id',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'DELETE',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = dynamic.fromJson(_result.data);
+    return Future.value(value);
   }
 }

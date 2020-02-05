@@ -350,8 +350,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return Block.of(blocks);
     }
 
-    final bool isWrappered = _typeChecker(retrofit.RetrofitResponse)
-        .isExactlyType(wrapperedReturnType);
+    final bool isWrappered =
+        _typeChecker(retrofit.HttpResponse).isExactlyType(wrapperedReturnType);
     final returnType = isWrappered
         ? _getResponseType(wrapperedReturnType)
         : wrapperedReturnType;
@@ -363,8 +363,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               .statement,
         );
         blocks.add(Code("""
-      final retrofitResponse = RetrofitResponse(null, $_resultVar);
-      return Future.value(retrofitResponse);
+      final httpResponse = HttpResponse(null, $_resultVar);
+      return Future.value(httpResponse);
       """));
       } else {
         blocks.add(
@@ -456,8 +456,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       }
       if (isWrappered) {
         blocks.add(Code("""
-      final retrofitResponse = RetrofitResponse(value, $_resultVar);
-      return Future.value(retrofitResponse);
+      final httpResponse = HttpResponse(value, $_resultVar);
+      return Future.value(httpResponse);
       """));
       } else {
         blocks.add(Code("return Future.value(value);"));
