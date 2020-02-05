@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:source_gen_test/annotations.dart';
-import 'package:retrofit/http.dart';
-import 'package:retrofit/dio.dart' as dio;
+import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 
 @ShouldGenerate(
@@ -45,7 +44,7 @@ abstract class BaseUrl {}
 @RestApi()
 abstract class EmptyExtras {
   @GET('/list/')
-  @dio.Extra({})
+  @Extra({})
   Future<void> list();
 }
 
@@ -58,7 +57,7 @@ abstract class EmptyExtras {
 @RestApi()
 abstract class ExtrasWithPrimitiveValues {
   @GET('/list/')
-  @dio.Extra({'key': 'value'})
+  @Extra({'key': 'value'})
   Future<void> list();
 }
 
@@ -71,7 +70,7 @@ abstract class ExtrasWithPrimitiveValues {
 @RestApi()
 abstract class ExtrasWithCustomConstant {
   @GET('/list/')
-  @dio.Extra({'key': CustomConstant()})
+  @Extra({'key': CustomConstant()})
   Future<void> list();
 }
 
@@ -361,7 +360,7 @@ abstract class TestBasicListDouble {
 abstract class TestCancelToken {
   @POST("/users")
   Future<String> createUser(
-      @Body() User user, @dio.CancelRequest() CancelToken cancelToken);
+      @Body() User user, @CancelRequest() CancelToken cancelToken);
 }
 
 @ShouldGenerate(
@@ -372,7 +371,7 @@ abstract class TestCancelToken {
 abstract class TestSendProgress {
   @POST("/users")
   Future<String> createUser(
-      @Body() User user, @dio.SendProgress() ProgressCallback onSendProgress);
+      @Body() User user, @SendProgress() ProgressCallback onSendProgress);
 }
 
 @ShouldGenerate(
@@ -382,8 +381,8 @@ abstract class TestSendProgress {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestReceiveProgress {
   @POST("/users")
-  Future<String> createUser(@Body() User user,
-      @dio.ReceiveProgress() ProgressCallback onReceiveProgress);
+  Future<String> createUser(
+      @Body() User user, @ReceiveProgress() ProgressCallback onReceiveProgress);
 }
 
 @ShouldGenerate(r'''
@@ -404,4 +403,31 @@ abstract class TestHeadMethod {
 abstract class TestOptionsMethod {
   @OPTIONS("/")
   Future<String> testOptionsMethod();
+}
+
+@ShouldGenerate(r'''
+    final httpResponse = HttpResponse(null, _result);
+''', contains: true)
+@RestApi()
+abstract class TestHttpResponseVoid {
+  @GET("/")
+  Future<HttpResponse<void>> noResponseData();
+}
+
+@ShouldGenerate(r'''
+    final httpResponse = HttpResponse(value, _result);
+''', contains: true)
+@RestApi()
+abstract class TestHttpResponseObject {
+  @GET("/")
+  Future<HttpResponse<Map<String, dynamic>>> responseWithObject();
+}
+
+@ShouldGenerate(r'''
+    final httpResponse = HttpResponse(value, _result);
+''', contains: true)
+@RestApi()
+abstract class TestHttpResponseArray {
+  @GET("/")
+  Future<HttpResponse<List<String>>> responseWithArray();
 }

@@ -19,6 +19,8 @@ abstract class DemoClient {
 
   @GET('/demo')
   Future<Result> getData();
+  @GET('/demo')
+  Future<HttpResponse<Result>> getData2();
 }
 
 @JsonSerializable()

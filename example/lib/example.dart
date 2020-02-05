@@ -45,6 +45,12 @@ abstract class RestClient {
 
   @GET("/task/group")
   Future<List<TaskGroup>> grouppedTaskByDate();
+
+  @GET("/task")
+  Future<HttpResponse<List<Task>>> getTasksWithReponse();
+
+  @DELETE("/tasks/{id}")
+  Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
 }
 
 @JsonSerializable()

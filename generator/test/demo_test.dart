@@ -7,7 +7,8 @@ import '../example/lib/demo.dart';
 
 MockWebServer _server;
 DemoClient _client;
-final _headers = {"Content-Type": "application/json"};
+final keyContentType = 'Content-Type';
+final _headers = {keyContentType: "application/json"};
 void main() {
   setUp(() async {
     _server = MockWebServer();
@@ -26,5 +27,14 @@ void main() {
     final tasks = await _client.getData();
     expect(tasks, isNotNull);
     print(tasks.toJson());
+  });
+
+  test("original response data", () async {
+    _server.enqueue(body: jsonEncode(data), headers: _headers);
+    final res = await _client.getData2();
+    expect(res, isNotNull);
+    expect(res.data.page, data["page"]);
+    expect(res.response.headers[keyContentType].join(';'),
+        _headers[keyContentType]);
   });
 }

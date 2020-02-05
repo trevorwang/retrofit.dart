@@ -1,8 +1,12 @@
 # Changelog
 
+## 1.2.0
+
+-  Add `HttpReponse` to handle original response
+
 ## 1.1.0
 
-* [BREAKING CHANGE] Add new `Part` annotation to send `multipart/form-data` request. `Field` will not be used in the future, please use `Part` instead.
+- [BREAKING CHANGE] Add new `Part` annotation to send `multipart/form-data` request. `Field` will not be used in the future, please use `Part` instead.
 
 ## 1.0.1
 

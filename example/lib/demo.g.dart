@@ -67,4 +67,22 @@ class _DemoClient implements DemoClient {
     final value = Result.fromJson(_result.data);
     return Future.value(value);
   }
+
+  @override
+  getData2() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<Map<String, dynamic>> _result = await _dio.request('/demo',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = Result.fromJson(_result.data);
+    final httpResponse = HttpResponse(value, _result);
+    return Future.value(httpResponse);
+  }
 }
