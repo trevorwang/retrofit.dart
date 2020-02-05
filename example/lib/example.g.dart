@@ -271,4 +271,24 @@ class _RestClient implements RestClient {
         .toList();
     return Future.value(value);
   }
+
+  @override
+  getTasksWithReponse() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<List<dynamic>> _result = await _dio.request('/task',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    var value = _result.data
+        .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
+        .toList();
+    final retrofitResponse = RetrofitResponse(value, _result);
+    return Future.value(retrofitResponse);
+  }
 }

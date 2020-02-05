@@ -209,7 +209,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   DartType _getResponseInnerType(DartType type) {
     final generic = _genericOf(type);
-
     if (generic == null ||
         _typeChecker(Map).isExactlyType(type) ||
         _typeChecker(BuiltMap).isExactlyType(type)) return type;
@@ -324,8 +323,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       namedArguments[_onReceiveProgress] =
           refer(receiveProgress.item1.displayName);
 
-    final returnType = _getResponseType(m.returnType);
-
+    final wrapperedReturnType = _getResponseType(m.returnType);
     final autoCastResponse = (globalOptions.autoCastResponse ??
         (clientAnnotation.autoCastResponse ?? true) ??
         (httpMehod.peek('autoCastResponse')?.boolValue ?? true));
@@ -341,14 +339,41 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return Block.of(blocks);
     }
 
-    if (returnType == null || "void" == returnType.toString()) {
+    if (wrapperedReturnType == null ||
+        "void" == wrapperedReturnType.toString()) {
       blocks.add(
         refer("await $_dioVar.request")
             .call([path], namedArguments, [refer("void")])
             .statement,
       );
-
       blocks.add(Code("return Future.value(null);"));
+      return Block.of(blocks);
+    }
+
+    final bool isWrappered = _typeChecker(retrofit.RetrofitResponse)
+        .isExactlyType(wrapperedReturnType);
+    final returnType = isWrappered
+        ? _getResponseType(wrapperedReturnType)
+        : wrapperedReturnType;
+    if (returnType == null || "void" == returnType.toString()) {
+      if (isWrappered) {
+        blocks.add(
+          refer("final $_resultVar = await $_dioVar.request")
+              .call([path], namedArguments, [refer("void")])
+              .statement,
+        );
+        blocks.add(Code("""
+      final retrofitResponse = RetrofitResponse(null, $_resultVar);
+      return Future.value(retrofitResponse);
+      """));
+      } else {
+        blocks.add(
+          refer("await $_dioVar.request")
+              .call([path], namedArguments, [refer("void")])
+              .statement,
+        );
+        blocks.add(Code("return Future.value(null);"));
+      }
     } else {
       final innerReturnType = _getResponseInnerType(returnType);
       if (_typeChecker(List).isExactlyType(returnType) ||
@@ -429,7 +454,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               Code("final value = $returnType.fromJson($_resultVar.data);"));
         }
       }
-      blocks.add(Code("return Future.value(value);"));
+      if (isWrappered) {
+        blocks.add(Code("""
+      final retrofitResponse = RetrofitResponse(value, $_resultVar);
+      return Future.value(retrofitResponse);
+      """));
+      } else {
+        blocks.add(Code("return Future.value(value);"));
+      }
     }
 
     return Block.of(blocks);

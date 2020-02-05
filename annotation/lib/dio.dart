@@ -30,3 +30,9 @@ class DioResponseType {
   final ResponseType responseType;
   const DioResponseType(this.responseType);
 }
+
+class RetrofitResponse<T> {
+  final T data;
+  final Response response;
+  RetrofitResponse(this.data, this.response);
+}

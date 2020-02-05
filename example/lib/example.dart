@@ -45,6 +45,9 @@ abstract class RestClient {
 
   @GET("/task/group")
   Future<List<TaskGroup>> grouppedTaskByDate();
+
+  @GET("/task")
+  Future<RetrofitResponse<List<Task>>> getTasksWithReponse();
 }
 
 @JsonSerializable()
