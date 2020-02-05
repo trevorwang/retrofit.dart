@@ -81,7 +81,8 @@ class _DemoClient implements DemoClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = dynamic.fromJson(_result.data);
-    return Future.value(value);
+    final value = Result.fromJson(_result.data);
+    final httpResponse = HttpResponse(value, _result);
+    return Future.value(httpResponse);
   }
 }

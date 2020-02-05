@@ -277,7 +277,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final Response<Map<String, dynamic>> _result = await _dio.request('/task',
+    final Response<List<dynamic>> _result = await _dio.request('/task',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
@@ -285,8 +285,11 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = dynamic.fromJson(_result.data);
-    return Future.value(value);
+    var value = _result.data
+        .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
+        .toList();
+    final httpResponse = HttpResponse(value, _result);
+    return Future.value(httpResponse);
   }
 
   @override
@@ -295,8 +298,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final Response<Map<String, dynamic>> _result = await _dio.request(
-        '/tasks/$id',
+    final _result = await _dio.request<void>('/tasks/$id',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'DELETE',
@@ -304,7 +306,7 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = dynamic.fromJson(_result.data);
-    return Future.value(value);
+    final httpResponse = HttpResponse(null, _result);
+    return Future.value(httpResponse);
   }
 }
