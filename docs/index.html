@@ -163,6 +163,13 @@ class Task {
   @FormUrlEncoded()
   Future&lt;String&gt; postUrlEncodedFormData(@Field() String hello);
 </code></pre>
+<h3 id="get-orignal-http-reponse">Get orignal HTTP reponse</h3>
+<pre class="language-dart"><code class="language-dart">  @GET("/tasks/{id}")
+  Future&lt;HttpResponse&lt;Task&gt;&gt; getTask(@Path("id") String id)
+
+  @GET("/tasks")
+  Future&lt;HttpResponse&lt;List&lt;Task&gt;&gt;&gt;&gt; getTasks()
+</code></pre>
 <h3 id="http-header">HTTP Header</h3>
 <ul>
 <li>
@@ -238,7 +245,7 @@ class Task {
 <footer>
   <span class="no-break">
     retrofit
-      1.1.0+1
+      1.2.0
   </span>
 
   <!-- footer-text placeholder -->
