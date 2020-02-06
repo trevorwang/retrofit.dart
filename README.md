@@ -133,7 +133,15 @@ The HTTP methods in the below sample are supported.
   Future<String> postUrlEncodedFormData(@Field() String hello);
 ```
 
+### Get orignal HTTP reponse
 
+```dart
+  @GET("/tasks/{id}")
+  Future<HttpResponse<Task>> getTask(@Path("id") String id)
+
+  @GET("/tasks")
+  Future<HttpResponse<List<Task>>>> getTasks()
+```
 
 ### HTTP Header
 
