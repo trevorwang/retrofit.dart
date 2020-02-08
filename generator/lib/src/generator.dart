@@ -727,7 +727,7 @@ String revivedLiteral(
     }
 
     if (constant.isType) {
-      return refer(constant.typeValue.getDisplayString());
+      return refer(constant.typeValue.displayName);
     }
 
     if (constant.isLiteral) {
