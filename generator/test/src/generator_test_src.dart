@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:source_gen_test/annotations.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
@@ -430,4 +431,39 @@ abstract class TestHttpResponseObject {
 abstract class TestHttpResponseArray {
   @GET("/")
   Future<HttpResponse<List<String>>> responseWithArray();
+}
+
+@ShouldGenerate(r'''
+      'files': files
+          .map((i) => MultipartFile.fromFileSync(i.path,
+              filename: i.path.split(Platform.pathSeparator).last))
+          .toList()
+''', contains: true)
+@RestApi()
+abstract class TestFileList {
+  @POST("/")
+  Future<void> testFileList(@Part() List<File> files);
+}
+
+@ShouldGenerate(r'''
+        <String, dynamic>{'users': users.map((i) => i?.toJson())});
+''', contains: true)
+@ShouldGenerate(r'''
+        <String, dynamic>{'item': user?.toJson() ?? <String, dynamic>{}});
+''', contains: true)
+@ShouldGenerate(r'''{'mapList': mapList}''', contains: true)
+@ShouldGenerate(r'''{'map': map}''', contains: true)
+@RestApi()
+abstract class TestModelList {
+  @POST("/")
+  Future<void> testUserList(@Part() List<User> users);
+
+  @POST("/")
+  Future<void> testUser(@Part("item") User user);
+
+  @POST("/")
+  Future<void> testListMap(@Part() List<Map<String, dynamic>> mapList);
+
+  @POST("/")
+  Future<void> testMap(@Part() Map<String, dynamic> map);
 }

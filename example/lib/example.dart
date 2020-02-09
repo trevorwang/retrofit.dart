@@ -51,6 +51,16 @@ abstract class RestClient {
 
   @DELETE("/tasks/{id}")
   Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
+
+  @POST("https://httpbin.org/post")
+  Future<String> postFormData(@Part() List<Task> task, @Part() File file);
+
+  @POST("https://httpbin.org/post")
+  Future<String> postFormData2(
+      @Part() List<Map<String, dynamic>> task, @Part() File file);
+
+  @POST("https://httpbin.org/post")
+  Future<String> postFormData3(@Part() List<File> files, @Part() File file);
 }
 
 @JsonSerializable()

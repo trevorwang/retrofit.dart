@@ -309,4 +309,79 @@ class _RestClient implements RestClient {
     final httpResponse = HttpResponse(null, _result);
     return Future.value(httpResponse);
   }
+
+  @override
+  postFormData(task, file) async {
+    ArgumentError.checkNotNull(task, 'task');
+    ArgumentError.checkNotNull(file, 'file');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = FormData.fromMap(<String, dynamic>{
+      'task': task.map((i) => i?.toJson()),
+      'file': MultipartFile.fromFileSync(file.path,
+          filename: file.path.split(Platform.pathSeparator).last)
+    });
+    final Response<String> _result = await _dio.request(
+        'https://httpbin.org/post',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
+  postFormData2(task, file) async {
+    ArgumentError.checkNotNull(task, 'task');
+    ArgumentError.checkNotNull(file, 'file');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = FormData.fromMap(<String, dynamic>{
+      'task': task,
+      'file': MultipartFile.fromFileSync(file.path,
+          filename: file.path.split(Platform.pathSeparator).last)
+    });
+    final Response<String> _result = await _dio.request(
+        'https://httpbin.org/post',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
+  postFormData3(files, file) async {
+    ArgumentError.checkNotNull(files, 'files');
+    ArgumentError.checkNotNull(file, 'file');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = FormData.fromMap(<String, dynamic>{
+      'files': files
+          .map((i) => MultipartFile.fromFileSync(i.path,
+              filename: i.path.split(Platform.pathSeparator).last))
+          .toList(),
+      'file': MultipartFile.fromFileSync(file.path,
+          filename: file.path.split(Platform.pathSeparator).last)
+    });
+    final Response<String> _result = await _dio.request(
+        'https://httpbin.org/post',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
 }
