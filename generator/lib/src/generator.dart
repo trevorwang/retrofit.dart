@@ -561,6 +561,45 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
             [refer(p.displayName).property('path')], {'filename': fileName});
         return MapEntry(literal(fieldName), uploadFileInfo);
+      } else if (_typeChecker(List).isExactlyType(p.type) ||
+          _typeChecker(BuiltList).isExactlyType(p.type)) {
+        var innnerType = _genericOf(p.type);
+        if (_isBasicType(innnerType) ||
+            _typeChecker(Map).isExactlyType(innnerType) ||
+            _typeChecker(BuiltMap).isExactlyType(innnerType) ||
+            _typeChecker(List).isExactlyType(innnerType) ||
+            _typeChecker(BuiltList).isExactlyType(innnerType)) {
+          return MapEntry(literal(fieldName), refer(p.displayName));
+        } else if (_typeChecker(File).isExactlyType(innnerType)) {
+          return MapEntry(literal("files"), refer("""
+              ${p.displayName}.map((i)=>
+                  MultipartFile.fromFileSync(i.path, filename:
+                  i.path.split(Platform.pathSeparator).last)).toList()
+                  """));
+        } else if (innnerType.element is ClassElement) {
+          final ele = innnerType.element as ClassElement;
+          final toJson = ele.methods
+              .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
+          if (toJson == null) {
+            log.severe("toJson() method have to add to ${p.type}");
+          } else {
+            return MapEntry(literal(fieldName),
+                refer("${p.displayName}.map((i)=> i?.toJson())"));
+          }
+        }
+      } else if (_typeChecker(Map).isExactlyType(p.type) ||
+          _typeChecker(BuiltMap).isExactlyType(p.type)) {
+        return MapEntry(literal(fieldName), refer(p.displayName));
+      } else if (p.type.element is ClassElement) {
+        final ele = p.type.element as ClassElement;
+        final toJson = ele.methods
+            .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
+        if (toJson == null) {
+          log.severe("toJson() method have to add to ${p.type}");
+        } else {
+          return MapEntry(literal(fieldName),
+              refer("${p.displayName}?.toJson() ?? <String,dynamic>{}"));
+        }
       } else {
         return MapEntry(literal(fieldName), refer(p.displayName));
       }
