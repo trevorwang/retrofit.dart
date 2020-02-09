@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+- Add `List<File>` support
+
 ## 1.2.0
 
 - Add `HttpReposne` to handle the original resposne
