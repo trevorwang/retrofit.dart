@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:source_gen_test/annotations.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
