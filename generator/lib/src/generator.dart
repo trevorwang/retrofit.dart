@@ -587,7 +587,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 refer("${p.displayName}.map((i)=> i?.toJson())"));
           }
         }
-      } else if (_typeChecker(Map).isExactlyType(p.type) ||
+      } else if (_isBasicType(p.type) ||
+          _typeChecker(Map).isExactlyType(p.type) ||
           _typeChecker(BuiltMap).isExactlyType(p.type)) {
         return MapEntry(literal(fieldName), refer(p.displayName));
       } else if (p.type.element is ClassElement) {
