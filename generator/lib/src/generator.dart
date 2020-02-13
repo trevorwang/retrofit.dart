@@ -569,7 +569,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             _typeChecker(BuiltMap).isExactlyType(innnerType) ||
             _typeChecker(List).isExactlyType(innnerType) ||
             _typeChecker(BuiltList).isExactlyType(innnerType)) {
-          return MapEntry(literal(fieldName), refer(p.displayName));
+          return MapEntry(literal(fieldName),
+              refer("jsonEncode(${p.displayName}).toString()"));
         } else if (_typeChecker(File).isExactlyType(innnerType)) {
           return MapEntry(literal("files"), refer("""
               ${p.displayName}.map((i)=>
@@ -584,7 +585,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             log.severe("toJson() method have to add to ${p.type}");
           } else {
             return MapEntry(literal(fieldName),
-                refer("${p.displayName}.map((i)=> i?.toJson())"));
+                refer("jsonEncode(${p.displayName}).toString()"));
           }
         }
       } else if (_isBasicType(p.type) ||
@@ -598,8 +599,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         if (toJson == null) {
           log.severe("toJson() method have to add to ${p.type}");
         } else {
-          return MapEntry(literal(fieldName),
-              refer("${p.displayName}?.toJson() ?? <String,dynamic>{}"));
+          return MapEntry(
+              literal(fieldName),
+              refer(
+                  "jsonEncode(${p.displayName}?? <String,dynamic>{}).toString()"));
         }
       } else {
         return MapEntry(literal(fieldName), refer(p.displayName));
