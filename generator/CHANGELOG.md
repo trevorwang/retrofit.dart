@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+- stringify models in formdata  #111
+
 ## 1.2.1
 
 - Add `List<File>` support
