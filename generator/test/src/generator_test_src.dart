@@ -444,13 +444,13 @@ abstract class TestFileList {
   Future<void> testFileList(@Part() List<File> files);
 }
 
-@ShouldGenerate(r'''
-        <String, dynamic>{'users': users.map((i) => i?.toJson())});
-''', contains: true)
-@ShouldGenerate(r'''
-        <String, dynamic>{'item': user?.toJson() ?? <String, dynamic>{}});
-''', contains: true)
-@ShouldGenerate(r'''{'mapList': mapList}''', contains: true)
+@ShouldGenerate(r''''users': jsonEncode(users).toString()''', contains: true)
+@ShouldGenerate(
+    r''''item': jsonEncode(user ?? <String, dynamic>{}).toString()''',
+    contains: true)
+@ShouldGenerate(
+    r'''<String, dynamic>{'mapList': jsonEncode(mapList).toString()}''',
+    contains: true)
 @ShouldGenerate(r'''{'map': map}''', contains: true)
 @RestApi()
 abstract class TestModelList {

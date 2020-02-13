@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
@@ -53,7 +55,7 @@ abstract class RestClient {
   Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
 
   @POST("https://httpbin.org/post")
-  Future<String> postFormData(@Part() List<Task> task, @Part() File file);
+  Future<String> postFormData(@Part() Task task, @Part() File file);
 
   @POST("https://httpbin.org/post")
   Future<String> postFormData2(
@@ -61,6 +63,9 @@ abstract class RestClient {
 
   @POST("https://httpbin.org/post")
   Future<String> postFormData3(@Part() List<File> files, @Part() File file);
+
+  @POST("https://httpbin.org/post")
+  Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
 }
 
 @JsonSerializable()
