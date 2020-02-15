@@ -11,6 +11,7 @@ jobs:
       - name: Mirror to Gitee
         uses: Yikun/hub-mirror-action@v0.02
         with:
-          dst_token: 91cd3f15b12a1c90c02c98c4be037d36
+          dst_token: ${{ secrets.GITEE_TOKEN }}
           dst: trevor/retrofit.dart
           src: trevorwang/retrofit.dart
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
