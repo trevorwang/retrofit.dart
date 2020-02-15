@@ -1,10 +1,10 @@
-name: Mirror to Gitee
+name: Sync to Gitee.
 
 on:
   push:
     branches:
       - master
-      - release
+      - release/*
 
 jobs:
   build:
@@ -12,8 +12,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Mirror to Gitee
-        run: |
-          git pull -p --tags
-          git remote add gitee https://trevor:${{secrets.GITEE_TOKEN}}@gitee.com/trevor/retrofit.dart.git
-          git push gitee --tags --prune
+      - name: Sync to Gitee.
+        uses: Yikun/hub-mirror-action@v0.02
+        with:
+          dst_token: 91cd3f15b12a1c90c02c98c4be037d36
+          dst: trevor/retrofit.dart
+          src: trevorwang/retrofit.dart
