@@ -19,19 +19,19 @@ jobs:
   test_dart22:
     <<: *common_test
     environment:
-      DART_VERSION: "2.2"
+      DART_VERSION: "2.2-dev"
   test_dart23:
     <<: *common_test
     environment:
-      DART_VERSION: "2.3"
+      DART_VERSION: "2.3-dev"
   test_dart24:
     <<: *common_test
     environment:
-      DART_VERSION: "2.4"
+      DART_VERSION: "2.4-dev"
   test_dart25:
     <<: *common_test
     environment:
-      DART_VERSION: "2.5"
+      DART_VERSION: "2.5.0"
   test_dart26:
     <<: *common_test
     environment:
