@@ -66,6 +66,14 @@ abstract class RestClient {
 
   @POST("https://httpbin.org/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
+
+  @GET('/demo')
+  Future<String> queries(@Queries() Map<String, dynamic> queries);
+
+  @GET("https://httpbin.org/get")
+  Future<String> namedExample(@Query("apikey") String apiKey,
+      @Query("scope") String scope, @Query("type") String type,
+      {@Query("from") int from});
 }
 
 @JsonSerializable()

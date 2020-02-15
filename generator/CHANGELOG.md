@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3
+
+- remove query parameter which is null
+
 ## 1.2.2
 
 - stringify models in formdata  #111
