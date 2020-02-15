@@ -1,6 +1,10 @@
 name: Mirror to Gitee
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - release
 
 jobs:
   build:
