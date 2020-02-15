@@ -1,8 +1,8 @@
 version: 2
 jobs:
-  build:
+  test_base: &common_test
     docker:
-      - image: google/dart
+      - image: google/dart:${DART_VERSION}
     steps:
       - checkout
       - run:
@@ -16,8 +16,17 @@ jobs:
             pub get
             pub run test
 
+  test_dart26:
+    <<: *common_test
+    environment:
+      DART_VERSION: "2.6"
+  test_dart27:
+    <<: *common_test
+    environment:
+      DART_VERSION: "2.7"
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
+      - test_dart26
+      - test_dart27

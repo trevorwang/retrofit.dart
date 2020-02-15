@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- Bumped retrofit's SDK requirement to >=2.6.0
+
 ## 1.2.0
 
 -  Add `HttpReponse` to handle original response
