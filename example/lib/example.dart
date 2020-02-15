@@ -4,7 +4,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'dart:io';
-import 'package:meta/meta.dart';
 
 part 'example.g.dart';
 

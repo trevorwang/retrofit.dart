@@ -589,6 +589,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
           if (toJson == null) {
             log.severe("toJson() method have to add to ${p.type}");
+            throw Exception();
           } else {
             return MapEntry(literal(fieldName),
                 refer("jsonEncode(${p.displayName}).toString()"));
@@ -604,6 +605,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
         if (toJson == null) {
           log.severe("toJson() method have to add to ${p.type}");
+          throw Exception();
         } else {
           return MapEntry(
               literal(fieldName),
