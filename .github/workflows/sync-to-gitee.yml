@@ -12,6 +12,6 @@ jobs:
         uses: Yikun/hub-mirror-action@v0.02
         with:
           dst_token: ${{ secrets.GITEE_TOKEN }}
-          dst: trevor/retrofit.dart
-          src: trevorwang/retrofit.dart
+          src: github/trevorwang
+          dst: gitee/trevor
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
