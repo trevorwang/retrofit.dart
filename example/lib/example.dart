@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'dart:io';
+import 'package:meta/meta.dart';
 
 part 'example.g.dart';
 
@@ -66,6 +67,14 @@ abstract class RestClient {
 
   @POST("https://httpbin.org/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
+
+  @GET('/demo')
+  Future<String> queries(@Queries() Map<String, dynamic> queries);
+
+  @GET("https://httpbin.org/get")
+  Future<String> namedExample(@Query("apikey") String apiKey,
+      @Query("scope") String scope, @Query("type") String type,
+      {@Query("from") int from});
 }
 
 @JsonSerializable()

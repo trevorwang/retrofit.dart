@@ -493,6 +493,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         [refer("${queryMap.keys.first.displayName} ?? <String,dynamic>{}")],
       ).statement);
     }
+
+    if (m.parameters
+        .where((p) => (p.isOptional && !p.isRequiredNamed))
+        .isNotEmpty) {
+      blocks.add(Code("$_queryParamsVar.removeWhere((k, v) => v == null);"));
+    }
   }
 
   void _generateRequestBody(

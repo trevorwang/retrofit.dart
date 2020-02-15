@@ -408,4 +408,50 @@ class _RestClient implements RestClient {
     final value = _result.data;
     return Future.value(value);
   }
+
+  @override
+  queries(queries) async {
+    ArgumentError.checkNotNull(queries, 'queries');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(queries ?? <String, dynamic>{});
+    final _data = <String, dynamic>{};
+    final Response<String> _result = await _dio.request('/demo',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
+  namedExample(apiKey, scope, type, {from}) async {
+    ArgumentError.checkNotNull(apiKey, 'apiKey');
+    ArgumentError.checkNotNull(scope, 'scope');
+    ArgumentError.checkNotNull(type, 'type');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      'apikey': apiKey,
+      'scope': scope,
+      'type': type,
+      'from': from
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final Response<String> _result = await _dio.request(
+        'https://httpbin.org/get',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
 }
