@@ -14,5 +14,7 @@ jobs:
           cd annotation
           dartdoc
           mv doc/api ../public
-      - name: GitHub Pages Deploy
-        uses: maxheld83/ghpages@v0.2.1
+      - name: GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v1.3.0
+        with:
+          build_dir: public
