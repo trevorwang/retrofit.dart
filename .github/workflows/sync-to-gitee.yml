@@ -9,9 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Mirror to Gitee
-        uses: Yikun/hub-mirror-action@v0.02
-        with:
-          dst_token: ${{ secrets.GITEE_TOKEN }}
-          src: github/trevorwang
-          dst: gitee/trevor
-          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+        run: |
+          git pull -p
+          git remote add gitee https://trevor:${{secrets.GITEE_TOKEN}}@gitee.com/trevor/retrofit.dart.git
+          git push gitee --tags --prune
