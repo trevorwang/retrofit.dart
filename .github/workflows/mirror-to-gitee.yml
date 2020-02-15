@@ -16,4 +16,4 @@ jobs:
         run: |
           git pull -p --tags
           git remote add gitee https://trevor:${{secrets.GITEE_TOKEN}}@gitee.com/trevor/retrofit.dart.git
-          git push gitee --mirror
+          git push gitee --tags --prune
