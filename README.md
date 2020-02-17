@@ -114,6 +114,17 @@ The HTTP methods in the below sample are supported.
   @GET("/tasks/{id}")
   Future<Task> getTask(@Path("id") String id);
 
+  @GET('/demo')
+  Future<String> queries(@Queries() Map<String, dynamic> queries);
+
+  @GET("https://httpbin.org/get")
+  Future<String> namedExample(
+      @Query("apikey") String apiKey,
+      @Query("scope") String scope, 
+      @Query("type") String type,
+      @Query("from") int from
+  );
+
   @PATCH("/tasks/{id}")
   Future<Task> updateTaskPart(
       @Path() String id, @Body() Map<String, dynamic> map);
