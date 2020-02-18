@@ -14,5 +14,6 @@ jobs:
           git checkout master
           git push gitee master
           git checkout gh-pages
+          git pull 
           git push gitee gh-pages
           git push --tags --prune
