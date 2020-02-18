@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - master
-      - release
-
+      - release/*
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,4 +15,8 @@ jobs:
         run: |
           git pull -p --tags
           git remote add gitee https://trevor:${{secrets.GITEE_TOKEN}}@gitee.com/trevor/retrofit.dart.git
-          git push gitee master --tags --prune
+          git checkout master
+          git push gitee master
+          git checkout gh-pages
+          git push -f gitee gh-pages
+          git push --tags --prune
