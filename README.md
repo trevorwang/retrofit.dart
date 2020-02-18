@@ -201,4 +201,17 @@ The HTTP methods in the below sample are supported.
 
 }
 ```
+### Multiple endpoints support
 
+If you want to use multiple endpoints to your `RestClient`, you should pass your base url when you initiate `RestClient`. Any value defined in `RestApi` will be ignored.
+
+```dart
+@RestApi(baseUrl: "this url will be ignored if baseUrl is passed")
+abstract class RestClient {
+  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+}
+
+final client = RestClient(dio, baseUrl: "your base url");
+```
+
+If you want to use the base url from `dio.option.baseUrl`, which has lowest priority, please don't pass any parameter to `RestApi` annotation and `RestClient`'s structure method. 
