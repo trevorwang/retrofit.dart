@@ -16,5 +16,5 @@ jobs:
           git fetch --unshallow
           git remote add gitee https://trevor:${{secrets.GITEE_TOKEN}}@gitee.com/trevor/retrofit.dart.git
           git push -f gitee origin/master:master
-          git push -f gitee origin/gh-pages gh-pages
+          git push -f gitee origin/gh-pages:gh-pages
           git push --tags --prune
