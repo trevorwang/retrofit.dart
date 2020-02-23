@@ -1,4 +1,7 @@
 # Changelog
+## 1.3.1
+
+- Add custom options support to each request  
 
 ## 1.3.0
 
