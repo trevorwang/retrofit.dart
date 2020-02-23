@@ -4,8 +4,7 @@ import 'package:source_gen_test/annotations.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 
-@ShouldGenerate(
-  r'''
+@ShouldGenerate(r'''
 class _RestClient implements RestClient {
   _RestClient(this._dio, {this.baseUrl}) {
     ArgumentError.checkNotNull(_dio, '_dio');
@@ -14,9 +13,7 @@ class _RestClient implements RestClient {
   final Dio _dio;
 
   String baseUrl;
-}
-''',
-)
+''', contains: true)
 @RestApi()
 abstract class RestClient {}
 
@@ -465,4 +462,35 @@ abstract class TestModelList {
 
   @POST("/")
   Future<void> testMap(@Part() Map<String, dynamic> map);
+}
+
+@ShouldGenerate(r'''
+  RequestOptions newRequestOptions(Options options) {
+    if (options is RequestOptions) {
+      return options;
+    }
+    if (options == null) {
+      return RequestOptions();
+    }
+    return RequestOptions(
+      method: options.method,
+      sendTimeout: options.sendTimeout,
+      receiveTimeout: options.receiveTimeout,
+      extra: options.extra,
+      headers: options.headers,
+      responseType: options.responseType,
+      contentType: options.contentType,
+      validateStatus: options.validateStatus,
+      receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+      followRedirects: options.followRedirects,
+      maxRedirects: options.maxRedirects,
+      requestEncoder: options.requestEncoder,
+      responseDecoder: options.responseDecoder,
+    );
+  }
+''', contains: true)
+@RestApi()
+abstract class CustonOptions {
+  @GET("")
+  Future<void> testOptions(@DioOptions() Options options);
 }

@@ -36,3 +36,8 @@ class HttpResponse<T> {
   final Response response;
   HttpResponse(this.data, this.response);
 }
+
+@immutable
+class DioOptions {
+  const DioOptions();
+}

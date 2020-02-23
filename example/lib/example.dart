@@ -84,6 +84,9 @@ abstract class RestClient {
     @Query('returnFaceId') bool returnFaceId,
     @Body() File file,
   });
+
+  @GET("")
+  Future<String> testCustomOptions(@DioOptions() Options options);
 }
 
 @JsonSerializable()

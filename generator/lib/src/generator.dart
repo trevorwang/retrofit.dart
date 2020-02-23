@@ -39,6 +39,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const _cancelToken = "cancelToken";
   static const _onSendProgress = "onSendProgress";
   static const _onReceiveProgress = "onReceiveProgress";
+  var hasCustomOptions = false;
 
   /// Global options sepcefied in the `build.yaml`
   final RetrofitOptions globalOptions;
@@ -79,6 +80,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ..constructors.addAll([_generateConstructor(baseUrl)])
         ..methods.addAll(_parseMethods(element))
         ..implements = ListBuilder([refer(className)]);
+      if (hasCustomOptions) {
+        c.methods.add(_generateOptionsCastMethod());
+      }
     });
 
     final emitter = DartEmitter();
@@ -302,12 +306,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
       extraOptions["responseType"] = refer(rsType.toString());
     }
-
-    final options = refer("RequestOptions").newInstance([], extraOptions);
-
     final namedArguments = <String, Expression>{};
     namedArguments[_queryParamsVar] = refer(_queryParamsVar);
-    namedArguments[_optionsVar] = options;
+    namedArguments[_optionsVar] =
+        _parseOptions(m, namedArguments, blocks, extraOptions);
     namedArguments[_dataVar] = refer(_localDataVar);
 
     final cancelToken = _getAnnotation(m, retrofit.CancelRequest);
@@ -465,6 +467,66 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     return Block.of(blocks);
+  }
+
+  Expression _parseOptions(
+      MethodElement m,
+      Map<String, Expression> namedArguments,
+      List<Code> blocks,
+      Map<String, Expression> extraOptions) {
+    final options = refer("RequestOptions").newInstance([], extraOptions);
+    final annoOptions = _getAnnotation(m, retrofit.DioOptions);
+    if (annoOptions == null) {
+      return options;
+    } else {
+      hasCustomOptions = true;
+      blocks.add(refer("newRequestOptions")
+          .call([refer(annoOptions.item1.displayName)])
+          .assignFinal("newOptions")
+          .statement);
+      final newOptions = refer("newOptions");
+      blocks.add(newOptions.property("merge").call([], extraOptions).statement);
+      return newOptions;
+    }
+  }
+
+  Method _generateOptionsCastMethod() {
+    return Method((m) {
+      m
+        ..name = "newRequestOptions"
+        ..returns = refer("RequestOptions")
+
+        /// required parameters
+        ..requiredParameters.add(Parameter((p) {
+          p.name = "options";
+          p.type = refer("Options").type;
+        }))
+
+        /// add method body
+        ..body = Code('''
+         if (options is RequestOptions) {
+            return options;
+          }
+          if (options == null) {
+            return RequestOptions();
+          }
+          return RequestOptions(
+            method: options.method,
+            sendTimeout: options.sendTimeout,
+            receiveTimeout: options.receiveTimeout,
+            extra: options.extra,
+            headers: options.headers,
+            responseType: options.responseType,
+            contentType: options.contentType,
+            validateStatus: options.validateStatus,
+            receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+            followRedirects: options.followRedirects,
+            maxRedirects: options.maxRedirects,
+            requestEncoder: options.requestEncoder,
+            responseDecoder: options.responseDecoder,
+          );
+        ''');
+    });
   }
 
   bool _isBasicType(DartType returnType) {
