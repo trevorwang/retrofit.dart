@@ -513,6 +513,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         blocks.add(refer("$_dataVar.addAll").call([
           refer("${_bodyName.displayName} ?? <String,dynamic>{}")
         ]).statement);
+      } else if (_typeChecker(File).isExactly(_bodyName.type.element)) {
+        blocks.add(refer("${_bodyName.displayName}.readAsBytesSync")
+            .call([])
+            .assignFinal(_dataVar)
+            .statement);
       } else if (_bodyName.type.element is ClassElement) {
         final ele = _bodyName.type.element as ClassElement;
         final toJson = ele.methods

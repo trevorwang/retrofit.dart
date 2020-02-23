@@ -454,4 +454,26 @@ class _RestClient implements RestClient {
     final value = _result.data;
     return Future.value(value);
   }
+
+  @override
+  detect({returnFaceId, file}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{'returnFaceId': returnFaceId};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _data = file.readAsBytesSync();
+    final Response<String> _result = await _dio.request(
+        'https://httpbin.org/post',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{
+              'Content-Type': 'application/octet-stream',
+              'Ocp-Apim-Subscription-Key': 'abc'
+            },
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
 }
