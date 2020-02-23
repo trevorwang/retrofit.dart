@@ -74,6 +74,16 @@ abstract class RestClient {
   Future<String> namedExample(@Query("apikey") String apiKey,
       @Query("scope") String scope, @Query("type") String type,
       {@Query("from") int from});
+
+  @POST("https://httpbin.org/post")
+  @Headers(<String, dynamic>{
+    "Content-Type": "application/octet-stream",
+    "Ocp-Apim-Subscription-Key": "abc"
+  })
+  Future<String> detect({
+    @Query('returnFaceId') bool returnFaceId,
+    @Body() File file,
+  });
 }
 
 @JsonSerializable()
