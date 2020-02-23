@@ -476,4 +476,46 @@ class _RestClient implements RestClient {
     final value = _result.data;
     return Future.value(value);
   }
+
+  @override
+  testCustomOptions(options) async {
+    ArgumentError.checkNotNull(options, 'options');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final newOptions = newRequestOptions(options);
+    newOptions.merge(
+        method: 'GET',
+        headers: <String, dynamic>{},
+        extra: _extra,
+        baseUrl: baseUrl);
+    final Response<String> _result = await _dio.request('',
+        queryParameters: queryParameters, options: newOptions, data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
+
+  RequestOptions newRequestOptions(Options options) {
+    if (options is RequestOptions) {
+      return options;
+    }
+    if (options == null) {
+      return RequestOptions();
+    }
+    return RequestOptions(
+      method: options.method,
+      sendTimeout: options.sendTimeout,
+      receiveTimeout: options.receiveTimeout,
+      extra: options.extra,
+      headers: options.headers,
+      responseType: options.responseType,
+      contentType: options.contentType,
+      validateStatus: options.validateStatus,
+      receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+      followRedirects: options.followRedirects,
+      maxRedirects: options.maxRedirects,
+      requestEncoder: options.requestEncoder,
+      responseDecoder: options.responseDecoder,
+    );
+  }
 }
