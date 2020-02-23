@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0+1
+
+- Add support to post file as request body
+
 ## 1.3.0
 
 - Bumped retrofit_generator's SDK requirement to >=2.6.0
