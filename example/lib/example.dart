@@ -62,7 +62,8 @@ abstract class RestClient {
       @Part() List<Map<String, dynamic>> task, @Part() File file);
 
   @POST("https://httpbin.org/post")
-  Future<String> postFormData3(@Part() List<File> files, @Part() File file);
+  Future<String> postFormData3(
+      @Part("customfiles") List<File> files, @Part() File file);
 
   @POST("https://httpbin.org/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);

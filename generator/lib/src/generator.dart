@@ -656,7 +656,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           return MapEntry(literal(fieldName),
               refer("jsonEncode(${p.displayName}).toString()"));
         } else if (_typeChecker(File).isExactlyType(innnerType)) {
-          return MapEntry(literal("files"), refer("""
+          return MapEntry(literal(fieldName), refer("""
               ${p.displayName}.map((i)=>
                   MultipartFile.fromFileSync(i.path, filename:
                   i.path.split(Platform.pathSeparator).last)).toList()
