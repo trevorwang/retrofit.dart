@@ -75,15 +75,12 @@ abstract class RestClient {
       @Query("scope") String scope, @Query("type") String type,
       {@Query("from") int from});
 
-  @POST("https://httpbin.org/post")
+  @POST("/postfile")
   @Headers(<String, dynamic>{
     "Content-Type": "application/octet-stream",
     "Ocp-Apim-Subscription-Key": "abc"
   })
-  Future<String> detect({
-    @Query('returnFaceId') bool returnFaceId,
-    @Body() File file,
-  });
+  Future<String> postFile({@Body() File file});
 
   @GET("")
   Future<String> testCustomOptions(@DioOptions() Options options);
