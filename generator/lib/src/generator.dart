@@ -576,8 +576,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           refer("${_bodyName.displayName} ?? <String,dynamic>{}")
         ]).statement);
       } else if (_typeChecker(File).isExactly(_bodyName.type.element)) {
-        blocks.add(refer("${_bodyName.displayName}.readAsBytesSync")
-            .call([])
+        blocks.add(refer("Stream")
+            .property("fromIterable")
+            .call([refer("${_bodyName.displayName}.readAsBytesSync()")])
             .assignFinal(_dataVar)
             .statement);
       } else if (_bodyName.type.element is ClassElement) {
