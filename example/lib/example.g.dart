@@ -365,7 +365,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = FormData.fromMap(<String, dynamic>{
-      'files': files
+      'customfiles': files
           .map((i) => MultipartFile.fromFileSync(i.path,
               filename: i.path.split(Platform.pathSeparator).last))
           .toList(),
