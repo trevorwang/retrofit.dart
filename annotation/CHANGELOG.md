@@ -2,6 +2,7 @@
 ## 1.3.1
 
 - Add custom options support to each request  
+- fix [#132](https://github.com/trevorwang/retrofit.dart/issues/132)
 
 ## 1.3.0
 
