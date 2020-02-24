@@ -63,6 +63,8 @@ class Method {
   ///
   /// This is experimental, Currently there's no perfect solution for this.
   @experimental
+  @Deprecated(
+      "Use `HttpResponse` to get the original response, will be removed in the future release.")
   final bool autoCastResponse;
 }
 
