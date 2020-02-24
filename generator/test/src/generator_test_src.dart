@@ -479,7 +479,7 @@ abstract class TestModelList {
       extra: options.extra,
       headers: options.headers,
       responseType: options.responseType,
-      contentType: options.contentType,
+      contentType: options.contentType.toString(),
       validateStatus: options.validateStatus,
       receiveDataWhenStatusError: options.receiveDataWhenStatusError,
       followRedirects: options.followRedirects,
@@ -488,6 +488,14 @@ abstract class TestModelList {
       responseDecoder: options.responseDecoder,
     );
   }
+''', contains: true)
+@ShouldGenerate(r'''
+    final newOptions = newRequestOptions(options);
+    newOptions.merge(
+        method: 'GET',
+        headers: <String, dynamic>{},
+        extra: _extra,
+        baseUrl: baseUrl);
 ''', contains: true)
 @RestApi()
 abstract class CustonOptions {
