@@ -470,6 +470,7 @@ class _RestClient implements RestClient {
               'Ocp-Apim-Subscription-Key': 'abc'
             },
             extra: _extra,
+            contentType: 'application/octet-stream',
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
