@@ -456,13 +456,12 @@ class _RestClient implements RestClient {
   }
 
   @override
-  detect({returnFaceId, file}) async {
+  postFile({file}) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{'returnFaceId': returnFaceId};
+    final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
-    final _data = file.readAsBytesSync();
-    final Response<String> _result = await _dio.request(
-        'https://httpbin.org/post',
+    final _data = Stream.fromIterable(file.readAsBytesSync());
+    final Response<String> _result = await _dio.request('/postfile',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -471,6 +470,7 @@ class _RestClient implements RestClient {
               'Ocp-Apim-Subscription-Key': 'abc'
             },
             extra: _extra,
+            contentType: 'application/octet-stream',
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;

@@ -279,14 +279,24 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     _generateExtra(m, blocks, _localExtraVar);
 
     _generateQueries(m, blocks, _queryParamsVar);
-    Map<Expression, Expression> headers = _generateHeaders(m);
+    Map<String, Expression> headers = _generateHeaders(m);
     _generateRequestBody(blocks, _localDataVar, m);
 
     final extraOptions = {
       "method": literal(httpMehod.peek("method").stringValue),
-      "headers": literalMap(headers, refer("String"), refer("dynamic")),
+      "headers": literalMap(headers.map((k, v) => MapEntry(literal(k), v)),
+          refer("String"), refer("dynamic")),
       _extraVar: refer(_localExtraVar),
     };
+
+    final contentTypeInHeader = headers.entries
+        .firstWhere((i) => "Content-Type".toLowerCase() == i.key.toLowerCase(),
+            orElse: () => null)
+        ?.value;
+    if (contentTypeInHeader != null) {
+      extraOptions[_contentType] = contentTypeInHeader;
+    }
+
     final contentType = _getFormUrlEncodedAnnotation(m);
     if (contentType != null) {
       extraOptions[_contentType] =
@@ -576,8 +586,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           refer("${_bodyName.displayName} ?? <String,dynamic>{}")
         ]).statement);
       } else if (_typeChecker(File).isExactly(_bodyName.type.element)) {
-        blocks.add(refer("${_bodyName.displayName}.readAsBytesSync")
-            .call([])
+        blocks.add(refer("Stream")
+            .property("fromIterable")
+            .call([refer("${_bodyName.displayName}.readAsBytesSync()")])
             .assignFinal(_dataVar)
             .statement);
       } else if (_bodyName.type.element is ClassElement) {
@@ -697,17 +708,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         .statement);
   }
 
-  Map<Expression, Expression> _generateHeaders(MethodElement m) {
+  Map<String, Expression> _generateHeaders(MethodElement m) {
     final anno = _getHeadersAnnotation(m);
     final headersMap = anno?.peek("value")?.mapValue ?? {};
     final headers = headersMap.map((k, v) {
-      return MapEntry(literal(k.toStringValue()), literal(v.toStringValue()));
+      return MapEntry(k.toStringValue(), literal(v.toStringValue()));
     });
 
     final annosInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annosInParam.map((k, v) {
       final value = v.peek("value")?.stringValue ?? k.displayName;
-      return MapEntry(literal(value), refer(k.displayName));
+      return MapEntry(value, refer(k.displayName));
     });
     headers.addAll(headersInParams);
     return headers;
