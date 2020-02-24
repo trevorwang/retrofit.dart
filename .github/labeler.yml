@@ -1,5 +1,11 @@
 annotation: annotation/**/*
 generator: generator/**/*
-docs: 
+docs:
   - docs/**/*
   - ./**/*.md
+example: example/**/*
+ci:
+  - .github/**/*
+  - .circleci/**/*
+  - .drone.yml
+  - .travis.yml
