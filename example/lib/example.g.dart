@@ -460,7 +460,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
-    final _data = Stream.fromIterable(file.readAsBytesSync());
+    final _data = Stream.fromIterable(file.readAsBytesSync().map((i) => [i]));
     final Response<String> _result = await _dio.request('/postfile',
         queryParameters: queryParameters,
         options: RequestOptions(

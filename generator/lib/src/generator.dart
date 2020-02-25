@@ -588,7 +588,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       } else if (_typeChecker(File).isExactly(_bodyName.type.element)) {
         blocks.add(refer("Stream")
             .property("fromIterable")
-            .call([refer("${_bodyName.displayName}.readAsBytesSync()")])
+            .call([
+              refer("${_bodyName.displayName}.readAsBytesSync().map((i)=>[i])")
+            ])
             .assignFinal(_dataVar)
             .statement);
       } else if (_bodyName.type.element is ClassElement) {
