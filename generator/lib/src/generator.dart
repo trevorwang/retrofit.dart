@@ -646,7 +646,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
         final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
             [refer(p.displayName).property('path')], {'filename': fileName});
-        return MapEntry(literal(fieldName), uploadFileInfo);
+
+        final optinalFile = m.parameters
+                .firstWhere((pp) => pp.displayName == p.displayName)
+                ?.isOptional ??
+            false;
+
+        return MapEntry(
+            literal(fieldName),
+            optinalFile
+                ? refer(p.displayName)
+                    .equalTo(literalNull)
+                    .conditional(literalNull, uploadFileInfo)
+                : uploadFileInfo);
       } else if (_typeChecker(List).isExactlyType(p.type) ||
           _typeChecker(BuiltList).isExactlyType(p.type)) {
         var innnerType = _genericOf(p.type);
@@ -659,9 +671,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               refer("jsonEncode(${p.displayName}).toString()"));
         } else if (_typeChecker(File).isExactlyType(innnerType)) {
           return MapEntry(literal(fieldName), refer("""
-              ${p.displayName}.map((i)=>
+              ${p.displayName}?.map((i)=>
                   MultipartFile.fromFileSync(i.path, filename:
-                  i.path.split(Platform.pathSeparator).last)).toList()
+                  i.path.split(Platform.pathSeparator).last))?.toList()
                   """));
         } else if (innnerType.element is ClassElement) {
           final ele = innnerType.element as ClassElement;

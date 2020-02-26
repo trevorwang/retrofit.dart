@@ -431,14 +431,23 @@ abstract class TestHttpResponseArray {
 
 @ShouldGenerate(r'''
       'files': files
-          .map((i) => MultipartFile.fromFileSync(i.path,
+          ?.map((i) => MultipartFile.fromFileSync(i.path,
               filename: i.path.split(Platform.pathSeparator).last))
-          .toList()
+          ?.toList()
+''', contains: true)
+@ShouldGenerate(r'''
+      'file': file == null
+          ? null
+          : MultipartFile.fromFileSync(file.path,
+              filename: file.path.split(Platform.pathSeparator).last)
 ''', contains: true)
 @RestApi()
 abstract class TestFileList {
   @POST("/")
   Future<void> testFileList(@Part() List<File> files);
+
+  @POST("/")
+  Future<void> testOptionalFile({@Part() File file});
 }
 
 @ShouldGenerate(r''''users': jsonEncode(users).toString()''', contains: true)
