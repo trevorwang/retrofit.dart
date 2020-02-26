@@ -359,18 +359,19 @@ class _RestClient implements RestClient {
   }
 
   @override
-  postFormData3(files, file) async {
-    ArgumentError.checkNotNull(files, 'files');
-    ArgumentError.checkNotNull(file, 'file');
+  postFormData3({files, file}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = FormData.fromMap(<String, dynamic>{
       'customfiles': files
-          .map((i) => MultipartFile.fromFileSync(i.path,
+          ?.map((i) => MultipartFile.fromFileSync(i.path,
               filename: i.path.split(Platform.pathSeparator).last))
-          .toList(),
-      'file': MultipartFile.fromFileSync(file.path,
-          filename: file.path.split(Platform.pathSeparator).last)
+          ?.toList(),
+      'file': file == null
+          ? null
+          : MultipartFile.fromFileSync(file.path,
+              filename: file.path.split(Platform.pathSeparator).last)
     });
     final Response<String> _result = await _dio.request(
         'https://httpbin.org/post',

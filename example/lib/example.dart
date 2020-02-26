@@ -63,7 +63,7 @@ abstract class RestClient {
 
   @POST("https://httpbin.org/post")
   Future<String> postFormData3(
-      @Part("customfiles") List<File> files, @Part() File file);
+      {@Part("customfiles") List<File> files, @Part() File file});
 
   @POST("https://httpbin.org/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
