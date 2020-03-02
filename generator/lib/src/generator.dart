@@ -635,84 +635,105 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return;
     }
 
-    final parts = _getAnnotations(m, retrofit.Part).map((p, r) {
-      final fieldName = r.peek("value")?.stringValue ?? p.displayName;
-      final isFileField = _typeChecker(File).isAssignableFromType(p.type);
-      if (isFileField) {
-        final fileName = r.peek("fileName")?.stringValue != null
-            ? literalString(r.peek("fileName")?.stringValue)
-            : refer(p.displayName)
-                .property('path.split(Platform.pathSeparator).last');
+    final parts = _getAnnotations(m, retrofit.Part);
+    if (parts.isNotEmpty) {
+      blocks.add(
+          refer('FormData').newInstance([]).assignFinal(_dataVar).statement);
 
-        final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
-            [refer(p.displayName).property('path')], {'filename': fileName});
+      parts.forEach((p, r) {
+        final fieldName = r.peek("value")?.stringValue ?? p.displayName;
+        final isFileField = _typeChecker(File).isAssignableFromType(p.type);
+        if (isFileField) {
+          final fileName = r.peek("fileName")?.stringValue != null
+              ? literalString(r.peek("fileName")?.stringValue)
+              : refer(p.displayName)
+                  .property('path.split(Platform.pathSeparator).last');
 
-        final optinalFile = m.parameters
-                .firstWhere((pp) => pp.displayName == p.displayName)
-                ?.isOptional ??
-            false;
+          final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
+              [refer(p.displayName).property('path')], {'filename': fileName});
 
-        return MapEntry(
-            literal(fieldName),
-            optinalFile
-                ? refer(p.displayName)
-                    .equalTo(literalNull)
-                    .conditional(literalNull, uploadFileInfo)
-                : uploadFileInfo);
-      } else if (_typeChecker(List).isExactlyType(p.type) ||
-          _typeChecker(BuiltList).isExactlyType(p.type)) {
-        var innnerType = _genericOf(p.type);
-        if (_isBasicType(innnerType) ||
-            _typeChecker(Map).isExactlyType(innnerType) ||
-            _typeChecker(BuiltMap).isExactlyType(innnerType) ||
-            _typeChecker(List).isExactlyType(innnerType) ||
-            _typeChecker(BuiltList).isExactlyType(innnerType)) {
-          return MapEntry(literal(fieldName),
-              refer("jsonEncode(${p.displayName}).toString()"));
-        } else if (_typeChecker(File).isExactlyType(innnerType)) {
-          return MapEntry(literal(fieldName), refer("""
-              ${p.displayName}?.map((i)=>
-                  MultipartFile.fromFileSync(i.path, filename:
-                  i.path.split(Platform.pathSeparator).last))?.toList()
-                  """));
-        } else if (innnerType.element is ClassElement) {
-          final ele = innnerType.element as ClassElement;
+          final optinalFile = m.parameters
+                  .firstWhere((pp) => pp.displayName == p.displayName)
+                  ?.isOptional ??
+              false;
+
+          blocks.add(refer(_dataVar).property('files').property("add").call([
+            refer("MapEntry").newInstance([
+              literal(fieldName),
+              optinalFile
+                  ? refer(p.displayName)
+                      .equalTo(literalNull)
+                      .conditional(literalNull, uploadFileInfo)
+                  : uploadFileInfo
+            ])
+          ]).statement);
+        } else if (_typeChecker(List).isExactlyType(p.type) ||
+            _typeChecker(BuiltList).isExactlyType(p.type)) {
+          var innnerType = _genericOf(p.type);
+          if (_isBasicType(innnerType) ||
+              _typeChecker(Map).isExactlyType(innnerType) ||
+              _typeChecker(BuiltMap).isExactlyType(innnerType) ||
+              _typeChecker(List).isExactlyType(innnerType) ||
+              _typeChecker(BuiltList).isExactlyType(innnerType)) {
+            blocks.add(refer(_dataVar).property('fields').property("add").call([
+              refer("MapEntry").newInstance(
+                  [literal(fieldName), refer("jsonEncode(${p.displayName})")])
+            ]).statement);
+          } else if (_typeChecker(File).isExactlyType(innnerType)) {
+            blocks
+                .add(refer(_dataVar).property('files').property("addAll").call([
+              refer(''' 
+                  ${p.displayName}?.map((i) => MapEntry(
+                '${fieldName}',
+                MultipartFile.fromFileSync(i.path,
+                    filename: i.path.split(Platform.pathSeparator).last)))
+                  ''')
+            ]).statement);
+          } else if (innnerType.element is ClassElement) {
+            final ele = innnerType.element as ClassElement;
+            final toJson = ele.methods.firstWhere(
+                (i) => i.displayName == "toJson",
+                orElse: () => null);
+            if (toJson == null) {
+              throw Exception("toJson() method have to add to ${p.type}");
+            } else {
+              blocks
+                  .add(refer(_dataVar).property('fields').property("add").call([
+                refer("MapEntry").newInstance(
+                    [literal(fieldName), refer("jsonEncode(${p.displayName})")])
+              ]).statement);
+            }
+          } else {
+            throw Exception("Unknown error!");
+          }
+        } else if (_isBasicType(p.type) ||
+            _typeChecker(Map).isExactlyType(p.type) ||
+            _typeChecker(BuiltMap).isExactlyType(p.type)) {
+          blocks.add(refer(_dataVar).property('fields').property("add").call([
+            refer("MapEntry")
+                .newInstance([literal(fieldName), refer(p.displayName)])
+          ]).statement);
+        } else if (p.type.element is ClassElement) {
+          final ele = p.type.element as ClassElement;
           final toJson = ele.methods
               .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
           if (toJson == null) {
             throw Exception("toJson() method have to add to ${p.type}");
           } else {
-            return MapEntry(literal(fieldName),
-                refer("jsonEncode(${p.displayName}).toString()"));
+            blocks.add(refer(_dataVar).property('fields').property("add").call([
+              refer("MapEntry").newInstance([
+                literal(fieldName),
+                refer("jsonEncode(${p.displayName}?? <String,dynamic>{})")
+              ])
+            ]).statement);
           }
         } else {
-          throw Exception("Unknown error!");
+          blocks.add(refer(_dataVar).property('fields').property("add").call([
+            refer("MapEntry")
+                .newInstance([literal(fieldName), refer(p.displayName)])
+          ]).statement);
         }
-      } else if (_isBasicType(p.type) ||
-          _typeChecker(Map).isExactlyType(p.type) ||
-          _typeChecker(BuiltMap).isExactlyType(p.type)) {
-        return MapEntry(literal(fieldName), refer(p.displayName));
-      } else if (p.type.element is ClassElement) {
-        final ele = p.type.element as ClassElement;
-        final toJson = ele.methods
-            .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
-        if (toJson == null) {
-          throw Exception("toJson() method have to add to ${p.type}");
-        } else {
-          return MapEntry(
-              literal(fieldName),
-              refer(
-                  "jsonEncode(${p.displayName}?? <String,dynamic>{}).toString()"));
-        }
-      } else {
-        return MapEntry(literal(fieldName), refer(p.displayName));
-      }
-    });
-    if (parts.isNotEmpty) {
-      blocks.add(refer("FormData.fromMap")
-          .call([literalMap(parts, refer("String"), refer("dynamic"))])
-          .assignFinal(_dataVar)
-          .statement);
+      });
       return;
     }
 
