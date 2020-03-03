@@ -54,24 +54,24 @@ abstract class RestClient {
   @DELETE("/tasks/{id}")
   Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
 
-  @POST("https://httpbin.org/post")
+  @POST("/post")
   Future<String> postFormData(@Part() Task task, @Part() File file);
 
-  @POST("https://httpbin.org/post")
+  @POST("/post")
   Future<String> postFormData2(
       @Part() List<Map<String, dynamic>> task, @Part() File file);
 
-  @POST("https://httpbin.org/post")
+  @POST("/post")
   Future<String> postFormData3(
       {@Part("customfiles") List<File> files, @Part() File file});
 
-  @POST("https://httpbin.org/post")
+  @POST("/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
 
   @GET('/demo')
   Future<String> queries(@Queries() Map<String, dynamic> queries);
 
-  @GET("https://httpbin.org/get")
+  @GET("/get")
   Future<String> namedExample(@Query("apikey") String apiKey,
       @Query("scope") String scope, @Query("type") String type,
       {@Query("from") int from});

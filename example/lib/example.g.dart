@@ -182,10 +182,11 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(file, 'file');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = FormData.fromMap(<String, dynamic>{
-      'file': MultipartFile.fromFileSync(file.path,
-          filename: file.path.split(Platform.pathSeparator).last)
-    });
+    final _data = FormData();
+    _data.files.add(MapEntry(
+        'file',
+        MultipartFile.fromFileSync(file.path,
+            filename: file.path.split(Platform.pathSeparator).last)));
     await _dio.request<void>('http://httpbin.org/post',
         queryParameters: queryParameters,
         options: RequestOptions(
@@ -316,13 +317,13 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(file, 'file');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = FormData.fromMap(<String, dynamic>{
-      'task': jsonEncode(task ?? <String, dynamic>{}).toString(),
-      'file': MultipartFile.fromFileSync(file.path,
-          filename: file.path.split(Platform.pathSeparator).last)
-    });
-    final Response<String> _result = await _dio.request(
-        'https://httpbin.org/post',
+    final _data = FormData();
+    _data.fields.add(MapEntry('task', jsonEncode(task ?? <String, dynamic>{})));
+    _data.files.add(MapEntry(
+        'file',
+        MultipartFile.fromFileSync(file.path,
+            filename: file.path.split(Platform.pathSeparator).last)));
+    final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -340,13 +341,13 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(file, 'file');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = FormData.fromMap(<String, dynamic>{
-      'task': jsonEncode(task).toString(),
-      'file': MultipartFile.fromFileSync(file.path,
-          filename: file.path.split(Platform.pathSeparator).last)
-    });
-    final Response<String> _result = await _dio.request(
-        'https://httpbin.org/post',
+    final _data = FormData();
+    _data.fields.add(MapEntry('task', jsonEncode(task)));
+    _data.files.add(MapEntry(
+        'file',
+        MultipartFile.fromFileSync(file.path,
+            filename: file.path.split(Platform.pathSeparator).last)));
+    final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -363,18 +364,18 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
-    final _data = FormData.fromMap(<String, dynamic>{
-      'customfiles': files
-          ?.map((i) => MultipartFile.fromFileSync(i.path,
-              filename: i.path.split(Platform.pathSeparator).last))
-          ?.toList(),
-      'file': file == null
-          ? null
-          : MultipartFile.fromFileSync(file.path,
-              filename: file.path.split(Platform.pathSeparator).last)
-    });
-    final Response<String> _result = await _dio.request(
-        'https://httpbin.org/post',
+    final _data = FormData();
+    _data.files.addAll(files?.map((i) => MapEntry(
+        'customfiles',
+        MultipartFile.fromFileSync(i.path,
+            filename: i.path.split(Platform.pathSeparator).last))));
+    _data.files.add(MapEntry(
+        'file',
+        file == null
+            ? null
+            : MultipartFile.fromFileSync(file.path,
+                filename: file.path.split(Platform.pathSeparator).last)));
+    final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -392,13 +393,13 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(file, 'file');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = FormData.fromMap(<String, dynamic>{
-      'tasks': jsonEncode(tasks).toString(),
-      'file': MultipartFile.fromFileSync(file.path,
-          filename: file.path.split(Platform.pathSeparator).last)
-    });
-    final Response<String> _result = await _dio.request(
-        'https://httpbin.org/post',
+    final _data = FormData();
+    _data.fields.add(MapEntry('tasks', jsonEncode(tasks)));
+    _data.files.add(MapEntry(
+        'file',
+        MultipartFile.fromFileSync(file.path,
+            filename: file.path.split(Platform.pathSeparator).last)));
+    final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -443,8 +444,7 @@ class _RestClient implements RestClient {
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
-    final Response<String> _result = await _dio.request(
-        'https://httpbin.org/get',
+    final Response<String> _result = await _dio.request('/get',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',

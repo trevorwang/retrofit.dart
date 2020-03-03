@@ -155,10 +155,11 @@ abstract class FormUrlEncodedTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.fromMap(<String, dynamic>{
-      'image': MultipartFile.fromFileSync(image.path,
-          filename: image.path.split(Platform.pathSeparator).last)
-    });
+    final _data = FormData();
+    _data.files.add(MapEntry(
+        'image',
+        MultipartFile.fromFileSync(image.path,
+            filename: image.path.split(Platform.pathSeparator).last)));
 ''',
   contains: true,
 )
@@ -170,10 +171,11 @@ abstract class FilePartTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.fromMap(<String, dynamic>{
-      'image': MultipartFile.fromFileSync(image.path,
-          filename: 'my_profile_image.jpg')
-    });
+    final _data = FormData();
+    _data.files.add(MapEntry(
+        'image',
+        MultipartFile.fromFileSync(image.path,
+            filename: 'my_profile_image.jpg')));
 ''',
   contains: true,
 )
@@ -185,10 +187,11 @@ abstract class FilePartWithCustomNameTest {
 
 @ShouldGenerate(
   r'''
-    final _data = FormData.fromMap(<String, dynamic>{
-      'image': MultipartFile.fromFileSync(image.path,
-          filename: image.path.split(Platform.pathSeparator).last)
-    });
+    final _data = FormData();
+    _data.files.add(MapEntry(
+        'image',
+        MultipartFile.fromFileSync(image.path,
+            filename: image.path.split(Platform.pathSeparator).last)));
 ''',
   contains: true,
 )
@@ -430,16 +433,19 @@ abstract class TestHttpResponseArray {
 }
 
 @ShouldGenerate(r'''
-      'files': files
-          ?.map((i) => MultipartFile.fromFileSync(i.path,
-              filename: i.path.split(Platform.pathSeparator).last))
-          ?.toList()
+    final _data = FormData();
+    _data.files.addAll(files?.map((i) => MapEntry(
+        'files',
+        MultipartFile.fromFileSync(i.path,
+            filename: i.path.split(Platform.pathSeparator).last))));
 ''', contains: true)
 @ShouldGenerate(r'''
-      'file': file == null
-          ? null
-          : MultipartFile.fromFileSync(file.path,
-              filename: file.path.split(Platform.pathSeparator).last)
+    _data.files.add(MapEntry(
+        'file',
+        file == null
+            ? null
+            : MultipartFile.fromFileSync(file.path,
+                filename: file.path.split(Platform.pathSeparator).last)));
 ''', contains: true)
 @RestApi()
 abstract class TestFileList {
@@ -450,14 +456,22 @@ abstract class TestFileList {
   Future<void> testOptionalFile({@Part() File file});
 }
 
-@ShouldGenerate(r''''users': jsonEncode(users).toString()''', contains: true)
-@ShouldGenerate(
-    r''''item': jsonEncode(user ?? <String, dynamic>{}).toString()''',
-    contains: true)
-@ShouldGenerate(
-    r'''<String, dynamic>{'mapList': jsonEncode(mapList).toString()}''',
-    contains: true)
-@ShouldGenerate(r'''{'map': map}''', contains: true)
+@ShouldGenerate(r'''
+    final _data = FormData();
+    _data.fields.add(MapEntry('users', jsonEncode(users)));
+''', contains: true)
+@ShouldGenerate(r'''
+    final _data = FormData();
+    _data.fields.add(MapEntry('item', jsonEncode(user ?? <String, dynamic>{})));
+    ''', contains: true)
+@ShouldGenerate(r'''
+    final _data = FormData();
+    _data.fields.add(MapEntry('mapList', jsonEncode(mapList)));
+    ''', contains: true)
+@ShouldGenerate(r'''
+    final _data = FormData();
+    _data.fields.add(MapEntry('map', map));
+''', contains: true)
 @RestApi()
 abstract class TestModelList {
   @POST("/")
