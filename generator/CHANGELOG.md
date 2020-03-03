@@ -1,4 +1,7 @@
 # Changelog
+## 1.3.1+4
+
+- add workaroud for [#143]
 
 ## 1.3.1
 
