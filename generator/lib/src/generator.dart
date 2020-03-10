@@ -706,12 +706,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           } else {
             throw Exception("Unknown error!");
           }
-        } else if (_isBasicType(p.type) ||
-            _typeChecker(Map).isExactlyType(p.type) ||
+        } else if (_isBasicType(p.type)) {
+          blocks.add(refer(_dataVar).property('fields').property("add").call([
+            refer("MapEntry").newInstance([
+              literal(fieldName),
+              if (_typeChecker(String).isExactlyType(p.type))
+                refer(p.displayName)
+              else
+                refer(p.displayName).property('toString').call([])
+            ])
+          ]).statement);
+        } else if (_typeChecker(Map).isExactlyType(p.type) ||
             _typeChecker(BuiltMap).isExactlyType(p.type)) {
           blocks.add(refer(_dataVar).property('fields').property("add").call([
-            refer("MapEntry")
-                .newInstance([literal(fieldName), refer(p.displayName)])
+            refer("MapEntry").newInstance(
+                [literal(fieldName), refer("jsonEncode(${p.displayName})")])
           ]).statement);
         } else if (p.type.element is ClassElement) {
           final ele = p.type.element as ClassElement;
