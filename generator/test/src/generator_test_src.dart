@@ -470,7 +470,12 @@ abstract class TestFileList {
     ''', contains: true)
 @ShouldGenerate(r'''
     final _data = FormData();
-    _data.fields.add(MapEntry('map', map));
+    _data.fields.add(MapEntry('map', jsonEncode(map)));
+''', contains: true)
+@ShouldGenerate(r'''
+    _data.fields.add(MapEntry('a', a.toString()));
+    _data.fields.add(MapEntry('b', b.toString()));
+    _data.fields.add(MapEntry('c', c.toString()));
 ''', contains: true)
 @RestApi()
 abstract class TestModelList {
@@ -485,6 +490,9 @@ abstract class TestModelList {
 
   @POST("/")
   Future<void> testMap(@Part() Map<String, dynamic> map);
+
+  @POST("/")
+  Future<void> testBasicType(@Part() int a, @Part() bool b, @Part() double c);
 }
 
 @ShouldGenerate(r'''

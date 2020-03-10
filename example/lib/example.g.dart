@@ -412,6 +412,33 @@ class _RestClient implements RestClient {
   }
 
   @override
+  postFormData5(tasks, map, a, b, c) async {
+    ArgumentError.checkNotNull(tasks, 'tasks');
+    ArgumentError.checkNotNull(map, 'map');
+    ArgumentError.checkNotNull(a, 'a');
+    ArgumentError.checkNotNull(b, 'b');
+    ArgumentError.checkNotNull(c, 'c');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('tasks', jsonEncode(tasks)));
+    _data.fields.add(MapEntry('map', jsonEncode(map)));
+    _data.fields.add(MapEntry('a', a.toString()));
+    _data.fields.add(MapEntry('b', b.toString()));
+    _data.fields.add(MapEntry('c', c.toString()));
+    final Response<String> _result = await _dio.request('/post',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
   queries(queries) async {
     ArgumentError.checkNotNull(queries, 'queries');
     const _extra = <String, dynamic>{};

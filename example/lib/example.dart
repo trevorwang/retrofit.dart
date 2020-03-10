@@ -68,6 +68,14 @@ abstract class RestClient {
   @POST("/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
 
+  @POST("/post")
+  Future<String> postFormData5(
+      @Part() List<Task> tasks,
+      @Part() Map<String, dynamic> map,
+      @Part() int a,
+      @Part() bool b,
+      @Part() double c);
+
   @GET('/demo')
   Future<String> queries(@Queries() Map<String, dynamic> queries);
 
