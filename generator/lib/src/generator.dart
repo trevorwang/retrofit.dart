@@ -495,6 +495,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .assignFinal("newOptions")
           .statement);
       final newOptions = refer("newOptions");
+      blocks.add(newOptions
+          .property(_extraVar)
+          .property('addAll')
+          .call([extraOptions.remove(_extraVar)]).statement);
+      blocks.add(newOptions
+          .property('headers')
+          .property('addAll')
+          .call([extraOptions.remove('headers')]).statement);
       blocks.add(newOptions.property("merge").call([], extraOptions).statement);
       return newOptions;
     }
