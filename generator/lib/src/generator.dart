@@ -503,8 +503,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .property('headers')
           .property('addAll')
           .call([extraOptions.remove('headers')]).statement);
-      blocks.add(newOptions.property("merge").call([], extraOptions).statement);
-      return newOptions;
+      return newOptions.property('merge').call([], extraOptions);
     }
   }
 

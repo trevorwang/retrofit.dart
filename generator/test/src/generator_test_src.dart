@@ -524,7 +524,10 @@ abstract class TestModelList {
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(<String, dynamic>{});
-    newOptions.merge(method: 'GET', baseUrl: baseUrl);
+    await _dio.request<void>('',
+        queryParameters: queryParameters,
+        options: newOptions.merge(method: 'GET', baseUrl: baseUrl),
+        data: _data);
     ''', contains: true)
 @RestApi()
 abstract class CustonOptions {
