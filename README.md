@@ -5,6 +5,7 @@
 [![Dart CI](https://github.com/trevorwang/retrofit.dart/workflows/Dart%20CI/badge.svg)](https://github.com/trevorwang/retrofit.dart)
 [![CircleCI](https://circleci.com/gh/trevorwang/retrofit.dart.svg?style=svg)](https://circleci.com/gh/trevorwang/retrofit.dart)
 [![Build Status](https://cloud.drone.io/api/badges/trevorwang/retrofit.dart/status.svg)](https://cloud.drone.io/trevorwang/retrofit.dart)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftrevorwang%2Fretrofit.dart.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftrevorwang%2Fretrofit.dart?ref=badge_shield)
 
 retrofit.dart is a type conversion [dio](https://github.com/flutterchina/dio/) client generator using [source_gen](https://github.com/dart-lang/source_gen) and inspired by [Chopper](https://github.com/lejard-h/chopper) and [Retrofit](https://github.com/square/retrofit).
 
@@ -215,3 +216,6 @@ final client = RestClient(dio, baseUrl: "your base url");
 ```
 
 If you want to use the base url from `dio.option.baseUrl`, which has lowest priority, please don't pass any parameter to `RestApi` annotation and `RestClient`'s structure method. 
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftrevorwang%2Fretrofit.dart.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftrevorwang%2Fretrofit.dart?ref=badge_large)
