@@ -512,11 +512,9 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
-    newOptions.merge(
-        method: 'GET',
-        headers: <String, dynamic>{},
-        extra: _extra,
-        baseUrl: baseUrl);
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.merge(method: 'GET', baseUrl: baseUrl);
     final Response<String> _result = await _dio.request('',
         queryParameters: queryParameters, options: newOptions, data: _data);
     final value = _result.data;

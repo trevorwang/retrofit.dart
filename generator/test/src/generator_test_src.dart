@@ -522,12 +522,10 @@ abstract class TestModelList {
 ''', contains: true)
 @ShouldGenerate(r'''
     final newOptions = newRequestOptions(options);
-    newOptions.merge(
-        method: 'GET',
-        headers: <String, dynamic>{},
-        extra: _extra,
-        baseUrl: baseUrl);
-''', contains: true)
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.merge(method: 'GET', baseUrl: baseUrl);
+    ''', contains: true)
 @RestApi()
 abstract class CustonOptions {
   @GET("")
