@@ -55,7 +55,7 @@ abstract class RestClient {
   Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
 
   @POST("/post")
-  Future<String> postFormData(@Part() Task task, @Part() File file);
+  Future<String> postFormData(@Part() Task task, {@Part() File file});
 
   @POST("/post")
   Future<String> postFormData2(
@@ -70,11 +70,12 @@ abstract class RestClient {
 
   @POST("/post")
   Future<String> postFormData5(
-      @Part() List<Task> tasks,
-      @Part() Map<String, dynamic> map,
-      @Part() int a,
-      @Part() bool b,
-      @Part() double c);
+    @Part() List<Task> tasks,
+    @Part() Map<String, dynamic> map,
+    @Part() int a, {
+    @Part() bool b,
+    @Part() double c,
+  });
 
   @GET('/demo')
   Future<String> queries(@Queries() Map<String, dynamic> queries);
