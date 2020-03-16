@@ -440,12 +440,12 @@ abstract class TestHttpResponseArray {
             filename: i.path.split(Platform.pathSeparator).last))));
 ''', contains: true)
 @ShouldGenerate(r'''
-    _data.files.add(MapEntry(
-        'file',
-        file == null
-            ? null
-            : MultipartFile.fromFileSync(file.path,
-                filename: file.path.split(Platform.pathSeparator).last)));
+    if (file != null) {
+      _data.files.add(MapEntry(
+          'file',
+          MultipartFile.fromFileSync(file.path,
+              filename: file.path.split(Platform.pathSeparator).last)));
+    }
 ''', contains: true)
 @RestApi()
 abstract class TestFileList {
@@ -473,9 +473,9 @@ abstract class TestFileList {
     _data.fields.add(MapEntry('map', jsonEncode(map)));
 ''', contains: true)
 @ShouldGenerate(r'''
-    _data.fields.add(MapEntry('a', a.toString()));
-    _data.fields.add(MapEntry('b', b.toString()));
-    _data.fields.add(MapEntry('c', c.toString()));
+    _data.fields.add(MapEntry('a', a?.toString()));
+    _data.fields.add(MapEntry('b', b?.toString()));
+    _data.fields.add(MapEntry('c', c?.toString()));
 ''', contains: true)
 @RestApi()
 abstract class TestModelList {

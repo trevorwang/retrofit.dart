@@ -664,16 +664,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   ?.isOptional ??
               false;
 
-          blocks.add(refer(_dataVar).property('files').property("add").call([
-            refer("MapEntry").newInstance([
-              literal(fieldName),
-              optinalFile
-                  ? refer(p.displayName)
-                      .equalTo(literalNull)
-                      .conditional(literalNull, uploadFileInfo)
-                  : uploadFileInfo
-            ])
-          ]).statement);
+          final returnCode =
+              refer(_dataVar).property('files').property("add").call([
+            refer("MapEntry").newInstance([literal(fieldName), uploadFileInfo])
+          ]).statement;
+          if (optinalFile) {
+            final condication =
+                refer(p.displayName).notEqualTo(literalNull).code;
+            blocks.addAll(
+                [Code("if("), condication, Code(") {"), returnCode, Code("}")]);
+          } else {
+            blocks.add(returnCode);
+          }
         } else if (_typeChecker(List).isExactlyType(p.type) ||
             _typeChecker(BuiltList).isExactlyType(p.type)) {
           var innnerType = _genericOf(p.type);
@@ -720,7 +722,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               if (_typeChecker(String).isExactlyType(p.type))
                 refer(p.displayName)
               else
-                refer(p.displayName).property('toString').call([])
+                refer(p.displayName).nullSafeProperty('toString').call([])
             ])
           ]).statement);
         } else if (_typeChecker(Map).isExactlyType(p.type) ||

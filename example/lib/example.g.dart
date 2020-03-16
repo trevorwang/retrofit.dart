@@ -312,17 +312,19 @@ class _RestClient implements RestClient {
   }
 
   @override
-  postFormData(task, file) async {
+  postFormData(task, {file}) async {
     ArgumentError.checkNotNull(task, 'task');
-    ArgumentError.checkNotNull(file, 'file');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = FormData();
     _data.fields.add(MapEntry('task', jsonEncode(task ?? <String, dynamic>{})));
-    _data.files.add(MapEntry(
-        'file',
-        MultipartFile.fromFileSync(file.path,
-            filename: file.path.split(Platform.pathSeparator).last)));
+    if (file != null) {
+      _data.files.add(MapEntry(
+          'file',
+          MultipartFile.fromFileSync(file.path,
+              filename: file.path.split(Platform.pathSeparator).last)));
+    }
     final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
@@ -369,12 +371,12 @@ class _RestClient implements RestClient {
         'customfiles',
         MultipartFile.fromFileSync(i.path,
             filename: i.path.split(Platform.pathSeparator).last))));
-    _data.files.add(MapEntry(
-        'file',
-        file == null
-            ? null
-            : MultipartFile.fromFileSync(file.path,
-                filename: file.path.split(Platform.pathSeparator).last)));
+    if (file != null) {
+      _data.files.add(MapEntry(
+          'file',
+          MultipartFile.fromFileSync(file.path,
+              filename: file.path.split(Platform.pathSeparator).last)));
+    }
     final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
@@ -412,20 +414,19 @@ class _RestClient implements RestClient {
   }
 
   @override
-  postFormData5(tasks, map, a, b, c) async {
+  postFormData5(tasks, map, a, {b, c}) async {
     ArgumentError.checkNotNull(tasks, 'tasks');
     ArgumentError.checkNotNull(map, 'map');
     ArgumentError.checkNotNull(a, 'a');
-    ArgumentError.checkNotNull(b, 'b');
-    ArgumentError.checkNotNull(c, 'c');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = FormData();
     _data.fields.add(MapEntry('tasks', jsonEncode(tasks)));
     _data.fields.add(MapEntry('map', jsonEncode(map)));
-    _data.fields.add(MapEntry('a', a.toString()));
-    _data.fields.add(MapEntry('b', b.toString()));
-    _data.fields.add(MapEntry('c', c.toString()));
+    _data.fields.add(MapEntry('a', a?.toString()));
+    _data.fields.add(MapEntry('b', b?.toString()));
+    _data.fields.add(MapEntry('c', c?.toString()));
     final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
