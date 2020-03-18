@@ -62,6 +62,23 @@ class _RestClient implements RestClient {
   String baseUrl;
 
   @override
+  getTags() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<List<dynamic>> _result = await _dio.request('/tags',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data.cast<String>();
+    return Future.value(value);
+  }
+
+  @override
   getTasks() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

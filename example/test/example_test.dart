@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:mock_web_server/mock_web_server.dart';
 import 'package:test/test.dart';
-import '../example/lib/example.dart';
-import 'src/task_data.dart';
+import '../lib/example.dart';
+import 'task_data.dart';
 
 MockWebServer _server;
 RestClient _client;
@@ -19,11 +21,23 @@ void main() {
     //   return new MockResponse()..httpCode = 404;
     // };
     await _server.start();
-    _client = RestClient(Dio(), baseUrl: _server.url);
+    final dio = Dio();
+    dio.interceptors.add(LogInterceptor(responseBody: true));
+    _client = RestClient(dio, baseUrl: _server.url);
   });
 
   tearDown(() {
     _server.shutdown();
+  });
+
+  test("test tag list", () async {
+    print(jsonEncode(["tag1", "tag2"]));
+    _server.enqueue(
+        body: jsonEncode(["tag1", "tag2"]),
+        headers: {"Content-Type": "application/json"});
+    final tasks = await _client.getTags();
+    expect(tasks, isNotNull);
+    expect(tasks.length, 2);
   });
 
   test("test empy task list", () async {

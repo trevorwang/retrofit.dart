@@ -12,9 +12,11 @@ dependencies:
   logger:
 
 dev_dependencies:
+  test:
   retrofit_generator:
   build_runner: ^1.4.0
   json_serializable: any
+  mock_web_server:
 
 dependency_overrides:
   retrofit:
