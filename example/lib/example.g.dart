@@ -52,7 +52,7 @@ Map<String, dynamic> _$TaskGroupToJson(TaskGroup instance) => <String, dynamic>{
 // **************************************************************************
 
 class _RestClient implements RestClient {
-  _RestClient(this._dio, {this.baseUrl}) {
+  _RestClient(this._dio, {this.baseUrl, this.isolateRunner}) {
     ArgumentError.checkNotNull(_dio, '_dio');
     this.baseUrl ??= 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/';
   }
@@ -61,8 +61,17 @@ class _RestClient implements RestClient {
 
   String baseUrl;
 
+  IsolateRunner isolateRunner;
+
   @override
   getTags() async {
+    if (isolateRunner) {
+      return isolateRunner.run(_getTags())
+    }
+    return _getTags();
+  }
+
+  _getTags() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
