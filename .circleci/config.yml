@@ -16,6 +16,10 @@ jobs:
             pub get
             pub run test
 
+            cd example
+            pub get 
+            pub run test
+
   test_dart26:
     <<: *common_test
     environment:

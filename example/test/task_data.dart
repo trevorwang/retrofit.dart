@@ -1,5 +1,5 @@
 import 'dart:convert';
-import '../../example/lib/example.dart';
+import '../lib/example.dart';
 
 final demoTask = Task(
     id: "123455151",

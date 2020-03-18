@@ -11,6 +11,9 @@ part 'example.g.dart';
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
+  @GET("/tags")
+  Future<List<String>> getTags();
+
   @GET("/tasks")
   Future<List<Task>> getTasks();
 

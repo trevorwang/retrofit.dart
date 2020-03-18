@@ -9,3 +9,4 @@ steps:
       - cd generator
       - pub get
       - pub run test
+      - cd example && pub get && pub run test
