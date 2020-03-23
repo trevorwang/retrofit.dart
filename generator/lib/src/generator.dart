@@ -716,15 +716,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             throw Exception("Unknown error!");
           }
         } else if (_isBasicType(p.type)) {
+          blocks.add(Code("if (${p.displayName} != null) {"));
           blocks.add(refer(_dataVar).property('fields').property("add").call([
             refer("MapEntry").newInstance([
               literal(fieldName),
               if (_typeChecker(String).isExactlyType(p.type))
                 refer(p.displayName)
               else
-                refer(p.displayName).nullSafeProperty('toString').call([])
+                refer(p.displayName).property('toString').call([])
             ])
           ]).statement);
+          blocks.add(Code("}"));
         } else if (_typeChecker(Map).isExactlyType(p.type) ||
             _typeChecker(BuiltMap).isExactlyType(p.type)) {
           blocks.add(refer(_dataVar).property('fields').property("add").call([

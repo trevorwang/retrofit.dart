@@ -473,9 +473,18 @@ abstract class TestFileList {
     _data.fields.add(MapEntry('map', jsonEncode(map)));
 ''', contains: true)
 @ShouldGenerate(r'''
-    _data.fields.add(MapEntry('a', a?.toString()));
-    _data.fields.add(MapEntry('b', b?.toString()));
-    _data.fields.add(MapEntry('c', c?.toString()));
+    if (a != null) {
+      _data.fields.add(MapEntry('a', a.toString()));
+    }
+    if (b != null) {
+      _data.fields.add(MapEntry('b', b.toString()));
+    }
+    if (c != null) {
+      _data.fields.add(MapEntry('c', c.toString()));
+    }
+    if (d != null) {
+      _data.fields.add(MapEntry('d', d));
+    }
 ''', contains: true)
 @RestApi()
 abstract class TestModelList {
@@ -492,7 +501,12 @@ abstract class TestModelList {
   Future<void> testMap(@Part() Map<String, dynamic> map);
 
   @POST("/")
-  Future<void> testBasicType(@Part() int a, @Part() bool b, @Part() double c);
+  Future<void> testBasicType(
+    @Part() int a,
+    @Part() bool b,
+    @Part() double c,
+    @Part() String d,
+  );
 }
 
 @ShouldGenerate(r'''

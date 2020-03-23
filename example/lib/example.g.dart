@@ -431,7 +431,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  postFormData5(tasks, map, a, {b, c}) async {
+  postFormData5(tasks, map, a, {b, c, d}) async {
     ArgumentError.checkNotNull(tasks, 'tasks');
     ArgumentError.checkNotNull(map, 'map');
     ArgumentError.checkNotNull(a, 'a');
@@ -441,9 +441,18 @@ class _RestClient implements RestClient {
     final _data = FormData();
     _data.fields.add(MapEntry('tasks', jsonEncode(tasks)));
     _data.fields.add(MapEntry('map', jsonEncode(map)));
-    _data.fields.add(MapEntry('a', a?.toString()));
-    _data.fields.add(MapEntry('b', b?.toString()));
-    _data.fields.add(MapEntry('c', c?.toString()));
+    if (a != null) {
+      _data.fields.add(MapEntry('a', a.toString()));
+    }
+    if (b != null) {
+      _data.fields.add(MapEntry('b', b.toString()));
+    }
+    if (c != null) {
+      _data.fields.add(MapEntry('c', c.toString()));
+    }
+    if (d != null) {
+      _data.fields.add(MapEntry('d', d));
+    }
     final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
