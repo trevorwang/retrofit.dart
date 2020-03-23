@@ -78,6 +78,7 @@ abstract class RestClient {
     @Part() int a, {
     @Part() bool b,
     @Part() double c,
+    @Part() String d,
   });
 
   @GET('/demo')
