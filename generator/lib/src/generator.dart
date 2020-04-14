@@ -648,16 +648,27 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           refer('FormData').newInstance([]).assignFinal(_dataVar).statement);
 
       parts.forEach((p, r) {
-        final fieldName = r.peek("value")?.stringValue ?? p.displayName;
+        final fieldName = r.peek("name")?.stringValue ??
+            r.peek("value")?.stringValue ??
+            p.displayName;
         final isFileField = _typeChecker(File).isAssignableFromType(p.type);
+        final contentType = r.peek('contentType')?.stringValue;
         if (isFileField) {
           final fileName = r.peek("fileName")?.stringValue != null
               ? literalString(r.peek("fileName")?.stringValue)
               : refer(p.displayName)
                   .property('path.split(Platform.pathSeparator).last');
 
-          final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
-              [refer(p.displayName).property('path')], {'filename': fileName});
+          final uploadFileInfo = refer('$MultipartFile.fromFileSync').call([
+            refer(p.displayName).property('path')
+          ], {
+            'filename': fileName,
+            if (contentType != null)
+              'contentType':
+                  refer("MediaType", 'package:http_parser/http_parser.dart')
+                      .property('parse')
+                      .call([literal(contentType)])
+          });
 
           final optinalFile = m.parameters
                   .firstWhere((pp) => pp.displayName == p.displayName)
@@ -689,13 +700,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   [literal(fieldName), refer("jsonEncode(${p.displayName})")])
             ]).statement);
           } else if (_typeChecker(File).isExactlyType(innnerType)) {
+            final conType = contentType == null
+                ? ""
+                : 'contentType: MediaType.parse(${literal(contentType)}),';
             blocks
                 .add(refer(_dataVar).property('files').property("addAll").call([
               refer(''' 
                   ${p.displayName}?.map((i) => MapEntry(
                 '${fieldName}',
                 MultipartFile.fromFileSync(i.path,
-                    filename: i.path.split(Platform.pathSeparator).last)))
+                    filename: i.path.split(Platform.pathSeparator).last,
+                    ${conType}
+                    )))
                   ''')
             ]).statement);
           } else if (innnerType.element is ClassElement) {

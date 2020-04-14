@@ -182,7 +182,8 @@ abstract class FilePartTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class FilePartWithCustomNameTest {
   @POST("/profile")
-  Future<String> setProfile(@Part('image', 'my_profile_image.jpg') File image);
+  Future<String> setProfile(
+      @Part(name: 'image', fileName: 'my_profile_image.jpg') File image);
 }
 
 @ShouldGenerate(
@@ -436,8 +437,10 @@ abstract class TestHttpResponseArray {
     final _data = FormData();
     _data.files.addAll(files?.map((i) => MapEntry(
         'files',
-        MultipartFile.fromFileSync(i.path,
-            filename: i.path.split(Platform.pathSeparator).last))));
+        MultipartFile.fromFileSync(
+          i.path,
+          filename: i.path.split(Platform.pathSeparator).last,
+        ))));
 ''', contains: true)
 @ShouldGenerate(r'''
     if (file != null) {
@@ -492,7 +495,7 @@ abstract class TestModelList {
   Future<void> testUserList(@Part() List<User> users);
 
   @POST("/")
-  Future<void> testUser(@Part("item") User user);
+  Future<void> testUser(@Part(name: "item") User user);
 
   @POST("/")
   Future<void> testListMap(@Part() List<Map<String, dynamic>> mapList);

@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'dart:io';
+import 'package:http_parser/http_parser.dart' show MediaType;
 
 part 'example.g.dart';
 
@@ -61,12 +62,15 @@ abstract class RestClient {
   Future<String> postFormData(@Part() Task task, {@Part() File file});
 
   @POST("/post")
-  Future<String> postFormData2(
-      @Part() List<Map<String, dynamic>> task, @Part() File file);
+  Future<String> postFormData2(@Part() List<Map<String, dynamic>> task,
+      @Part(contentType: 'application/json') File file);
 
   @POST("/post")
   Future<String> postFormData3(
-      {@Part("customfiles") List<File> files, @Part() File file});
+      {@Part(value: "customfiles", contentType: 'application/json')
+          List<File> files,
+      @Part()
+          File file});
 
   @POST("/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
