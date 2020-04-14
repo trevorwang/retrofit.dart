@@ -235,5 +235,7 @@ class Part {
   /// If this field is a file, optionally specify it's name. otherwise the name
   /// will be derived from the actual file.
   final String fileName;
-  const Part([this.value, this.fileName]);
+
+  final String contentType;
+  const Part([this.value, this.fileName, this.contentType]);
 }
