@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3
+
+- [BERAKING CHANGE] Change `Part`'s params to named parameters from optional ones.
+
 ## 1.3.2
 
 - Add `contentType` to `Part` annotaion

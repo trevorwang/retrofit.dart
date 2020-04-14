@@ -225,17 +225,22 @@ class MultiPart {
 /// @MultiPart()
 /// Future<String> example(
 ///   @Part() int foo,
-///   @Part("bar") String barbar},
+///   { @Part(name: "bar") String barbar,
+///     @Part(contentType:'application/json') File file
+///   },
 /// )
 /// ```
 @immutable
 class Part {
+  @Deprecated('future release')
   final String value;
+  final String name;
 
   /// If this field is a file, optionally specify it's name. otherwise the name
   /// will be derived from the actual file.
   final String fileName;
 
+  // To identify the content type of a file
   final String contentType;
-  const Part([this.value, this.fileName, this.contentType]);
+  const Part({this.value, this.name, this.fileName, this.contentType});
 }
