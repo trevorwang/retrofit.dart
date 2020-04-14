@@ -365,7 +365,8 @@ class _RestClient implements RestClient {
     _data.files.add(MapEntry(
         'file',
         MultipartFile.fromFileSync(file.path,
-            filename: file.path.split(Platform.pathSeparator).last)));
+            filename: file.path.split(Platform.pathSeparator).last,
+            contentType: MediaType.parse('application/json'))));
     final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(
@@ -385,9 +386,10 @@ class _RestClient implements RestClient {
     queryParameters.removeWhere((k, v) => v == null);
     final _data = FormData();
     _data.files.addAll(files?.map((i) => MapEntry(
-        'customfiles',
+        'files',
         MultipartFile.fromFileSync(i.path,
-            filename: i.path.split(Platform.pathSeparator).last))));
+            filename: i.path.split(Platform.pathSeparator).last,
+            contentType: MediaType.parse('application/json')))));
     if (file != null) {
       _data.files.add(MapEntry(
           'file',

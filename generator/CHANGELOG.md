@@ -1,4 +1,9 @@
 # Changelog
+
+## 1.3.3
+
+- Add content type support to `Part`
+
 ## 1.3.1+4
 
 - add workaroud for [#143]
