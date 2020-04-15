@@ -272,6 +272,41 @@ class _RestClient implements RestClient {
   }
 
   @override
+  headRquest2() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response _result = await _dio.request('/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'HEAD',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
+  headRquest3() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response _result = await _dio.request('/',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'HEAD',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    final httpResponse = HttpResponse(value, _result);
+    return Future.value(httpResponse);
+  }
+
+  @override
   grouppedTaskByDate() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -386,10 +421,12 @@ class _RestClient implements RestClient {
     queryParameters.removeWhere((k, v) => v == null);
     final _data = FormData();
     _data.files.addAll(files?.map((i) => MapEntry(
-        'files',
-        MultipartFile.fromFileSync(i.path,
-            filename: i.path.split(Platform.pathSeparator).last,
-            contentType: MediaType.parse('application/json')))));
+        'customfiles',
+        MultipartFile.fromFileSync(
+          i.path,
+          filename: i.path.split(Platform.pathSeparator).last,
+          contentType: MediaType.parse('application/json'),
+        ))));
     if (file != null) {
       _data.files.add(MapEntry(
           'file',

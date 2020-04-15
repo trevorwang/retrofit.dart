@@ -49,6 +49,12 @@ abstract class RestClient {
   @HEAD('/')
   Future<String> headRequest();
 
+  @HEAD('/')
+  Future headRquest2();
+
+  @HEAD('/')
+  Future<HttpResponse> headRquest3();
+
   @GET("/task/group")
   Future<List<TaskGroup>> grouppedTaskByDate();
 
