@@ -455,6 +455,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .statement,
           );
           blocks.add(Code("final value = $_resultVar.data;"));
+        } else if (returnType?.toString() == 'dynamic') {
+          blocks.add(
+            refer("await $_dioVar.request")
+                .call([path], namedArguments)
+                .assignFinal(_resultVar, refer("Response"))
+                .statement,
+          );
+          blocks.add(Code("final value = $_resultVar.data;"));
         } else {
           blocks.add(
             refer("await $_dioVar.request")
