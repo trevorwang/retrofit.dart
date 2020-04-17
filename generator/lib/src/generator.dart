@@ -101,21 +101,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ..modifier = FieldModifier.var$);
 
   Constructor _generateConstructor(String url) => Constructor((c) {
-    c.requiredParameters.add(Parameter((p) => p
-      ..name = _dioVar
-      ..toThis = true));
-    c.optionalParameters.add(Parameter((p) => p
-      ..named = true
-      ..name = _baseUrlVar
-      ..toThis = true));
-    final block = [
-      Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
-      if (url != null && url.isNotEmpty)
-        Code("this.${_baseUrlVar} ??= ${literal(url)};"),
-    ];
+        c.requiredParameters.add(Parameter((p) => p
+          ..name = _dioVar
+          ..toThis = true));
+        c.optionalParameters.add(Parameter((p) => p
+          ..named = true
+          ..name = _baseUrlVar
+          ..toThis = true));
+        final block = [
+          Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
+          if (url != null && url.isNotEmpty)
+            Code("this.${_baseUrlVar} ??= ${literal(url)};"),
+        ];
 
-    c.body = Block.of(block);
-  });
+        c.body = Block.of(block);
+      });
 
   Iterable<Method> _parseMethods(ClassElement element) =>
       element.methods.where((MethodElement m) {
@@ -240,12 +240,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       mm.requiredParameters.addAll(m.parameters
           .where((it) => it.isRequiredPositional || it.isRequiredNamed)
           .map((it) => Parameter((p) => p
-        ..name = it.name
-        ..named = it.isNamed)));
+            ..name = it.name
+            ..named = it.isNamed)));
 
       /// optional positional or named parameters
       mm.optionalParameters.addAll(m.parameters.where((i) => i.isOptional).map(
-              (it) => Parameter((p) => p
+          (it) => Parameter((p) => p
             ..name = it.name
             ..named = it.isNamed
             ..defaultTo = it.defaultValueCode == null
@@ -270,7 +270,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final blocks = <Code>[];
 
     for (var parameter in m.parameters.where((p) =>
-    p.isRequiredNamed ||
+        p.isRequiredNamed ||
         p.isRequiredPositional ||
         p.metadata.firstWhere((meta) => meta.isRequired, orElse: () => null) !=
             null)) {
@@ -293,7 +293,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final contentTypeInHeader = headers.entries
         .firstWhere((i) => "Content-Type".toLowerCase() == i.key.toLowerCase(),
-        orElse: () => null)
+            orElse: () => null)
         ?.value;
     if (contentTypeInHeader != null) {
       extraOptions[_contentType] = contentTypeInHeader;
@@ -365,7 +365,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     final bool isWrappered =
-    _typeChecker(retrofit.HttpResponse).isExactlyType(wrapperedReturnType);
+        _typeChecker(retrofit.HttpResponse).isExactlyType(wrapperedReturnType);
     final returnType = isWrappered
         ? _getResponseType(wrapperedReturnType)
         : wrapperedReturnType;
@@ -567,13 +567,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ..name = "newRequestOptions"
         ..returns = refer("RequestOptions")
 
-      /// required parameters
+        /// required parameters
         ..requiredParameters.add(Parameter((p) {
           p.name = "options";
           p.type = refer("Options").type;
         }))
 
-      /// add method body
+        /// add method body
         ..body = Code('''
          if (options is RequestOptions) {
             return options;
@@ -650,8 +650,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         blocks.add(refer("Stream")
             .property("fromIterable")
             .call([
-          refer("${_bodyName.displayName}.readAsBytesSync().map((i)=>[i])")
-        ])
+              refer("${_bodyName.displayName}.readAsBytesSync().map((i)=>[i])")
+            ])
             .assignFinal(_dataVar)
             .statement);
       } else if (_bodyName.type.element is ClassElement) {
@@ -661,7 +661,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         if (toJson == null) {
           log.warning(
               "${_bodyName.type} must provide a `toJson()` method which return a Map.\n"
-                  "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
+              "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
           blocks.add(
               refer(_bodyName.displayName).assignFinal(_dataVar).statement);
         } else {
@@ -711,7 +711,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           final fileName = r.peek("fileName")?.stringValue != null
               ? literalString(r.peek("fileName")?.stringValue)
               : refer(p.displayName)
-              .property('path.split(Platform.pathSeparator).last');
+                  .property('path.split(Platform.pathSeparator).last');
 
           final uploadFileInfo = refer('$MultipartFile.fromFileSync').call([
             refer(p.displayName).property('path')
@@ -719,20 +719,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             'filename': fileName,
             if (contentType != null)
               'contentType':
-              refer("MediaType", 'package:http_parser/http_parser.dart')
-                  .property('parse')
-                  .call([literal(contentType)])
+                  refer("MediaType", 'package:http_parser/http_parser.dart')
+                      .property('parse')
+                      .call([literal(contentType)])
           });
 
           final optinalFile = m.parameters
-              .firstWhere((pp) => pp.displayName == p.displayName)
-              ?.isOptional ??
+                  .firstWhere((pp) => pp.displayName == p.displayName)
+                  ?.isOptional ??
               false;
 
           final returnCode =
               refer(_dataVar).property('files').property("add").call([
-                refer("MapEntry").newInstance([literal(fieldName), uploadFileInfo])
-              ]).statement;
+            refer("MapEntry").newInstance([literal(fieldName), uploadFileInfo])
+          ]).statement;
           if (optinalFile) {
             final condication =
                 refer(p.displayName).notEqualTo(literalNull).code;
@@ -771,7 +771,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           } else if (innnerType.element is ClassElement) {
             final ele = innnerType.element as ClassElement;
             final toJson = ele.methods.firstWhere(
-                    (i) => i.displayName == "toJson",
+                (i) => i.displayName == "toJson",
                 orElse: () => null);
             if (toJson == null) {
               throw Exception("toJson() method have to add to ${p.type}");
@@ -858,25 +858,25 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final c = ConstantReader(extra);
       blocks.add(literalMap(
         c.peek('data')?.mapValue?.map((k, v) {
-          return MapEntry(
-            k.toStringValue() ??
-                (throw InvalidGenerationSourceError(
-                  'Invalid key for extra Map, only `String` keys are supported',
-                  element: m,
-                  todo: 'Make sure all keys are of string type',
-                )),
-            v.toBoolValue() ??
-                v.toDoubleValue() ??
-                v.toIntValue() ??
-                v.toStringValue() ??
-                v.toListValue() ??
-                v.toMapValue() ??
-                v.toSetValue() ??
-                v.toSymbolValue() ??
-                v.toTypeValue() ??
-                Code(revivedLiteral(v)),
-          );
-        }) ??
+              return MapEntry(
+                k.toStringValue() ??
+                    (throw InvalidGenerationSourceError(
+                      'Invalid key for extra Map, only `String` keys are supported',
+                      element: m,
+                      todo: 'Make sure all keys are of string type',
+                    )),
+                v.toBoolValue() ??
+                    v.toDoubleValue() ??
+                    v.toIntValue() ??
+                    v.toStringValue() ??
+                    v.toListValue() ??
+                    v.toMapValue() ??
+                    v.toSetValue() ??
+                    v.toSymbolValue() ??
+                    v.toTypeValue() ??
+                    Code(revivedLiteral(v)),
+              );
+            }) ??
             {},
         refer('String'),
         refer('dynamic'),
@@ -898,9 +898,9 @@ Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
 /// [object] must not be null.
 /// [object] is assumed to be a constant.
 String revivedLiteral(
-    Object object, {
-      DartEmitter dartEmitter,
-    }) {
+  Object object, {
+  DartEmitter dartEmitter,
+}) {
   dartEmitter ??= DartEmitter();
 
   ArgumentError.checkNotNull(object, 'object');
