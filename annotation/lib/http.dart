@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-/// A holder that includs all http methods which are supported by retrofit.
+/// A holder that includes all http methods which are supported by retrofit.
 class HttpMethod {
   static const String GET = "GET";
   static const String POST = "POST";
@@ -9,6 +9,18 @@ class HttpMethod {
   static const String DELETE = "DELETE";
   static const String HEAD = "HEAD";
   static const String OPTIONS = "OPTIONS";
+}
+
+/// Define how to parse response json
+/// If you want to support more, PR is welcome
+enum Parser {
+  /// Each model class must provide 'factory T.fromJson(Map<String, dynamic> json)'
+  /// For more detail, please visit 'https://github.com/trevorwang/retrofit.dart#type-conversion'
+  JsonSerializable,
+
+  /// Each model class must add annotation '@jsonSerializable'
+  /// For more detail, please visit 'https://github.com/k-paxian/dart-json-mapper'
+  DartJsonMapper
 }
 
 /// Define an API.
@@ -34,7 +46,11 @@ class RestApi {
   /// Otherwise the `path` field of any [HttpMethod] like [POST] should have the full URL.
 
   final String baseUrl;
-  const RestApi({this.baseUrl, this.autoCastResponse});
+
+  /// if you don't specify the [parser]. It will be [Parser.JsonSerializable]
+  final Parser parser;
+
+  const RestApi({this.baseUrl, this.autoCastResponse, this.parser});
 
   /// Automatically cast response to proper type for all methods in this client
   ///
@@ -53,6 +69,7 @@ class Method {
   /// See [RestApi.baseUrl] for details of how this is resolved against a base URL
   /// to create the full endpoint URL.
   final String path;
+
   const Method(
     this.method,
     this.path, {
@@ -126,6 +143,7 @@ class OPTIONS extends Method {
 @immutable
 class Headers {
   final Map<String, dynamic> value;
+
   const Headers([this.value]);
 }
 
@@ -135,6 +153,7 @@ class Headers {
 @immutable
 class Header {
   final String value;
+
   const Header(this.value);
 }
 
@@ -162,6 +181,7 @@ class Body {
 @immutable
 class Field {
   final String value;
+
   const Field([this.value]);
 }
 
@@ -171,6 +191,7 @@ class Field {
 @immutable
 class Path {
   final String value;
+
   const Path([this.value]);
 }
 
@@ -187,6 +208,7 @@ class Path {
 class Query {
   final String value;
   final bool encoded;
+
   const Query(this.value, {this.encoded = false});
 }
 
@@ -196,6 +218,7 @@ class Query {
 @immutable
 class Queries {
   final bool encoded;
+
   const Queries({this.encoded = false});
 }
 
@@ -208,6 +231,7 @@ class Queries {
 @immutable
 class FormUrlEncoded {
   final mime = 'application/x-www-form-urlencoded';
+
   const FormUrlEncoded();
 }
 
@@ -242,5 +266,6 @@ class Part {
 
   // To identify the content type of a file
   final String contentType;
+
   const Part({this.value, this.name, this.fileName, this.contentType});
 }
