@@ -65,10 +65,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   String _implementClass(ClassElement element, ConstantReader annotation) {
     final className = element.name;
     final name = '_$className';
+    final enumString = (annotation?.peek('parser')?.revive()?.accessor);
+    final parser = retrofit.Parser.values.firstWhere((e) => e.toString() == enumString, orElse: () => null);
     clientAnnotation = retrofit.RestApi(
       autoCastResponse: (annotation?.peek('autoCastResponse')?.boolValue),
       baseUrl: (annotation?.peek(_baseUrlVar)?.stringValue ?? ''),
-      parser: (annotation?.peek('parser') ?? retrofit.Parser.JsonSerializable),
+      parser: (parser ?? retrofit.Parser.JsonSerializable),
     );
     final baseUrl = clientAnnotation.baseUrl;
     final classBuilder = Class((c) {
