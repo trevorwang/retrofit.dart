@@ -10,6 +10,8 @@ dependencies:
   retrofit:
   json_annotation:
   logger:
+  dart_json_mapper:
+  reflectable: 2.2.4
 
 dev_dependencies:
   test:

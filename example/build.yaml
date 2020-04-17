@@ -1,0 +1,6 @@
+targets:
+  $default:
+    builders:
+      reflectable:
+        generate_for:
+          - lib/json_mapper_example.dart
