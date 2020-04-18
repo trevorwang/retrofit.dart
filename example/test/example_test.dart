@@ -2,12 +2,16 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:mock_web_server/mock_web_server.dart';
+import 'package:retrofit_example/json_mapper_example.dart';
+import 'package:retrofit_example/json_mapper_example.reflectable.dart'
+    show initializeReflectable;
 import 'package:test/test.dart';
 import '../lib/example.dart';
 import 'task_data.dart';
 
 MockWebServer _server;
 RestClient _client;
+ApiService _apiService;
 final _headers = {"Content-Type": "application/json"};
 final dispatcherMap = <String, MockResponse>{};
 void main() {
@@ -24,6 +28,9 @@ void main() {
     final dio = Dio();
     dio.interceptors.add(LogInterceptor(responseBody: true));
     _client = RestClient(dio, baseUrl: _server.url);
+
+    initializeReflectable();
+    _apiService = ApiService(dio, baseUrl: _server.url);
   });
 
   tearDown(() {
@@ -108,5 +115,12 @@ void main() {
     expect(result, isNotNull);
     expect(result.first.todos, isNotEmpty);
     expect(result.first.todos.first.avatar, demoTask.avatar);
+  });
+
+  test("test json mapper parse task", () async {
+    _server.enqueue(body: demoTaskListJson, headers: _headers);
+    final tasks = await _apiService.getTasks();
+    expect(tasks, isNotNull);
+    expect(tasks.length, 1);
   });
 }
