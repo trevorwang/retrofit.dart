@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4
+
+- Add dart json mapper deserialize support
+
 ## 1.3.3
 
 - Add content type support to `Part`
