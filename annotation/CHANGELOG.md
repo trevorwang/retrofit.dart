@@ -2,7 +2,7 @@
 
 ## 1.3.4
 
-- Add dart json mapper support
+- Add dart json mapper deserialize support
 
 ## 1.3.3
 
