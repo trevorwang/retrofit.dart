@@ -7,6 +7,12 @@ jobs:
       - checkout
       - run:
           command: |
+            cd example
+            pub get 
+            pub run build_runner build
+
+      - run:
+          command: |
             ./tool/travis.sh dartanalyzer
           environment:
             PKGS: "example annotation generator"

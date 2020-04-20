@@ -11,6 +11,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Generate code
+        run: cd example && pub get && pub run build_runner build
       - name: Analyze packages
         run: PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
       - name: Install dependencies
