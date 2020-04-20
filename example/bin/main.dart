@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:logger/logger.dart';
-import 'package:retrofit_example/example.dart';
 import 'package:dio/dio.dart';
+import 'package:retrofit_example/example.dart';
+import 'package:retrofit_example/json_mapper_example.dart' hide Task;
+import 'package:retrofit_example/json_mapper_example.reflectable.dart' show initializeReflectable;
 
 final logger = Logger();
 void main(List<String> args) {
@@ -53,4 +55,8 @@ void main(List<String> args) {
   client.getFile().then((it) {
     print(it.length);
   });
+
+  initializeReflectable();
+  final api = ApiService(dio);
+  api.getTasks().then((it) => logger.i(it.toString()));
 }

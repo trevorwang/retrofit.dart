@@ -551,3 +551,73 @@ abstract class CustonOptions {
   @GET("")
   Future<void> testOptions(@DioOptions() Options options);
 }
+
+@ShouldGenerate(
+  r'''
+    final value = JsonMapper.deserialize<User>(_result.data);
+    return Future.value(value);
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.DartJsonMapper,
+)
+abstract class JsonMapperGenericCast {
+  @POST("/xx")
+  Future<User> getUser();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data
+        .map((dynamic i) =>
+            JsonMapper.deserialize<User>(i as Map<String, dynamic>))
+        .toList();
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.DartJsonMapper,
+)
+abstract class JsonMapperTestListBody {
+  @GET("/xx")
+  Future<List<User>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data.map((k, dynamic v) => MapEntry(
+        k,
+        (v as List)
+            .map((i) => JsonMapper.deserialize<User>(i as Map<String, dynamic>))
+            .toList()));
+
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.DartJsonMapper,
+)
+abstract class JsonMapperTestMapBody {
+  @GET("/xx")
+  Future<Map<String, List<User>>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data.map((k, dynamic v) =>
+        MapEntry(k, JsonMapper.deserialize<User>(v as Map<String, dynamic>)));
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.DartJsonMapper,
+)
+abstract class JsonMapperTestMapBody2 {
+  @GET("/xx")
+  Future<Map<String, User>> getResult();
+}

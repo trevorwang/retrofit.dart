@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-/// A holder that includs all http methods which are supported by retrofit.
+/// A holder that includes all http methods which are supported by retrofit.
 class HttpMethod {
   static const String GET = "GET";
   static const String POST = "POST";
@@ -9,6 +9,18 @@ class HttpMethod {
   static const String DELETE = "DELETE";
   static const String HEAD = "HEAD";
   static const String OPTIONS = "OPTIONS";
+}
+
+/// Define how to parse response json
+/// If you want to support more, PR is welcome
+enum Parser {
+  /// Each model class must provide 'factory T.fromJson(Map<String, dynamic> json)'
+  /// For more detail, please visit 'https://github.com/trevorwang/retrofit.dart#type-conversion'
+  JsonSerializable,
+
+  /// Each model class must add annotation '@jsonSerializable'
+  /// For more detail, please visit 'https://github.com/k-paxian/dart-json-mapper'
+  DartJsonMapper
 }
 
 /// Define an API.
@@ -34,7 +46,11 @@ class RestApi {
   /// Otherwise the `path` field of any [HttpMethod] like [POST] should have the full URL.
 
   final String baseUrl;
-  const RestApi({this.baseUrl, this.autoCastResponse});
+
+  /// if you don't specify the [parser]. It will be [Parser.JsonSerializable]
+  final Parser parser;
+
+  const RestApi({this.baseUrl, this.autoCastResponse, this.parser});
 
   /// Automatically cast response to proper type for all methods in this client
   ///
