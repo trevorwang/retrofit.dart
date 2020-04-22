@@ -1,6 +1,7 @@
 analyzer:
-  strong-mode:
-    implicit-casts: false
-    # implicit-dynamic: false
+  # strong-mode:
+  # implicit-casts: false
+  # implicit-dynamic: false
   exclude:
-    - */**/*.reflectable.dart 
+    - lib/**/*.reflectable.dart
+    - lib/**/*.g.dart
