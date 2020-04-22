@@ -22,6 +22,56 @@ Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
       'createdAt': instance.createdAt,
     };
 
+TaskQuery _$TaskQueryFromJson(Map<String, dynamic> json) {
+  return TaskQuery(
+    (json['statuses'] as List)
+        ?.map((e) => _$enumDecodeNullable(_$StatusEnumMap, e))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$TaskQueryToJson(TaskQuery instance) => <String, dynamic>{
+      'statuses': instance.statuses?.map((e) => _$StatusEnumMap[e])?.toList(),
+    };
+
+T _$enumDecode<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    throw ArgumentError('A value must be provided. Supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+
+  final value = enumValues.entries
+      .singleWhere((e) => e.value == source, orElse: () => null)
+      ?.key;
+
+  if (value == null && unknownValue == null) {
+    throw ArgumentError('`$source` is not one of the supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+  return value ?? unknownValue;
+}
+
+T _$enumDecodeNullable<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+}
+
+const _$StatusEnumMap = {
+  Status.New: 'new',
+  Status.OnGoing: 'on_going',
+  Status.Closed: 'closed',
+};
+
 TaskGroup _$TaskGroupFromJson(Map<String, dynamic> json) {
   return TaskGroup(
     date: json['date'] == null ? null : DateTime.parse(json['date'] as String),
@@ -512,6 +562,24 @@ class _RestClient implements RestClient {
     queryParameters.addAll(queries ?? <String, dynamic>{});
     final _data = <String, dynamic>{};
     final Response<String> _result = await _dio.request('/demo',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return Future.value(value);
+  }
+
+  @override
+  queryByEnum(query) async {
+    ArgumentError.checkNotNull(query, 'query');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{'tasks': query?.toJson()};
+    final _data = <String, dynamic>{};
+    final Response<String> _result = await _dio.request('/enums',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
