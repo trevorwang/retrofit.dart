@@ -94,6 +94,9 @@ abstract class RestClient {
   @GET('/demo')
   Future<String> queries(@Queries() Map<String, dynamic> queries);
 
+  @GET('/enums')
+  Future<String> queryByEnum(@Query('tasks') TaskQuery query);
+
   @GET("/get")
   Future<String> namedExample(@Query("apikey") String apiKey,
       @Query("scope") String scope, @Query("type") String type,
@@ -121,6 +124,25 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
   Map<String, dynamic> toJson() => _$TaskToJson(this);
+}
+
+enum Status {
+  @JsonValue("new")
+  New,
+  @JsonValue("on_going")
+  OnGoing,
+  @JsonValue("closed")
+  Closed,
+}
+
+@JsonSerializable()
+class TaskQuery {
+  List<Status> statuses;
+  TaskQuery(this.statuses);
+
+  factory TaskQuery.fromJson(Map<String, dynamic> json) =>
+      _$TaskQueryFromJson(json);
+  Map<String, dynamic> toJson() => _$TaskQueryToJson(this);
 }
 
 @JsonSerializable()

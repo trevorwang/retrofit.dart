@@ -21,8 +21,8 @@ class RetrofitOptions {
 
   RetrofitOptions.fromOptions([BuilderOptions options])
       : autoCastResponse =
-      (options?.config['auto_cast_response']?.toString() ?? 'true') ==
-          'true';
+            (options?.config['auto_cast_response']?.toString() ?? 'true') ==
+                'true';
 }
 
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
@@ -66,7 +66,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final className = element.name;
     final name = '_$className';
     final enumString = (annotation?.peek('parser')?.revive()?.accessor);
-    final parser = retrofit.Parser.values.firstWhere((e) => e.toString() == enumString, orElse: () => null);
+    final parser = retrofit.Parser.values
+        .firstWhere((e) => e.toString() == enumString, orElse: () => null);
     clientAnnotation = retrofit.RestApi(
       autoCastResponse: (annotation?.peek('autoCastResponse')?.boolValue),
       baseUrl: (annotation?.peek(_baseUrlVar)?.stringValue ?? ''),
@@ -616,7 +617,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final queries = _getAnnotations(m, retrofit.Query);
     final queryParameters = queries.map((p, ConstantReader r) {
       final value = r.peek("value")?.stringValue ?? p.displayName;
-      return MapEntry(literal(value), refer(p.displayName));
+      final pValue = (_isBasicType(p.type) ||
+              p.type.isDartCoreList ||
+              p.type.isDartCoreMap)
+          ? refer(p.displayName)
+          : refer(p.displayName).nullSafeProperty('toJson').call([]);
+      return MapEntry(literal(value), pValue);
     });
 
     final queryMap = _getAnnotations(m, retrofit.Queries);
