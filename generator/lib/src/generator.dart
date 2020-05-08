@@ -289,8 +289,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final extraOptions = {
       "method": literal(httpMehod.peek("method").stringValue),
-      "headers": literalMap(headers.map((k, v) => MapEntry(literal(k), v)),
-          refer("String"), refer("dynamic")),
+      "headers": literalMap(
+          headers.map((k, v) => MapEntry(literalString(k, raw: true), v)),
+          refer("String"),
+          refer("dynamic")),
       _extraVar: refer(_localExtraVar),
     };
 
@@ -616,13 +618,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       MethodElement m, List<Code> blocks, String _queryParamsVar) {
     final queries = _getAnnotations(m, retrofit.Query);
     final queryParameters = queries.map((p, ConstantReader r) {
-      final value = r.peek("value")?.stringValue ?? p.displayName;
-      final pValue = (_isBasicType(p.type) ||
+      final key = r.peek("value")?.stringValue ?? p.displayName;
+      final value = (_isBasicType(p.type) ||
               p.type.isDartCoreList ||
               p.type.isDartCoreMap)
           ? refer(p.displayName)
           : refer(p.displayName).nullSafeProperty('toJson').call([]);
-      return MapEntry(literal(value), pValue);
+      return MapEntry(literalString(key, raw: true), value);
     });
 
     final queryMap = _getAnnotations(m, retrofit.Queries);
