@@ -275,7 +275,7 @@ class _RestClient implements RestClient {
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
-            headers: <String, dynamic>{'accept': 'image/jpeg'},
+            headers: <String, dynamic>{r'accept': 'image/jpeg'},
             extra: _extra,
             baseUrl: baseUrl,
             responseType: ResponseType.bytes),
@@ -577,7 +577,7 @@ class _RestClient implements RestClient {
   queryByEnum(query) async {
     ArgumentError.checkNotNull(query, 'query');
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{'tasks': query?.toJson()};
+    final queryParameters = <String, dynamic>{r'tasks': query?.toJson()};
     final _data = <String, dynamic>{};
     final Response<String> _result = await _dio.request('/enums',
         queryParameters: queryParameters,
@@ -598,10 +598,10 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(type, 'type');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      'apikey': apiKey,
-      'scope': scope,
-      'type': type,
-      'from': from
+      r'$apikey': apiKey,
+      r'scope': scope,
+      r'type': type,
+      r'from': from
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
@@ -628,11 +628,10 @@ class _RestClient implements RestClient {
         options: RequestOptions(
             method: 'POST',
             headers: <String, dynamic>{
-              'Content-Type': 'application/octet-stream',
-              'Ocp-Apim-Subscription-Key': 'abc'
+              r'$Content-Type': 'application/octet-stream',
+              r'Ocp-Apim-Subscription-Key': 'abc'
             },
             extra: _extra,
-            contentType: 'application/octet-stream',
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;

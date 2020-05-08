@@ -98,13 +98,13 @@ abstract class RestClient {
   Future<String> queryByEnum(@Query('tasks') TaskQuery query);
 
   @GET("/get")
-  Future<String> namedExample(@Query("apikey") String apiKey,
+  Future<String> namedExample(@Query("\$apikey") String apiKey,
       @Query("scope") String scope, @Query("type") String type,
       {@Query("from") int from});
 
   @POST("/postfile")
   @Headers(<String, dynamic>{
-    "Content-Type": "application/octet-stream",
+    "\$Content-Type": "application/octet-stream",
     "Ocp-Apim-Subscription-Key": "abc"
   })
   Future<String> postFile({@Body() File file});

@@ -123,4 +123,10 @@ void main() {
     expect(tasks, isNotNull);
     expect(tasks.length, 1);
   });
+
+  test('test escaping character in query & headers', () async {
+    _server.enqueue(body: 'hello');
+    await _client.namedExample("apkKeyvalue", "hello", "ggggg");
+    expect(true, true);
+  });
 }
