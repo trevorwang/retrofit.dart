@@ -215,6 +215,18 @@ abstract class GenericCast {
   Future<User> getUser();
 }
 
+@ShouldGenerate(
+  r'''
+    yield value;
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class StreamReturnType {
+  @POST("/users/1")
+  Stream<User> getUser();
+}
+
 class User {
   User();
   factory User.fromJson(Map<String, dynamic> json) {
