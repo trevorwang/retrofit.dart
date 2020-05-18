@@ -227,6 +227,18 @@ abstract class StreamReturnType {
   Stream<User> getUser();
 }
 
+@ShouldGenerate(
+  r'''
+  getUser() async* {
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class StreamReturnModifier {
+  @POST("/users/1")
+  Stream<User> getUser();
+}
+
 class User {
   User();
   factory User.fromJson(Map<String, dynamic> json) {
