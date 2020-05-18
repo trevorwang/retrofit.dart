@@ -631,10 +631,23 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     blocks.add(literalMap(queryParameters, refer("String"), refer("dynamic"))
         .assignFinal(_queryParamsVar)
         .statement);
-    if (queryMap.isNotEmpty) {
-      blocks.add(refer('$_queryParamsVar.addAll').call(
-        [refer("${queryMap.keys.first.displayName} ?? <String,dynamic>{}")],
-      ).statement);
+    for (final p in queryMap.keys) {
+      final type = p.type;
+      final displayName = p.displayName;
+      final value =
+          (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap)
+              ? refer(displayName)
+              : refer(displayName).nullSafeProperty('toJson').call([]);
+
+      /// workaround until this is merged in code_builder
+      /// https://github.com/dart-lang/code_builder/pull/269
+      final emitter = DartEmitter();
+      final buffer = StringBuffer();
+      value.accept(emitter, buffer);
+      refer('?? <String,dynamic>{}').accept(emitter, buffer);
+      final expression = refer(buffer.toString());
+
+      blocks.add(refer('$_queryParamsVar.addAll').call([expression]).statement);
     }
 
     if (m.parameters
