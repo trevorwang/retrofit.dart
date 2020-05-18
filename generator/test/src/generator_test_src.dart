@@ -251,6 +251,20 @@ abstract class TestObjectBody {
   Future<String> createUser(@Body() User user);
 }
 
+@ShouldGenerate(
+  r'''
+    final queryParameters = <String, dynamic>{r'u': u?.toJson()};
+    queryParameters.addAll(user1?.toJson() ?? <String, dynamic>{});
+    queryParameters.addAll(user2?.toJson() ?? <String, dynamic>{});
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestObjectQueries {
+  @POST("/users")
+  Future<String> createUser(@Query('u') User u, @Queries() User user1, @Queries() User user2);
+}
+
 class CustomObject {
   final String id;
   CustomObject(this.id);
