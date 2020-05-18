@@ -236,7 +236,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return Method((mm) {
       mm
         ..name = m.displayName
-        ..modifier = m.returnType.isDartAsyncFuture ? MethodModifier.async : MethodModifier.asyncStar
+        ..modifier = m.returnType.isDartAsyncFuture
+            ? MethodModifier.async
+            : MethodModifier.asyncStar
         ..annotations = ListBuilder([CodeExpression(Code('override'))]);
 
       /// required parameters
@@ -269,7 +271,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   Code _generateRequest(MethodElement m, ConstantReader httpMehod) {
-    final returnAsyncWrapper = m.returnType.isDartAsyncFuture ? 'return' : 'yield';
+    final returnAsyncWrapper =
+        m.returnType.isDartAsyncFuture ? 'return' : 'yield';
     final path = _generatePath(m, httpMehod);
     final blocks = <Code>[];
 
