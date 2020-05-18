@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.5
+
+- Add multiple `@Queries` decorators support
+- Add serializable objects with `@Queries` decorator support
+
 ## 1.3.4
 
 - Add dart json mapper deserialize support
