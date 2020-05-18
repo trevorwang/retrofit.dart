@@ -631,9 +631,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     blocks.add(literalMap(queryParameters, refer("String"), refer("dynamic"))
         .assignFinal(_queryParamsVar)
         .statement);
-    if (queryMap.isNotEmpty) {
-      final type = queryMap.keys.first.type;
-      final displayName = queryMap.keys.first.displayName;
+    for (final p in queryMap.keys) {
+      final type = p.type;
+      final displayName = p.displayName;
       final value =
           (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap)
               ? refer(displayName)
