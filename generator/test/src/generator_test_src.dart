@@ -205,7 +205,7 @@ abstract class UploadFileInfoPartTest {
 @ShouldGenerate(
   r'''
     final value = User.fromJson(_result.data);
-    return Future.value(value);
+    return value;
 ''',
   contains: true,
 )
@@ -228,7 +228,7 @@ class User {
 @ShouldGenerate(
   r'''
     final value = _result.data;
-    return Future.value(value);
+    return value;
 ''',
   contains: true,
 )
@@ -304,7 +304,7 @@ abstract class TestMapBody2 {
 @ShouldGenerate(
   r'''
     final value = _result.data.cast<String>();
-    return Future.value(value);
+    return value;
 ''',
   contains: true,
 )
@@ -317,7 +317,7 @@ abstract class TestBasicListString {
 @ShouldGenerate(
   r'''
     final value = _result.data.cast<bool>();
-    return Future.value(value);
+    return value;
 ''',
   contains: true,
 )
@@ -330,7 +330,7 @@ abstract class TestBasicListBool {
 @ShouldGenerate(
   r'''
     final value = _result.data.cast<int>();
-    return Future.value(value);
+    return value;
 ''',
   contains: true,
 )
@@ -343,7 +343,7 @@ abstract class TestBasicListInt {
 @ShouldGenerate(
   r'''
     final value = _result.data.cast<double>();
-    return Future.value(value);
+    return value;
 ''',
   contains: true,
 )
@@ -555,7 +555,7 @@ abstract class CustonOptions {
 @ShouldGenerate(
   r'''
     final value = JsonMapper.deserialize<User>(_result.data);
-    return Future.value(value);
+    return value;
 ''',
   contains: true,
 )
