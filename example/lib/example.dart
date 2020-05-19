@@ -15,6 +15,9 @@ abstract class RestClient {
   @GET("/tags")
   Future<List<String>> getTags();
 
+  @GET("/tags")
+  Stream<List<String>> getTagsAsStream();
+
   @GET("/tasks")
   Future<List<Task>> getTasks();
 

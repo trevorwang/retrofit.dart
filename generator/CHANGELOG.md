@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.6
+
+- Add support of Stream return type.
+
 ## 1.3.5
 
 - Add multiple `@Queries` decorators support

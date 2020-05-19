@@ -125,7 +125,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         final methodAnnot = _getMethodAnnotation(m);
         return methodAnnot != null &&
             m.isAbstract &&
-            m.returnType.isDartAsyncFuture;
+            (m.returnType.isDartAsyncFuture || m.returnType.isDartAsyncStream);
       }).map((m) => _generateMethod(m));
 
   final _methodsAnnotations = const [
@@ -236,7 +236,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return Method((mm) {
       mm
         ..name = m.displayName
-        ..modifier = MethodModifier.async
+        ..modifier = m.returnType.isDartAsyncFuture
+            ? MethodModifier.async
+            : MethodModifier.asyncStar
         ..annotations = ListBuilder([CodeExpression(Code('override'))]);
 
       /// required parameters
@@ -269,6 +271,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   Code _generateRequest(MethodElement m, ConstantReader httpMehod) {
+    final returnAsyncWrapper =
+        m.returnType.isDartAsyncFuture ? 'return' : 'yield';
     final path = _generatePath(m, httpMehod);
     final blocks = <Code>[];
 
@@ -365,7 +369,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .call([path], namedArguments, [refer("void")])
             .statement,
       );
-      blocks.add(Code("return Future.value(null);"));
+      blocks.add(Code("$returnAsyncWrapper null;"));
       return Block.of(blocks);
     }
 
@@ -383,7 +387,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         );
         blocks.add(Code("""
       final httpResponse = HttpResponse(null, $_resultVar);
-      return Future.value(httpResponse);
+      $returnAsyncWrapper httpResponse;
       """));
       } else {
         blocks.add(
@@ -391,7 +395,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               .call([path], namedArguments, [refer("void")])
               .statement,
         );
-        blocks.add(Code("return Future.value(null);"));
+        blocks.add(Code("$returnAsyncWrapper null;"));
       }
     } else {
       final innerReturnType = _getResponseInnerType(returnType);
@@ -528,10 +532,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       if (isWrappered) {
         blocks.add(Code("""
       final httpResponse = HttpResponse(value, $_resultVar);
-      return Future.value(httpResponse);
+      $returnAsyncWrapper httpResponse;
       """));
       } else {
-        blocks.add(Code("return Future.value(value);"));
+        blocks.add(Code("$returnAsyncWrapper value;"));
       }
     }
 
@@ -1031,4 +1035,14 @@ String revivedLiteral(
   }
 
   return '$instantiation($args $kwargs)';
+}
+
+extension DartTypeStreamAnnotation on DartType {
+  bool get isDartAsyncStream {
+    ClassElement element = this.element;
+    if (element == null) {
+      return false;
+    }
+    return element.name == "Stream" && element.library.isDartAsync;
+  }
 }

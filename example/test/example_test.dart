@@ -47,6 +47,17 @@ void main() {
     expect(tasks.length, 2);
   });
 
+  test("test stream tag list", () async {
+    print(jsonEncode(["tag1", "tag2"]));
+    _server.enqueue(
+        body: jsonEncode(["tag1", "tag2"]),
+        headers: {"Content-Type": "application/json"});
+    final tasksStream = await _client.getTagsAsStream();
+    final tasks = await tasksStream.first;
+    expect(tasks, isNotNull);
+    expect(tasks.length, 2);
+  });
+
   test("test empy task list", () async {
     _server.enqueue(
         body: demoEmptyListJson, headers: {"Content-Type": "application/json"});

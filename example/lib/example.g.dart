@@ -125,7 +125,24 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data.cast<String>();
-    return Future.value(value);
+    return value;
+  }
+
+  @override
+  getTagsAsStream() async* {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final Response<List<dynamic>> _result = await _dio.request('/tags',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data.cast<String>();
+    yield value;
   }
 
   @override
@@ -144,7 +161,7 @@ class _RestClient implements RestClient {
     var value = _result.data
         .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
         .toList();
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -163,7 +180,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = Task.fromJson(_result.data);
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -184,7 +201,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = Task.fromJson(_result.data);
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -205,7 +222,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = Task.fromJson(_result.data);
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -222,7 +239,7 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    return Future.value(null);
+    return null;
   }
 
   @override
@@ -241,7 +258,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = Task.fromJson(_result.data);
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -262,7 +279,7 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    return Future.value(null);
+    return null;
   }
 
   @override
@@ -281,7 +298,7 @@ class _RestClient implements RestClient {
             responseType: ResponseType.bytes),
         data: _data);
     final value = _result.data.cast<int>();
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -301,7 +318,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -318,7 +335,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -335,7 +352,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -353,7 +370,7 @@ class _RestClient implements RestClient {
         data: _data);
     final value = _result.data;
     final httpResponse = HttpResponse(value, _result);
-    return Future.value(httpResponse);
+    return httpResponse;
   }
 
   @override
@@ -372,7 +389,7 @@ class _RestClient implements RestClient {
     var value = _result.data
         .map((dynamic i) => TaskGroup.fromJson(i as Map<String, dynamic>))
         .toList();
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -392,7 +409,7 @@ class _RestClient implements RestClient {
         .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
         .toList();
     final httpResponse = HttpResponse(value, _result);
-    return Future.value(httpResponse);
+    return httpResponse;
   }
 
   @override
@@ -410,7 +427,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final httpResponse = HttpResponse(null, _result);
-    return Future.value(httpResponse);
+    return httpResponse;
   }
 
   @override
@@ -436,7 +453,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -461,7 +478,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -492,7 +509,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -516,7 +533,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -551,7 +568,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -570,7 +587,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -588,7 +605,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -614,7 +631,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -635,7 +652,7 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   @override
@@ -652,7 +669,7 @@ class _RestClient implements RestClient {
         options: newOptions.merge(method: 'GET', baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return Future.value(value);
+    return value;
   }
 
   RequestOptions newRequestOptions(Options options) {

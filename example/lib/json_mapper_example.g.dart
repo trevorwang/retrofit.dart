@@ -33,7 +33,7 @@ class _ApiService implements ApiService {
         .map((dynamic i) =>
             JsonMapper.deserialize<Task>(i as Map<String, dynamic>))
         .toList();
-    return Future.value(value);
+    return value;
   }
 
   RequestOptions newRequestOptions(Options options) {
