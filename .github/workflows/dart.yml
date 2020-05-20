@@ -1,7 +1,10 @@
 name: Dart CI
 
-on: [push]
-
+on:
+  release:
+    branches:
+      - master
+    types: [published]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,3 +24,11 @@ jobs:
         run: |
           cd generator && pub run test
           cd example && pub run test
+
+      - name: Setup credentials
+        run: |
+          mkdir -p ~/.pub-cache/
+          echo ${{secrets.PUB_CREDENTIALS}} | base64 --decode > ~/.pub-cache/credentials.json
+      - name: Release new version
+        run: |
+          cd generator && pub publish -f
