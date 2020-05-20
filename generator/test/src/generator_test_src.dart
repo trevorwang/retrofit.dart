@@ -239,14 +239,27 @@ abstract class StreamReturnModifier {
   Stream<User> getUser();
 }
 
-class User {
+class User implements AbstractUser {
   User();
+
   factory User.fromJson(Map<String, dynamic> json) {
     return User();
   }
+
   Map<String, dynamic> toJson() {
     return {};
   }
+}
+
+mixin AbstractUserMixin {
+  Map<String, dynamic> toJson();
+}
+
+abstract class AbstractUser with AbstractUserMixin {
+  factory AbstractUser() = User;
+
+  factory AbstractUser.fromJson(Map<String, dynamic> json) =>
+      User.fromJson(json);
 }
 
 @ShouldGenerate(
@@ -277,6 +290,19 @@ abstract class TestObjectBody {
 
 @ShouldGenerate(
   r'''
+    final _data = <String, dynamic>{};
+    _data.addAll(user?.toJson() ?? <String, dynamic>{});
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TestAbstractObjectBody {
+  @POST("/users")
+  Future<String> createUser(@Body() AbstractUser user);
+}
+
+@ShouldGenerate(
+  r'''
     final queryParameters = <String, dynamic>{r'u': u?.toJson()};
     queryParameters.addAll(user1?.toJson() ?? <String, dynamic>{});
     queryParameters.addAll(user2?.toJson() ?? <String, dynamic>{});
@@ -286,11 +312,13 @@ abstract class TestObjectBody {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestObjectQueries {
   @POST("/users")
-  Future<String> createUser(@Query('u') User u, @Queries() User user1, @Queries() User user2);
+  Future<String> createUser(
+      @Query('u') User u, @Queries() User user1, @Queries() User user2);
 }
 
 class CustomObject {
   final String id;
+
   CustomObject(this.id);
 }
 
