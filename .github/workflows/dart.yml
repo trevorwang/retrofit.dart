@@ -1,6 +1,6 @@
 name: Dart CI
 
-on: [push]
+on: [release]
 
 jobs:
   build:
