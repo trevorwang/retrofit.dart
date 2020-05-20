@@ -1,7 +1,10 @@
 name: Dart CI
 
-on: [release]
-
+on:
+  release:
+    branches:
+      - master
+    types: [published]
 jobs:
   build:
     runs-on: ubuntu-latest
