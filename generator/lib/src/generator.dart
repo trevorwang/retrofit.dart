@@ -683,8 +683,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .statement);
       } else if (_bodyName.type.element is ClassElement) {
         final ele = _bodyName.type.element as ClassElement;
-        final toJson = ele.methods
-            .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
+        final toJson = ele.lookUpMethod('toJson', ele.library);
         if (toJson == null) {
           log.warning(
               "${_bodyName.type} must provide a `toJson()` method which return a Map.\n"
@@ -797,9 +796,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ]).statement);
           } else if (innnerType.element is ClassElement) {
             final ele = innnerType.element as ClassElement;
-            final toJson = ele.methods.firstWhere(
-                (i) => i.displayName == "toJson",
-                orElse: () => null);
+            final toJson = ele.lookUpMethod('toJson', ele.library);
             if (toJson == null) {
               throw Exception("toJson() method have to add to ${p.type}");
             } else {
@@ -832,8 +829,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ]).statement);
         } else if (p.type.element is ClassElement) {
           final ele = p.type.element as ClassElement;
-          final toJson = ele.methods
-              .firstWhere((i) => i.displayName == "toJson", orElse: () => null);
+          final toJson = ele.lookUpMethod('toJson', ele.library);
           if (toJson == null) {
             throw Exception("toJson() method have to add to ${p.type}");
           } else {

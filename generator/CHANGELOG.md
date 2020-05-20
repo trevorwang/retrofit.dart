@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.7
+
+- Add support for abstract classes with `toJson` defined in mixin/interface/superclass.
+This approach is used in [freezed](https://pub.dev/packages/freezed) package 
+
 ## 1.3.6
 
 - Add support of Stream return type.
