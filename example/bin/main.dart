@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit_example/example.dart';
+import 'package:retrofit_example/serializable.dart';
 import 'package:retrofit_example/json_mapper_example.dart' hide Task;
-import 'package:retrofit_example/json_mapper_example.reflectable.dart' show initializeReflectable;
+import 'package:retrofit_example/json_mapper_example.reflectable.dart'
+    show initializeReflectable;
 
 final logger = Logger();
 void main(List<String> args) {
