@@ -15,14 +15,9 @@ import 'package:tuple/tuple.dart';
 import 'package:retrofit/retrofit.dart' as retrofit;
 
 class RetrofitOptions {
-  final bool autoCastResponse;
+  RetrofitOptions();
 
-  RetrofitOptions({this.autoCastResponse});
-
-  RetrofitOptions.fromOptions([BuilderOptions options])
-      : autoCastResponse =
-            (options?.config['auto_cast_response']?.toString() ?? 'true') ==
-                'true';
+  RetrofitOptions.fromOptions([BuilderOptions options]);
 }
 
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
@@ -69,7 +64,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final parser = retrofit.Parser.values
         .firstWhere((e) => e.toString() == enumString, orElse: () => null);
     clientAnnotation = retrofit.RestApi(
-      autoCastResponse: (annotation?.peek('autoCastResponse')?.boolValue),
       baseUrl: (annotation?.peek(_baseUrlVar)?.stringValue ?? ''),
       parser: (parser ?? retrofit.Parser.JsonSerializable),
     );
@@ -347,20 +341,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           refer(receiveProgress.item1.displayName);
 
     final wrapperedReturnType = _getResponseType(m.returnType);
-    final autoCastResponse = (globalOptions.autoCastResponse ??
-        (clientAnnotation.autoCastResponse ?? true) ??
-        (httpMehod.peek('autoCastResponse')?.boolValue ?? true));
-
-    /// If autoCastResponse is false, return the response as it is
-    if (!autoCastResponse) {
-      blocks.add(
-        refer("$_dioVar.request")
-            .call([path], namedArguments)
-            .returned
-            .statement,
-      );
-      return Block.of(blocks);
-    }
 
     if (wrapperedReturnType == null ||
         "void" == wrapperedReturnType.toString()) {
