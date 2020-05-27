@@ -6,6 +6,7 @@ import 'package:dio/dio.dart' hide Headers;
 import 'dart:io';
 import 'package:http_parser/http_parser.dart' show MediaType;
 
+part 'example.retrofit.dart';
 part 'example.g.dart';
 
 @RestApi(baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/")

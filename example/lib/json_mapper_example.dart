@@ -3,7 +3,7 @@ import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'json_mapper_example.reflectable.dart' show initializeReflectable;
 
-part 'json_mapper_example.g.dart';
+part 'json_mapper_example.retrofit.dart';
 
 @RestApi(
   baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/",

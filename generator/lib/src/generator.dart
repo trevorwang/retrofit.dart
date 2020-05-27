@@ -894,8 +894,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 }
 
-Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
-    [RetrofitGenerator(RetrofitOptions.fromOptions(options))], "retrofit");
+Builder generatorFactoryBuilder(BuilderOptions options) => PartBuilder(
+    [RetrofitGenerator(RetrofitOptions.fromOptions(options))],
+    ".retrofit.dart");
 
 /// Returns `$revived($args $kwargs)`, this won't have ending semi-colon (`;`).
 /// [object] must not be null.
@@ -984,7 +985,7 @@ String revivedLiteral(
     }
 
     if (constant.isType) {
-      return refer(constant.typeValue.displayName);
+      return refer(constant.typeValue.getDisplayString());
     }
 
     if (constant.isLiteral) {

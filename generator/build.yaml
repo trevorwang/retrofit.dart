@@ -4,7 +4,7 @@ builders:
     target: ":retrofit"
     import: "package:retrofit_generator/retrofit_generator.dart"
     builder_factories: ["retrofitBuilder"]
-    build_extensions: { ".dart": [".retrofit.g.part"] }
+    build_extensions: { ".dart": [".retrofit.dart"] }
     auto_apply: dependents
-    build_to: cache
+    build_to: source
     applies_builders: ["source_gen|combining_builder"]
