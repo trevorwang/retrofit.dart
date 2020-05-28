@@ -117,7 +117,7 @@ class OPTIONS extends Method {
 @immutable
 class Headers {
   final Map<String, dynamic> value;
-  const Headers([this.value]);
+  const Headers({this.value});
 }
 
 /// Replaces the header with the value of its target.
@@ -162,7 +162,7 @@ class Field {
 @immutable
 class Path {
   final String value;
-  const Path([this.value]);
+  const Path({this.value});
 }
 
 /// Query parameter appended to the URL.
@@ -177,8 +177,7 @@ class Path {
 @immutable
 class Query {
   final String value;
-  final bool encoded;
-  const Query(this.value, {this.encoded = false});
+  const Query(this.value);
 }
 
 /// Query parameter keys and values appended to the URL.
@@ -186,8 +185,7 @@ class Query {
 /// A `null` value for the map, as a key, or as a value is not allowed.
 @immutable
 class Queries {
-  final bool encoded;
-  const Queries({this.encoded = false});
+  const Queries();
 }
 
 /// Denotes that the request body will use form URL encoding. Fields should be declared as

@@ -21,7 +21,7 @@ abstract class RestClient {
   Future<List<Task>> getTasks();
 
   @GET("/tasks/{id}")
-  Future<Task> getTask(@Path("id") String id);
+  Future<Task> getTask(@Path(value: "id") String id);
 
   @PATCH("/tasks/{id}")
   Future<Task> updateTaskPart(
@@ -39,7 +39,7 @@ abstract class RestClient {
   @POST("http://httpbin.org/post")
   Future<void> createNewTaskFromFile(@Part() File file);
 
-  @Headers(<String, String>{"accept": "image/jpeg"})
+  @Headers(value: <String, String>{"accept": "image/jpeg"})
   @GET("http://httpbin.org/image/jpeg")
   @DioResponseType(ResponseType.bytes)
   Future<List<int>> getFile();
@@ -105,7 +105,7 @@ abstract class RestClient {
       {@Query("from") int from});
 
   @POST("/postfile")
-  @Headers(<String, dynamic>{
+  @Headers(value: <String, dynamic>{
     "\$Content-Type": "application/octet-stream",
     "Ocp-Apim-Subscription-Key": "abc"
   })
