@@ -152,8 +152,8 @@ class Body {
 /// `foo=Bob+Smith&bar=President`.
 @immutable
 class Field {
-  final String value;
-  const Field([this.value]);
+  final String name;
+  const Field({this.name});
 }
 
 /// Named replacement in a URL path segment.
@@ -223,8 +223,6 @@ class MultiPart {
 /// ```
 @immutable
 class Part {
-  @Deprecated('future release')
-  final String value;
   final String name;
 
   /// If this field is a file, optionally specify it's name. otherwise the name
@@ -233,5 +231,5 @@ class Part {
 
   // To identify the content type of a file
   final String contentType;
-  const Part({this.value, this.name, this.fileName, this.contentType});
+  const Part({this.name, this.fileName, this.contentType});
 }

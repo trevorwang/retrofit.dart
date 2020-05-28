@@ -688,7 +688,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     final fields = _getAnnotations(m, retrofit.Field).map((p, r) {
-      final fieldName = r.peek("value")?.stringValue ?? p.displayName;
+      final fieldName = r.peek("name")?.stringValue ?? p.displayName;
       final isFileField = _typeChecker(File).isAssignableFromType(p.type);
       if (isFileField) {
         log.severe(
@@ -708,9 +708,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           refer('FormData').newInstance([]).assignFinal(_dataVar).statement);
 
       parts.forEach((p, r) {
-        final fieldName = r.peek("name")?.stringValue ??
-            r.peek("value")?.stringValue ??
-            p.displayName;
+        final fieldName = r.peek("name")?.stringValue ?? p.displayName;
         final isFileField = _typeChecker(File).isAssignableFromType(p.type);
         final contentType = r.peek('contentType')?.stringValue;
         if (isFileField) {

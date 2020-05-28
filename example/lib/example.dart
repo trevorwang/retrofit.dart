@@ -75,7 +75,7 @@ abstract class RestClient {
 
   @POST("/post")
   Future<String> postFormData3(
-      {@Part(value: "customfiles", contentType: 'application/json')
+      {@Part(name: "customfiles", contentType: 'application/json')
           List<File> files,
       @Part()
           File file});
