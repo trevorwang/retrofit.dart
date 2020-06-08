@@ -579,31 +579,6 @@ abstract class TestModelList {
 }
 
 @ShouldGenerate(r'''
-  RequestOptions newRequestOptions(Options options) {
-    if (options is RequestOptions) {
-      return options;
-    }
-    if (options == null) {
-      return RequestOptions();
-    }
-    return RequestOptions(
-      method: options.method,
-      sendTimeout: options.sendTimeout,
-      receiveTimeout: options.receiveTimeout,
-      extra: options.extra,
-      headers: options.headers,
-      responseType: options.responseType,
-      contentType: options.contentType.toString(),
-      validateStatus: options.validateStatus,
-      receiveDataWhenStatusError: options.receiveDataWhenStatusError,
-      followRedirects: options.followRedirects,
-      maxRedirects: options.maxRedirects,
-      requestEncoder: options.requestEncoder,
-      responseDecoder: options.responseDecoder,
-    );
-  }
-''', contains: true)
-@ShouldGenerate(r'''
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(<String, dynamic>{});

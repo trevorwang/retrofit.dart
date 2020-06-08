@@ -78,9 +78,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ..constructors.addAll([_generateConstructor(baseUrl)])
         ..methods.addAll(_parseMethods(element))
         ..implements = ListBuilder([refer(className)]);
-      if (hasCustomOptions) {
-        c.methods.add(_generateOptionsCastMethod());
-      }
     });
 
     final emitter = DartEmitter();
@@ -548,45 +545,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .call([extraOptions.remove('headers')]).statement);
       return newOptions.property('merge').call([], extraOptions);
     }
-  }
-
-  Method _generateOptionsCastMethod() {
-    return Method((m) {
-      m
-        ..name = "newRequestOptions"
-        ..returns = refer("RequestOptions")
-
-        /// required parameters
-        ..requiredParameters.add(Parameter((p) {
-          p.name = "options";
-          p.type = refer("Options").type;
-        }))
-
-        /// add method body
-        ..body = Code('''
-         if (options is RequestOptions) {
-            return options;
-          }
-          if (options == null) {
-            return RequestOptions();
-          }
-          return RequestOptions(
-            method: options.method,
-            sendTimeout: options.sendTimeout,
-            receiveTimeout: options.receiveTimeout,
-            extra: options.extra,
-            headers: options.headers,
-            responseType: options.responseType,
-            contentType: options.contentType.toString(),
-            validateStatus: options.validateStatus,
-            receiveDataWhenStatusError: options.receiveDataWhenStatusError,
-            followRedirects: options.followRedirects,
-            maxRedirects: options.maxRedirects,
-            requestEncoder: options.requestEncoder,
-            responseDecoder: options.responseDecoder,
-          );
-        ''');
-    });
   }
 
   bool _isBasicType(DartType returnType) {
