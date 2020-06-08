@@ -3,7 +3,7 @@ import 'mock_adapter.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;
 
-part 'example.g.dart';
+part 'example.retrofit.dart';
 
 @RestApi(baseUrl: "http://baidu.com")
 abstract class RestClient {
