@@ -5,7 +5,6 @@ steps:
   - name: test
     image: google/dart
     commands:
-      - cd example && pub get && pub run build_runner build
-      - cd .. && PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
-      - cd generator && pub get && pub run test
-      - cd ../example && pub get && pub run test
+      - cd /drone/src/example && pub get && pub run build_runner build  && pub run test
+      - cd /drone/src && PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
+      - cd /drone/src/generator && pub get && pub run test
