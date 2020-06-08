@@ -473,30 +473,30 @@ abstract class TestOptionsMethod {
 }
 
 @ShouldGenerate(r'''
-    final httpResponse = HttpResponse(null, _result);
+_result.copyWith(data: null);
 ''', contains: true)
 @RestApi()
 abstract class TestHttpResponseVoid {
   @GET("/")
-  Future<HttpResponse<void>> noResponseData();
+  Future<Response<void>> noResponseData();
 }
 
 @ShouldGenerate(r'''
-    final httpResponse = HttpResponse(value, _result);
+_result.copyWith(data: value);
 ''', contains: true)
 @RestApi()
 abstract class TestHttpResponseObject {
   @GET("/")
-  Future<HttpResponse<Map<String, dynamic>>> responseWithObject();
+  Future<Response<Map<String, dynamic>>> responseWithObject();
 }
 
 @ShouldGenerate(r'''
-    final httpResponse = HttpResponse(value, _result);
+_result.copyWith(data: value);
 ''', contains: true)
 @RestApi()
 abstract class TestHttpResponseArray {
   @GET("/")
-  Future<HttpResponse<List<String>>> responseWithArray();
+  Future<Response<List<String>>> responseWithArray();
 }
 
 @ShouldGenerate(r'''

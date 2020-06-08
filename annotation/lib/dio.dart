@@ -31,12 +31,6 @@ class DioResponseType {
   const DioResponseType(this.responseType);
 }
 
-class HttpResponse<T> {
-  final T data;
-  final Response response;
-  HttpResponse(this.data, this.response);
-}
-
 @immutable
 class DioOptions {
   const DioOptions();
@@ -64,4 +58,16 @@ RequestOptions newRequestOptions(Options options) {
     requestEncoder: options.requestEncoder,
     responseDecoder: options.responseDecoder,
   );
+}
+
+extension ResponseEx<NewType> on Response<NewType> {
+  Response<NewType> copyWith<NewType>({NewType data}) => Response<NewType>(
+      data: data,
+      headers: this.headers,
+      request: this.request,
+      isRedirect: this.isRedirect,
+      statusCode: this.statusCode,
+      statusMessage: this.statusMessage,
+      redirects: this.redirects,
+      extra: this.extra);
 }

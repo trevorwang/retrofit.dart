@@ -73,6 +73,15 @@ void main() {
     expect(tasks.length, 1);
   });
 
+  test("test task list -- getTasksWithReponse", () async {
+    _server.enqueue(body: demoTaskListJson, headers: _headers);
+    final reponse = await _client.getTasksWithReponse();
+    expect(reponse, isA<Response>());
+    expect(reponse.data, isA<List>());
+    expect(reponse.data, isNotNull);
+    expect(reponse.data.length, 1);
+  });
+
   test("test task detail", () async {
     _server.enqueue(headers: _headers, body: demoTaskJson);
     final task = await _client.getTask("id");
@@ -139,5 +148,12 @@ void main() {
     _server.enqueue(body: 'hello');
     await _client.namedExample("apkKeyvalue", "hello", "ggggg");
     expect(true, true);
+  });
+
+  test('test head method', () async {
+    _server.enqueue(body: 'xxxxx');
+    final res = await _client.headRquest3();
+    expect(200, res.statusCode);
+    expect('', res.data);
   });
 }

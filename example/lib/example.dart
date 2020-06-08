@@ -55,16 +55,16 @@ abstract class RestClient {
   Future headRquest2();
 
   @HEAD('/')
-  Future<HttpResponse> headRquest3();
+  Future<Response> headRquest3();
 
   @GET("/task/group")
   Future<List<TaskGroup>> grouppedTaskByDate();
 
   @GET("/task")
-  Future<HttpResponse<List<Task>>> getTasksWithReponse();
+  Future<Response<List<Task>>> getTasksWithReponse();
 
   @DELETE("/tasks/{id}")
-  Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
+  Future<Response<void>> deleteTaskWithResponse(@Path() String id);
 
   @POST("/post")
   Future<String> postFormData(@Part() Task task, {@Part() File file});
