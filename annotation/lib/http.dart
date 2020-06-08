@@ -153,7 +153,7 @@ class Body {
 @immutable
 class Field {
   final String name;
-  const Field({this.name});
+  const Field([this.name]);
 }
 
 /// Named replacement in a URL path segment.
@@ -161,8 +161,8 @@ class Field {
 /// Path parameters may not be `null`.
 @immutable
 class Path {
-  final String value;
-  const Path({this.value});
+  final String name;
+  const Path([this.name]);
 }
 
 /// Query parameter appended to the URL.
@@ -176,8 +176,8 @@ class Path {
 /// Calling with `foo.friends(1)` yields `/get?bar=1`.
 @immutable
 class Query {
-  final String value;
-  const Query(this.value);
+  final String name;
+  const Query([this.name]);
 }
 
 /// Query parameter keys and values appended to the URL.

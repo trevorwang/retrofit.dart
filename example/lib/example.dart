@@ -21,7 +21,7 @@ abstract class RestClient {
   Future<List<Task>> getTasks();
 
   @GET("/tasks/{id}")
-  Future<Task> getTask(@Path(value: "id") String id);
+  Future<Task> getTask(@Path("id") String taskId);
 
   @PATCH("/tasks/{id}")
   Future<Task> updateTaskPart(

@@ -255,7 +255,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final paths = _getAnnotations(m, retrofit.Path);
     String definePath = method.peek("path").stringValue;
     paths.forEach((k, v) {
-      final value = v.peek("value")?.stringValue ?? k.displayName;
+      final value = v.peek("name")?.stringValue ?? k.displayName;
       definePath = definePath.replaceFirst("{$value}", "\$${k.displayName}");
     });
     return literal(definePath);
@@ -560,7 +560,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       MethodElement m, List<Code> blocks, String _queryParamsVar) {
     final queries = _getAnnotations(m, retrofit.Query);
     final queryParameters = queries.map((p, ConstantReader r) {
-      final key = r.peek("value")?.stringValue ?? p.displayName;
+      final key = r.peek("name")?.stringValue ?? p.displayName;
       final value = (_isBasicType(p.type) ||
               p.type.isDartCoreList ||
               p.type.isDartCoreMap)
