@@ -5,7 +5,7 @@ steps:
   - name: test
     image: google/dart
     commands:
-      - export DDDD=${PWD}
-      - cd "$DDDD/example" && pub get && pub run build_runner build &&  pub run test
-      - cd "$DDDD" PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
-      - cd "$DDDD/generator" && pub get && pub run test
+      - cd example && pub get && pub run build_runner build
+      - cd .. && PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
+      - cd generator && pub get && pub run test
+      - cd ../example && pub get && pub run test
