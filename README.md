@@ -151,10 +151,10 @@ The HTTP methods in the below sample are supported.
 
 ```dart
   @GET("/tasks/{id}")
-  Future<HttpResponse<Task>> getTask(@Path("id") String id)
+  Future<Response<Task>> getTask(@Path("id") String id)
 
   @GET("/tasks")
-  Future<HttpResponse<List<Task>>>> getTasks()
+  Future<Response<List<Task>>>> getTasks()
 ```
 
 ### HTTP Header
