@@ -1,5 +1,5 @@
 name: retrofit
-version: 2.0.0-dev
+version: 0.0.1-dev
 
 homepage: https://mings.in/retrofit.dart/
 repository: https://github.com/trevorwang/retrofit.dart/
@@ -11,3 +11,4 @@ environment:
 dependencies:
   meta: ^1.1.6
   dio: ^3.0.1
+  logging: ">=0.11.0 <1.0.0"

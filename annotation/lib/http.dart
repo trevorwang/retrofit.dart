@@ -9,6 +9,15 @@ class HttpMethod {
   static const String DELETE = "DELETE";
   static const String HEAD = "HEAD";
   static const String OPTIONS = "OPTIONS";
+
+  static bool isValidMethod(String method) =>
+      GET == method ||
+      POST == method ||
+      PATCH == method ||
+      PUT == method ||
+      DELETE == method ||
+      HEAD == method ||
+      OPTIONS == method;
 }
 
 /// Define how to parse response json
