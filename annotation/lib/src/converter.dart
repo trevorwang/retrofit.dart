@@ -23,9 +23,9 @@ class JsonConverter<T> extends Converter<T> {
     dynamic body = response.body;
     body = utf8.decode(body);
     body = _tryDecodeJson(body);
-    if (isTypeOf<T, Iterable<I>>()) {
+    if (T is Iterable<I>) {
       body = body.cast<I>();
-    } else if (isTypeOf<T, Map<String, I>>()) {
+    } else if (T is Map<String, I>) {
       body = body.cast<String, I>();
     }
     return response.copyWith<T>(body: body);

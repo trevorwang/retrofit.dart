@@ -10,14 +10,15 @@ class Request {
 
   const Request(
     this.method,
-    this.baseUrl,
     this.url, {
     this.body,
+    baseUrl,
     parts,
     parameters,
     headers,
     multipart,
   })  : parameters = parameters ?? const {},
+        baseUrl = null,
         parts = parts ?? const [],
         headers = headers ?? const {},
         multipart = multipart ?? false;
@@ -48,9 +49,9 @@ class Request {
   }) {
     return Request(
       method ?? this.method,
-      baseUrl ?? this.method,
       url ?? this.url,
       body: body ?? this.body,
+      baseUrl: baseUrl ?? this.baseUrl,
       parts: parts ?? this.parts,
       parameters: parameters ?? this.parameters,
       multipart: multipart ?? this.multipart,

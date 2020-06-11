@@ -18,21 +18,32 @@ class Client {
     var newReq = request;
     if (converter != null) {
       newReq = converter.convertRequest(request);
+      assert(newReq != null);
     }
 
     final url = newReq.url;
-    final $baseUrl = newReq.baseUrl ?? this.baseUrl;
+    final _baseUrl = newReq.baseUrl ?? this.baseUrl;
     final body = newReq.body;
-    final options = dio.RequestOptions(baseUrl: $baseUrl);
+    final options = dio.RequestOptions(baseUrl: _baseUrl);
+    options.method = newReq.method;
     options.responseType = dio.ResponseType.bytes;
 
     final res = await _client.request(url,
         data: body, queryParameters: request.parameters, options: options);
 
     var response = Response(res, res.data);
-    if (converter == null) converter = JsonConverter();
+    var contentType = response.headers['content-type'];
+    if (converter == null &&
+        (contentType?.contains('application/json') ?? false)) {
+      converter = JsonConverter();
+    }
     if (converter != null) {
       return response = converter.convertResponse<T, I>(response);
+    }
+
+    if (T is String || T == dynamic) {
+      final data = String.fromCharCodes(response.body as List<int>);
+      return response.copyWith(body: data as T);
     }
     return response;
   }

@@ -12,3 +12,7 @@ dependencies:
   meta: ^1.1.6
   dio: ^3.0.1
   logging: ">=0.11.0 <1.0.0"
+
+dev_dependencies:
+  test: ^1.14.7
+  mock_web_server: ^4.1.1
