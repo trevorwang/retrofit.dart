@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart' as dio;
+import '../http.dart';
 import 'converter.dart';
 import 'dart:async';
 import 'request.dart';
 import 'response.dart';
+import 'utils.dart';
 
 class Client {
   final String baseUrl;
@@ -13,6 +15,35 @@ class Client {
     dio.Dio dioClient,
     this.converter,
   }) : _client = dioClient ?? dio.Dio();
+
+  Future<Response<T>> get<T, I>(
+    String url, {
+    Map<String, String> headers,
+    Map<String, dynamic> parameters,
+  }) =>
+      request(Request(
+        HttpMethod.GET,
+        url,
+        headers: headers,
+        parameters: parameters,
+      ));
+
+  Future<Response<T>> post<T, I>(
+    String url, {
+    Map<String, String> headers,
+    Map<String, dynamic> parameters,
+    List<PartValue> parts,
+    dynamic body,
+  }) =>
+      request<T, I>(Request(
+        HttpMethod.POST,
+        url,
+        headers: headers,
+        parameters: parameters,
+        body: body,
+        parts: parts,
+        multipart: parts != null,
+      ));
 
   Future<Response<T>> request<T, I>(Request request) async {
     var newReq = request;
@@ -28,9 +59,18 @@ class Client {
     options.method = newReq.method;
     options.responseType = dio.ResponseType.bytes;
 
-    final res = await _client.request(url,
-        data: body, queryParameters: request.parameters, options: options);
-
+    var res;
+    try {
+      res = await _client.request(url,
+          data: body, queryParameters: request.parameters, options: options);
+    } catch (err) {
+      if (err is dio.DioError) {
+        assert(err.response != null, 'unexpected http error!');
+        res = err.response;
+      } else {
+        logger.warning('unexpected error happened!');
+      }
+    }
     var response = Response(res, res.data);
     var contentType = response.headers['content-type'];
     if (converter == null &&
