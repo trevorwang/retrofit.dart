@@ -55,6 +55,13 @@ void main() {
       expect(req.queries, 'foo=bar&age=1&income=2.5');
     });
 
+    test('basic map queries with null value', () async {
+      final queries = {'foo': null};
+      final req = Request(HttpMethod.GET, '', parameters: queries);
+
+      expect(req.queries, '');
+    });
+
     test('object map in queries', () async {
       final queries = {
         'foo': 'bar',

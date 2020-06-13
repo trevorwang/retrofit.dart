@@ -16,7 +16,7 @@ Iterable<QueryPair> _mapToQuery(Map<String, dynamic> map, {String prefix}) {
       querySet.addAll(_iterableToQuery(name, value));
     } else if (value is Map) {
       querySet.addAll(_mapToQuery(value, prefix: name));
-    } else if (value.toString().isNotEmpty == true) {
+    } else if (value?.toString()?.isNotEmpty == true) {
       querySet.add(QueryPair(name, _urlEncode(value)));
     }
   });
