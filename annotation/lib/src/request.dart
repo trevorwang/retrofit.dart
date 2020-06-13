@@ -18,7 +18,7 @@ class Request {
     headers,
     multipart,
   })  : parameters = parameters ?? const {},
-        baseUrl = null,
+        baseUrl = baseUrl ?? null,
         parts = parts ?? const [],
         headers = headers ?? const {},
         multipart = multipart ?? false;
@@ -56,6 +56,19 @@ class Request {
       parameters: parameters ?? this.parameters,
       multipart: multipart ?? this.multipart,
     );
+  }
+
+  Uri get uri {
+    assert(url != null);
+    if (url.startsWith('https://') ||
+        url.startsWith('http://') ||
+        this.baseUrl == null) {
+      return Uri.parse(url);
+    }
+    if (!baseUrl.endsWith('/') && !url.startsWith('/')) {
+      return Uri.parse('$baseUrl/$url');
+    }
+    return Uri.parse('$baseUrl$url');
   }
 }
 
