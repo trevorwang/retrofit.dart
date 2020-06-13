@@ -4,6 +4,7 @@ import 'package:test/test.dart';
 import 'package:mock_web_server/mock_web_server.dart';
 
 MockWebServer _server;
+const jsonContentHeader = {'Content-Type': 'application/json'};
 
 void main() {
   setUp(() async {
@@ -38,7 +39,7 @@ void main() {
     final client = Client(baseUrl: _server.url);
     final content = '{}';
     _server
-        .enqueue(body: content, headers: {'content-type': 'application/json'});
+        .enqueue(body: content, headers:jsonContentHeader );
     final value = await client.request(Request(HttpMethod.GET, '/'));
 
     expect(value.body.toString(), content);
@@ -49,7 +50,7 @@ void main() {
     final content = {'name': 'trevor', 'age': 33};
     _server.enqueue(
         body: json.encode(content),
-        headers: {'content-type': 'application/json'});
+        headers:jsonContentHeader);
     final value = await client.request(Request(HttpMethod.GET, '/'));
 
     expect(value.body, content);
@@ -61,7 +62,7 @@ void main() {
     final content = ['1', '2', '3'];
     _server.enqueue(
         body: json.encode(content),
-        headers: {'content-type': 'application/json'});
+        headers: jsonContentHeader);
     final value = await client.request(Request(HttpMethod.GET, '/'));
     expect(value.body, content);
     expect(value.body is List, isTrue);
