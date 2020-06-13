@@ -53,8 +53,8 @@ class Client {
     }
 
     final body = newReq.body;
-    final options = dio.RequestOptions(baseUrl: this.baseUrl);
-    options.method = newReq.method;
+    final options = newReq.toRequest();
+    options.baseUrl = this.baseUrl;
     options.responseType = dio.ResponseType.bytes;
 
     var res;

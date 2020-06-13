@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' as dio;
 import 'package:meta/meta.dart';
 import 'utils.dart';
 
@@ -26,20 +27,6 @@ class Request {
         headers = headers ?? const {},
         multipart = multipart ?? false;
 
-  Future toHttpRequest() {
-    if (body is Stream<List<int>>) {
-      return toStreamedRequest();
-    }
-    if (multipart) {
-      return toMultipartRequest();
-    }
-    return toBasicRequest();
-  }
-
-  Future toBasicRequest() => throw UnimplementedError();
-  Future toMultipartRequest() => throw UnimplementedError();
-  Future toStreamedRequest() => throw UnimplementedError();
-
   Request copyWith({
     String method,
     String baseUrl,
@@ -61,14 +48,30 @@ class Request {
     );
   }
 
+  dio.RequestOptions toRequest() {
+    return dio.RequestOptions(
+      method: this.method,
+      headers: _buildHeaders(),
+    );
+  }
+
   @visibleForTesting
   Uri get basicUri => _buildBasicUri();
 
   Uri get uri {
-    return basicUri.replace(query: mapToQuery(this.queryParameters));
+    final query = mapToQuery(this.queryParameters);
+    final completedUri = basicUri;
+    if (query.isNotEmpty) {
+      // Add query only when there's data
+      basicUri.replace(query: query);
+    }
+    return completedUri;
   }
 
+  @visibleForTesting
   String get queries => mapToQuery(this.queryParameters);
+
+  Map<String, String> _buildHeaders() => Map.from(this.headers);
 
   Uri _buildBasicUri() {
     assert(url != null);
