@@ -52,17 +52,14 @@ class Client {
       assert(newReq != null);
     }
 
-    final url = newReq.url;
-    final _baseUrl = newReq.baseUrl ?? this.baseUrl;
     final body = newReq.body;
-    final options = dio.RequestOptions(baseUrl: _baseUrl);
+    final options = dio.RequestOptions(baseUrl: this.baseUrl);
     options.method = newReq.method;
     options.responseType = dio.ResponseType.bytes;
 
     var res;
     try {
-      res = await _client.request(url,
-          data: body, queryParameters: request.parameters, options: options);
+      res = await _client.requestUri(newReq.uri, data: body, options: options);
     } catch (err) {
       if (err is dio.DioError) {
         assert(err.response != null, 'unexpected http error!');

@@ -165,7 +165,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   Map<ParameterElement, ConstantReader> _getAnnotations(
       MethodElement m, Type type) {
     var annot = <ParameterElement, ConstantReader>{};
-    for (final p in m.parameters) {
+    for (final p in m.queryParameters) {
       final a = _typeChecker(type).firstAnnotationOf(p);
       if (a != null) {
         annot[p] = ConstantReader(a);
@@ -176,7 +176,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   Tuple2<ParameterElement, ConstantReader> _getAnnotation(
       MethodElement m, Type type) {
-    for (final p in m.parameters) {
+    for (final p in m.queryParameters) {
       final a = _typeChecker(type).firstAnnotationOf(p);
       if (a != null) {
         return Tuple2(p, ConstantReader(a));
@@ -233,15 +233,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ..annotations = ListBuilder([CodeExpression(Code('override'))]);
 
       /// required parameters
-      mm.requiredParameters.addAll(m.parameters
+      mm.requiredParameters.addAll(m.queryParameters
           .where((it) => it.isRequiredPositional || it.isRequiredNamed)
           .map((it) => Parameter((p) => p
             ..name = it.name
             ..named = it.isNamed)));
 
       /// optional positional or named parameters
-      mm.optionalParameters.addAll(m.parameters.where((i) => i.isOptional).map(
-          (it) => Parameter((p) => p
+      mm.optionalParameters.addAll(m.queryParameters
+          .where((i) => i.isOptional)
+          .map((it) => Parameter((p) => p
             ..name = it.name
             ..named = it.isNamed
             ..defaultTo = it.defaultValueCode == null
@@ -267,7 +268,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final path = _generatePath(m, httpMehod);
     final blocks = <Code>[];
 
-    for (var parameter in m.parameters.where((p) =>
+    for (var parameter in m.queryParameters.where((p) =>
         p.isRequiredNamed ||
         p.isRequiredPositional ||
         p.metadata.firstWhere((meta) => meta.isRequired, orElse: () => null) !=
@@ -590,7 +591,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       blocks.add(refer('$_queryParamsVar.addAll').call([expression]).statement);
     }
 
-    if (m.parameters
+    if (m.queryParameters
         .where((p) => (p.isOptional && !p.isRequiredNamed))
         .isNotEmpty) {
       blocks.add(Code("$_queryParamsVar.removeWhere((k, v) => v == null);"));
@@ -684,7 +685,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                       .call([literal(contentType)])
           });
 
-          final optinalFile = m.parameters
+          final optinalFile = m.queryParameters
                   .firstWhere((pp) => pp.displayName == p.displayName)
                   ?.isOptional ??
               false;

@@ -1,10 +1,13 @@
+import 'package:meta/meta.dart';
+import 'utils.dart';
+
 class Request {
   final String method;
   final String baseUrl;
   final String url;
   final dynamic body;
   final List<PartValue> parts;
-  final Map<String, dynamic> parameters;
+  final Map<String, dynamic> queryParameters;
   final Map<String, String> headers;
   final bool multipart;
 
@@ -17,7 +20,7 @@ class Request {
     parameters,
     headers,
     multipart,
-  })  : parameters = parameters ?? const {},
+  })  : queryParameters = parameters ?? const {},
         baseUrl = baseUrl ?? null,
         parts = parts ?? const [],
         headers = headers ?? const {},
@@ -53,12 +56,21 @@ class Request {
       body: body ?? this.body,
       baseUrl: baseUrl ?? this.baseUrl,
       parts: parts ?? this.parts,
-      parameters: parameters ?? this.parameters,
+      parameters: parameters ?? this.queryParameters,
       multipart: multipart ?? this.multipart,
     );
   }
 
+  @visibleForTesting
+  Uri get basicUri => _buildBasicUri();
+
   Uri get uri {
+    return basicUri.replace(query: mapToQuery(this.queryParameters));
+  }
+
+  String get queries => mapToQuery(this.queryParameters);
+
+  Uri _buildBasicUri() {
     assert(url != null);
     if (url.startsWith('https://') ||
         url.startsWith('http://') ||
