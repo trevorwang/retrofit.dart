@@ -82,5 +82,18 @@ void main() {
       final req = Request(HttpMethod.GET, '', parameters: queries);
       expect(req.queries, 'foo=bar&colors=red&colors=black&colors=green');
     });
+
+    test('full url string', () async {
+      final queries = {
+        'foo': 'bar',
+        'colors': ['red', 'black', 'green'],
+      };
+      final baseUrl = 'https://baidu.com';
+      final url = '/google';
+      final req =
+          Request(HttpMethod.GET, url, baseUrl: baseUrl, parameters: queries);
+      expect(req.uri.toString(),
+          '$baseUrl$url?foo=bar&colors=red&colors=black&colors=green');
+    });
   });
 }
