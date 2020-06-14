@@ -60,12 +60,11 @@ class Request {
 
   Uri get uri {
     final query = mapToQuery(this.queryParameters);
-    final completedUri = basicUri;
     if (query.isNotEmpty) {
       // Add query only when there's data
-      basicUri.replace(query: query);
+      return basicUri.replace(query: query);
     }
-    return completedUri;
+    return basicUri;
   }
 
   @visibleForTesting
