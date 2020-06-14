@@ -2,6 +2,7 @@ import 'package:logging/logging.dart';
 
 final logger = Logger("retrofit");
 
+/// colors=red&colors=white&user.name=trevor&user.age=22
 String mapToQuery(Map<String, dynamic> map) => _mapToQuery(map).join('&');
 
 Iterable<QueryPair> _mapToQuery(Map<String, dynamic> map, {String prefix}) {
