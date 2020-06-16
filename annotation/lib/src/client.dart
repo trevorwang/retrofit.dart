@@ -47,15 +47,19 @@ class Client {
 
   Future<Response<T>> request<T, I>(Request request) async {
     var newReq = request;
-    if (converter != null) {
-      newReq = converter.convertRequest(request);
-      assert(newReq != null);
+
+    if (!isFormUrlEncoded(request)) {
+      if (converter != null) {
+        newReq = converter.convertRequest(request);
+        assert(newReq != null);
+      }
     }
 
     final body = newReq.body;
     final options = newReq.toRequest();
     options.baseUrl = this.baseUrl;
     options.responseType = dio.ResponseType.bytes;
+    options.headers.addAll(newReq.headers);
 
     var res;
     try {

@@ -4,6 +4,15 @@ import 'request.dart';
 import 'response.dart';
 import 'utils.dart';
 
+typedef RequestConverter = Request Function(Request request);
+typedef ResponseConverter = Response<T> Function<T, I>(Response response);
+
+class ConverterFactory {
+  final RequestConverter reqConverter;
+  final ResponseConverter resConverter;
+  const ConverterFactory({this.reqConverter, this.resConverter});
+}
+
 abstract class Converter<T> {
   Request convertRequest(Request request) {
     return request;

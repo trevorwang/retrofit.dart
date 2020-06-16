@@ -1,6 +1,11 @@
 import 'package:logging/logging.dart';
+import 'package:retrofit/retrofit.dart';
 
-final logger = Logger("retrofit");
+const contentTypeKey = 'content-type';
+const jsonType = 'application/json';
+const formUrlEncodedType = 'application/x-www-form-urlencoded';
+
+final logger = Logger('retrofit');
 
 /// colors=red&colors=white&user.name=trevor&user.age=22
 String mapToQuery(Map<String, dynamic> map) => _mapToQuery(map).join('&');
@@ -41,4 +46,8 @@ class QueryPair {
   String toString() {
     return '$key=$value';
   }
+}
+
+bool isFormUrlEncoded(Request request) {
+  return formUrlEncodedType == request.headers[contentTypeKey];
 }
