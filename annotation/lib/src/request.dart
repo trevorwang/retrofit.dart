@@ -91,3 +91,10 @@ class PartValue<T> {
   final String name;
   PartValue(this.name, this.value);
 }
+
+class PartFile<T> extends PartValue<T> {
+  final T value;
+  final String name;
+  final String contentType;
+  PartFile(this.name, this.value, {this.contentType}) : super(name, value);
+}

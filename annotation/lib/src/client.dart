@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart' as dio;
+import 'package:http_parser/http_parser.dart';
+
 import '../http.dart';
 import 'converter.dart';
-import 'dart:async';
 import 'request.dart';
 import 'response.dart';
 import 'utils.dart';
@@ -66,12 +68,19 @@ class Client {
     if (request.multipart) {
       var formdata = dio.FormData();
       for (var item in request.parts) {
-        if (item.value is File) {
-          formdata.files.add(MapEntry(item.name,
-              dio.MultipartFile.fromBytes(item.value.readAsBytes())));
+        final contentType = _fileContentType(item);
+        if (item.value is List<int>) {
+          formdata.files.add(MapEntry(
+            item.name,
+            dio.MultipartFile.fromBytes(item.value, contentType: contentType),
+          ));
+        } else if (item.value is File) {
+          formdata.files.add(MapEntry(
+              item.name,
+              dio.MultipartFile.fromFileSync(item.value.path,
+                  contentType: contentType)));
         } else {
-          formdata.fields
-              .add(MapEntry<String, String>(item.name, item.value.toString()));
+          formdata.fields.add(MapEntry(item.name, item.value.toString()));
         }
       }
 
@@ -104,5 +113,15 @@ class Client {
       return response.copyWith(body: data as T);
     }
     return response;
+  }
+
+  MediaType _fileContentType(PartValue item) {
+    if (item is PartFile) {
+      final type = item.contentType;
+      if (type != null) {
+        return MediaType.parse(type);
+      }
+    }
+    return null;
   }
 }
