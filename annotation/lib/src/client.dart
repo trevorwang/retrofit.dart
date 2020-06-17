@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart' as dio;
 import '../http.dart';
 import 'converter.dart';
@@ -55,11 +57,26 @@ class Client {
       }
     }
 
-    final body = newReq.body;
+    var body = newReq.body;
     final options = newReq.toRequest();
     options.baseUrl = this.baseUrl;
     options.responseType = dio.ResponseType.bytes;
     options.headers.addAll(newReq.headers);
+
+    if (request.multipart) {
+      var formdata = dio.FormData();
+      for (var item in request.parts) {
+        if (item.value is File) {
+          formdata.files.add(MapEntry(item.name,
+              dio.MultipartFile.fromBytes(item.value.readAsBytes())));
+        } else {
+          formdata.fields
+              .add(MapEntry<String, String>(item.name, item.value.toString()));
+        }
+      }
+
+      body = formdata;
+    }
 
     var res;
     try {

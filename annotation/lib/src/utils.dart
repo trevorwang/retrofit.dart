@@ -4,6 +4,7 @@ import 'package:retrofit/retrofit.dart';
 const contentTypeKey = 'content-type';
 const jsonType = 'application/json';
 const formUrlEncodedType = 'application/x-www-form-urlencoded';
+const multipartType = 'multipart/form-data';
 
 final logger = Logger('retrofit');
 
