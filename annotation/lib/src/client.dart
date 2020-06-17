@@ -62,6 +62,7 @@ class Client {
     var body = newReq.body;
     final options = newReq.toRequest();
     options.baseUrl = this.baseUrl;
+    // TODO: Will handle response type before release
     options.responseType = dio.ResponseType.bytes;
     options.headers.addAll(newReq.headers);
 
@@ -99,9 +100,8 @@ class Client {
       }
     }
     var response = Response(res, res.data);
-    var contentType = response.headers['content-type'];
-    if (converter == null &&
-        (contentType?.contains('application/json') ?? false)) {
+    var contentType = response.headers[contentTypeKey];
+    if (converter == null && (contentType?.contains(jsonType) ?? false)) {
       converter = JsonConverter();
     }
     if (converter != null) {
