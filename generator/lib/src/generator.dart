@@ -770,7 +770,22 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         } else if (_typeChecker(List).isExactlyType(p.type) ||
             _typeChecker(BuiltList).isExactlyType(p.type)) {
           var innnerType = _genericOf(p.type);
-          if (_isBasicType(innnerType) ||
+
+          if (innnerType.getDisplayString() == "List<int>") {
+            final conType = contentType == null
+                ? ""
+                : 'contentType: MediaType.parse(${literal(contentType)}),';
+            blocks
+                .add(refer(_dataVar).property('files').property("addAll").call([
+              refer(''' 
+                  ${p.displayName}?.map((i) => MapEntry(
+                '${fieldName}',
+                MultipartFile.fromBytes(i,
+                    ${conType}
+                    )))
+                  ''')
+            ]).statement);
+          } else if (_isBasicType(innnerType) ||
               _typeChecker(Map).isExactlyType(innnerType) ||
               _typeChecker(BuiltMap).isExactlyType(innnerType) ||
               _typeChecker(List).isExactlyType(innnerType) ||

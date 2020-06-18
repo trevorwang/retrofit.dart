@@ -82,6 +82,10 @@ abstract class RestClient {
           File file});
 
   @POST("/post")
+  Future<String> postFormData6(
+      {@Part(value: "customfiles") List<List<int>> files, @Part() File file});
+
+  @POST("/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
 
   @POST("/post")

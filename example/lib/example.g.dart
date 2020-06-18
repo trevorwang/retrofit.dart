@@ -513,6 +513,35 @@ class _RestClient implements RestClient {
   }
 
   @override
+  postFormData6({files, file}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _data = FormData();
+    _data.files.addAll(files?.map((i) => MapEntry(
+        'customfiles',
+        MultipartFile.fromBytes(
+          i,
+        ))));
+    if (file != null) {
+      _data.files.add(MapEntry(
+          'file',
+          MultipartFile.fromFileSync(file.path,
+              filename: file.path.split(Platform.pathSeparator).last)));
+    }
+    final Response<String> _result = await _dio.request('/post',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data;
+    return value;
+  }
+
+  @override
   postFormData4(tasks, file) async {
     ArgumentError.checkNotNull(tasks, 'tasks');
     ArgumentError.checkNotNull(file, 'file');
