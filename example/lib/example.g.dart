@@ -523,12 +523,12 @@ class _RestClient implements RestClient {
         MultipartFile.fromBytes(
           i,
         ))));
-    if (file != null) {
-      _data.files.add(MapEntry(
-          'file',
-          MultipartFile.fromFileSync(file.path,
-              filename: file.path.split(Platform.pathSeparator).last)));
-    }
+    _data.files.add(MapEntry(
+        'file',
+        MultipartFile.fromBytes(
+          file,
+          filename: null,
+        )));
     final Response<String> _result = await _dio.request('/post',
         queryParameters: queryParameters,
         options: RequestOptions(

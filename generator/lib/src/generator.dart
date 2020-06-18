@@ -733,6 +733,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             p.displayName;
         final isFileField = _typeChecker(File).isAssignableFromType(p.type);
         final contentType = r.peek('contentType')?.stringValue;
+
+        log.warning(p.type.getDisplayString());
         if (isFileField) {
           final fileName = r.peek("fileName")?.stringValue != null
               ? literalString(r.peek("fileName")?.stringValue)
@@ -767,6 +769,22 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           } else {
             blocks.add(returnCode);
           }
+        } else if (p.type.getDisplayString() == "List<int>") {
+          final fileName = r.peek("fileName")?.stringValue;
+          final conType = contentType == null
+              ? ""
+              : 'contentType: MediaType.parse(${literal(contentType)}),';
+          blocks.add(refer(_dataVar).property('files').property("add").call([
+            refer(''' 
+                  MapEntry(
+                '${fieldName}',
+                MultipartFile.fromBytes(${p.displayName},
+
+                filename:${literal(fileName ?? null)},
+                    ${conType}
+                    ))
+                  ''')
+          ]).statement);
         } else if (_typeChecker(List).isExactlyType(p.type) ||
             _typeChecker(BuiltList).isExactlyType(p.type)) {
           var innnerType = _genericOf(p.type);
