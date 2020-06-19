@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:http_parser/http_parser.dart';
@@ -86,11 +85,6 @@ class Client {
                 item.name,
                 dio.MultipartFile.fromBytes(e, contentType: contentType),
               )));
-        } else if (item.value is File) {
-          formdata.files.add(MapEntry(
-              item.name,
-              dio.MultipartFile.fromFileSync(item.value.path,
-                  contentType: contentType)));
         } else {
           formdata.fields.add(MapEntry(item.name, item.value.toString()));
         }

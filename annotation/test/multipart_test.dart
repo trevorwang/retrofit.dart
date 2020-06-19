@@ -5,7 +5,6 @@ import 'package:retrofit/retrofit.dart';
 import 'package:retrofit/src/utils.dart';
 import 'package:test/test.dart';
 import 'package:mock_web_server/mock_web_server.dart';
-import 'dart:io';
 
 MockWebServer _server;
 Client client;
@@ -50,35 +49,6 @@ void main() {
           'content-disposition: form-data; name="age"\r\n'
           '\r\n13'
           '\r\n',
-        ));
-  });
-
-  test('file', () async {
-    final partList = [
-      PartValue<String>('name', 'peter'),
-      PartValue<File>('file', File('./README.md'))
-    ];
-
-    final request =
-        Request(HttpMethod.POST, '/', parts: partList, multipart: true);
-    await client.request(request);
-    final req = _server.takeRequest();
-    expect(req.headers[contentTypeKey],
-        contains('multipart/form-data; boundary='));
-    expect(
-        req.body,
-        contains(
-          'content-disposition: form-data; name="name"\r\n'
-          '\r\n'
-          'peter\r\n',
-        ));
-    expect(
-        req.body,
-        contains(
-          'content-disposition: form-data; name="file"; filename="README.md"\r\n'
-          'content-type: application/octet-stream\r\n'
-          '\r\n'
-          '# Retrofit For Dart\n',
         ));
   });
 
