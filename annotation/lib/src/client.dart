@@ -70,11 +70,22 @@ class Client {
       var formdata = dio.FormData();
       for (var item in request.parts) {
         final contentType = _fileContentType(item);
-        if (item.value is List<int>) {
+        if (item.value is dio.MultipartFile) {
+          formdata.files.add(MapEntry(item.name, item.value));
+        } else if (item.value is Iterable<dio.MultipartFile>) {
+          final fileList = item.value as Iterable<dio.MultipartFile>;
+          formdata.files.addAll(fileList.map((e) => MapEntry(item.name, e)));
+        } else if (item.value is List<int>) {
           formdata.files.add(MapEntry(
             item.name,
             dio.MultipartFile.fromBytes(item.value, contentType: contentType),
           ));
+        } else if (item.value is Iterable<List<int>>) {
+          final bytesList = item.value as Iterable<List<int>>;
+          formdata.files.addAll(bytesList.map((e) => MapEntry(
+                item.name,
+                dio.MultipartFile.fromBytes(e, contentType: contentType),
+              )));
         } else if (item.value is File) {
           formdata.files.add(MapEntry(
               item.name,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:retrofit/src/utils.dart';
 import 'package:test/test.dart';
@@ -81,9 +82,13 @@ void main() {
         ));
   });
 
-  test('bytes', () async {
+  test('bytes and bytes list', () async {
     final content = 'hello world!';
-    final partList = [PartValue<List<int>>('bytes', content.codeUnits)];
+    final bytesListContent = 'bytes list';
+    final partList = [
+      PartValue<List<int>>('bytes', content.codeUnits),
+      PartValue<List<List<int>>>('bytes list', [bytesListContent.codeUnits]),
+    ];
 
     final request =
         Request(HttpMethod.POST, '/', parts: partList, multipart: true);
@@ -120,6 +125,44 @@ void main() {
           'content-type: ${jsonType}\r\n'
           '\r\n'
           '${content}\r\n',
+        ));
+  });
+
+  test('MultiPartFile and list', () async {
+    final content = json.encode({'name': 'peter', 'age': 13});
+    final name = '1';
+    final listContentName = '2';
+    final listContent = 'Hello  MultipartFile array';
+    final partList = [
+      PartValue(name, MultipartFile.fromBytes(content.codeUnits)),
+      PartValue(listContentName, [
+        MultipartFile.fromBytes(listContent.codeUnits),
+        MultipartFile.fromBytes(listContent.codeUnits)
+      ]),
+    ];
+
+    final request =
+        Request(HttpMethod.POST, '/', parts: partList, multipart: true);
+    await client.request(request);
+    final req = _server.takeRequest();
+    expect(req.headers[contentTypeKey],
+        contains('multipart/form-data; boundary='));
+    expect(
+        req.body,
+        contains(
+          'content-disposition: form-data; name="$name"\r\n'
+          'content-type: application/octet-stream\r\n'
+          '\r\n'
+          '${content}\r\n',
+        ));
+
+    expect(
+        req.body,
+        contains(
+          'content-disposition: form-data; name="$listContentName"\r\n'
+          'content-type: application/octet-stream\r\n'
+          '\r\n'
+          '${listContent}\r\n',
         ));
   });
 }
