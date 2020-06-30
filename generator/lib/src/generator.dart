@@ -614,6 +614,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         _typeChecker(bool).isExactlyType(returnType) ||
         _typeChecker(int).isExactlyType(returnType) ||
         _typeChecker(double).isExactlyType(returnType) ||
+        _typeChecker(num).isExactlyType(returnType) ||
         _typeChecker(Double).isExactlyType(returnType) ||
         _typeChecker(Float).isExactlyType(returnType);
   }
