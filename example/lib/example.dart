@@ -47,7 +47,10 @@ abstract class RestClient {
 
   @POST("http://httpbin.org/post")
   @FormUrlEncoded()
-  Future<String> postUrlEncodedFormData(@Field() String hello);
+  Future<String> postUrlEncodedFormData(
+    @Field() String hello, {
+    @Field() String gg,
+  });
 
   @HEAD('/')
   Future<String> headRequest();
