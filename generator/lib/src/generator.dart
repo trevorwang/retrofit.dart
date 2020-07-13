@@ -720,6 +720,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     if (fields.isNotEmpty) {
       blocks.add(literalMap(fields).assignFinal(_dataVar).statement);
+      blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
       return;
     }
 
