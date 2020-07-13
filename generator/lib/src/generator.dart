@@ -734,7 +734,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         final isFileField = _typeChecker(File).isAssignableFromType(p.type);
         final contentType = r.peek('contentType')?.stringValue;
 
-        log.warning(p.type.getDisplayString());
         if (isFileField) {
           final fileName = r.peek("fileName")?.stringValue != null
               ? literalString(r.peek("fileName")?.stringValue)
