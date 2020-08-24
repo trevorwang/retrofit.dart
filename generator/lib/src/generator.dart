@@ -64,7 +64,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   String _implementClass(ClassElement element, ConstantReader annotation) {
     final className = element.name;
-    final name = '_$className';
     final enumString = (annotation?.peek('parser')?.revive()?.accessor);
     final parser = retrofit.Parser.values
         .firstWhere((e) => e.toString() == enumString, orElse: () => null);
@@ -76,14 +75,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final baseUrl = clientAnnotation.baseUrl;
     final classBuilder = Class((c) {
       c
-        ..name = name
+        ..name = '_$className'
+        ..types = ListBuilder(element.typeParameters.map((e) => refer(e.name)))
         ..fields.addAll([
           _buildDioFiled(),
           _buildBaseUrlFiled(baseUrl),
         ])
         ..constructors.addAll([_generateConstructor(baseUrl)])
         ..methods.addAll(_parseMethods(element))
-        ..implements = ListBuilder([refer(className)]);
+        ..implements =
+            ListBuilder([refer(_generateTypeParameterizedName(element))]);
       if (hasCustomOptions) {
         c.methods.add(_generateOptionsCastMethod());
       }
@@ -127,6 +128,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             m.isAbstract &&
             (m.returnType.isDartAsyncFuture || m.returnType.isDartAsyncStream);
       }).map((m) => _generateMethod(m));
+
+  String _generateTypeParameterizedName(TypeParameterizedElement element) =>
+      element.displayName +
+      (element.typeParameters.isNotEmpty
+          ? '<${element.typeParameters.join(',')}>'
+          : '');
 
   final _methodsAnnotations = const [
     retrofit.GET,
@@ -236,6 +243,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return Method((mm) {
       mm
         ..name = m.displayName
+        ..types = ListBuilder(m.typeParameters.map((e) => refer(e.name)))
         ..modifier = m.returnType.isDartAsyncFuture
             ? MethodModifier.async
             : MethodModifier.asyncStar
@@ -1038,7 +1046,7 @@ String revivedLiteral(
     }
 
     if (constant.isType) {
-      return refer(constant.typeValue.displayName);
+      return refer(constant.typeValue.getDisplayString());
     }
 
     if (constant.isLiteral) {
