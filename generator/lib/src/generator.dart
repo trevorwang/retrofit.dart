@@ -73,18 +73,24 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       parser: (parser ?? retrofit.Parser.JsonSerializable),
     );
     final baseUrl = clientAnnotation.baseUrl;
+    final extraFieldElements = element.fields.where((e) =>
+        e.name != _dioVar &&
+        e.name != _baseUrlVar &&
+        !e.isStatic &&
+        !e.isConst);
     final classBuilder = Class((c) {
       c
         ..name = '_$className'
-        ..types = ListBuilder(element.typeParameters.map((e) => refer(e.name)))
-        ..fields.addAll([
-          _buildDioFiled(),
-          _buildBaseUrlFiled(baseUrl),
-        ])
-        ..constructors.addAll([_generateConstructor(baseUrl)])
+        ..types.addAll(element.typeParameters.map((e) => refer(e.name)))
+        ..fields.addAll(
+          [
+            _buildDioFiled(),
+            _buildBaseUrlFiled(baseUrl),
+          ].followedBy(_buildExtraFields(extraFieldElements)),
+        )
+        ..constructors.add(_generateConstructor(baseUrl, extraFieldElements))
         ..methods.addAll(_parseMethods(element))
-        ..implements =
-            ListBuilder([refer(_generateTypeParameterizedName(element))]);
+        ..implements.add(refer(_generateTypeParameterizedName(element)));
       if (hasCustomOptions) {
         c.methods.add(_generateOptionsCastMethod());
       }
@@ -104,7 +110,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ..type = refer("String")
     ..modifier = FieldModifier.var$);
 
-  Constructor _generateConstructor(String url) => Constructor((c) {
+  Iterable<Field> _buildExtraFields(Iterable<FieldElement> fields) =>
+      fields.map((e) => Field(
+            (m) => m
+              ..name = e.name
+              ..type = refer(e.type.getDisplayString())
+              ..modifier =
+                  e.isFinal ? FieldModifier.final$ : FieldModifier.var$,
+          ));
+
+  Constructor _generateConstructor(
+    String url,
+    Iterable<FieldElement> extraElements,
+  ) =>
+      Constructor((c) {
         c.requiredParameters.add(Parameter((p) => p
           ..name = _dioVar
           ..toThis = true));
@@ -112,6 +131,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ..named = true
           ..name = _baseUrlVar
           ..toThis = true));
+        extraElements.forEach(
+          (element) => c.optionalParameters.add(Parameter((p) => p
+            ..named = true
+            ..name = element.name
+            ..toThis = true)),
+        );
         final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
           if (url != null && url.isNotEmpty)
@@ -243,11 +268,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return Method((mm) {
       mm
         ..name = m.displayName
-        ..types = ListBuilder(m.typeParameters.map((e) => refer(e.name)))
+        ..types.addAll(m.typeParameters.map((e) => refer(e.name)))
         ..modifier = m.returnType.isDartAsyncFuture
             ? MethodModifier.async
             : MethodModifier.asyncStar
-        ..annotations = ListBuilder([CodeExpression(Code('override'))]);
+        ..annotations.add(CodeExpression(Code('override')));
 
       /// required parameters
       mm.requiredParameters.addAll(m.parameters
