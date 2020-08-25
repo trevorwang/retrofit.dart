@@ -687,3 +687,57 @@ abstract class JsonMapperTestMapBody2 {
   @GET("/xx")
   Future<Map<String, User>> getResult();
 }
+
+@ShouldGenerate(
+  '_data.removeWhere((k, v) => v == null);',
+  contains: true,
+)
+@RestApi()
+abstract class MapBodyShouldBeCleanTest {
+  @PUT("/")
+  Future<void> update(@Body() Map<String, dynamic> data);
+}
+
+@ShouldGenerate(
+  '_data.removeWhere((k, v) => v == null);',
+  contains: true,
+)
+@RestApi()
+abstract class JsonSerializableBodyShouldBeCleanTest {
+  @PUT("/")
+  Future<void> update(@Body() User obj);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = str;
+    await _dio.request<void>('/',
+  ''', 
+  contains: true,
+  expectedLogItems: [
+    "String must provide a `toJson()` method which return a Map.\n"
+      "It is programmer\'s responsibility to make sure the String is properly serialized"
+  ]
+)
+@RestApi()
+abstract class NonJsonSerializableBodyShouldNotBeCleanTest {
+  @PUT("/")
+  Future<void> update(@Body() String str);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = users;
+    await _dio.request<void>('/',
+  ''', 
+  contains: true,
+  expectedLogItems: [
+    "List<User> must provide a `toJson()` method which return a Map.\n"
+      "It is programmer\'s responsibility to make sure the List<User> is properly serialized"
+  ]
+)
+@RestApi()
+abstract class ListBodyShouldNotBeCleanTest {
+  @PUT("/")
+  Future<void> update(@Body() List<User> users);
+}
