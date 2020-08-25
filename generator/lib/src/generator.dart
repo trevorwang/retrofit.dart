@@ -73,24 +73,24 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       parser: (parser ?? retrofit.Parser.JsonSerializable),
     );
     final baseUrl = clientAnnotation.baseUrl;
-    final extraFieldElements = element.fields.where((e) =>
-        e.name != _dioVar &&
-        e.name != _baseUrlVar &&
-        !e.isStatic &&
-        !e.isConst);
+    final annotClassConst = element.constructors.firstWhere(
+      (c) => !c.isFactory,
+      orElse: () => null,
+    );
     final classBuilder = Class((c) {
       c
         ..name = '_$className'
         ..types.addAll(element.typeParameters.map((e) => refer(e.name)))
-        ..fields.addAll(
-          [
-            _buildDioFiled(),
-            _buildBaseUrlFiled(baseUrl),
-          ].followedBy(_buildExtraFields(extraFieldElements)),
+        ..fields.addAll([_buildDioFiled(), _buildBaseUrlFiled(baseUrl)])
+        ..constructors.add(
+          _generateConstructor(baseUrl, annotClassConst),
         )
-        ..constructors.add(_generateConstructor(baseUrl, extraFieldElements))
-        ..methods.addAll(_parseMethods(element))
-        ..implements.add(refer(_generateTypeParameterizedName(element)));
+        ..methods.addAll(_parseMethods(element));
+      if (annotClassConst == null) {
+        c.implements.add(refer(_generateTypeParameterizedName(element)));
+      } else {
+        c.extend = Reference(_generateTypeParameterizedName(element));
+      }
       if (hasCustomOptions) {
         c.methods.add(_generateOptionsCastMethod());
       }
@@ -110,18 +110,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ..type = refer("String")
     ..modifier = FieldModifier.var$);
 
-  Iterable<Field> _buildExtraFields(Iterable<FieldElement> fields) =>
-      fields.map((e) => Field(
-            (m) => m
-              ..name = e.name
-              ..type = refer(e.type.getDisplayString())
-              ..modifier =
-                  e.isFinal ? FieldModifier.final$ : FieldModifier.var$,
-          ));
-
   Constructor _generateConstructor(
     String url,
-    Iterable<FieldElement> extraElements,
+    ConstructorElement superClassConst,
   ) =>
       Constructor((c) {
         c.requiredParameters.add(Parameter((p) => p
@@ -131,12 +122,26 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ..named = true
           ..name = _baseUrlVar
           ..toThis = true));
-        extraElements.forEach(
-          (element) => c.optionalParameters.add(Parameter((p) => p
-            ..named = true
-            ..name = element.name
-            ..toThis = true)),
-        );
+        if (superClassConst != null) {
+          final superConstName = superClassConst.isDefaultConstructor
+              ? 'super'
+              : 'super.${superClassConst.name}';
+          final constParams = superClassConst.parameters;
+          constParams.forEach(
+            (element) {
+              var params = c.optionalParameters;
+              if (element.isPrivate) params = c.requiredParameters;
+              params.add(Parameter((p) => p
+                ..named = true
+                ..type = refer(element.type.getDisplayString())
+                ..name = element.name));
+            },
+          );
+          final paramList = constParams
+              .map((e) => (e.isNamed ? '${e.name}: ' : '') + '${e.name}');
+          c.initializers
+              .add(Code('$superConstName(' + paramList.join(',') + ')'));
+        }
         final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
           if (url != null && url.isNotEmpty)
