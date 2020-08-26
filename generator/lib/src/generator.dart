@@ -127,16 +127,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               ? 'super'
               : 'super.${superClassConst.name}';
           final constParams = superClassConst.parameters;
-          constParams.forEach(
-            (element) {
-              var params = c.optionalParameters;
-              if (element.isPrivate) params = c.requiredParameters;
-              params.add(Parameter((p) => p
-                ..named = true
+          constParams.forEach((element) {
+            if (!element.isOptional || element.isPrivate) {
+              c.requiredParameters.add(Parameter((p) => p
                 ..type = refer(element.type.getDisplayString())
                 ..name = element.name));
-            },
-          );
+            } else {
+              c.optionalParameters.add(Parameter((p) => p
+                ..named = element.isNamed
+                ..type = refer(element.type.getDisplayString())
+                ..name = element.name));
+            }
+          });
           final paramList = constParams
               .map((e) => (e.isNamed ? '${e.name}: ' : '') + '${e.name}');
           c.initializers
