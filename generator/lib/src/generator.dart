@@ -628,7 +628,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               p.type.isDartCoreList ||
               p.type.isDartCoreMap)
           ? refer(p.displayName)
-          : refer(p.displayName).nullSafeProperty('toJson').call([]);
+          : clientAnnotation.parser == retrofit.Parser.DartJsonMapper
+              ? refer(p.displayName)
+              : refer(p.displayName).nullSafeProperty('toJson').call([]);
       return MapEntry(literalString(key, raw: true), value);
     });
 
@@ -642,7 +644,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final value =
           (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap)
               ? refer(displayName)
-              : refer(displayName).nullSafeProperty('toJson').call([]);
+              : clientAnnotation.parser == retrofit.Parser.DartJsonMapper
+                  ? refer(displayName)
+                  : refer(displayName).nullSafeProperty('toJson').call([]);
 
       /// workaround until this is merged in code_builder
       /// https://github.com/dart-lang/code_builder/pull/269

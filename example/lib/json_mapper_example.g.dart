@@ -17,9 +17,10 @@ class _ApiService implements ApiService {
   String baseUrl;
 
   @override
-  getTasks() async {
+  getTasks(dateTime) async {
+    ArgumentError.checkNotNull(dateTime, 'dateTime');
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'dateTime': dateTime};
     final _data = <String, dynamic>{};
     final Response<List<dynamic>> _result = await _dio.request('/tasks',
         queryParameters: queryParameters,
