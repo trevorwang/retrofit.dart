@@ -73,20 +73,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       parser: (parser ?? retrofit.Parser.JsonSerializable),
     );
     final baseUrl = clientAnnotation.baseUrl;
-    final annotClassConst = element.constructors.firstWhere(
-      (c) => !c.isFactory,
-      orElse: () => null,
-    );
+    final annotClassConsts = element.constructors.where((c) => !c.isFactory);
     final classBuilder = Class((c) {
       c
         ..name = '_$className'
         ..types.addAll(element.typeParameters.map((e) => refer(e.name)))
         ..fields.addAll([_buildDioFiled(), _buildBaseUrlFiled(baseUrl)])
-        ..constructors.add(
-          _generateConstructor(baseUrl, annotClassConst),
+        ..constructors.addAll(
+          annotClassConsts.map(
+            (e) => _generateConstructor(baseUrl, superClassConst: e),
+          ),
         )
         ..methods.addAll(_parseMethods(element));
-      if (annotClassConst == null) {
+      if (annotClassConsts.isEmpty) {
+        c.constructors.add(_generateConstructor(baseUrl));
         c.implements.add(refer(_generateTypeParameterizedName(element)));
       } else {
         c.extend = Reference(_generateTypeParameterizedName(element));
@@ -111,9 +111,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ..modifier = FieldModifier.var$);
 
   Constructor _generateConstructor(
-    String url,
+    String url, {
     ConstructorElement superClassConst,
-  ) =>
+  }) =>
       Constructor((c) {
         c.requiredParameters.add(Parameter((p) => p
           ..name = _dioVar
@@ -123,9 +123,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ..name = _baseUrlVar
           ..toThis = true));
         if (superClassConst != null) {
-          final superConstName = superClassConst.isDefaultConstructor
-              ? 'super'
-              : 'super.${superClassConst.name}';
+          var superConstName = 'super';
+          if (!superClassConst.isDefaultConstructor) {
+            superConstName += '.${superClassConst.name}';
+            c.name = superClassConst.name;
+          }
           final constParams = superClassConst.parameters;
           constParams.forEach((element) {
             if (!element.isOptional || element.isPrivate) {
