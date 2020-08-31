@@ -124,7 +124,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ..toThis = true));
         if (superClassConst != null) {
           var superConstName = 'super';
-          if (!superClassConst.isDefaultConstructor) {
+          if (superClassConst.name.isNotEmpty) {
             superConstName += '.${superClassConst.name}';
             c.name = superClassConst.name;
           }
@@ -149,7 +149,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
           if (url != null && url.isNotEmpty)
-            Code("this.${_baseUrlVar} ??= ${literal(url)};"),
+            Code("${_baseUrlVar} ??= ${literal(url)};"),
         ];
 
         c.body = Block.of(block);
@@ -276,6 +276,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     return Method((mm) {
       mm
+        ..returns = refer(m.type.returnType.getDisplayString())
         ..name = m.displayName
         ..types.addAll(m.typeParameters.map((e) => refer(e.name)))
         ..modifier = m.returnType.isDartAsyncFuture
@@ -445,18 +446,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           _typeChecker(BuiltList).isExactlyType(returnType)) {
         if (_isBasicType(innerReturnType)) {
           blocks.add(
-            refer("await $_dioVar.request")
+            refer("await $_dioVar.request<List<dynamic>>")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<List<dynamic>>"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           blocks.add(
               Code("final value = $_resultVar.data.cast<$innerReturnType>();"));
         } else {
           blocks.add(
-            refer("await $_dioVar.request")
+            refer("await $_dioVar.request<List<dynamic>>")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<List<dynamic>>"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           switch (clientAnnotation.parser) {
@@ -474,9 +475,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           _typeChecker(BuiltMap).isExactlyType(returnType)) {
         final types = _getResponseInnerTypes(returnType);
         blocks.add(
-          refer("await $_dioVar.request")
+          refer("await $_dioVar.request<Map<String,dynamic>>")
               .call([path], namedArguments)
-              .assignFinal(_resultVar, refer("Response<Map<String,dynamic>>"))
+              .assignFinal(_resultVar)
               .statement,
         );
 
@@ -538,9 +539,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       } else {
         if (_isBasicType(returnType)) {
           blocks.add(
-            refer("await $_dioVar.request")
+            refer("await $_dioVar.request<$returnType>")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<$returnType>"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           blocks.add(Code("final value = $_resultVar.data;"));
@@ -548,15 +549,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           blocks.add(
             refer("await $_dioVar.request")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           blocks.add(Code("final value = $_resultVar.data;"));
         } else {
           blocks.add(
-            refer("await $_dioVar.request")
+            refer("await $_dioVar.request<Map<String,dynamic>>")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<Map<String,dynamic>>"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           switch (clientAnnotation.parser) {
