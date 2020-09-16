@@ -6,7 +6,7 @@ homepage: https://mings.in/retrofit.dart/
 repository: https://github.com/trevorwang/retrofit.dart/
 
 environment:
-  sdk: '>=2.6.0 <3.0.0'
+  sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
   dio: ^3.0.1
@@ -22,6 +22,3 @@ dev_dependencies:
   test:
   source_gen_test: any
   resource:
-
-dependency_overrides:
-  analyzer: '0.39.14'
