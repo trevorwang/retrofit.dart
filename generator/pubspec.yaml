@@ -22,3 +22,6 @@ dev_dependencies:
   test:
   source_gen_test: any
   resource:
+
+dependency_overrides:
+  analyzer: '0.39.14'
