@@ -6,12 +6,11 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: trevorwang/no-free-usage-action@v1.0.1
-    - name: Check user stars
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Check user stars
+        uses: trevorwang/no-free-usage-action@v1.0.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
