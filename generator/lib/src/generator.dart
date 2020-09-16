@@ -813,10 +813,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               _typeChecker(BuiltMap).isExactlyType(innnerType) ||
               _typeChecker(List).isExactlyType(innnerType) ||
               _typeChecker(BuiltList).isExactlyType(innnerType)) {
-            blocks.add(refer(_dataVar).property('fields').property("add").call([
-              refer("MapEntry").newInstance(
-                  [literal(fieldName), refer("jsonEncode(${p.displayName})")])
-            ]).statement);
+            var value = _isBasicType(innnerType) ? 'i' : 'jsonEncode(i)';
+            blocks.add(refer('''
+            ${p.displayName}?.forEach((i){
+              ${_dataVar}.fields.add(MapEntry(${literal(fieldName)},${value}));
+            })
+            ''').statement);
           } else if (_typeChecker(File).isExactlyType(innnerType)) {
             final conType = contentType == null
                 ? ""

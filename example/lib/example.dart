@@ -74,7 +74,9 @@ abstract class RestClient {
   Future<String> postFormData(@Part() Task task, {@Part() File file});
 
   @POST("/post")
-  Future<String> postFormData2(@Part() List<Map<String, dynamic>> task,
+  Future<String> postFormData2(
+      @Part() List<Map<String, dynamic>> task,
+      @Part() List<String> tags,
       @Part(contentType: 'application/json') File file);
 
   @POST("/post")
