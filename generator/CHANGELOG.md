@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.8
+
+- Send list params duplicatedly in multipart
+
 ## 1.3.7
 
 - Add support for abstract classes with `toJson` defined in mixin/interface/superclass.
