@@ -534,8 +534,9 @@ abstract class TestFileList {
     _data.fields.add(MapEntry('item', jsonEncode(user ?? <String, dynamic>{})));
     ''', contains: true)
 @ShouldGenerate(r'''
-    final _data = FormData();
-    _data.fields.add(MapEntry('mapList', jsonEncode(mapList)));
+    mapList?.forEach((i) {
+      _data.fields.add(MapEntry('mapList', jsonEncode(i)));
+    });
     ''', contains: true)
 @ShouldGenerate(r'''
     final _data = FormData();
