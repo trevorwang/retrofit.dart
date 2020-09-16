@@ -15,7 +15,7 @@ jobs:
           command: |
             ./tool/travis.sh dartanalyzer
           environment:
-            PKGS: "example annotation generator"
+            PKGS: 'example annotation generator'
       - run:
           command: |
             cd generator
@@ -26,22 +26,22 @@ jobs:
             pub get 
             pub run test
 
-  test_dart26:
-    <<: *common_test
-    environment:
-      DART_VERSION: "2.6"
   test_dart27:
     <<: *common_test
     environment:
-      DART_VERSION: "2.7"
+      DART_VERSION: '2.7'
   test_dart28:
     <<: *common_test
     environment:
-      DART_VERSION: "2.8"
+      DART_VERSION: '2.8'
+  test_dart29:
+    <<: *common_test
+    environment:
+      DART_VERSION: '2.9'
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - test_dart26
       - test_dart27
       - test_dart28
+      - test_dart29
