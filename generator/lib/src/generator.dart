@@ -688,20 +688,37 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .statement);
       } else if (_bodyName.type.element is ClassElement) {
         final ele = _bodyName.type.element as ClassElement;
-        final toJson = ele.lookUpMethod('toJson', ele.library);
-        if (toJson == null) {
-          log.warning(
-              "${_bodyName.type} must provide a `toJson()` method which return a Map.\n"
-              "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
-          blocks.add(
-              refer(_bodyName.displayName).assignFinal(_dataVar).statement);
-        } else {
-          blocks.add(literalMap({}, refer("String"), refer("dynamic"))
-              .assignFinal(_dataVar)
-              .statement);
-          blocks.add(refer("$_dataVar.addAll").call([
-            refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
-          ]).statement);
+        switch (clientAnnotation.parser) {
+          case retrofit.Parser.JsonSerializable:
+            final toJson = ele.lookUpMethod('toJson', ele.library);
+            if (toJson == null) {
+              log.warning(
+                  "${_bodyName.type} must provide a `toJson()` method which return a Map.\n"
+                  "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
+              blocks.add(
+                  refer(_bodyName.displayName).assignFinal(_dataVar).statement);
+            } else {
+              blocks.add(literalMap({}, refer("String"), refer("dynamic"))
+                  .assignFinal(_dataVar)
+                  .statement);
+              blocks.add(refer("$_dataVar.addAll").call([
+                refer(
+                    "${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
+              ]).statement);
+            }
+            break;
+          case retrofit.Parser.DartJsonMapper:
+            ele.metadata.firstWhere(
+                    (elementAnnotation) =>
+                        elementAnnotation.element.name == "jsonSerializable",
+                    orElse: () => null) ??
+                (throw throw InvalidGenerationSourceError(
+                  'Generator cannot target `${ele.name}`, Please check if add the [@jsonSerializable] annotation',
+                ));
+            blocks.add(refer("JsonMapper.serialize(${_bodyName.type})")
+                .assignFinal(_dataVar)
+                .statement);
+            break;
         }
       } else {
         /// @Body annotations with no type are assinged as is
@@ -757,7 +774,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                       .call([literal(contentType)])
           });
 
-          final optinalFile = m.parameters
+          final optionalFile = m.parameters
                   .firstWhere((pp) => pp.displayName == p.displayName)
                   ?.isOptional ??
               false;
@@ -766,7 +783,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               refer(_dataVar).property('files').property("add").call([
             refer("MapEntry").newInstance([literal(fieldName), uploadFileInfo])
           ]).statement;
-          if (optinalFile) {
+          if (optionalFile) {
             final condication =
                 refer(p.displayName).notEqualTo(literalNull).code;
             blocks.addAll(
