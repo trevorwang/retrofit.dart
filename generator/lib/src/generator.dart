@@ -715,7 +715,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 (throw throw InvalidGenerationSourceError(
                   'Generator cannot target `${ele.name}`, Please check if add the [@jsonSerializable] annotation',
                 ));
-            blocks.add(refer("JsonMapper.serialize(${_bodyName})")
+            blocks.add(refer("JsonMapper.serialize(${_bodyName.displayName})")
                 .assignFinal(_dataVar)
                 .statement);
             break;
