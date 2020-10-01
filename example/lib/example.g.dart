@@ -466,11 +466,9 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = FormData();
-
     task?.forEach((i) {
       _data.fields.add(MapEntry('task', jsonEncode(i)));
     });
-
     tags?.forEach((i) {
       _data.fields.add(MapEntry('tags', i));
     });

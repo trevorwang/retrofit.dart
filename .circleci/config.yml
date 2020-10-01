@@ -38,6 +38,10 @@ jobs:
     <<: *common_test
     environment:
       DART_VERSION: '2.9'
+  test_dart210:
+    <<: *common_test
+    environment:
+      DART_VERSION: '2.10'
 workflows:
   version: 2
   build_and_test:
@@ -45,3 +49,4 @@ workflows:
       - test_dart27
       - test_dart28
       - test_dart29
+      - test_dart210
