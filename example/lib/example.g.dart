@@ -191,6 +191,7 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(map ?? <String, dynamic>{});
+    _data.removeWhere((k, v) => v == null);
     final Response<Map<String, dynamic>> _result = await _dio.request(
         '/tasks/$id',
         queryParameters: queryParameters,
@@ -212,6 +213,7 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(task?.toJson() ?? <String, dynamic>{});
+    _data.removeWhere((k, v) => v == null);
     final Response<Map<String, dynamic>> _result = await _dio.request(
         '/tasks/$id',
         queryParameters: queryParameters,
@@ -249,6 +251,7 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(task?.toJson() ?? <String, dynamic>{});
+    _data.removeWhere((k, v) => v == null);
     final Response<Map<String, dynamic>> _result = await _dio.request('/tasks',
         queryParameters: queryParameters,
         options: RequestOptions(

@@ -710,6 +710,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         blocks.add(refer("$_dataVar.addAll").call([
           refer("${_bodyName.displayName} ?? <String,dynamic>{}")
         ]).statement);
+        blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
       } else if (_typeChecker(File).isExactly(_bodyName.type.element)) {
         blocks.add(refer("Stream")
             .property("fromIterable")
@@ -751,6 +752,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             blocks.add(refer("$_dataVar.addAll").call([
               refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
             ]).statement);
+            blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
           }
         }
       } else {
