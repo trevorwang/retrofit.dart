@@ -14,6 +14,7 @@ RestClient _client;
 ApiService _apiService;
 final _headers = {"Content-Type": "application/json"};
 final dispatcherMap = <String, MockResponse>{};
+
 void main() {
   setUp(() async {
     _server = MockWebServer();
@@ -27,6 +28,7 @@ void main() {
     await _server.start();
     final dio = Dio();
     dio.interceptors.add(LogInterceptor(responseBody: true));
+    dio.interceptors.add(DateTimeInterceptor());
     _client = RestClient(dio, baseUrl: _server.url);
 
     initializeReflectable();
@@ -130,7 +132,7 @@ void main() {
 
   test("test json mapper parse task", () async {
     _server.enqueue(body: demoTaskListJson, headers: _headers);
-    final tasks = await _apiService.getTasks();
+    final tasks = await _apiService.getTasks(new DateTime.now());
     expect(tasks, isNotNull);
     expect(tasks.length, 1);
   });
@@ -140,4 +142,19 @@ void main() {
     await _client.namedExample("apkKeyvalue", "hello", "ggggg");
     expect(true, true);
   });
+}
+
+class DateTimeInterceptor extends Interceptor {
+  @override
+  Future onRequest(RequestOptions options) async {
+    options.queryParameters = options.queryParameters.map((key, value) {
+      if (value is DateTime) {
+        //may be change to string from any you use object
+        return MapEntry(key, value.toString());
+      } else {
+        return MapEntry(key, value);
+      }
+    });
+    return options;
+  }
 }

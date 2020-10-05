@@ -418,6 +418,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .statement,
           );
           switch (clientAnnotation.parser) {
+            case retrofit.Parser.MapSerializable:
+              blocks.add(Code(
+                  "var value = $_resultVar.data.map((dynamic i) => $innerReturnType.fromMap(i as Map<String,dynamic>)).toList();"));
+              break;
             case retrofit.Parser.JsonSerializable:
               blocks.add(Code(
                   "var value = $_resultVar.data.map((dynamic i) => $innerReturnType.fromJson(i as Map<String,dynamic>)).toList();"));
@@ -445,6 +449,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               _typeChecker(BuiltList).isExactlyType(secondType)) {
             final type = _getResponseType(secondType);
             switch (clientAnnotation.parser) {
+              case retrofit.Parser.MapSerializable:
+                blocks.add(Code("""
+            var value = $_resultVar.data
+              .map((k, dynamic v) =>
+                MapEntry(
+                  k, (v as List)
+                    .map((i) => $type.fromMap(i as Map<String,dynamic>))
+                    .toList()
+                )
+              );
+            """));
+                break;
               case retrofit.Parser.JsonSerializable:
                 blocks.add(Code("""
             var value = $_resultVar.data
@@ -472,6 +488,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             }
           } else if (!_isBasicType(secondType)) {
             switch (clientAnnotation.parser) {
+              case retrofit.Parser.MapSerializable:
+                blocks.add(Code("""
+            var value = $_resultVar.data
+              .map((k, dynamic v) =>
+                MapEntry(k, $secondType.fromMap(v as Map<String, dynamic>))
+              );
+            """));
+                break;
               case retrofit.Parser.JsonSerializable:
                 blocks.add(Code("""
             var value = $_resultVar.data
@@ -518,6 +542,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .statement,
           );
           switch (clientAnnotation.parser) {
+            case retrofit.Parser.MapSerializable:
+              blocks.add(
+                  Code("final value = $returnType.fromMap($_resultVar.data);"));
+              break;
             case retrofit.Parser.JsonSerializable:
               blocks.add(Code(
                   "final value = $returnType.fromJson($_resultVar.data);"));
@@ -628,7 +656,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               p.type.isDartCoreList ||
               p.type.isDartCoreMap)
           ? refer(p.displayName)
-          : refer(p.displayName).nullSafeProperty('toJson').call([]);
+          : clientAnnotation.parser == retrofit.Parser.DartJsonMapper
+              ? refer(p.displayName)
+              : clientAnnotation.parser == retrofit.Parser.JsonSerializable
+                  ? refer(p.displayName).nullSafeProperty('toJson').call([])
+                  : refer(p.displayName).nullSafeProperty('toMap').call([]);
       return MapEntry(literalString(key, raw: true), value);
     });
 
@@ -642,7 +674,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final value =
           (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap)
               ? refer(displayName)
-              : refer(displayName).nullSafeProperty('toJson').call([]);
+              : clientAnnotation.parser == retrofit.Parser.DartJsonMapper
+                  ? refer(displayName)
+                  : clientAnnotation.parser == retrofit.Parser.JsonSerializable
+                      ? refer(displayName).nullSafeProperty('toJson').call([])
+                      : refer(displayName).nullSafeProperty('toMap').call([]);
 
       /// workaround until this is merged in code_builder
       /// https://github.com/dart-lang/code_builder/pull/269
@@ -685,21 +721,39 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .statement);
       } else if (_bodyName.type.element is ClassElement) {
         final ele = _bodyName.type.element as ClassElement;
-        final toJson = ele.lookUpMethod('toJson', ele.library);
-        if (toJson == null) {
-          log.warning(
-              "${_bodyName.type} must provide a `toJson()` method which return a Map.\n"
-              "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
-          blocks.add(
-              refer(_bodyName.displayName).assignFinal(_dataVar).statement);
+        if (clientAnnotation.parser == retrofit.Parser.MapSerializable) {
+          final toMap = ele.lookUpMethod('toMap', ele.library);
+          if (toMap == null) {
+            log.warning(
+                "${_bodyName.type} must provide a `toMap()` method which return a Map.\n"
+                "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
+            blocks.add(
+                refer(_bodyName.displayName).assignFinal(_dataVar).statement);
+          } else {
+            blocks.add(literalMap({}, refer("String"), refer("dynamic"))
+                .assignFinal(_dataVar)
+                .statement);
+            blocks.add(refer("$_dataVar.addAll").call([
+              refer("${_bodyName.displayName}?.toMap() ?? <String,dynamic>{}")
+            ]).statement);
+          }
         } else {
-          blocks.add(literalMap({}, refer("String"), refer("dynamic"))
-              .assignFinal(_dataVar)
-              .statement);
-          blocks.add(refer("$_dataVar.addAll").call([
-            refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
-          ]).statement);
-          blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
+          final toJson = ele.lookUpMethod('toJson', ele.library);
+          if (toJson == null) {
+            log.warning(
+                "${_bodyName.type} must provide a `toJson()` method which return a Map.\n"
+                "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
+            blocks.add(
+                refer(_bodyName.displayName).assignFinal(_dataVar).statement);
+          } else {
+            blocks.add(literalMap({}, refer("String"), refer("dynamic"))
+                .assignFinal(_dataVar)
+                .statement);
+            blocks.add(refer("$_dataVar.addAll").call([
+              refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
+            ]).statement);
+            blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
+          }
         }
       } else {
         /// @Body annotations with no type are assinged as is
@@ -811,10 +865,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               _typeChecker(BuiltMap).isExactlyType(innnerType) ||
               _typeChecker(List).isExactlyType(innnerType) ||
               _typeChecker(BuiltList).isExactlyType(innnerType)) {
-            blocks.add(refer(_dataVar).property('fields').property("add").call([
-              refer("MapEntry").newInstance(
-                  [literal(fieldName), refer("jsonEncode(${p.displayName})")])
-            ]).statement);
+            var value = _isBasicType(innnerType) ? 'i' : 'jsonEncode(i)';
+            blocks.add(refer('''
+            ${p.displayName}?.forEach((i){
+              ${_dataVar}.fields.add(MapEntry(${literal(fieldName)},${value}));
+            })
+            ''').statement);
           } else if (_typeChecker(File).isExactlyType(innnerType)) {
             final conType = contentType == null
                 ? ""

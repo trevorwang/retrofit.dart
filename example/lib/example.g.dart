@@ -462,13 +462,19 @@ class _RestClient implements RestClient {
   }
 
   @override
-  postFormData2(task, file) async {
+  postFormData2(task, tags, file) async {
     ArgumentError.checkNotNull(task, 'task');
+    ArgumentError.checkNotNull(tags, 'tags');
     ArgumentError.checkNotNull(file, 'file');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = FormData();
-    _data.fields.add(MapEntry('task', jsonEncode(task)));
+    task?.forEach((i) {
+      _data.fields.add(MapEntry('task', jsonEncode(i)));
+    });
+    tags?.forEach((i) {
+      _data.fields.add(MapEntry('tags', i));
+    });
     _data.files.add(MapEntry(
         'file',
         MultipartFile.fromFileSync(file.path,

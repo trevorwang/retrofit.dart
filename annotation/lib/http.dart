@@ -18,6 +18,9 @@ enum Parser {
   /// For more detail, please visit 'https://github.com/trevorwang/retrofit.dart#type-conversion'
   JsonSerializable,
 
+  /// same as [JsonSerializable] but with toMap and fromMap functions.
+  MapSerializable,
+
   /// Each model class must add annotation '@jsonSerializable'
   /// For more detail, please visit 'https://github.com/k-paxian/dart-json-mapper'
   DartJsonMapper

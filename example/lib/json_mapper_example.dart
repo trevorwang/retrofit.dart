@@ -13,7 +13,7 @@ abstract class ApiService {
   factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
 
   @GET("/tasks")
-  Future<List<Task>> getTasks();
+  Future<List<Task>> getTasks(@Query("dateTime") DateTime dateTime);
 }
 
 void main() {
