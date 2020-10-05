@@ -73,7 +73,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       parser: (parser ?? retrofit.Parser.JsonSerializable),
     );
     final baseUrl = clientAnnotation.baseUrl;
-    final annotClassConsts = element.constructors.where((c) => !c.isFactory);
+    final annotClassConsts = element.constructors
+        .where((c) => !c.isFactory && !c.isDefaultConstructor);
     final classBuilder = Class((c) {
       c
         ..name = '_$className'
