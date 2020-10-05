@@ -30,7 +30,7 @@ class _RestClient implements RestClient {
         options: newOptions.merge(method: 'GET', baseUrl: baseUrl),
         data: _data);
     final value = _result.data.cast<String>();
-    return Future.value(value);
+    return value;
   }
 
   RequestOptions newRequestOptions(Options options) {

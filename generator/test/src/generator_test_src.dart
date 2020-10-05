@@ -534,8 +534,9 @@ abstract class TestFileList {
     _data.fields.add(MapEntry('item', jsonEncode(user ?? <String, dynamic>{})));
     ''', contains: true)
 @ShouldGenerate(r'''
-    final _data = FormData();
-    _data.fields.add(MapEntry('mapList', jsonEncode(mapList)));
+    mapList?.forEach((i) {
+      _data.fields.add(MapEntry('mapList', jsonEncode(i)));
+    });
     ''', contains: true)
 @ShouldGenerate(r'''
     final _data = FormData();
@@ -684,6 +685,75 @@ abstract class JsonMapperTestMapBody {
   parser: Parser.DartJsonMapper,
 )
 abstract class JsonMapperTestMapBody2 {
+  @GET("/xx")
+  Future<Map<String, User>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = User.fromMap(_result.data);
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.MapSerializable,
+)
+abstract class MapSerializableGenericCast {
+  @POST("/xx")
+  Future<User> getUser();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data
+        .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
+        .toList();
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.MapSerializable,
+)
+abstract class MapSerializableTestListBody {
+  @GET("/xx")
+  Future<List<User>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data.map((k, dynamic v) => MapEntry(
+        k,
+        (v as List)
+            .map((i) => User.fromMap(i as Map<String, dynamic>))
+            .toList()));
+
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.MapSerializable,
+)
+abstract class MapSerializableTestMapBody {
+  @GET("/xx")
+  Future<Map<String, List<User>>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data.map(
+        (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.MapSerializable,
+)
+abstract class MapSerializableTestMapBody2 {
   @GET("/xx")
   Future<Map<String, User>> getResult();
 }
