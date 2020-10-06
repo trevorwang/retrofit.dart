@@ -21,7 +21,7 @@ abstract class RestClient {}
 class _BaseUrl implements BaseUrl {
   _BaseUrl(this._dio, {this.baseUrl}) {
     ArgumentError.checkNotNull(_dio, '_dio');
-    this.baseUrl ??= 'http://httpbin.org/';
+    baseUrl ??= 'http://httpbin.org/';
   }
 
   final Dio _dio;
@@ -229,7 +229,7 @@ abstract class StreamReturnType {
 
 @ShouldGenerate(
   r'''
-  getUser() async* {
+  Stream<User> getUser() async* {
 ''',
   contains: true,
 )

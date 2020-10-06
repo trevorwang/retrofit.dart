@@ -64,7 +64,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   String _implementClass(ClassElement element, ConstantReader annotation) {
     final className = element.name;
-    final name = '_$className';
     final enumString = (annotation?.peek('parser')?.revive()?.accessor);
     final parser = retrofit.Parser.values
         .firstWhere((e) => e.toString() == enumString, orElse: () => null);
@@ -74,16 +73,25 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       parser: (parser ?? retrofit.Parser.JsonSerializable),
     );
     final baseUrl = clientAnnotation.baseUrl;
+    final annotClassConsts = element.constructors
+        .where((c) => !c.isFactory && !c.isDefaultConstructor);
     final classBuilder = Class((c) {
       c
-        ..name = name
-        ..fields.addAll([
-          _buildDioFiled(),
-          _buildBaseUrlFiled(baseUrl),
-        ])
-        ..constructors.addAll([_generateConstructor(baseUrl)])
-        ..methods.addAll(_parseMethods(element))
-        ..implements = ListBuilder([refer(className)]);
+        ..name = '_$className'
+        ..types.addAll(element.typeParameters.map((e) => refer(e.name)))
+        ..fields.addAll([_buildDioFiled(), _buildBaseUrlFiled(baseUrl)])
+        ..constructors.addAll(
+          annotClassConsts.map(
+            (e) => _generateConstructor(baseUrl, superClassConst: e),
+          ),
+        )
+        ..methods.addAll(_parseMethods(element));
+      if (annotClassConsts.isEmpty) {
+        c.constructors.add(_generateConstructor(baseUrl));
+        c.implements.add(refer(_generateTypeParameterizedName(element)));
+      } else {
+        c.extend = Reference(_generateTypeParameterizedName(element));
+      }
       if (hasCustomOptions) {
         c.methods.add(_generateOptionsCastMethod());
       }
@@ -103,7 +111,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ..type = refer("String")
     ..modifier = FieldModifier.var$);
 
-  Constructor _generateConstructor(String url) => Constructor((c) {
+  Constructor _generateConstructor(
+    String url, {
+    ConstructorElement superClassConst,
+  }) =>
+      Constructor((c) {
         c.requiredParameters.add(Parameter((p) => p
           ..name = _dioVar
           ..toThis = true));
@@ -111,10 +123,34 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ..named = true
           ..name = _baseUrlVar
           ..toThis = true));
+        if (superClassConst != null) {
+          var superConstName = 'super';
+          if (superClassConst.name.isNotEmpty) {
+            superConstName += '.${superClassConst.name}';
+            c.name = superClassConst.name;
+          }
+          final constParams = superClassConst.parameters;
+          constParams.forEach((element) {
+            if (!element.isOptional || element.isPrivate) {
+              c.requiredParameters.add(Parameter((p) => p
+                ..type = refer(element.type.getDisplayString())
+                ..name = element.name));
+            } else {
+              c.optionalParameters.add(Parameter((p) => p
+                ..named = element.isNamed
+                ..type = refer(element.type.getDisplayString())
+                ..name = element.name));
+            }
+          });
+          final paramList = constParams
+              .map((e) => (e.isNamed ? '${e.name}: ' : '') + '${e.name}');
+          c.initializers
+              .add(Code('$superConstName(' + paramList.join(',') + ')'));
+        }
         final block = [
           Code("ArgumentError.checkNotNull($_dioVar,'$_dioVar');"),
           if (url != null && url.isNotEmpty)
-            Code("this.${_baseUrlVar} ??= ${literal(url)};"),
+            Code("${_baseUrlVar} ??= ${literal(url)};"),
         ];
 
         c.body = Block.of(block);
@@ -127,6 +163,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             m.isAbstract &&
             (m.returnType.isDartAsyncFuture || m.returnType.isDartAsyncStream);
       }).map((m) => _generateMethod(m));
+
+  String _generateTypeParameterizedName(TypeParameterizedElement element) =>
+      element.displayName +
+      (element.typeParameters.isNotEmpty
+          ? '<${element.typeParameters.join(',')}>'
+          : '');
 
   final _methodsAnnotations = const [
     retrofit.GET,
@@ -235,11 +277,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     return Method((mm) {
       mm
+        ..returns = refer(m.type.returnType.getDisplayString())
         ..name = m.displayName
+        ..types.addAll(m.typeParameters.map((e) => refer(e.name)))
         ..modifier = m.returnType.isDartAsyncFuture
             ? MethodModifier.async
             : MethodModifier.asyncStar
-        ..annotations = ListBuilder([CodeExpression(Code('override'))]);
+        ..annotations.add(CodeExpression(Code('override')));
 
       /// required parameters
       mm.requiredParameters.addAll(m.parameters
@@ -403,18 +447,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           _typeChecker(BuiltList).isExactlyType(returnType)) {
         if (_isBasicType(innerReturnType)) {
           blocks.add(
-            refer("await $_dioVar.request")
+            refer("await $_dioVar.request<List<dynamic>>")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<List<dynamic>>"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           blocks.add(
               Code("final value = $_resultVar.data.cast<$innerReturnType>();"));
         } else {
           blocks.add(
-            refer("await $_dioVar.request")
+            refer("await $_dioVar.request<List<dynamic>>")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<List<dynamic>>"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           switch (clientAnnotation.parser) {
@@ -436,9 +480,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           _typeChecker(BuiltMap).isExactlyType(returnType)) {
         final types = _getResponseInnerTypes(returnType);
         blocks.add(
-          refer("await $_dioVar.request")
+          refer("await $_dioVar.request<Map<String,dynamic>>")
               .call([path], namedArguments)
-              .assignFinal(_resultVar, refer("Response<Map<String,dynamic>>"))
+              .assignFinal(_resultVar)
               .statement,
         );
 
@@ -520,9 +564,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       } else {
         if (_isBasicType(returnType)) {
           blocks.add(
-            refer("await $_dioVar.request")
+            refer("await $_dioVar.request<$returnType>")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<$returnType>"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           blocks.add(Code("final value = $_resultVar.data;"));
@@ -530,15 +574,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           blocks.add(
             refer("await $_dioVar.request")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           blocks.add(Code("final value = $_resultVar.data;"));
         } else {
           blocks.add(
-            refer("await $_dioVar.request")
+            refer("await $_dioVar.request<Map<String,dynamic>>")
                 .call([path], namedArguments)
-                .assignFinal(_resultVar, refer("Response<Map<String,dynamic>>"))
+                .assignFinal(_resultVar)
                 .statement,
           );
           switch (clientAnnotation.parser) {
@@ -1096,7 +1140,7 @@ String revivedLiteral(
     }
 
     if (constant.isType) {
-      return refer(constant.typeValue.displayName);
+      return refer(constant.typeValue.getDisplayString());
     }
 
     if (constant.isLiteral) {
