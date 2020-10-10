@@ -9,7 +9,7 @@ part of 'json_mapper_example.dart';
 class _ApiService implements ApiService {
   _ApiService(this._dio, {this.baseUrl}) {
     ArgumentError.checkNotNull(_dio, '_dio');
-    this.baseUrl ??= 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/';
+    baseUrl ??= 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/';
   }
 
   final Dio _dio;
@@ -17,12 +17,12 @@ class _ApiService implements ApiService {
   String baseUrl;
 
   @override
-  getTasks(dateTime) async {
+  Future<List<Task>> getTasks(dateTime) async {
     ArgumentError.checkNotNull(dateTime, 'dateTime');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'dateTime': dateTime};
     final _data = <String, dynamic>{};
-    final Response<List<dynamic>> _result = await _dio.request('/tasks',
+    final _result = await _dio.request<List<dynamic>>('/tasks',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
