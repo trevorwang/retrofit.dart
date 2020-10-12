@@ -769,7 +769,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           final toMap = ele.lookUpMethod('toMap', ele.library);
           if (toMap == null) {
             log.warning(
-                "${_bodyName.type} must provide a `toMap()` method which return a Map.\n"
+                "${_displayString(_bodyName.type)} must provide a `toMap()` method which return a Map.\n"
                 "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
             blocks.add(
                 refer(_bodyName.displayName).assignFinal(_dataVar).statement);
@@ -785,8 +785,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           final toJson = ele.lookUpMethod('toJson', ele.library);
           if (toJson == null) {
             log.warning(
-                "${_bodyName.type} must provide a `toJson()` method which return a Map.\n"
-                "It is programmer's responsibility to make sure the ${_bodyName.type} is properly serialized");
+                "${_displayString(_bodyName.type)} must provide a `toJson()` method which return a Map.\n"
+                "It is programmer's responsibility to make sure the ${_displayString(_bodyName.type)} is properly serialized");
             blocks.add(
                 refer(_bodyName.displayName).assignFinal(_dataVar).statement);
           } else {
