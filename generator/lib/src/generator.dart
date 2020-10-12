@@ -133,12 +133,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           constParams.forEach((element) {
             if (!element.isOptional || element.isPrivate) {
               c.requiredParameters.add(Parameter((p) => p
-                ..type = refer(element.type.getDisplayString())
+                ..type =
+                    refer(element.type.getDisplayString(withNullability: false))
                 ..name = element.name));
             } else {
               c.optionalParameters.add(Parameter((p) => p
                 ..named = element.isNamed
-                ..type = refer(element.type.getDisplayString())
+                ..type =
+                    refer(element.type.getDisplayString(withNullability: false))
                 ..name = element.name));
             }
           });
@@ -277,7 +279,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     return Method((mm) {
       mm
-        ..returns = refer(m.type.returnType.getDisplayString())
+        ..returns =
+            refer(m.type.returnType.getDisplayString(withNullability: false))
         ..name = m.displayName
         ..types.addAll(m.typeParameters.map((e) => refer(e.name)))
         ..modifier = m.returnType.isDartAsyncFuture
@@ -870,7 +873,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           } else {
             blocks.add(returnCode);
           }
-        } else if (p.type.getDisplayString() == "List<int>") {
+        } else if (p.type.getDisplayString(withNullability: false) ==
+            "List<int>") {
           final fileName = r.peek("fileName")?.stringValue;
           final conType = contentType == null
               ? ""
@@ -890,7 +894,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             _typeChecker(BuiltList).isExactlyType(p.type)) {
           var innnerType = _genericOf(p.type);
 
-          if (innnerType.getDisplayString() == "List<int>") {
+          if (innnerType.getDisplayString(withNullability: false) ==
+              "List<int>") {
             final conType = contentType == null
                 ? ""
                 : 'contentType: MediaType.parse(${literal(contentType)}),';
@@ -1140,7 +1145,7 @@ String revivedLiteral(
     }
 
     if (constant.isType) {
-      return refer(constant.typeValue.getDisplayString());
+      return refer(constant.typeValue.getDisplayString(withNullability: false));
     }
 
     if (constant.isLiteral) {
