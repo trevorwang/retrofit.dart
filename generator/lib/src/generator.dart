@@ -564,7 +564,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       } else {
         if (_isBasicType(returnType)) {
           blocks.add(
-            refer("await $_dioVar.request<$returnType>")
+            refer("await $_dioVar.request<${_displayString(returnType)}>")
                 .call([path], namedArguments)
                 .assignFinal(_resultVar)
                 .statement,
