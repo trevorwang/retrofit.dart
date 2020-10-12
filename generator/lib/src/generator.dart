@@ -133,14 +133,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           constParams.forEach((element) {
             if (!element.isOptional || element.isPrivate) {
               c.requiredParameters.add(Parameter((p) => p
-                ..type =
-                    refer(element.type.getDisplayString(withNullability: false))
+                ..type = refer(_displayString(element.type))
                 ..name = element.name));
             } else {
               c.optionalParameters.add(Parameter((p) => p
                 ..named = element.isNamed
-                ..type =
-                    refer(element.type.getDisplayString(withNullability: false))
+                ..type = refer(_displayString(element.type))
                 ..name = element.name));
             }
           });
@@ -279,8 +277,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     return Method((mm) {
       mm
-        ..returns =
-            refer(m.type.returnType.getDisplayString(withNullability: false))
+        ..returns = refer(_displayString(m.type.returnType))
         ..name = m.displayName
         ..types.addAll(m.typeParameters.map((e) => refer(e.name)))
         ..modifier = m.returnType.isDartAsyncFuture
@@ -455,8 +452,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar)
                 .statement,
           );
-          blocks.add(
-              Code("final value = $_resultVar.data.cast<$innerReturnType>();"));
+          blocks.add(Code(
+              "final value = $_resultVar.data.cast<${_displayString(innerReturnType)}>();"));
         } else {
           blocks.add(
             refer("await $_dioVar.request<List<dynamic>>")
@@ -467,15 +464,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           switch (clientAnnotation.parser) {
             case retrofit.Parser.MapSerializable:
               blocks.add(Code(
-                  "var value = $_resultVar.data.map((dynamic i) => $innerReturnType.fromMap(i as Map<String,dynamic>)).toList();"));
+                  "var value = $_resultVar.data.map((dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)).toList();"));
               break;
             case retrofit.Parser.JsonSerializable:
               blocks.add(Code(
-                  "var value = $_resultVar.data.map((dynamic i) => $innerReturnType.fromJson(i as Map<String,dynamic>)).toList();"));
+                  "var value = $_resultVar.data.map((dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)).toList();"));
               break;
             case retrofit.Parser.DartJsonMapper:
               blocks.add(Code(
-                  "var value = $_resultVar.data.map((dynamic i) => JsonMapper.deserialize<$innerReturnType>(i as Map<String,dynamic>)).toList();"));
+                  "var value = $_resultVar.data.map((dynamic i) => JsonMapper.deserialize<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)).toList();"));
               break;
           }
         }
@@ -502,7 +499,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               .map((k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
-                    .map((i) => $type.fromMap(i as Map<String,dynamic>))
+                    .map((i) => ${_displayString(type)}.fromMap(i as Map<String,dynamic>))
                     .toList()
                 )
               );
@@ -526,7 +523,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               .map((k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
-                    .map((i) => JsonMapper.deserialize<$type>(i as Map<String,dynamic>))
+                    .map((i) => JsonMapper.deserialize<${_displayString(type)}>(i as Map<String,dynamic>))
                     .toList()
                 )
               );
@@ -539,7 +536,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 blocks.add(Code("""
             var value = $_resultVar.data
               .map((k, dynamic v) =>
-                MapEntry(k, $secondType.fromMap(v as Map<String, dynamic>))
+                MapEntry(k, ${_displayString(secondType)}.fromMap(v as Map<String, dynamic>))
               );
             """));
                 break;
@@ -547,7 +544,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 blocks.add(Code("""
             var value = $_resultVar.data
               .map((k, dynamic v) =>
-                MapEntry(k, $secondType.fromJson(v as Map<String, dynamic>))
+                MapEntry(k, ${_displayString(secondType)}.fromJson(v as Map<String, dynamic>))
               );
             """));
                 break;
@@ -555,7 +552,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 blocks.add(Code("""
             var value = $_resultVar.data
               .map((k, dynamic v) =>
-                MapEntry(k, JsonMapper.deserialize<$secondType>(v as Map<String, dynamic>))
+                MapEntry(k, JsonMapper.deserialize<${_displayString(secondType)}>(v as Map<String, dynamic>))
               );
             """));
                 break;
@@ -590,16 +587,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           );
           switch (clientAnnotation.parser) {
             case retrofit.Parser.MapSerializable:
-              blocks.add(
-                  Code("final value = $returnType.fromMap($_resultVar.data);"));
+              blocks.add(Code(
+                  "final value = ${_displayString(returnType)}.fromMap($_resultVar.data);"));
               break;
             case retrofit.Parser.JsonSerializable:
               blocks.add(Code(
-                  "final value = $returnType.fromJson($_resultVar.data);"));
+                  "final value = ${_displayString(returnType)}.fromJson($_resultVar.data);"));
               break;
             case retrofit.Parser.DartJsonMapper:
               blocks.add(Code(
-                  "final value = JsonMapper.deserialize<$returnType>($_resultVar.data);"));
+                  "final value = JsonMapper.deserialize<${_displayString(returnType)}>($_resultVar.data);"));
               break;
           }
         }
@@ -873,8 +870,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           } else {
             blocks.add(returnCode);
           }
-        } else if (p.type.getDisplayString(withNullability: false) ==
-            "List<int>") {
+        } else if (_displayString(p.type) == "List<int>") {
           final fileName = r.peek("fileName")?.stringValue;
           final conType = contentType == null
               ? ""
@@ -894,8 +890,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             _typeChecker(BuiltList).isExactlyType(p.type)) {
           var innnerType = _genericOf(p.type);
 
-          if (innnerType.getDisplayString(withNullability: false) ==
-              "List<int>") {
+          if (_displayString(innnerType) == "List<int>") {
             final conType = contentType == null
                 ? ""
                 : 'contentType: MediaType.parse(${literal(contentType)}),';
@@ -1145,7 +1140,7 @@ String revivedLiteral(
     }
 
     if (constant.isType) {
-      return refer(constant.typeValue.getDisplayString(withNullability: false));
+      return refer(_displayString(constant.typeValue));
     }
 
     if (constant.isLiteral) {
@@ -1182,4 +1177,8 @@ extension DartTypeStreamAnnotation on DartType {
     }
     return element.name == "Stream" && element.library.isDartAsync;
   }
+}
+
+String _displayString(dynamic e) {
+  return e.getDisplayString(withNullability: false);
 }
