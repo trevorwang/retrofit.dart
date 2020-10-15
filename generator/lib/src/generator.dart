@@ -1180,5 +1180,15 @@ extension DartTypeStreamAnnotation on DartType {
 }
 
 String _displayString(dynamic e) {
-  return e.getDisplayString(withNullability: false);
+  dynamic func = e.getDisplayString;
+
+  try {
+    return func(withNullability: false);
+  } catch (e) {
+    if (e is TypeError) {
+      return func();
+    } else {
+      rethrow;
+    }
+  }
 }
