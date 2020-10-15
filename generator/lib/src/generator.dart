@@ -511,7 +511,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               .map((k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
-                    .map((i) => $type.fromJson(i as Map<String,dynamic>))
+                    .map((i) => ${_displayString(type)}.fromJson(i as Map<String,dynamic>))
                     .toList()
                 )
               );
