@@ -758,7 +758,6 @@ abstract class MapSerializableTestMapBody2 {
   Future<Map<String, User>> getResult();
 }
 
-
 @ShouldGenerate(
   '_data.removeWhere((k, v) => v == null);',
   contains: true,
@@ -780,16 +779,15 @@ abstract class JsonSerializableBodyShouldBeCleanTest {
 }
 
 @ShouldGenerate(
-  r'''
+    r'''
     final _data = str;
     await _dio.request<void>('/',
-  ''', 
-  contains: true,
-  expectedLogItems: [
-    "String must provide a `toJson()` method which return a Map.\n"
-      "It is programmer\'s responsibility to make sure the String is properly serialized"
-  ]
-)
+  ''',
+    contains: true,
+    expectedLogItems: [
+      "String must provide a `toJson()` method which return a Map.\n"
+          "It is programmer\'s responsibility to make sure the String is properly serialized"
+    ])
 @RestApi()
 abstract class NonJsonSerializableBodyShouldNotBeCleanTest {
   @PUT("/")
@@ -798,17 +796,13 @@ abstract class NonJsonSerializableBodyShouldNotBeCleanTest {
 
 @ShouldGenerate(
   r'''
-    final _data = users;
+    final _data = users.map((e) => e.toJson());
     await _dio.request<void>('/',
-  ''', 
+  ''',
   contains: true,
-  expectedLogItems: [
-    "List<User> must provide a `toJson()` method which return a Map.\n"
-      "It is programmer\'s responsibility to make sure the List<User> is properly serialized"
-  ]
 )
 @RestApi()
 abstract class ListBodyShouldNotBeCleanTest {
   @PUT("/")
   Future<void> update(@Body() List<User> users);
-} 
+}
