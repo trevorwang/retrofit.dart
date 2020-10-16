@@ -37,6 +37,10 @@ abstract class RestClient {
   @POST("/tasks")
   Future<Task> createTask(@Body() Task task);
 
+  @POST("/tasks")
+  Future<List<Task>> createTasks(@Body() List<Task> tasks);
+  @POST("/tasks")
+  Future<List<String>> createTaskNames(@Body() List<String> tasks);
   @POST("http://httpbin.org/post")
   Future<void> createNewTaskFromFile(@Part() File file);
 
