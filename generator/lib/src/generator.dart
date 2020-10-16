@@ -691,6 +691,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         _typeChecker(Float).isExactlyType(returnType);
   }
 
+  bool _isBasicInnerType(DartType returnType) {
+    var innnerType = _genericOf(returnType);
+    return _isBasicType(innnerType);
+  }
+
   void _generateQueries(
       MethodElement m, List<Code> blocks, String _queryParamsVar) {
     final queries = _getAnnotations(m, retrofit.Query);
@@ -755,6 +760,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           refer("${_bodyName.displayName} ?? <String,dynamic>{}")
         ]).statement);
         blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
+      } else if ((_typeChecker(List).isExactly(_bodyName.type.element) ||
+              _typeChecker(BuiltList).isExactly(_bodyName.type.element)) &&
+          !_isBasicInnerType(_bodyName.type)) {
+        blocks.add(refer('''
+            ${_bodyName.displayName}.map((e) => e.toJson())
+            ''').assignFinal(_dataVar).statement);
       } else if (_typeChecker(File).isExactly(_bodyName.type.element)) {
         blocks.add(refer("Stream")
             .property("fromIterable")

@@ -262,6 +262,44 @@ class _RestClient implements RestClient {
   }
 
   @override
+  Future<List<Task>> createTasks(tasks) async {
+    ArgumentError.checkNotNull(tasks, 'tasks');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = tasks.map((e) => e.toJson());
+    final _result = await _dio.request<List<dynamic>>('/tasks',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    var value = _result.data
+        .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
+  Future<List<String>> createTaskNames(tasks) async {
+    ArgumentError.checkNotNull(tasks, 'tasks');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = tasks;
+    final _result = await _dio.request<List<dynamic>>('/tasks',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data.cast<String>();
+    return value;
+  }
+
+  @override
   Future<void> createNewTaskFromFile(file) async {
     ArgumentError.checkNotNull(file, 'file');
     const _extra = <String, dynamic>{};
