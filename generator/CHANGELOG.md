@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+- compatible with analyzer 0.40.0
+
 ## 1.3.8
 
 - Send list params duplicatedly in multipart
