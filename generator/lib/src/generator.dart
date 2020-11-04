@@ -941,6 +941,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     )))
                   ''')
             ]).statement);
+          } else if (_typeChecker(MultipartFile).isExactlyType(innnerType)) {
+            blocks
+                .add(refer(_dataVar).property('files').property("addAll").call([
+              refer(''' 
+                  ${p.displayName}?.map((i) => MapEntry(
+                '${fieldName}',
+                i))
+                  ''')
+            ]).statement);
           } else if (innnerType.element is ClassElement) {
             final ele = innnerType.element as ClassElement;
             final toJson = ele.lookUpMethod('toJson', ele.library);
