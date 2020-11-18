@@ -764,7 +764,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               _typeChecker(BuiltList).isExactly(_bodyName.type.element)) &&
           !_isBasicInnerType(_bodyName.type)) {
         blocks.add(refer('''
-            ${_bodyName.displayName}.map((e) => e.toJson())
+            ${_bodyName.displayName}.map((e) => e.toJson()).toList()
             ''').assignFinal(_dataVar).statement);
       } else if (_typeChecker(File).isExactly(_bodyName.type.element)) {
         blocks.add(refer("Stream")
