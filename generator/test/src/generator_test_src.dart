@@ -796,7 +796,7 @@ abstract class NonJsonSerializableBodyShouldNotBeCleanTest {
 
 @ShouldGenerate(
   r'''
-    final _data = users.map((e) => e.toJson());
+    final _data = users.map((e) => e.toJson()).toList();
     await _dio.request<void>('/',
   ''',
   contains: true,
