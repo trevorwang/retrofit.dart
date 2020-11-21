@@ -266,7 +266,7 @@ class _RestClient implements RestClient {
     ArgumentError.checkNotNull(tasks, 'tasks');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = tasks.map((e) => e.toJson());
+    final _data = tasks.map((e) => e.toJson()).toList();
     final _result = await _dio.request<List<dynamic>>('/tasks',
         queryParameters: queryParameters,
         options: RequestOptions(
