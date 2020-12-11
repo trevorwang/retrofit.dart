@@ -1221,7 +1221,7 @@ String _displaySubType(dynamic e) {
   String value = _displayString(e);
   // Searches for the beggining of some subtype
   int beggining = value.indexOf('<');
-  if (beggining != null) {
+  if (beggining > 0) {
     // If exists searches for if has another subtype
     int closing = value.indexOf('<', beggining + 1);
     if (closing < 0) {
