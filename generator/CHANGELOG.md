@@ -1,5 +1,6 @@
 # Changelog
-
+## 1.4.1
+- Add support for json serializable generic types 
 ## 1.4.0
 
 - compatible with analyzer 0.40.0
