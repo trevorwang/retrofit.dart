@@ -591,8 +591,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   "final value = ${_displayString(returnType)}.fromMap($_resultVar.data);"));
               break;
             case retrofit.Parser.JsonSerializable:
+              // If has a subtype
+              if (_displaySubType(returnType) != null) {
               blocks.add(Code(
+                    "final value = ${_displayString(returnType)}.fromJson($_resultVar.data, (data) => ${_displaySubType(returnType)}.fromJson(data));"));
+              } else {
+                blocks.add(Code(
                   "final value = ${_displayString(returnType)}.fromJson($_resultVar.data);"));
+              }
               break;
             case retrofit.Parser.DartJsonMapper:
               blocks.add(Code(
@@ -1208,5 +1214,25 @@ String _displayString(dynamic e) {
     } else {
       rethrow;
     }
+  }
+}
+
+String _displaySubType(dynamic e) {
+  String value = _displayString(e);
+  // Searches for the beggining of some subtype
+  int beggining = value.indexOf('<');
+  if (beggining > 0) {
+    // If exists searches for if has another subtype
+    int closing = value.indexOf('<', beggining + 1);
+    if (closing < 0) {
+      // If no other subtype found get the end character
+      closing = value.indexOf('>');
+    }
+    // Get the string from beggining to end (subtype)
+    String subType = value.substring(beggining + 1, closing);
+
+    return subType;
+  } else {
+    return null;
   }
 }
