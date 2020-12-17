@@ -591,8 +591,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   "final value = ${_displayString(returnType)}.fromMap($_resultVar.data);"));
               break;
             case retrofit.Parser.JsonSerializable:
-              blocks.add(Code(
-                  "final value = ${_displayString(returnType)}.fromJson($_resultVar.data);"));
+              var typeArgs = returnType is ParameterizedType
+                  ? returnType.typeArguments
+                  : [];
+              var mapperVal;
+              if (typeArgs.length > 0) {
+                mapperVal =
+                    "final value = ${_displayString(returnType)}.fromJson($_resultVar.data,${_getInnerJsonSerializableMapperFn(returnType)});";
+              } else {
+                mapperVal =
+                    "final value = ${_displayString(returnType)}.fromJson($_resultVar.data);";
+              }
+              blocks.add(Code(mapperVal));
               break;
             case retrofit.Parser.DartJsonMapper:
               blocks.add(Code(
@@ -612,6 +622,57 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     return Block.of(blocks);
+  }
+
+  String _getInnerJsonSerializableMapperFn(DartType dartType) {
+    var typeArgs = dartType is ParameterizedType ? dartType.typeArguments : [];
+    if (typeArgs.length > 0) {
+      if (_typeChecker(List).isExactlyType(dartType) ||
+          _typeChecker(BuiltList).isExactlyType(dartType)) {
+        var genericType = _getResponseType(dartType);
+        var typeArgs = genericType is ParameterizedType ? genericType.typeArguments : [];
+        var mapperVal;
+        var genericTypeString = "${_displayString(genericType)}";
+
+        if (typeArgs.length > 0) {
+          mapperVal = """
+    (json)=> (json as List<$genericTypeString>)
+            .map<${genericTypeString}>((i) => ${genericTypeString}.fromJson(
+                  i as Map<String, dynamic>,${_getInnerJsonSerializableMapperFn(genericType)}
+                ))
+            .toList()
+    """;
+        } else {
+          if (_isBasicType(genericType)){
+            mapperVal = """
+    (json)=>(json as List<$genericTypeString>)
+            .map<${genericTypeString}>((i) => 
+                  i as ${genericTypeString}
+                )
+            .toList()
+    """;
+          }else
+            {
+              mapperVal = """
+    (json)=>(json as List<$genericTypeString>)
+            .map<${genericTypeString}>((i) => ${genericTypeString}.fromJson(
+                  i as Map<String, dynamic>,
+                ))
+            .toList()
+    """;
+            }
+        }
+        return mapperVal;
+      } else {
+        var mappedVal = '';
+        for (DartType arg in typeArgs) {
+          mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
+        }
+        return mappedVal;
+      }
+    } else {
+      return "(json)=>${_displayString(dartType)}.fromJson(json),";
+    }
   }
 
   Expression _parseOptions(
