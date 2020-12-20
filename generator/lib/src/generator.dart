@@ -655,9 +655,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             {
               mapperVal = """
     (json)=>(json as List<$genericTypeString>)
-            .map<${genericTypeString}>((i) => ${genericTypeString}.fromJson(
-                  i as Map<String, dynamic>,
-                ))
+            .map<${genericTypeString}>((i) =>
+            ${genericTypeString == 'dynamic' ? ' i as Map<String, dynamic>' : genericTypeString + '.fromJson(  i as Map<String, dynamic> )  '}
+    )
             .toList()
     """;
             }
