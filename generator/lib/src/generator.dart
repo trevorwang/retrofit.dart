@@ -666,7 +666,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       } else {
         var mappedVal = '';
         for (DartType arg in typeArgs) {
-          mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
+          // print(arg);
+          var typeArgs = arg is ParameterizedType
+              ? arg.typeArguments
+              : [];
+          if (typeArgs.length > 0)
+            if (_typeChecker(List).isExactlyType(arg) ||
+                _typeChecker(BuiltList).isExactlyType(arg)) {
+              mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
+            }else{
+              mappedVal += "(json)=>${_displayString(arg)}.fromJson(json,${_getInnerJsonSerializableMapperFn(arg)}),";
+            }
+          else{
+            mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
+          }
+
         }
         return mappedVal;
       }
