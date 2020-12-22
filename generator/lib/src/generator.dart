@@ -636,7 +636,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
         if (typeArgs.length > 0) {
           mapperVal = """
-    (json)=> (json as List<$genericTypeString>)
+    (json)=> (json as List<dynamic>)
             .map<${genericTypeString}>((i) => ${genericTypeString}.fromJson(
                   i as Map<String, dynamic>,${_getInnerJsonSerializableMapperFn(genericType)}
                 ))
@@ -645,7 +645,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         } else {
           if (_isBasicType(genericType)){
             mapperVal = """
-    (json)=>(json as List<$genericTypeString>)
+    (json)=>(json as List<dynamic>)
             .map<${genericTypeString}>((i) => 
                   i as ${genericTypeString}
                 )
@@ -654,7 +654,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           }else
             {
               mapperVal = """
-    (json)=>(json as List<$genericTypeString>)
+    (json)=>(json as List<dynamic>)
             .map<${genericTypeString}>((i) =>
             ${genericTypeString == 'dynamic' ? ' i as Map<String, dynamic>' : genericTypeString + '.fromJson(  i as Map<String, dynamic> )  '}
     )
@@ -680,7 +680,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           else{
             mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
           }
-
         }
         return mappedVal;
       }
