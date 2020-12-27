@@ -684,6 +684,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         return mappedVal;
       }
     } else {
+      if ( _displayString(dartType) == 'dynamic' || _isBasicType(dartType)){
+        return "(json)=>json as ${_displayString(dartType)},";
+
+      }else
       return "(json)=>${_displayString(dartType)}.fromJson(json),";
     }
   }
