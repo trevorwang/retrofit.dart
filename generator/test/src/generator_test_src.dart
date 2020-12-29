@@ -251,6 +251,18 @@ class User implements AbstractUser {
   }
 }
 
+class GenericUser<T> implements AbstractUser {
+  GenericUser();
+
+  factory GenericUser.fromJson(Map<String, dynamic> json, T Function(Object json) fromJsonT) {
+    return GenericUser<T>();
+  }
+
+  Map<String, dynamic> toJson() {
+    return {};
+  }
+}
+
 mixin AbstractUserMixin {
   Map<String, dynamic> toJson();
 }
@@ -806,3 +818,52 @@ abstract class ListBodyShouldNotBeCleanTest {
   @PUT("/")
   Future<void> update(@Body() List<User> users);
 }
+
+@ShouldGenerate(
+  r'''
+    final value = GenericUser<dynamic>.fromJson(
+      _result.data,
+      (json) => json as dynamic,
+    );
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
+  @PUT("/")
+  Future<GenericUser<dynamic>> get();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = GenericUser<List<User>>.fromJson(
+        _result.data,
+        (json) => (json as List<dynamic>)
+            .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
+            .toList());
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
+  @PUT("/")
+  Future<GenericUser<List<User>>> get();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = GenericUser<List<double>>.fromJson(
+        _result.data,
+        (json) =>
+            (json as List<dynamic>).map<double>((i) => i as double).toList());
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
+  @PUT("/")
+  Future<GenericUser<List<double>>> get();
+}
+
+
+
