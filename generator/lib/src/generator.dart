@@ -636,7 +636,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
         if (typeArgs.length > 0) {
           mapperVal = """
-    (json)=> (json as List<$genericTypeString>)
+    (json)=> (json as List<dynamic>)
             .map<${genericTypeString}>((i) => ${genericTypeString}.fromJson(
                   i as Map<String, dynamic>,${_getInnerJsonSerializableMapperFn(genericType)}
                 ))
@@ -645,7 +645,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         } else {
           if (_isBasicType(genericType)){
             mapperVal = """
-    (json)=>(json as List<$genericTypeString>)
+    (json)=>(json as List<dynamic>)
             .map<${genericTypeString}>((i) => 
                   i as ${genericTypeString}
                 )
@@ -654,10 +654,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           }else
             {
               mapperVal = """
-    (json)=>(json as List<$genericTypeString>)
-            .map<${genericTypeString}>((i) => ${genericTypeString}.fromJson(
-                  i as Map<String, dynamic>,
-                ))
+    (json)=>(json as List<dynamic>)
+            .map<${genericTypeString}>((i) =>
+            ${genericTypeString == 'dynamic' ? ' i as Map<String, dynamic>' : genericTypeString + '.fromJson(  i as Map<String, dynamic> )  '}
+    )
             .toList()
     """;
             }
@@ -666,11 +666,28 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       } else {
         var mappedVal = '';
         for (DartType arg in typeArgs) {
-          mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
+          // print(arg);
+          var typeArgs = arg is ParameterizedType
+              ? arg.typeArguments
+              : [];
+          if (typeArgs.length > 0)
+            if (_typeChecker(List).isExactlyType(arg) ||
+                _typeChecker(BuiltList).isExactlyType(arg)) {
+              mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
+            }else{
+              mappedVal += "(json)=>${_displayString(arg)}.fromJson(json,${_getInnerJsonSerializableMapperFn(arg)}),";
+            }
+          else{
+            mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
+          }
         }
         return mappedVal;
       }
     } else {
+      if ( _displayString(dartType) == 'dynamic' || _isBasicType(dartType)){
+        return "(json)=>json as ${_displayString(dartType)},";
+
+      }else
       return "(json)=>${_displayString(dartType)}.fromJson(json),";
     }
   }
