@@ -41,3 +41,7 @@ class HttpResponse<T> {
 class DioOptions {
   const DioOptions();
 }
+
+abstract class RequestConverter<T, S> {
+  S convert(T object);
+}

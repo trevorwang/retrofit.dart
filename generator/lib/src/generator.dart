@@ -213,6 +213,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
+  List<ConstantReader> _getConverterAnnotation(MethodElement method) {
+    return _typeChecker(retrofit.RequestConverter)
+        .annotationsOf(method, throwOnUnresolved: false)
+        .map((a) => ConstantReader(a)).toList();
+  }
+
   Map<ParameterElement, ConstantReader> _getAnnotations(
       MethodElement m, Type type) {
     var annot = <ParameterElement, ConstantReader>{};
@@ -273,7 +279,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   Method _generateMethod(MethodElement m) {
-    final httpMehod = _getMethodAnnotation(m);
+    final httpMethod = _getMethodAnnotation(m);
+    final converters = _getConverterAnnotation(m);
 
     return Method((mm) {
       mm
@@ -300,24 +307,26 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ..defaultTo = it.defaultValueCode == null
                 ? null
                 : Code(it.defaultValueCode))));
-      mm.body = _generateRequest(m, httpMehod);
+      mm.body = _generateRequest(m, httpMethod, converters);
     });
   }
 
-  Expression _generatePath(MethodElement m, ConstantReader method) {
+  Expression _generatePath(MethodElement m, ConstantReader method, List<ConstantReader> converters) {
     final paths = _getAnnotations(m, retrofit.Path);
     String definePath = method.peek("path").stringValue;
     paths.forEach((k, v) {
+      final converter = _converterForType(converters, k.type);
+      final key = converter != null ? "\${${_constructorForConverter(converter)}().convert(${k.displayName})}" : "\$${k.displayName}";
       final value = v.peek("value")?.stringValue ?? k.displayName;
-      definePath = definePath.replaceFirst("{$value}", "\$${k.displayName}");
+      definePath = definePath.replaceFirst("{$value}", key);
     });
     return literal(definePath);
   }
 
-  Code _generateRequest(MethodElement m, ConstantReader httpMehod) {
+  Code _generateRequest(MethodElement m, ConstantReader httpMethod, List<ConstantReader> converters) {
     final returnAsyncWrapper =
         m.returnType.isDartAsyncFuture ? 'return' : 'yield';
-    final path = _generatePath(m, httpMehod);
+    final path = _generatePath(m, httpMethod, converters);
     final blocks = <Code>[];
 
     for (var parameter in m.parameters.where((p) =>
@@ -331,12 +340,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     _generateExtra(m, blocks, _localExtraVar);
 
-    _generateQueries(m, blocks, _queryParamsVar);
-    Map<String, Expression> headers = _generateHeaders(m);
-    _generateRequestBody(blocks, _localDataVar, m);
+    _generateQueries(m, blocks, _queryParamsVar, converters);
+    Map<String, Expression> headers = _generateHeaders(m, converters);
+    _generateRequestBody(blocks, _localDataVar, m, converters);
 
     final extraOptions = {
-      "method": literal(httpMehod.peek("method").stringValue),
+      "method": literal(httpMethod.peek("method").stringValue),
       "headers": literalMap(
           headers.map((k, v) => MapEntry(literalString(k, raw: true), v)),
           refer("String"),
@@ -390,10 +399,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       namedArguments[_onReceiveProgress] =
           refer(receiveProgress.item1.displayName);
 
-    final wrapperedReturnType = _getResponseType(m.returnType);
+    final wrappedReturnType = _getResponseType(m.returnType);
     final autoCastResponse = (globalOptions.autoCastResponse ??
         (clientAnnotation.autoCastResponse ?? true) ??
-        (httpMehod.peek('autoCastResponse')?.boolValue ?? true));
+        (httpMethod.peek('autoCastResponse')?.boolValue ?? true));
 
     /// If autoCastResponse is false, return the response as it is
     if (!autoCastResponse) {
@@ -406,8 +415,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return Block.of(blocks);
     }
 
-    if (wrapperedReturnType == null ||
-        "void" == wrapperedReturnType.toString()) {
+    if (wrappedReturnType == null ||
+        "void" == wrappedReturnType.toString()) {
       blocks.add(
         refer("await $_dioVar.request")
             .call([path], namedArguments, [refer("void")])
@@ -417,13 +426,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return Block.of(blocks);
     }
 
-    final bool isWrappered =
-        _typeChecker(retrofit.HttpResponse).isExactlyType(wrapperedReturnType);
-    final returnType = isWrappered
-        ? _getResponseType(wrapperedReturnType)
-        : wrapperedReturnType;
+    final bool isWrapped =
+        _typeChecker(retrofit.HttpResponse).isExactlyType(wrappedReturnType);
+    final returnType = isWrapped
+        ? _getResponseType(wrappedReturnType)
+        : wrappedReturnType;
     if (returnType == null || "void" == returnType.toString()) {
-      if (isWrappered) {
+      if (isWrapped) {
         blocks.add(
           refer("final $_resultVar = await $_dioVar.request")
               .call([path], namedArguments, [refer("void")])
@@ -611,7 +620,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           }
         }
       }
-      if (isWrappered) {
+      if (isWrapped) {
         blocks.add(Code("""
       final httpResponse = HttpResponse(value, $_resultVar);
       $returnAsyncWrapper httpResponse;
@@ -770,24 +779,52 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   bool _isBasicInnerType(DartType returnType) {
-    var innnerType = _genericOf(returnType);
-    return _isBasicType(innnerType);
+    var innerType = _genericOf(returnType);
+    return _isBasicType(innerType);
+  }
+
+  ConstantReader _converterForType(List<ConstantReader> converters, DartType typeToCheck) {
+    if (converters.isEmpty) return null;
+
+    for (var converter in converters) {
+      var type = converter.objectValue.type;
+      if (type is InterfaceType) {
+        var interfaces = type.interfaces;
+        for (var interface in interfaces) {
+          if (interface is InterfaceType) {
+            if (_typeChecker(retrofit.RequestConverter).isExactlyType(interface) && interface.typeArguments[0] == typeToCheck) {
+              return converter;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  String _constructorForConverter(ConstantReader converter) {
+    var raw = (converter.objectValue.type as InterfaceType).element.thisType.toString();
+    return raw.substring(0, raw.length - 1);
   }
 
   void _generateQueries(
-      MethodElement m, List<Code> blocks, String _queryParamsVar) {
+      MethodElement m, List<Code> blocks, String _queryParamsVar, List<ConstantReader> converters) {
     final queries = _getAnnotations(m, retrofit.Query);
     final queryParameters = queries.map((p, ConstantReader r) {
+
       final key = r.peek("value")?.stringValue ?? p.displayName;
+      final converter = _converterForType(converters, p.type);
       final value = (_isBasicType(p.type) ||
               p.type.isDartCoreList ||
               p.type.isDartCoreMap)
           ? refer(p.displayName)
-          : clientAnnotation.parser == retrofit.Parser.DartJsonMapper
-              ? refer(p.displayName)
-              : clientAnnotation.parser == retrofit.Parser.JsonSerializable
-                  ? refer(p.displayName).nullSafeProperty('toJson').call([])
-                  : refer(p.displayName).nullSafeProperty('toMap').call([]);
+          : converter != null
+              ? refer(_constructorForConverter(converter) + "().convert(" + p.displayName + ")")
+              : clientAnnotation.parser == retrofit.Parser.DartJsonMapper
+                  ? refer(p.displayName)
+                  : clientAnnotation.parser == retrofit.Parser.JsonSerializable
+                      ? refer(p.displayName).nullSafeProperty('toJson').call([])
+                      : refer(p.displayName).nullSafeProperty('toMap').call([]);
       return MapEntry(literalString(key, raw: true), value);
     });
 
@@ -826,7 +863,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   void _generateRequestBody(
-      List<Code> blocks, String _dataVar, MethodElement m) {
+      List<Code> blocks, String _dataVar, MethodElement m, List<ConstantReader> converters) {
     final _bodyName = _getAnnotation(m, retrofit.Body)?.item1;
     if (_bodyName != null) {
       if (TypeChecker.fromRuntime(Map).isAssignableFromType(_bodyName.type)) {
@@ -904,7 +941,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         log.severe(
             'File is not support by @Field(). Please use @Part() instead.');
       }
-      return MapEntry(literal(fieldName), refer(p.displayName));
+      final converter = _converterForType(converters, p.type);
+      final key = converter != null ? "${_constructorForConverter(converter)}().convert(${p.displayName})" : "${p.displayName}";
+      return MapEntry(literal(fieldName), refer(key));
     });
 
     if (fields.isNotEmpty) {
@@ -952,10 +991,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             refer("MapEntry").newInstance([literal(fieldName), uploadFileInfo])
           ]).statement;
           if (optinalFile) {
-            final condication =
+            final condition =
                 refer(p.displayName).notEqualTo(literalNull).code;
             blocks.addAll(
-                [Code("if("), condication, Code(") {"), returnCode, Code("}")]);
+                [Code("if("), condition, Code(") {"), returnCode, Code("}")]);
           } else {
             blocks.add(returnCode);
           }
@@ -1090,7 +1129,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         .statement);
   }
 
-  Map<String, Expression> _generateHeaders(MethodElement m) {
+  Map<String, Expression> _generateHeaders(MethodElement m, List<ConstantReader> converters) {
     final anno = _getHeadersAnnotation(m);
     final headersMap = anno?.peek("value")?.mapValue ?? {};
     final headers = headersMap.map((k, v) {
@@ -1099,8 +1138,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final annosInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annosInParam.map((k, v) {
+      final converter = _converterForType(converters, k.type);
+      final key = converter != null ? "${_constructorForConverter(converter)}().convert(${k.displayName})" : "${k.displayName}";
       final value = v.peek("value")?.stringValue ?? k.displayName;
-      return MapEntry(value, refer(k.displayName));
+      return MapEntry(value, refer(key));
     });
     headers.addAll(headersInParams);
     return headers;

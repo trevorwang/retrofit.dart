@@ -88,7 +88,7 @@ void main(List<String> args) {
 
 ### Type Conversion
 
-> Before you use the type conversion, please make sure that a ` factory Task.fromJson(Map<String, dynamic> json)` must be provided for each model class. `json_serializable` is the recommanded to be used as the serialization tool.
+> Before you use the type conversion, please make sure that a ` factory Task.fromJson(Map<String, dynamic> json)` must be provided for each model class. `json_serializable` is the recommended being used as the serialization tool.
 
 ```dart
 ...
@@ -104,6 +104,22 @@ class Task {
 }
 ```
 
+If you want to use an object, which does not directly provide a `toJson()` method, as `@Query`, `@Field`, `@Header` or `@Path` you can implement the `RequestConverter<S, T>` and then annotate the method in the REST interface with the newly created class:
+
+```dart
+class DateTimeConverter implements RequestConverter<DateTime, int> {
+  @override
+  int convert(DateTime object) => object.millisecondsSinceEpoch;
+}
+
+@RestApi(baseUrl: 'https://example.com')
+abstract class ProfileApi {
+  
+  @GET('/')
+  @DateTimeConverter()
+  Future<String> getAll(@Query('timestamp') DateTime timestamp);
+}
+```
 
 
 ### HTTP Methods
@@ -146,7 +162,7 @@ The HTTP methods in the below sample are supported.
   Future<String> postUrlEncodedFormData(@Field() String hello);
 ```
 
-### Get orignal HTTP reponse
+### Get original HTTP response
 
 ```dart
   @GET("/tasks/{id}")
@@ -158,7 +174,7 @@ The HTTP methods in the below sample are supported.
 
 ### HTTP Header
 
-* Add a HTTP header from the parameter of the method
+* Add an HTTP header from the parameter of the method
 
   ```dart
   	@GET("/tasks")
@@ -167,7 +183,7 @@ The HTTP methods in the below sample are supported.
 
   
 
-* Add staitc HTTP headers
+* Add static HTTP headers
 
   ```dart
   	@GET("/tasks")
@@ -214,7 +230,7 @@ abstract class RestClient {
 final client = RestClient(dio, baseUrl: "your base url");
 ```
 
-If you want to use the base url from `dio.option.baseUrl`, which has lowest priority, please don't pass any parameter to `RestApi` annotation and `RestClient`'s structure method. 
+If you want to use the base url from `dio.option.baseUrl`, which has the lowest priority, please don't pass any parameter to `RestApi` annotation and `RestClient`'s structure method. 
 
 ### Hide generated files
 
