@@ -837,7 +837,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         blocks.add(refer("$_dataVar.addAll").call([
           refer("${_bodyName.displayName} ?? <String,dynamic>{}")
         ]).statement);
-        blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
       } else if ((_typeChecker(List).isExactly(_bodyName.type.element) ||
               _typeChecker(BuiltList).isExactly(_bodyName.type.element)) &&
           !_isBasicInnerType(_bodyName.type)) {
@@ -885,7 +884,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             blocks.add(refer("$_dataVar.addAll").call([
               refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
             ]).statement);
-            blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
           }
         }
       } else {
