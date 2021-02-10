@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:built_collection/built_collection.dart';
@@ -16,13 +17,16 @@ import 'package:retrofit/retrofit.dart' as retrofit;
 
 class RetrofitOptions {
   final bool autoCastResponse;
+  final bool nullsafety;
 
-  RetrofitOptions({this.autoCastResponse});
+  RetrofitOptions({this.autoCastResponse, this.nullsafety});
 
   RetrofitOptions.fromOptions([BuilderOptions options])
       : autoCastResponse =
             (options?.config['auto_cast_response']?.toString() ?? 'true') ==
-                'true';
+                'true',
+        nullsafety = (options?.config['nullsafety']?.toString() ?? 'true') ==
+            'true';
 }
 
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
@@ -106,10 +110,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ..type = refer("Dio")
     ..modifier = FieldModifier.final$);
 
-  Field _buildBaseUrlFiled(String url) => Field((m) => m
+  Field _buildBaseUrlFiled(String url) => Field((m) {
+    m
     ..name = _baseUrlVar
     ..type = refer("String")
-    ..modifier = FieldModifier.var$);
+    ..modifier = FieldModifier.var$;
+    if (globalOptions.nullsafety) {
+      m.type = refer("String?");
+    }
+  });
 
   Constructor _generateConstructor(
     String url, {
@@ -285,16 +294,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             : MethodModifier.asyncStar
         ..annotations.add(CodeExpression(Code('override')));
 
+      m.parameters.where((element) => element.name == 'query').forEach((element) {
+        print('$element -> Named: ${element.isOptional}, ns enabled: ${globalOptions.nullsafety}. Type: ${element.type.nullabilitySuffix}');
+      });
+
       /// required parameters
       mm.requiredParameters.addAll(m.parameters
-          .where((it) => it.isRequiredPositional || it.isRequiredNamed)
+          .where((it) => it.isRequiredPositional || (it.isRequiredNamed && !globalOptions.nullsafety))
           .map((it) => Parameter((p) => p
             ..name = it.name
             ..named = it.isNamed)));
 
       /// optional positional or named parameters
-      mm.optionalParameters.addAll(m.parameters.where((i) => i.isOptional).map(
+      mm.optionalParameters.addAll(m.parameters.where((i) => i.isOptional || (i.isRequiredNamed && globalOptions.nullsafety)).map(
           (it) => Parameter((p) => p
+            ..required = (it.isNamed && globalOptions.nullsafety && it.type.nullabilitySuffix == NullabilitySuffix.none && !it.hasDefaultValue)
             ..name = it.name
             ..named = it.isNamed
             ..defaultTo = it.defaultValueCode == null
@@ -881,9 +895,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             blocks.add(literalMap({}, refer("String"), refer("dynamic"))
                 .assignFinal(_dataVar)
                 .statement);
-            blocks.add(refer("$_dataVar.addAll").call([
-              refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
-            ]).statement);
+            if (globalOptions.nullsafety && m.returnType.nullabilitySuffix != NullabilitySuffix.question) {
+              blocks.add(refer("$_dataVar.addAll").call([
+                refer("${_bodyName.displayName}.toJson()")
+              ]).statement);
+            } else {
+              blocks.add(refer("$_dataVar.addAll").call([
+                refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
+              ]).statement);
+            }
           }
         }
       } else {
