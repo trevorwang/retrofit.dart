@@ -251,6 +251,7 @@ class User implements AbstractUser {
   }
 }
 
+@JsonSerializable(genericArgumentFactories: true)
 class GenericUser<T> implements AbstractUser {
   GenericUser();
 
@@ -261,6 +262,23 @@ class GenericUser<T> implements AbstractUser {
   Map<String, dynamic> toJson() {
     return {};
   }
+}
+
+@JsonSerializable(genericArgumentFactories: false)
+class GenericUserWithoutGenericArgumentFactories<T> implements AbstractUser {
+  GenericUserWithoutGenericArgumentFactories();
+
+  factory GenericUserWithoutGenericArgumentFactories.fromJson(Map<String, dynamic> json, T Function(Object json) fromJsonT) {
+    return GenericUserWithoutGenericArgumentFactories<T>();
+  }
+
+  Map<String, dynamic> toJson() {
+    return {};
+  }
+}
+class JsonSerializable{
+  final bool genericArgumentFactories;
+  const JsonSerializable({   this.genericArgumentFactories,});
 }
 
 mixin AbstractUserMixin {
@@ -845,5 +863,15 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
   Future<GenericUser<List<double>>> get();
 }
 
-
-
+@ShouldGenerate(
+  r'''
+    final value = GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
+        _result.data);
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class DynamicInnerGenericTypeShouldBeWithoutGenericArgumentType {
+  @PUT("/")
+  Future<GenericUserWithoutGenericArgumentFactories<dynamic>> get();
+}
