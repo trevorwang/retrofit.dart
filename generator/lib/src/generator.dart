@@ -113,11 +113,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   Field _buildBaseUrlFiled(String url) => Field((m) {
     m
     ..name = _baseUrlVar
-    ..type = refer("String")
+    ..type = globalOptions.nullsafety ? refer("String?") : refer("String")
     ..modifier = FieldModifier.var$;
-    if (globalOptions.nullsafety) {
-      m.type = refer("String?");
-    }
   });
 
   Constructor _generateConstructor(
@@ -293,10 +290,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ? MethodModifier.async
             : MethodModifier.asyncStar
         ..annotations.add(CodeExpression(Code('override')));
-
-      m.parameters.where((element) => element.name == 'query').forEach((element) {
-        print('$element -> Named: ${element.isOptional}, ns enabled: ${globalOptions.nullsafety}. Type: ${element.type.nullabilitySuffix}');
-      });
 
       /// required parameters
       mm.requiredParameters.addAll(m.parameters
