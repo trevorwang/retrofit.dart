@@ -103,13 +103,14 @@ class _RestClient implements RestClient {
   String? baseUrl;
 
   @override
-  Future<List<String>> getTags() async {
+  Future<List<String>> getTags({optionalHeader}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<List<dynamic>>(RequestOptions(
         method: 'GET',
-        headers: <String, dynamic>{},
+        headers: <String, dynamic>{r'optionalHeader': optionalHeader},
         extra: _extra,
         baseUrl: baseUrl,
         queryParameters: queryParameters,
@@ -117,6 +118,23 @@ class _RestClient implements RestClient {
         data: _data));
     final value = _result.data!.cast<String>();
     return value;
+  }
+
+  @override
+  Future<HttpResponse<void>> reponseWith204() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<void>(RequestOptions(
+        method: 'GET',
+        headers: <String, dynamic>{},
+        extra: _extra,
+        baseUrl: baseUrl,
+        queryParameters: queryParameters,
+        path: 'https://httpbin.org/status/204',
+        data: _data));
+    final httpResponse = HttpResponse(null, _result);
+    return httpResponse;
   }
 
   @override
@@ -507,9 +525,7 @@ class _RestClient implements RestClient {
           contentType: MediaType.parse('application/json'),
         ))));
     _data.files.add(MapEntry(
-        'file',
-        MultipartFile.fromFileSync(file.path,
-            filename: file.path.split(Platform.pathSeparator).last)));
+        'file', MultipartFile.fromFileSync(file.path, filename: 'abc.txt')));
     final _result = await _dio.fetch<String>(RequestOptions(
         method: 'POST',
         headers: <String, dynamic>{},
@@ -536,7 +552,7 @@ class _RestClient implements RestClient {
         'file',
         MultipartFile.fromBytes(
           file,
-          filename: null,
+          filename: 'abc.txt',
         )));
     final _result = await _dio.fetch<String>(RequestOptions(
         method: 'POST',
