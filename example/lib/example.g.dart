@@ -321,7 +321,6 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = {'hello': hello, 'gg': gg};
-    _data.removeWhere((k, v) => v == null);
     final _result = await _dio.fetch<String>(RequestOptions(
         method: 'POST',
         headers: <String, dynamic>{},
@@ -447,6 +446,7 @@ class _RestClient implements RestClient {
   Future<String> postFormData(task, {required file}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = FormData();
     _data.fields.add(MapEntry('task', jsonEncode(task ?? <String, dynamic>{})));
     _data.files.add(MapEntry(
@@ -469,6 +469,7 @@ class _RestClient implements RestClient {
   Future<String> postFormData2(task, tags, file) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = FormData();
     task.forEach((i) {
       _data.fields.add(MapEntry('task', jsonEncode(i)));
@@ -681,8 +682,12 @@ class _RestClient implements RestClient {
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(<String, dynamic>{});
-    final _result = await _dio
-        .fetch<String>(newOptions.copyWith(method: 'GET', baseUrl: baseUrl));
+    final _result = await _dio.fetch<String>(newOptions.copyWith(
+        method: 'GET',
+        baseUrl: baseUrl,
+        queryParameters: queryParameters,
+        path: '')
+      ..data = _data);
     final value = _result.data!;
     return value;
   }

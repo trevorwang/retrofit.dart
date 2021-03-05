@@ -738,7 +738,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .property('headers')
           .property('addAll')
           .call([extraOptions.remove('headers')]).statement);
-      return newOptions.property('copyWith').call([], extraOptions);
+      return newOptions.property('copyWith').call([], Map.from(extraOptions)
+        ..[_queryParamsVar] = namedArguments[_queryParamsVar]
+        ..[_path] = namedArguments[_path]).cascade('data').assign(namedArguments[_dataVar]);
     }
   }
 
@@ -845,7 +847,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     if (m.parameters
-        .where((p) => (p.isOptional && !p.isRequiredNamed))
+        .where((p) => (p.type.nullabilitySuffix == NullabilitySuffix.question))
         .isNotEmpty) {
       blocks.add(Code("$_queryParamsVar.removeWhere((k, v) => v == null);"));
     }
@@ -927,7 +929,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return;
     }
 
+    var anyNullable = false;
     final fields = _getAnnotations(m, retrofit.Field).map((p, r) {
+      anyNullable |= p.type.nullabilitySuffix == NullabilitySuffix.question;
       final fieldName = r.peek("value")?.stringValue ?? p.displayName;
       final isFileField = _typeChecker(File).isAssignableFromType(p.type);
       if (isFileField) {
@@ -939,7 +943,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     if (fields.isNotEmpty) {
       blocks.add(literalMap(fields).assignFinal(_dataVar).statement);
-      blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
+      if (anyNullable) {
+        blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
+      }
       return;
     }
 
