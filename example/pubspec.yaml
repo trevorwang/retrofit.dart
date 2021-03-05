@@ -15,7 +15,7 @@ dev_dependencies:
   test:
   retrofit_generator:
   build_runner: ^1.4.0
-  json_serializable: any
+  json_serializable: ^3.5.1
   mock_web_server:
 
 dependency_overrides:
