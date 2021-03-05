@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 import '../lib/example.dart';
 import 'task_data.dart';
 
-MockWebServer _server;
-RestClient _client;
+late MockWebServer _server;
+late RestClient _client;
 final _headers = {"Content-Type": "application/json"};
 final dispatcherMap = <String, MockResponse>{};
 

@@ -4,20 +4,20 @@ version: 0.0.1
 author: Trevor Wang <trevor.wang@qq.com>
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   retrofit:
-  json_annotation:
-  logger:
-  dart_json_mapper:
-  reflectable: ^2.2.4
+  json_annotation: ^4.0.0
+  logger: ^1.0.0-nullsafety.0
+  dart_json_mapper: ^1.7.11
+  reflectable: ^3.0.0-nullsafety.1
 
 dev_dependencies:
   test:
   retrofit_generator:
-  build_runner: ^1.4.0
-  json_serializable: any
+  build_runner: any
+  json_serializable: ^4.0.2
   mock_web_server:
 
 dependency_overrides:
@@ -25,3 +25,4 @@ dependency_overrides:
     path: ../annotation
   retrofit_generator:
     path: ../generator
+  analyzer: ^1.1.0

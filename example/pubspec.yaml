@@ -4,18 +4,19 @@ version: 0.0.1
 author: Trevor Wang <trevor.wang@qq.com>
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   retrofit:
-  json_annotation:
-  logger:
+  json_annotation: ^4.0.0
+  logger: ^1.0.0-nullsafety.0
+  dio: ^4.0.0-beta4
 
 dev_dependencies:
   test:
   retrofit_generator:
-  build_runner: ^1.4.0
-  json_serializable: any
+  build_runner: ^1.11.5
+  json_serializable: ^4.0.2
   mock_web_server:
 
 dependency_overrides:

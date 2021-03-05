@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/dio.dart' hide Headers;
+import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:dio/dio.dart' hide Headers;
-import 'dart:io';
-import 'package:http_parser/http_parser.dart' show MediaType;
 
 part 'example.g.dart';
 
@@ -39,8 +39,10 @@ abstract class RestClient {
 
   @POST("/tasks")
   Future<List<Task>> createTasks(@Body() List<Task> tasks);
+
   @POST("/tasks")
   Future<List<String>> createTaskNames(@Body() List<String> tasks);
+
   @POST("http://httpbin.org/post")
   Future<void> createNewTaskFromFile(@Part() File file);
 
@@ -53,7 +55,7 @@ abstract class RestClient {
   @FormUrlEncoded()
   Future<String> postUrlEncodedFormData(
     @Field() String hello, {
-    @Field() String gg,
+    @Field() required String gg,
   });
 
   @HEAD('/')
@@ -75,25 +77,25 @@ abstract class RestClient {
   Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
 
   @POST("/post")
-  Future<String> postFormData(@Part() Task task, {@Part() File file});
+  Future<String> postFormData(@Part() Task? task, {@Part() required File file});
 
   @POST("/post")
   Future<String> postFormData2(
       @Part() List<Map<String, dynamic>> task,
-      @Part() List<String> tags,
+      @Part() List<String>? tags,
       @Part(contentType: 'application/json') File file);
 
   @POST("/post")
   Future<String> postFormData3(
       {@Part(value: "customfiles", contentType: 'application/json')
-          List<File> files,
+      required List<File> files,
       @Part()
-          File file});
+      required File file});
 
   @POST("/post")
   Future<String> postFormData6(
-      {@Part(value: "customfiles") List<List<int>> files,
-      @Part() List<int> file});
+      {@Part(value: "customfiles") required List<List<int>> files,
+      @Part() required List<int> file});
 
   @POST("/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
@@ -103,9 +105,9 @@ abstract class RestClient {
     @Part() List<Task> tasks,
     @Part() Map<String, dynamic> map,
     @Part() int a, {
-    @Part() bool b,
-    @Part() double c,
-    @Part() String d,
+    @Part() required bool b,
+    @Part() required double c,
+    @Part() required String d,
   });
 
   @GET('/demo')
@@ -117,14 +119,14 @@ abstract class RestClient {
   @GET("/get")
   Future<String> namedExample(@Query("\$apikey") String apiKey,
       @Query("scope") String scope, @Query("type") String type,
-      {@Query("from") int from});
+      {@Query("from") int? from});
 
   @POST("/postfile")
   @Headers(<String, dynamic>{
     "\$Content-Type": "application/octet-stream",
     "Ocp-Apim-Subscription-Key": "abc"
   })
-  Future<String> postFile({@Body() File file});
+  Future<String> postFile({@Body() required File file});
 
   @GET("")
   Future<String> testCustomOptions(@DioOptions() Options options);
@@ -137,9 +139,14 @@ class Task {
   String avatar;
   String createdAt;
 
-  Task({this.id, this.name, this.avatar, this.createdAt});
+  Task(
+      {required this.id,
+      required this.name,
+      required this.avatar,
+      required this.createdAt});
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
+
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 }
 
@@ -155,10 +162,12 @@ enum Status {
 @JsonSerializable()
 class TaskQuery {
   List<Status> statuses;
+
   TaskQuery(this.statuses);
 
   factory TaskQuery.fromJson(Map<String, dynamic> json) =>
       _$TaskQueryFromJson(json);
+
   Map<String, dynamic> toJson() => _$TaskQueryToJson(this);
 }
 
@@ -169,9 +178,14 @@ class TaskGroup {
   List<Task> completed;
   List<Task> inProgress;
 
-  TaskGroup({this.date, this.todos, this.completed, this.inProgress});
+  TaskGroup(
+      {required this.date,
+      required this.todos,
+      required this.completed,
+      required this.inProgress});
 
   factory TaskGroup.fromJson(Map<String, dynamic> json) =>
       _$TaskGroupFromJson(json);
+
   Map<String, dynamic> toJson() => _$TaskGroupToJson(this);
 }
