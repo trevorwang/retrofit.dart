@@ -94,7 +94,6 @@ Map<String, dynamic> _$TaskGroupToJson(TaskGroup instance) => <String, dynamic>{
 
 class _RestClient implements RestClient {
   _RestClient(this._dio, {this.baseUrl}) {
-    ArgumentError.checkNotNull(_dio, '_dio');
     baseUrl ??= 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/';
   }
 
