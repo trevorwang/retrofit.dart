@@ -24,7 +24,6 @@ class _BaseUrl implements BaseUrl {
   final Dio _dio;
 
   String? baseUrl;
-}
 ''', contains: true)
 @RestApi(baseUrl: "http://httpbin.org/")
 abstract class BaseUrl {}
@@ -73,10 +72,8 @@ class CustomConstant {
 }
 
 @ShouldGenerate(
-  r'''
-RequestOptions(
-        method: 'GET',
-''',
+  r'''Options(
+            method: 'GET',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -86,10 +83,8 @@ abstract class HttpGetTest {
 }
 
 @ShouldGenerate(
-  r'''
-RequestOptions(
-        method: 'POST',
-''',
+  r'''Options(
+            method: 'POST',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -99,10 +94,8 @@ abstract class HttpPostTest {
 }
 
 @ShouldGenerate(
-  r'''
-RequestOptions(
-        method: 'PUT',
-''',
+  r'''Options(
+            method: 'PUT',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -112,10 +105,7 @@ abstract class HttpPutTest {
 }
 
 @ShouldGenerate(
-  r'''
-RequestOptions(
-        method: 'DELETE',
-''',
+  r'''Options(method: 'DELETE',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -125,10 +115,7 @@ abstract class HttpDeleteTest {
 }
 
 @ShouldGenerate(
-  r'''
-RequestOptions(
-        method: 'PATCH',
-''',
+  r'''Options(method: 'PATCH',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -138,9 +125,7 @@ abstract class HttpPatchTest {
 }
 
 @ShouldGenerate(
-  r'''
-    contentType: 'application/x-www-form-urlencoded',
-''',
+  r"contentType: 'application/x-www-form-urlencoded'",
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -517,20 +502,14 @@ abstract class TestReceiveProgress {
       @Body() User user, @ReceiveProgress() ProgressCallback onReceiveProgress);
 }
 
-@ShouldGenerate(r'''
-RequestOptions(
-        method: 'HEAD',
-''', contains: true)
+@ShouldGenerate(r'''Options(method: 'HEAD',''', contains: true)
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestHeadMethod {
   @HEAD("/")
   Future<String> testHeadMethod();
 }
 
-@ShouldGenerate(r'''
-RequestOptions(
-        method: 'OPTIONS',
-''', contains: true)
+@ShouldGenerate(r'''Options(method: 'OPTIONS',''', contains: true)
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestOptionsMethod {
   @OPTIONS("/")
@@ -825,8 +804,8 @@ abstract class MapSerializableTestMapBody2 {
 @ShouldGenerate(
     r'''
     final _data = str;
-    await _dio.fetch<void>(RequestOptions(
-  ''',
+    await _dio.fetch<void>(_setStreamType<void>(
+        Options(''',
     contains: true,
     expectedLogItems: [
       "String must provide a `toJson()` method which return a Map.\n"
@@ -841,8 +820,8 @@ abstract class NonJsonSerializableBodyShouldNotBeCleanTest {
 @ShouldGenerate(
   r'''
     final _data = users.map((e) => e.toJson()).toList();
-    await _dio.fetch<void>(RequestOptions(
-  ''',
+    await _dio.fetch<void>(_setStreamType<void>(
+        Options(''',
   contains: true,
 )
 @RestApi()

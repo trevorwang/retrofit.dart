@@ -96,6 +96,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       if (hasCustomOptions) {
         c.methods.add(_generateOptionsCastMethod());
       }
+      c.methods.add(_generateTypeSetterMethod());
     });
 
     final emitter = DartEmitter();
@@ -733,10 +734,24 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       Map<String, Expression> namedArguments,
       List<Code> blocks,
       Map<String, Expression> extraOptions) {
-    final options = refer("RequestOptions").newInstance([], Map.from(extraOptions)..addAll(namedArguments));
     final annoOptions = _getAnnotation(m, retrofit.DioOptions);
     if (annoOptions == null) {
-      return options;
+      final args = Map<String, Expression>.from(extraOptions)..addAll(namedArguments);
+      final path = args.remove(_path)!;
+      final dataVar = args.remove(_dataVar)!;
+      final queryParams = args.remove(_queryParamsVar)!;
+      final baseUrl = args.remove(_baseUrlVar)!;
+
+      final type = refer(_displayString(_getResponseType(m.returnType)));
+
+      return refer('_setStreamType').call([
+      refer("Options").newInstance([], args).property('compose').call([
+        refer(_dioVar).property('options'),
+        path,
+        dataVar,
+      ], {_queryParamsVar : queryParams},).property('copyWith').call([], {_baseUrlVar : baseUrl.ifNullThen(refer(_dioVar).property('options').property('baseUrl'))})
+      ], {}, [type]);
+
     } else {
       hasCustomOptions = true;
       blocks.add(refer("newRequestOptions")
@@ -795,6 +810,30 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             path: '',
           );
         ''');
+    });
+  }
+
+  Method _generateTypeSetterMethod() {
+    return Method((m){
+      final t = refer('T');
+      final optionsParam = Parameter((p){
+        p..name = 'requestOptions'
+        ..type = refer('RequestOptions');
+      });
+      m..name = '_setStreamType'
+          ..types = ListBuilder([t])
+        ..returns = refer('RequestOptions')
+        ..requiredParameters = ListBuilder([optionsParam])
+      ..body = Code('''if (T != dynamic &&
+        !(requestOptions.responseType == ResponseType.bytes ||
+            requestOptions.responseType == ResponseType.stream)) {
+      if (T == String) {
+        requestOptions.responseType = ResponseType.plain;
+      } else {
+        requestOptions.responseType = ResponseType.json;
+      }
+    }
+    return requestOptions;''');
     });
   }
 
