@@ -26,27 +26,17 @@ jobs:
             pub get 
             pub run test
 
-  test_dart27:
+  test_dart_212:
     <<: *common_test
     environment:
-      DART_VERSION: '2.7'
-  test_dart28:
+      DART_VERSION: '2.12'
+  test_dart_latest:
     <<: *common_test
     environment:
-      DART_VERSION: '2.8'
-  test_dart29:
-    <<: *common_test
-    environment:
-      DART_VERSION: '2.9'
-  test_dart210:
-    <<: *common_test
-    environment:
-      DART_VERSION: '2.10'
+      DART_VERSION: 'latest'
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - test_dart27
-      - test_dart28
-      - test_dart29
-      - test_dart210
+      - test_dart_212
+      - test_dart_latest
