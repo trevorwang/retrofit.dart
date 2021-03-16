@@ -10,18 +10,18 @@ environment:
 
 dependencies:
   dio: ^4.0.0-beta7
-  source_gen: ^0.9.4+2
+  source_gen: ^0.9.10+4
   built_collection: ^5.0.0
   code_builder: ^3.7.0
   tuple: ^2.0.0
   retrofit:
-  analyzer: ^1.1.0
+  analyzer: ^1.2.0
   dart_style: ^1.0.0
-  build: ^1.6.3
+  build: ^2.0.0
 
 dev_dependencies:
-  test:
-  source_gen_test: any
+  test: 1.16.5
+  source_gen_test: ^0.1.1+4
   resource:
 
 dependency_overrides:
