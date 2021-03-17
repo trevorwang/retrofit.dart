@@ -13,7 +13,7 @@ dependencies:
   dio: ^4.0.0-beta7
 
 dev_dependencies:
-  test:
+  test: 1.16.5
   retrofit_generator:
   build_runner: ^1.11.5
   json_serializable: ^4.0.2
