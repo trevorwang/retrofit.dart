@@ -938,6 +938,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final parts = _getAnnotations(m, retrofit.Part);
     if (parts.isNotEmpty) {
+      if (m.parameters.length == 1 && m.parameters.first.displayName == "map") {
+        blocks.add(refer('FormData')
+            .newInstanceNamed('fromMap',
+                [CodeExpression(Code(m.parameters.first.displayName))])
+            .assignFinal(_dataVar)
+            .statement);
+        return;
+      }
       blocks.add(
           refer('FormData').newInstance([]).assignFinal(_dataVar).statement);
 
