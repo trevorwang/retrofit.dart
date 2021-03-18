@@ -583,8 +583,7 @@ abstract class TestFileList {
     });
     ''', contains: true)
 @ShouldGenerate(r'''
-    final _data = FormData();
-    _data.fields.add(MapEntry('map', jsonEncode(map)));
+    final _data = FormData.fromMap(map);
 ''', contains: true)
 @ShouldGenerate(r'''
     _data.fields.add(MapEntry('a', a.toString()));
