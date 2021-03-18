@@ -745,13 +745,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final type = refer(_displayString(_getResponseType(m.returnType)));
 
       return refer('_setStreamType').call([
-      refer("Options").newInstance([], args).property('compose').call([
-        refer(_dioVar).property('options'),
-        path,
-        dataVar,
-      ], {_queryParamsVar : queryParams},).property('copyWith').call([], {_baseUrlVar : baseUrl.ifNullThen(refer(_dioVar).property('options').property('baseUrl'))})
-      ], {}, [type]);
-
+        refer("Options")
+            .newInstance([], args)
+            .property('compose')
+            .call(
+              [refer(_dioVar).property('options'), path],
+              {_queryParamsVar: queryParams, _dataVar: dataVar},
+            )
+            .property('copyWith')
+            .call([], {
+              _baseUrlVar: baseUrl.ifNullThen(
+                  refer(_dioVar).property('options').property('baseUrl'))
+            })
+      ], {}, [
+        type
+      ]);
     } else {
       hasCustomOptions = true;
       blocks.add(refer("newRequestOptions")
