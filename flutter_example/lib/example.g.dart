@@ -9,15 +9,15 @@ part of 'example.dart';
 class _RestClient implements RestClient {
   _RestClient(this._dio, {this.baseUrl}) {
     ArgumentError.checkNotNull(_dio, '_dio');
-    this.baseUrl ??= 'http://baidu.com';
+    baseUrl ??= 'http://baidu.com';
   }
 
   final Dio _dio;
 
-  String baseUrl;
+  String? baseUrl;
 
   @override
-  getTags({options}) async {
+  Future<List<String>> getTags({options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -25,20 +25,18 @@ class _RestClient implements RestClient {
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(<String, dynamic>{});
-    final Response<List<dynamic>> _result = await _dio.request('/tags',
-        queryParameters: queryParameters,
-        options: newOptions.merge(method: 'GET', baseUrl: baseUrl),
-        data: _data);
-    final value = _result.data.cast<String>();
+    final _result = await _dio.fetch<List<dynamic>>(
+        newOptions.copyWith(method: 'GET', baseUrl: baseUrl));
+    final value = _result.data!.cast<String>();
     return value;
   }
 
-  RequestOptions newRequestOptions(Options options) {
+  RequestOptions newRequestOptions(Options? options) {
     if (options is RequestOptions) {
-      return options;
+      return options as RequestOptions;
     }
     if (options == null) {
-      return RequestOptions();
+      return RequestOptions(path: '');
     }
     return RequestOptions(
       method: options.method,
@@ -54,6 +52,7 @@ class _RestClient implements RestClient {
       maxRedirects: options.maxRedirects,
       requestEncoder: options.requestEncoder,
       responseDecoder: options.responseDecoder,
+      path: '',
     );
   }
 }
