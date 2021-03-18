@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 import '../lib/example.dart';
 import 'task_data.dart';
 
-MockWebServer _server;
-RestClient _client;
+late MockWebServer _server;
+late RestClient _client;
 final _headers = {"Content-Type": "application/json"};
 final dispatcherMap = <String, MockResponse>{};
 
@@ -132,7 +132,7 @@ void main() {
 
 class DateTimeInterceptor extends Interceptor {
   @override
-  Future onRequest(RequestOptions options) async {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.queryParameters = options.queryParameters.map((key, value) {
       if (value is DateTime) {
         //may be change to string from any you use object
@@ -141,6 +141,6 @@ class DateTimeInterceptor extends Interceptor {
         return MapEntry(key, value);
       }
     });
-    return options;
+    handler.next(options);
   }
 }
