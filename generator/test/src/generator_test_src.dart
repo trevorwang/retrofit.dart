@@ -72,8 +72,7 @@ class CustomConstant {
 }
 
 @ShouldGenerate(
-  r'''Options(
-            method: 'GET',''',
+  r'''Options(method: 'GET',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -83,8 +82,7 @@ abstract class HttpGetTest {
 }
 
 @ShouldGenerate(
-  r'''Options(
-            method: 'POST',''',
+  r'''Options(method: 'POST',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -94,8 +92,7 @@ abstract class HttpPostTest {
 }
 
 @ShouldGenerate(
-  r'''Options(
-            method: 'PUT',''',
+  r'''Options(method: 'PUT',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
