@@ -112,8 +112,8 @@ class _RestClient implements RestClient {
                 method: 'GET',
                 headers: <String, dynamic>{r'optionalHeader': optionalHeader},
                 extra: _extra)
-            .compose(_dio.options, '/tags', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/tags',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!.cast<String>();
     return value;
@@ -126,8 +126,8 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<void>(_setStreamType<HttpResponse<void>>(
         Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, 'https://httpbin.org/status/204', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, 'https://httpbin.org/status/204',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final httpResponse = HttpResponse(null, _result);
     return httpResponse;
@@ -141,8 +141,8 @@ class _RestClient implements RestClient {
     final _result = await _dio.fetch<List<dynamic>>(
         _setStreamType<List<String>>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, '/tags', _data,
-                    queryParameters: queryParameters)
+                .compose(_dio.options, '/tags',
+                    queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!.cast<String>();
     yield value;
@@ -155,8 +155,8 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<List<dynamic>>(_setStreamType<List<Task>>(
         Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/tasks', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/tasks',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     var value = _result.data!
         .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
@@ -171,8 +171,8 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
         Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/tasks/$id', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/tasks/$id',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Task.fromJson(_result.data!);
     return value;
@@ -186,8 +186,8 @@ class _RestClient implements RestClient {
     _data.addAll(map);
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
         Options(method: 'PATCH', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/tasks/$id', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/tasks/$id',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Task.fromJson(_result.data!);
     return value;
@@ -201,8 +201,8 @@ class _RestClient implements RestClient {
     _data.addAll(task.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
         Options(method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/tasks/$id', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/tasks/$id',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Task.fromJson(_result.data!);
     return value;
@@ -215,8 +215,8 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     await _dio.fetch<void>(_setStreamType<void>(
         Options(method: 'DELETE', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/tasks/$id', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/tasks/$id',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     return null;
   }
@@ -229,8 +229,8 @@ class _RestClient implements RestClient {
     _data.addAll(task.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
         Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/tasks', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/tasks',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Task.fromJson(_result.data!);
     return value;
@@ -243,8 +243,8 @@ class _RestClient implements RestClient {
     final _data = tasks.map((e) => e.toJson()).toList();
     final _result = await _dio.fetch<List<dynamic>>(_setStreamType<List<Task>>(
         Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/tasks', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/tasks',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     var value = _result.data!
         .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
@@ -260,8 +260,8 @@ class _RestClient implements RestClient {
     final _result = await _dio.fetch<List<dynamic>>(
         _setStreamType<List<String>>(
             Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, '/tasks', _data,
-                    queryParameters: queryParameters)
+                .compose(_dio.options, '/tasks',
+                    queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!.cast<String>();
     return value;
@@ -278,8 +278,8 @@ class _RestClient implements RestClient {
             filename: file.path.split(Platform.pathSeparator).last)));
     await _dio.fetch<void>(_setStreamType<void>(
         Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, 'http://httpbin.org/post', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, 'http://httpbin.org/post',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     return null;
   }
@@ -295,8 +295,8 @@ class _RestClient implements RestClient {
                 headers: <String, dynamic>{r'accept': 'image/jpeg'},
                 extra: _extra,
                 responseType: ResponseType.bytes)
-            .compose(_dio.options, 'http://httpbin.org/image/jpeg', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, 'http://httpbin.org/image/jpeg',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!.cast<int>();
     return value;
@@ -312,8 +312,8 @@ class _RestClient implements RestClient {
             headers: <String, dynamic>{},
             extra: _extra,
             contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options, 'http://httpbin.org/post', _data,
-            queryParameters: queryParameters)
+        .compose(_dio.options, 'http://httpbin.org/post',
+            queryParameters: queryParameters, data: _data)
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -326,7 +326,8 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
         Options(method: 'HEAD', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/', _data, queryParameters: queryParameters)
+            .compose(_dio.options, '/',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -339,7 +340,8 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch(_setStreamType<dynamic>(
         Options(method: 'HEAD', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/', _data, queryParameters: queryParameters)
+            .compose(_dio.options, '/',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -352,7 +354,8 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(
         Options(method: 'HEAD', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/', _data, queryParameters: queryParameters)
+            .compose(_dio.options, '/',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     final httpResponse = HttpResponse(value, _result);
@@ -367,8 +370,8 @@ class _RestClient implements RestClient {
     final _result = await _dio.fetch<List<dynamic>>(
         _setStreamType<List<TaskGroup>>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, '/task/group', _data,
-                    queryParameters: queryParameters)
+                .compose(_dio.options, '/task/group',
+                    queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     var value = _result.data!
         .map((dynamic i) => TaskGroup.fromJson(i as Map<String, dynamic>))
@@ -384,8 +387,8 @@ class _RestClient implements RestClient {
     final _result = await _dio.fetch<List<dynamic>>(
         _setStreamType<HttpResponse<List<Task>>>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, '/task', _data,
-                    queryParameters: queryParameters)
+                .compose(_dio.options, '/task',
+                    queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     var value = _result.data!
         .map((dynamic i) => Task.fromJson(i as Map<String, dynamic>))
@@ -401,8 +404,8 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<void>(_setStreamType<HttpResponse<void>>(
         Options(method: 'DELETE', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/tasks/$id', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/tasks/$id',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final httpResponse = HttpResponse(null, _result);
     return httpResponse;
@@ -419,10 +422,11 @@ class _RestClient implements RestClient {
         'file',
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last)));
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-        .compose(_dio.options, '/post', _data, queryParameters: queryParameters)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/post',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -444,10 +448,11 @@ class _RestClient implements RestClient {
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last,
             contentType: MediaType.parse('application/json'))));
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-        .compose(_dio.options, '/post', _data, queryParameters: queryParameters)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/post',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -466,10 +471,11 @@ class _RestClient implements RestClient {
         ))));
     _data.files.add(MapEntry(
         'file', MultipartFile.fromFileSync(file.path, filename: 'abc.txt')));
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-        .compose(_dio.options, '/post', _data, queryParameters: queryParameters)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/post',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -490,10 +496,11 @@ class _RestClient implements RestClient {
           file,
           filename: 'abc.txt',
         )));
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-        .compose(_dio.options, '/post', _data, queryParameters: queryParameters)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/post',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -508,10 +515,11 @@ class _RestClient implements RestClient {
         'file',
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last)));
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-        .compose(_dio.options, '/post', _data, queryParameters: queryParameters)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/post',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -528,10 +536,11 @@ class _RestClient implements RestClient {
     _data.fields.add(MapEntry('b', b.toString()));
     _data.fields.add(MapEntry('c', c.toString()));
     _data.fields.add(MapEntry('d', d));
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-        .compose(_dio.options, '/post', _data, queryParameters: queryParameters)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/post',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -542,10 +551,11 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(queries);
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-        .compose(_dio.options, '/demo', _data, queryParameters: queryParameters)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/demo',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -557,8 +567,8 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
         Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/enums', _data,
-                queryParameters: queryParameters)
+            .compose(_dio.options, '/enums',
+                queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -575,10 +585,11 @@ class _RestClient implements RestClient {
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-        .compose(_dio.options, '/get', _data, queryParameters: queryParameters)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/get',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -595,8 +606,8 @@ class _RestClient implements RestClient {
               r'Ocp-Apim-Subscription-Key': 'abc'
             },
             extra: _extra)
-        .compose(_dio.options, '/postfile', _data,
-            queryParameters: queryParameters)
+        .compose(_dio.options, '/postfile',
+            queryParameters: queryParameters, data: _data)
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
