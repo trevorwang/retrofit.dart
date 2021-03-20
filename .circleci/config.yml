@@ -20,7 +20,7 @@ jobs:
           command: |
             cd generator
             pub get
-            dart --no-sound-null-safety run test
+            dart run test
 
             cd example
             pub get 

@@ -315,10 +315,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   Expression _generatePath(MethodElement m, ConstantReader method) {
     final paths = _getAnnotations(m, retrofit.Path);
-    String definePath = method.peek("path").stringValue;
+    String? definePath = method.peek("path")?.stringValue;
     paths.forEach((k, v) {
       final value = v.peek("value")?.stringValue ?? k.displayName;
-      definePath = definePath.replaceFirst("{$value}", "\$${k.displayName}");
+      definePath = definePath?.replaceFirst("{$value}", "\$${k.displayName}");
     });
     return literal(definePath);
   }
@@ -336,7 +336,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     _generateRequestBody(blocks, _localDataVar, m);
 
     final extraOptions = {
-      "method": literal(httpMethod.peek("method").stringValue),
+      "method": literal(httpMethod.peek("method")?.stringValue),
       "headers": literalMap(
           headers.map((k, v) => MapEntry(literalString(k, raw: true), v)),
           refer("String"),
@@ -354,7 +354,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final contentType = _getFormUrlEncodedAnnotation(m);
     if (contentType != null) {
       extraOptions[_contentType] =
-          literal(contentType.peek("mime").stringValue);
+          literal(contentType.peek("mime")?.stringValue);
     }
     extraOptions[_baseUrlVar] = refer(_baseUrlVar);
 
@@ -363,9 +363,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final rsType = ResponseType.values.firstWhere((it) {
         return responseType
             .peek("responseType")
-            .objectValue
+            ?.objectValue
             .toString()
-            .contains(it.toString().split(".")[1]);
+            .contains(it.toString().split(".")[1]) ?? false;
       });
 
       extraOptions["responseType"] = refer(rsType.toString());
@@ -638,7 +638,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   bool isGenericArgumentFactories(DartType? dartType){
     final metaData = dartType?.element?.metadata;
-    if (metaData == null) {
+    if (metaData == null || dartType == null) {
       return false;
     }
     final constDartObj = metaData.isNotEmpty ? metaData.first.computeConstantValue():null;
@@ -745,12 +745,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final type = refer(_displayString(_getResponseType(m.returnType)));
 
       return refer('_setStreamType').call([
-      refer("Options").newInstance([], args).property('compose').call([
-        refer(_dioVar).property('options'),
-        path,
-        dataVar,
-      ], {_queryParamsVar : queryParams},).property('copyWith').call([], {_baseUrlVar : baseUrl.ifNullThen(refer(_dioVar).property('options').property('baseUrl'))})
-      ], {}, [type]);
+        refer("Options")
+            .newInstance([], args)
+            .property('compose')
+            .call(
+          [refer(_dioVar).property('options'), path],
+          {_queryParamsVar: queryParams, _dataVar: dataVar},
+        )
+            .property('copyWith')
+            .call([], {
+          _baseUrlVar: baseUrl.ifNullThen(
+              refer(_dioVar).property('options').property('baseUrl'))
+        })
+      ], {}, [
+        type
+      ]);
 
     } else {
       hasCustomOptions = true;
@@ -913,6 +922,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       List<Code> blocks, String _dataVar, MethodElement m) {
     final _bodyName = _getAnnotation(m, retrofit.Body)?.item1;
     if (_bodyName != null) {
+      final bodyTypeElement = _bodyName.type.element;
       if (TypeChecker.fromRuntime(Map).isAssignableFromType(_bodyName.type)) {
         blocks.add(literalMap({}, refer("String"), refer("dynamic"))
             .assignFinal(_dataVar)
@@ -921,13 +931,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         blocks.add(refer("$_dataVar.addAll").call([
           refer("${_bodyName.displayName}${m.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' :''}")
         ]).statement);
-      } else if ((_typeChecker(List).isExactly(_bodyName.type.element) ||
-              _typeChecker(BuiltList).isExactly(_bodyName.type.element)) &&
-          !_isBasicInnerType(_bodyName.type)) {
+      } else if (bodyTypeElement != null && ((_typeChecker(List).isExactly(bodyTypeElement) ||
+              _typeChecker(BuiltList).isExactly(bodyTypeElement)) &&
+          !_isBasicInnerType(_bodyName.type))) {
         blocks.add(refer('''
             ${_bodyName.displayName}.map((e) => e.toJson()).toList()
             ''').assignFinal(_dataVar).statement);
-      } else if (_typeChecker(File).isExactly(_bodyName.type.element)) {
+      } else if (bodyTypeElement != null && _typeChecker(File).isExactly(bodyTypeElement)) {
         blocks.add(refer("Stream")
             .property("fromIterable")
             .call([
@@ -1069,9 +1079,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ]).statement);
         } else if (_typeChecker(List).isExactlyType(p.type) ||
             _typeChecker(BuiltList).isExactlyType(p.type)) {
-          var innnerType = _genericOf(p.type);
+          var innerType = _genericOf(p.type);
 
-          if (_displayString(innnerType) == "List<int>") {
+          if (_displayString(innerType) == "List<int>") {
             final conType = contentType == null
                 ? ""
                 : 'contentType: MediaType.parse(${literal(contentType)}),';
@@ -1085,19 +1095,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     )))
                   ''')
             ]).statement);
-          } else if (_isBasicType(innnerType) ||
-              _typeChecker(Map).isExactlyType(innnerType) ||
-              _typeChecker(BuiltMap).isExactlyType(innnerType) ||
-              _typeChecker(List).isExactlyType(innnerType) ||
-              _typeChecker(BuiltList).isExactlyType(innnerType)) {
-            var value = _isBasicType(innnerType) ? 'i' : 'jsonEncode(i)';
+          } else if (_isBasicType(innerType) || ((innerType != null) &&
+              (_typeChecker(Map).isExactlyType(innerType) ||
+              _typeChecker(BuiltMap).isExactlyType(innerType) ||
+              _typeChecker(List).isExactlyType(innerType) ||
+              _typeChecker(BuiltList).isExactlyType(innerType)))) {
+            var value = _isBasicType(innerType) ? 'i' : 'jsonEncode(i)';
             var nullableInfix = (p.type.nullabilitySuffix == NullabilitySuffix.question) ? '?' : '';
             blocks.add(refer('''
             ${p.displayName}$nullableInfix.forEach((i){
               ${_dataVar}.fields.add(MapEntry(${literal(fieldName)},${value}));
             })
             ''').statement);
-          } else if (_typeChecker(File).isExactlyType(innnerType)) {
+          } else if (innerType != null && _typeChecker(File).isExactlyType(innerType)) {
             final conType = contentType == null
                 ? ""
                 : 'contentType: MediaType.parse(${literal(contentType)}),';
@@ -1112,7 +1122,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     )))
                   ''')
             ]).statement);
-          } else if (_typeChecker(MultipartFile).isExactlyType(innnerType)) {
+          } else if (innerType != null && _typeChecker(MultipartFile).isExactlyType(innerType)) {
             blocks
                 .add(refer(_dataVar).property('files').property("addAll").call([
               refer(''' 
@@ -1121,8 +1131,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 i))
                   ''')
             ]).statement);
-          } else if (innnerType?.element is ClassElement) {
-            final ele = innnerType!.element as ClassElement;
+          } else if (innerType?.element is ClassElement) {
+            final ele = innerType!.element as ClassElement;
             final toJson = ele.lookUpMethod('toJson', ele.library);
             if (toJson == null) {
               throw Exception("toJson() method have to add to ${p.type}");
@@ -1191,7 +1201,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final anno = _getHeadersAnnotation(m);
     final headersMap = anno?.peek("value")?.mapValue ?? {};
     final headers = headersMap.map((k, v) {
-      return MapEntry(k.toStringValue()!, literal(v.toStringValue()));
+      return MapEntry(k?.toStringValue() ?? 'null', literal(v?.toStringValue()));
     });
 
     final annosInParam = _getAnnotations(m, retrofit.Header);
@@ -1211,24 +1221,24 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     if (extra != null) {
       final c = ConstantReader(extra);
       blocks.add(literalMap(
-        c.peek('data')?.mapValue?.map((k, v) {
+        c.peek('data')?.mapValue.map((k, v) {
               return MapEntry(
-                k.toStringValue() ??
+                k?.toStringValue() ??
                     (throw InvalidGenerationSourceError(
                       'Invalid key for extra Map, only `String` keys are supported',
                       element: m,
                       todo: 'Make sure all keys are of string type',
                     )),
-                v.toBoolValue() ??
-                    v.toDoubleValue() ??
-                    v.toIntValue() ??
-                    v.toStringValue() ??
-                    v.toListValue() ??
-                    v.toMapValue() ??
-                    v.toSetValue() ??
-                    v.toSymbolValue() ??
-                    (v.toTypeValue() ??
-                    Code(revivedLiteral(v))),
+                v?.toBoolValue() ??
+                    v?.toDoubleValue() ??
+                    v?.toIntValue() ??
+                    v?.toStringValue() ??
+                    v?.toListValue() ??
+                    v?.toMapValue() ??
+                    v?.toSetValue() ??
+                    v?.toSymbolValue() ??
+                    (v?.toTypeValue() ??
+                        (v != null ? Code(revivedLiteral(v)) : Code('null'))),
               );
             }) ??
             {},
@@ -1291,7 +1301,8 @@ String revivedLiteral(
 
   final args = StringBuffer();
   final kwargs = StringBuffer();
-  Spec objectToSpec(DartObject object) {
+  Spec objectToSpec(DartObject? object) {
+    if (object == null) return literalNull;
     final constant = ConstantReader(object);
     if (constant.isNull) {
       return literalNull;
