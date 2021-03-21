@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0-beta2
+
+- Update to dio-prev3
+- Update to source_gen 1.0.0
+
 ## 2.0.0-beta1
 
 - Nullsafety support
