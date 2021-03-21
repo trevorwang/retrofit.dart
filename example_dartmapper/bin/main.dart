@@ -21,7 +21,7 @@ void main(List<String> args) {
     switch (obj.runtimeType) {
       case DioError:
         final res = (obj as DioError).response;
-        logger.e("Got error : ${res.statusCode} -> ${res.statusMessage}");
+        logger.e("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
         break;
       default:
     }

@@ -472,7 +472,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               break;
             case retrofit.Parser.DartJsonMapper:
               blocks.add(Code(
-                  "var value = $_resultVar.data!.map((dynamic i) => JsonMapper.deserialize<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)).toList();"));
+                  "var value = $_resultVar.data!.map((dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!).toList();"));
               break;
             default:
               throw ArgumentError('No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
@@ -525,7 +525,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               .map((k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
-                    .map((i) => JsonMapper.deserialize<${_displayString(type)}>(i as Map<String,dynamic>))
+                    .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i as Map<String,dynamic>)!)
                     .toList()
                 )
               );
@@ -556,7 +556,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 blocks.add(Code("""
             var value = $_resultVar.data!
               .map((k, dynamic v) =>
-                MapEntry(k, JsonMapper.deserialize<${_displayString(secondType)}>(v as Map<String, dynamic>))
+                MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v as Map<String, dynamic>)!)
               );
             """));
                 break;
@@ -616,7 +616,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               break;
             case retrofit.Parser.DartJsonMapper:
               blocks.add(Code(
-                  "final value = JsonMapper.deserialize<${_displayString(returnType)}>($_resultVar.data!);"));
+                  "final value = JsonMapper.fromMap<${_displayString(returnType)}>($_resultVar.data!)!;"));
               break;
             default:
               throw ArgumentError('No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
