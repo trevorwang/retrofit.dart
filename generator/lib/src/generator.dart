@@ -65,7 +65,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   String _implementClass(ClassElement element, ConstantReader? annotation) {
     final className = element.name;
-    final enumString = (annotation?.peek('parser')?.revive()?.accessor);
+    final enumString = (annotation?.peek('parser')?.revive().accessor);
     final parser = retrofit.Parser.values
         .firstWhereOrNull((e) => e.toString() == enumString);
     clientAnnotation = retrofit.RestApi(
@@ -749,18 +749,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .newInstance([], args)
             .property('compose')
             .call(
-          [refer(_dioVar).property('options'), path],
-          {_queryParamsVar: queryParams, _dataVar: dataVar},
-        )
+              [refer(_dioVar).property('options'), path],
+              {_queryParamsVar: queryParams, _dataVar: dataVar},
+            )
             .property('copyWith')
             .call([], {
-          _baseUrlVar: baseUrl.ifNullThen(
-              refer(_dioVar).property('options').property('baseUrl'))
-        })
+              _baseUrlVar: baseUrl.ifNullThen(
+                  refer(_dioVar).property('options').property('baseUrl'))
+            })
       ], {}, [
         type
       ]);
-
     } else {
       hasCustomOptions = true;
       blocks.add(refer("newRequestOptions")

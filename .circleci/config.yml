@@ -8,7 +8,7 @@ jobs:
       - run:
           command: |
             cd example
-            pub get 
+            dart pub get
             dart --no-sound-null-safety run build_runner build --delete-conflicting-outputs
 
       - run:
@@ -19,11 +19,11 @@ jobs:
       - run:
           command: |
             cd generator
-            pub get
-            dart run test
+            dart pub get
+            dart --no-sound-null-safety run test
 
             cd example
-            pub get 
+            dart pub get
             dart --no-sound-null-safety run test
 
   test_dart_212:
