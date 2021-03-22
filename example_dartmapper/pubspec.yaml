@@ -9,15 +9,15 @@ environment:
 dependencies:
   retrofit:
   json_annotation: ^4.0.0
-  logger: ^1.0.0-nullsafety.0
-  dart_json_mapper: ^1.7.11
-  reflectable: ^3.0.0-nullsafety.1
+  logger: ^1.0.0
+  dart_json_mapper: ^2.0.5
+  reflectable: ^3.0.0
 
 dev_dependencies:
-  test:
+  test: 1.16.5
   retrofit_generator:
-  build_runner: any
-  json_serializable: ^4.0.2
+  build_runner: ^1.12.2
+  json_serializable: ^4.0.3
   mock_web_server:
 
 dependency_overrides:
@@ -26,3 +26,4 @@ dependency_overrides:
   retrofit_generator:
     path: ../generator
   analyzer: ^1.1.0
+  dart_style: ^2.0.0

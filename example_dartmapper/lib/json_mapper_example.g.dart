@@ -8,41 +8,36 @@ part of 'json_mapper_example.dart';
 
 class _ApiService implements ApiService {
   _ApiService(this._dio, {this.baseUrl}) {
-    ArgumentError.checkNotNull(_dio, '_dio');
     baseUrl ??= 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/';
   }
 
   final Dio _dio;
 
-  String baseUrl;
+  String? baseUrl;
 
   @override
   Future<List<Task>> getTasks(dateTime) async {
-    ArgumentError.checkNotNull(dateTime, 'dateTime');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'dateTime': dateTime};
     final _data = <String, dynamic>{};
-    final _result = await _dio.request<List<dynamic>>('/tasks',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'GET',
-            headers: <String, dynamic>{},
-            extra: _extra,
-            baseUrl: baseUrl),
-        data: _data);
-    var value = _result.data
-        .map((dynamic i) =>
-            JsonMapper.deserialize<Task>(i as Map<String, dynamic>))
+    final _result = await _dio.fetch<List<dynamic>>(_setStreamType<List<Task>>(
+        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/tasks',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    var value = _result.data!
+        .map(
+            (dynamic i) => JsonMapper.fromMap<Task>(i as Map<String, dynamic>)!)
         .toList();
     return value;
   }
 
-  RequestOptions newRequestOptions(Options options) {
+  RequestOptions newRequestOptions(Options? options) {
     if (options is RequestOptions) {
-      return options;
+      return options as RequestOptions;
     }
     if (options == null) {
-      return RequestOptions();
+      return RequestOptions(path: '');
     }
     return RequestOptions(
       method: options.method,
@@ -58,6 +53,20 @@ class _ApiService implements ApiService {
       maxRedirects: options.maxRedirects,
       requestEncoder: options.requestEncoder,
       responseDecoder: options.responseDecoder,
+      path: '',
     );
+  }
+
+  RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
+    if (T != dynamic &&
+        !(requestOptions.responseType == ResponseType.bytes ||
+            requestOptions.responseType == ResponseType.stream)) {
+      if (T == String) {
+        requestOptions.responseType = ResponseType.plain;
+      } else {
+        requestOptions.responseType = ResponseType.json;
+      }
+    }
+    return requestOptions;
   }
 }
