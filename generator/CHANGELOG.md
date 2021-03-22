@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0-beta3
+
+- Fixed CancelRequest generating invalid code 
+
 ## 2.0.0-beta2
 
 - Update to dio-prev3

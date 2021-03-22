@@ -631,6 +631,22 @@ class _RestClient implements RestClient {
     return value;
   }
 
+  @override
+  Future<String> cancelRequest(cancelToken) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/cancel',
+                queryParameters: queryParameters,
+                data: _data,
+                cancelToken: cancelToken)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
   RequestOptions newRequestOptions(Options? options) {
     if (options is RequestOptions) {
       return options as RequestOptions;
