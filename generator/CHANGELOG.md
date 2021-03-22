@@ -1,6 +1,18 @@
 # Changelog
+
+## 2.0.0-beta2
+
+- Update to dio-prev3
+- Update to source_gen 1.0.0
+
+## 2.0.0-beta1
+
+- Nullsafety support
+
 ## 1.4.1
-- Add support for json serializable generic types 
+
+- Add support for json serializable generic types
+
 ## 1.4.0
 
 - compatible with analyzer 0.40.0
@@ -12,7 +24,7 @@
 ## 1.3.7
 
 - Add support for abstract classes with `toJson` defined in mixin/interface/superclass.
-This approach is used in [freezed](https://pub.dev/packages/freezed) package 
+  This approach is used in [freezed](https://pub.dev/packages/freezed) package
 
 ## 1.3.6
 
@@ -37,7 +49,7 @@ This approach is used in [freezed](https://pub.dev/packages/freezed) package
 
 ## 1.3.1
 
-- Add custom options support to each request  
+- Add custom options support to each request
 - fix [#132](https://github.com/trevorwang/retrofit.dart/issues/132)
 
 ## 1.3.0+1
@@ -54,7 +66,7 @@ This approach is used in [freezed](https://pub.dev/packages/freezed) package
 
 ## 1.2.2
 
-- stringify models in formdata  #111
+- stringify models in formdata #111
 
 ## 1.2.1
 

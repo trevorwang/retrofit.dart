@@ -72,8 +72,7 @@ class CustomConstant {
 }
 
 @ShouldGenerate(
-  r'''Options(
-            method: 'GET',''',
+  r'''Options(method: 'GET',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -83,8 +82,7 @@ abstract class HttpGetTest {
 }
 
 @ShouldGenerate(
-  r'''Options(
-            method: 'POST',''',
+  r'''Options(method: 'POST',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -94,8 +92,7 @@ abstract class HttpPostTest {
 }
 
 @ShouldGenerate(
-  r'''Options(
-            method: 'PUT',''',
+  r'''Options(method: 'PUT',''',
   contains: true,
 )
 @RestApi(baseUrl: "https://httpbin.org/")
@@ -663,7 +660,7 @@ abstract class CustomOptions {
 
 @ShouldGenerate(
   r'''
-    final value = JsonMapper.deserialize<User>(_result.data!);
+    final value = JsonMapper.fromMap<User>(_result.data!)!;
     return value;
 ''',
   contains: true,
@@ -680,8 +677,8 @@ abstract class JsonMapperGenericCast {
 @ShouldGenerate(
   r'''
     var value = _result.data!
-        .map((dynamic i) =>
-            JsonMapper.deserialize<User>(i as Map<String, dynamic>))
+        .map(
+            (dynamic i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
         .toList();
 ''',
   contains: true,
@@ -700,7 +697,7 @@ abstract class JsonMapperTestListBody {
     var value = _result.data!.map((k, dynamic v) => MapEntry(
         k,
         (v as List)
-            .map((i) => JsonMapper.deserialize<User>(i as Map<String, dynamic>))
+            .map((i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
             .toList()));
 
 ''',
@@ -718,7 +715,7 @@ abstract class JsonMapperTestMapBody {
 @ShouldGenerate(
   r'''
     var value = _result.data!.map((k, dynamic v) =>
-        MapEntry(k, JsonMapper.deserialize<User>(v as Map<String, dynamic>)));
+        MapEntry(k, JsonMapper.fromMap<User>(v as Map<String, dynamic>)!));
 ''',
   contains: true,
 )

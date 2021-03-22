@@ -9,9 +9,9 @@ import 'package:test/test.dart';
 import '../lib/example.dart';
 import 'task_data.dart';
 
-MockWebServer _server;
-RestClient _client;
-ApiService _apiService;
+late MockWebServer _server;
+late RestClient _client;
+late ApiService _apiService;
 final _headers = {"Content-Type": "application/json"};
 final dispatcherMap = <String, MockResponse>{};
 
@@ -127,7 +127,7 @@ void main() {
     final result = await _client.grouppedTaskByDate();
     expect(result, isNotNull);
     expect(result.first.todos, isNotEmpty);
-    expect(result.first.todos.first.avatar, demoTask.avatar);
+    expect(result.first.todos?.first.avatar, demoTask.avatar);
   });
 
   test("test json mapper parse task", () async {
@@ -146,7 +146,7 @@ void main() {
 
 class DateTimeInterceptor extends Interceptor {
   @override
-  Future onRequest(RequestOptions options) async {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     options.queryParameters = options.queryParameters.map((key, value) {
       if (value is DateTime) {
         //may be change to string from any you use object
@@ -155,6 +155,6 @@ class DateTimeInterceptor extends Interceptor {
         return MapEntry(key, value);
       }
     });
-    return options;
+    handler.next(options);
   }
 }
