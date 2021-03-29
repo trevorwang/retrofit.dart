@@ -741,16 +741,25 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final dataVar = args.remove(_dataVar)!;
       final queryParams = args.remove(_queryParamsVar)!;
       final baseUrl = args.remove(_baseUrlVar)!;
+      final cancelToken = args.remove(_cancelToken);
+      final sendProgress = args.remove(_onSendProgress);
 
       final type = refer(_displayString(_getResponseType(m.returnType)));
+
+      final composeArguments = <String,Expression>{_queryParamsVar: queryParams, _dataVar: dataVar};
+      if (cancelToken != null) {
+        composeArguments[_cancelToken] = cancelToken;
+      }
+      if (sendProgress != null){
+        composeArguments[_onSendProgress] = sendProgress;
+      }
 
       return refer('_setStreamType').call([
         refer("Options")
             .newInstance([], args)
             .property('compose')
             .call(
-              [refer(_dioVar).property('options'), path],
-              {_queryParamsVar: queryParams, _dataVar: dataVar},
+              [refer(_dioVar).property('options'), path], composeArguments,
             )
             .property('copyWith')
             .call([], {

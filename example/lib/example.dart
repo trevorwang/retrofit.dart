@@ -134,6 +134,13 @@ abstract class RestClient {
 
   @GET("")
   Future<String> testCustomOptions(@DioOptions() Options options);
+
+  @GET('/cancel')
+  Future<String> cancelRequest(@CancelRequest() CancelToken cancelToken);
+
+  @PUT('/progress')
+  Future<String> sendProgress(@CancelRequest() CancelToken cancelToken, {@SendProgress() ProgressCallback? sendProgress});
+
 }
 
 @JsonSerializable()

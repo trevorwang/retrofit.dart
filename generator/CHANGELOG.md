@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0-beta3
+
+- Fixed CancelRequest generating invalid code (#322)
+- Fixed onSendProgress generating invalid code (#325)
+
 ## 2.0.0-beta2
 
 - Update to dio-prev3
