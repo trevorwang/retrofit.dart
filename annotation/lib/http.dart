@@ -167,6 +167,13 @@ class Body {
   const Body();
 }
 
+/// Use this annotation on a service method param when you want to indicate that no body should be
+/// generated for POST/PUT/DELETE requests.
+@immutable
+class NoBody {
+  const NoBody();
+}
+
 /// Named pair for a form request.
 ///
 /// ```

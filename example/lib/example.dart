@@ -141,6 +141,10 @@ abstract class RestClient {
   @PUT('/progress')
   Future<String> sendProgress(@CancelRequest() CancelToken cancelToken, {@SendProgress() ProgressCallback? sendProgress});
 
+  @PUT('/boBody')
+  @NoBody()
+  Future<String> sendWithoutBody();
+
 }
 
 @JsonSerializable()
