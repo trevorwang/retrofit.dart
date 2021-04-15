@@ -859,6 +859,21 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   r'''
+    final value = GenericUser<User>.fromJson(
+      _result.data!,
+      (json) => User.fromJson(json as Map<String, dynamic>),
+    );
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class DynamicInnerGenericTypeShouldBeCastedAsMap {
+  @PUT("/")
+  Future<GenericUser<User>> get();
+}
+
+@ShouldGenerate(
+  r'''
     final value = GenericUser<List<double>>.fromJson(
         _result.data!,
         (json) =>
