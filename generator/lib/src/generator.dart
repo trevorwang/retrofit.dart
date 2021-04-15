@@ -928,8 +928,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   void _generateRequestBody(
       List<Code> blocks, String _dataVar, MethodElement m) {
-    final _bodyName = _getAnnotation(m, retrofit.Body)?.item1;
+    var annotation = _getAnnotation(m, retrofit.Body);
+    final _bodyName = annotation?.item1;
     if (_bodyName != null) {
+      final nullToAbsent = annotation!.item2.peek('nullToAbsent')?.boolValue ?? false;
       final bodyTypeElement = _bodyName.type.element;
       if (TypeChecker.fromRuntime(Map).isAssignableFromType(_bodyName.type)) {
         blocks.add(literalMap({}, refer("String"), refer("dynamic"))
@@ -939,6 +941,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         blocks.add(refer("$_dataVar.addAll").call([
           refer("${_bodyName.displayName}${m.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' :''}")
         ]).statement);
+        if(nullToAbsent) blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
       } else if (bodyTypeElement != null && ((_typeChecker(List).isExactly(bodyTypeElement) ||
               _typeChecker(BuiltList).isExactly(bodyTypeElement)) &&
           !_isBasicInnerType(_bodyName.type))) {
@@ -992,6 +995,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
               ]).statement);
             }
+            if(nullToAbsent) blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
           }
         }
       } else {
