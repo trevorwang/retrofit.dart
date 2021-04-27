@@ -308,7 +308,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ..named = it.isNamed
             ..defaultTo = it.defaultValueCode == null
                 ? null
-                : Code(it.defaultValueCode))));
+                : Code(it.defaultValueCode!))));
       mm.body = _generateRequest(m, httpMehod);
     });
   }
@@ -786,7 +786,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .call([extraOptions.remove('headers')!]).statement);
       return newOptions.property('copyWith').call([], Map.from(extraOptions)
         ..[_queryParamsVar] = namedArguments[_queryParamsVar]!
-        ..[_path] = namedArguments[_path]!).cascade('data').assign(namedArguments[_dataVar]);
+        ..[_path] = namedArguments[_path]!).cascade('data').assign(namedArguments[_dataVar]!);
     }
   }
 
@@ -1048,8 +1048,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         final contentType = r.peek('contentType')?.stringValue;
 
         if (isFileField) {
-          final fileName = r.peek("fileName")?.stringValue != null
-              ? literalString(r.peek("fileName")?.stringValue)
+          final fileNameValue = r.peek("fileName")?.stringValue;
+          final fileName = fileNameValue != null
+              ? literalString(fileNameValue)
               : refer(p.displayName)
                   .property('path.split(Platform.pathSeparator).last');
 
