@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:source_gen_test/annotations.dart';
-import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
+import 'package:retrofit/retrofit.dart';
+import 'package:source_gen_test/annotations.dart';
 
 @ShouldGenerate(r'''
 class _RestClient implements RestClient {
@@ -798,6 +798,26 @@ abstract class MapSerializableTestMapBody2 {
 }
 
 @ShouldGenerate(
+  '_data.removeWhere((k, v) => v == null);',
+  contains: true,
+)
+@RestApi()
+abstract class MapBodyShouldBeCleanTest {
+  @PUT("/")
+  Future<void> update(@Body(nullToAbsent: true) Map<String, dynamic> data);
+}
+
+@ShouldGenerate(
+  '_data.removeWhere((k, v) => v == null);',
+  contains: true,
+)
+@RestApi()
+abstract class JsonSerializableBodyShouldBeCleanTest {
+  @PUT("/")
+  Future<void> update(@Body(nullToAbsent: true) User obj);
+}
+
+@ShouldGenerate(
     r'''
     final _data = str;
     await _dio.fetch<void>(_setStreamType<void>(
@@ -855,6 +875,21 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
 abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
   @PUT("/")
   Future<GenericUser<List<User>>> get();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = GenericUser<User>.fromJson(
+      _result.data!,
+      (json) => User.fromJson(json as Map<String, dynamic>),
+    );
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class DynamicInnerGenericTypeShouldBeCastedAsMap {
+  @PUT("/")
+  Future<GenericUser<User>> get();
 }
 
 @ShouldGenerate(
