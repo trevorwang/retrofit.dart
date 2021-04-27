@@ -315,7 +315,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ..named = it.isNamed
             ..defaultTo = it.defaultValueCode == null
                 ? null
-                : Code(it.defaultValueCode))));
+                : Code(it.defaultValueCode!))));
       mm.body = _generateRequest(m, httpMehod);
     });
   }
@@ -728,11 +728,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         return mappedVal;
       }
     } else {
-      if ( _displayString(dartType) == 'dynamic' || _isBasicType(dartType)){
+      if (_displayString(dartType) == 'dynamic' || _isBasicType(dartType)) {
         return "(json)=>json as ${_displayString(dartType)},";
-
-      }else
-      return "(json)=>${_displayString(dartType)}.fromJson(json),";
+      } else {
+        return "(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),";
+      }
     }
   }
 
@@ -793,7 +793,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .call([extraOptions.remove('headers')!]).statement);
       return newOptions.property('copyWith').call([], Map.from(extraOptions)
         ..[_queryParamsVar] = namedArguments[_queryParamsVar]!
-        ..[_path] = namedArguments[_path]!).cascade('data').assign(namedArguments[_dataVar]);
+        ..[_path] = namedArguments[_path]!).cascade('data').assign(namedArguments[_dataVar]!);
     }
   }
 
@@ -941,8 +941,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return;
     }
 
-    final _bodyName = _getAnnotation(m, retrofit.Body)?.item1;
+    var annotation = _getAnnotation(m, retrofit.Body);
+    final _bodyName = annotation?.item1;
     if (_bodyName != null) {
+      final nullToAbsent = annotation!.item2.peek('nullToAbsent')?.boolValue ?? false;
       final bodyTypeElement = _bodyName.type.element;
       if (TypeChecker.fromRuntime(Map).isAssignableFromType(_bodyName.type)) {
         blocks.add(literalMap({}, refer("String"), refer("dynamic"))
@@ -952,6 +954,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         blocks.add(refer("$_dataVar.addAll").call([
           refer("${_bodyName.displayName}${m.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' :''}")
         ]).statement);
+        if (nullToAbsent) blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
       } else if (bodyTypeElement != null && ((_typeChecker(List).isExactly(bodyTypeElement) ||
               _typeChecker(BuiltList).isExactly(bodyTypeElement)) &&
           !_isBasicInnerType(_bodyName.type))) {
@@ -1005,6 +1008,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
               ]).statement);
             }
+            if (nullToAbsent) blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
           }
         }
       } else {
@@ -1057,8 +1061,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         final contentType = r.peek('contentType')?.stringValue;
 
         if (isFileField) {
-          final fileName = r.peek("fileName")?.stringValue != null
-              ? literalString(r.peek("fileName")?.stringValue)
+          final fileNameValue = r.peek("fileName")?.stringValue;
+          final fileName = fileNameValue != null
+              ? literalString(fileNameValue)
               : refer(p.displayName)
                   .property('path.split(Platform.pathSeparator).last');
 

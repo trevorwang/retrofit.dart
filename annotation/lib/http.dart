@@ -164,7 +164,8 @@ class Header {
 /// Body parameters may not be `null`.
 @immutable
 class Body {
-  const Body();
+  final bool nullToAbsent;
+  const Body({this.nullToAbsent = false});
 }
 
 /// Use this annotation on a service method param when you want to indicate that no body should be

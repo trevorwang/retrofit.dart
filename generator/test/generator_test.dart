@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'dart:async';
 import 'package:retrofit_generator/src/generator.dart';
 import 'package:source_gen_test/src/build_log_tracking.dart';
