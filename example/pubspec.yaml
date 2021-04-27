@@ -10,12 +10,12 @@ dependencies:
   retrofit:
   json_annotation: ^4.0.0
   logger: ^1.0.0
-  dio: ^4.0.0-prev3
+  dio: ^4.0.0
 
 dev_dependencies:
   test: 1.16.5
   retrofit_generator:
-  build_runner: ^1.12.2
+  build_runner: ^2.0.1
   json_serializable: ^4.0.3
   mock_web_server:
 
