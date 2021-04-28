@@ -183,7 +183,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     retrofit.PATCH,
     retrofit.HEAD,
     retrofit.OPTIONS,
-    retrofit.Method
+    retrofit.Method,
   ];
 
   TypeChecker _typeChecker(Type type) => TypeChecker.fromRuntime(type);
@@ -194,6 +194,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .firstAnnotationOf(method, throwOnUnresolved: false);
       if (annot != null) return ConstantReader(annot);
     }
+    return null;
+  }
+
+  ConstantReader? _getMethodAnnotationByType(MethodElement method, Type type) {
+    final annot = _typeChecker(type)
+          .firstAnnotationOf(method, throwOnUnresolved: false);
+    if (annot != null) return ConstantReader(annot);
     return null;
   }
 
@@ -928,6 +935,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   void _generateRequestBody(
       List<Code> blocks, String _dataVar, MethodElement m) {
+    final _noBody = _getMethodAnnotationByType(m, retrofit.NoBody);
+    if (_noBody != null) {
+      blocks.add(refer('null').assignFinal(_dataVar, refer('String?')).statement);
+      return;
+    }
+
     var annotation = _getAnnotation(m, retrofit.Body);
     final _bodyName = annotation?.item1;
     if (_bodyName != null) {
@@ -941,7 +954,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         blocks.add(refer("$_dataVar.addAll").call([
           refer("${_bodyName.displayName}${m.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' :''}")
         ]).statement);
-        if(nullToAbsent) blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
+        if (nullToAbsent) blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
       } else if (bodyTypeElement != null && ((_typeChecker(List).isExactly(bodyTypeElement) ||
               _typeChecker(BuiltList).isExactly(bodyTypeElement)) &&
           !_isBasicInnerType(_bodyName.type))) {
@@ -995,7 +1008,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 refer("${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
               ]).statement);
             }
-            if(nullToAbsent) blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
+            if (nullToAbsent) blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
           }
         }
       } else {

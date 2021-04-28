@@ -161,8 +161,7 @@ abstract class FilePartTest {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class FilePartWithCustomNameTest {
   @POST("/profile")
-  Future<String> setProfile(
-      @Part(name: 'image', fileName: 'my_profile_image.jpg') File image);
+  Future<String> setProfile(@Part(name: 'image', fileName: 'my_profile_image.jpg') File image);
 }
 
 @ShouldGenerate(
@@ -255,9 +254,11 @@ class GenericUserWithoutGenericArgumentFactories<T> implements AbstractUser {
     return {};
   }
 }
-class JsonSerializable{
+
+class JsonSerializable {
   final bool genericArgumentFactories;
-  const JsonSerializable({  required this.genericArgumentFactories,});
+
+  const JsonSerializable({ required this.genericArgumentFactories,});
 }
 
 mixin AbstractUserMixin {
@@ -355,12 +356,10 @@ abstract class TestAbstractObjectBodyNullable {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestObjectQueries {
   @POST("/users")
-  Future<String> createUser(
-      @Query('u') User u, @Queries() User user1, @Queries() User user2);
+  Future<String> createUser(@Query('u') User u, @Queries() User user1, @Queries() User user2);
 
   @POST("/users")
-  Future<String> createNullableUser(
-      @Query('u') User u, {@Queries() User? user3, @Queries() User? user4});
+  Future<String> createNullableUser(@Query('u') User u, {@Queries() User? user3, @Queries() User? user4});
 }
 
 class CustomObject {
@@ -473,8 +472,7 @@ abstract class TestBasicListDouble {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestCancelToken {
   @POST("/users")
-  Future<String> createUser(
-      @Body() User user, @CancelRequest() CancelToken cancelToken);
+  Future<String> createUser(@Body() User user, @CancelRequest() CancelToken cancelToken);
 }
 
 @ShouldGenerate(
@@ -484,8 +482,7 @@ abstract class TestCancelToken {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestSendProgress {
   @POST("/users")
-  Future<String> createUser(
-      @Body() User user, @SendProgress() ProgressCallback onSendProgress);
+  Future<String> createUser(@Body() User user, @SendProgress() ProgressCallback onSendProgress);
 }
 
 @ShouldGenerate(
@@ -495,8 +492,7 @@ abstract class TestSendProgress {
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class TestReceiveProgress {
   @POST("/users")
-  Future<String> createUser(
-      @Body() User user, @ReceiveProgress() ProgressCallback onReceiveProgress);
+  Future<String> createUser(@Body() User user, @ReceiveProgress() ProgressCallback onReceiveProgress);
 }
 
 @ShouldGenerate(r'''Options(method: 'HEAD',''', contains: true)
@@ -605,14 +601,12 @@ abstract class TestModelList {
   Future<void> testMap(@Part() Map<String, dynamic> map);
 
   @POST("/")
-  Future<void> testBasicType(
-    @Part() int a,
-    @Part() bool b,
-    @Part() double c,
-    {
-    @Part() String? d,
-    }
-  );
+  Future<void> testBasicType(@Part() int a,
+      @Part() bool b,
+      @Part() double c,
+      {
+        @Part() String? d,
+      });
 }
 
 @ShouldGenerate(r'''
@@ -918,4 +912,17 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
 abstract class DynamicInnerGenericTypeShouldBeWithoutGenericArgumentType {
   @PUT("/")
   Future<GenericUserWithoutGenericArgumentFactories<dynamic>> get();
+}
+
+@ShouldGenerate(
+  r'''
+    final String? _data = null;
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class NoBodyGeneratesNullBody {
+  @PUT("/")
+  @NoBody()
+  Future<GenericUser<dynamic>> puy();
 }
