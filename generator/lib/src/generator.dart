@@ -10,10 +10,9 @@ import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dio/dio.dart';
+import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
-
-import 'package:retrofit/retrofit.dart' as retrofit;
 
 class RetrofitOptions {
   final bool? autoCastResponse;
@@ -292,7 +291,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     return Method((mm) {
       mm
-        ..returns = refer(_displayString(m.type.returnType))
+        ..returns = refer(_displayString(m.type.returnType, true))
         ..name = m.displayName
         ..types.addAll(m.typeParameters.map((e) => refer(e.name)))
         ..modifier = m.returnType.isDartAsyncFuture
@@ -459,8 +458,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar)
                 .statement,
           );
-          blocks.add(Code(
-              "final value = $_resultVar.data!.cast<${_displayString(innerReturnType)}>();"));
+          blocks.add(refer('$_resultVar.data')
+              .propertyIf(thisNullable: returnType.isNullable, name: 'cast')
+              .call([], {}, [refer('${_displayString(innerReturnType)}')])
+              .assignFinal('value')
+              .statement);
         } else {
           blocks.add(
             refer("await $_dioVar.fetch<List<dynamic>>")
@@ -468,22 +470,30 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar)
                 .statement,
           );
+          Reference mapperCode;
           switch (clientAnnotation.parser) {
             case retrofit.Parser.MapSerializable:
-              blocks.add(Code(
-                  "var value = $_resultVar.data!.map((dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)).toList();"));
+              mapperCode = refer('(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)');
               break;
             case retrofit.Parser.JsonSerializable:
-              blocks.add(Code(
-                  "var value = $_resultVar.data!.map((dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)).toList();"));
+              mapperCode = refer('(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)');
               break;
             case retrofit.Parser.DartJsonMapper:
-              blocks.add(Code(
-                  "var value = $_resultVar.data!.map((dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!).toList();"));
+              mapperCode = refer(
+                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!');
               break;
             default:
               throw ArgumentError('No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
           }
+          blocks.add(
+            refer('$_resultVar.data')
+                .propertyIf(thisNullable: returnType.isNullable, name: 'map')
+                .call([mapperCode])
+                .property('toList')
+                .call([])
+                .assignVar('value')
+                .statement,
+          );
         }
       } else if (_typeChecker(Map).isExactlyType(returnType) ||
           _typeChecker(BuiltMap).isExactlyType(returnType)) {
@@ -501,75 +511,69 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           if (_typeChecker(List).isExactlyType(secondType) ||
               _typeChecker(BuiltList).isExactlyType(secondType)) {
             final type = _getResponseType(secondType);
+            Reference mapperCode;
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
-                blocks.add(Code("""
-            var value = $_resultVar.data!
-              .map((k, dynamic v) =>
+                mapperCode = refer("""
+            (k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
                     .map((i) => ${_displayString(type)}.fromMap(i as Map<String,dynamic>))
                     .toList()
                 )
-              );
-            """));
+            """);
                 break;
               case retrofit.Parser.JsonSerializable:
-                blocks.add(Code("""
-            var value = $_resultVar.data!
-              .map((k, dynamic v) =>
+                mapperCode = refer("""
+            (k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
                     .map((i) => ${_displayString(type)}.fromJson(i as Map<String,dynamic>))
                     .toList()
                 )
-              );
-            """));
+            """);
                 break;
               case retrofit.Parser.DartJsonMapper:
-                blocks.add(Code("""
-            var value = $_resultVar.data!
-              .map((k, dynamic v) =>
+                mapperCode = refer("""
+            (k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
                     .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i as Map<String,dynamic>)!)
                     .toList()
                 )
-              );
-            """));
+            """);
                 break;
               default:
                 throw ArgumentError('No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
             }
+            blocks.add(refer('$_resultVar.data')
+                .propertyIf(thisNullable: returnType.isNullable, name: 'map')
+                .call([mapperCode])
+                .assignVar('value')
+                .statement);
           } else if (!_isBasicType(secondType)) {
+            Reference mapperCode;
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
-                blocks.add(Code("""
-            var value = $_resultVar.data!
-              .map((k, dynamic v) =>
-                MapEntry(k, ${_displayString(secondType)}.fromMap(v as Map<String, dynamic>))
-              );
-            """));
+                mapperCode = refer('(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}.fromMap(v as Map<String, dynamic>))');
                 break;
               case retrofit.Parser.JsonSerializable:
-                blocks.add(Code("""
-            var value = $_resultVar.data!
-              .map((k, dynamic v) =>
-                MapEntry(k, ${_displayString(secondType)}.fromJson(v as Map<String, dynamic>))
-              );
-            """));
+                mapperCode = refer('(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}.fromJson(v as Map<String, dynamic>))');
+
                 break;
               case retrofit.Parser.DartJsonMapper:
-                blocks.add(Code("""
-            var value = $_resultVar.data!
-              .map((k, dynamic v) =>
-                MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v as Map<String, dynamic>)!)
-              );
-            """));
+                mapperCode = refer('(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v as Map<String, dynamic>)!)');
                 break;
               default:
                 throw ArgumentError('No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
             }
+            blocks.add(
+              refer('$_resultVar.data')
+                  .propertyIf(thisNullable: returnType.isNullable, name: 'map')
+                  .call([mapperCode])
+                  .assignVar('value')
+                  .statement
+            );
           }
         } else {
           blocks.add(Code("final value = $_resultVar.data!;"));
@@ -582,7 +586,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar)
                 .statement,
           );
-          blocks.add(Code("final value = $_resultVar.data!;"));
+          blocks.add(
+              refer('$_resultVar.data')
+                  .asNoNullIf(returnNullable: returnType.isNullable)
+                  .assignFinal('value')
+                  .statement
+          );
         } else if (returnType.toString() == 'dynamic') {
           blocks.add(
             refer("await $_dioVar.fetch")
@@ -590,7 +599,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar)
                 .statement,
           );
-          blocks.add(Code("final value = $_resultVar.data!;"));
+          blocks.add(Code("final value = $_resultVar.data;"));
         } else {
           blocks.add(
             refer("await $_dioVar.fetch<Map<String,dynamic>>")
@@ -598,36 +607,37 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar)
                 .statement,
           );
+          Expression mapperCode;
           switch (clientAnnotation.parser) {
             case retrofit.Parser.MapSerializable:
-              blocks.add(Code(
-                  "final value = ${_displayString(returnType)}.fromMap($_resultVar.data!);"));
+              mapperCode = refer('${_displayString(returnType)}.fromMap($_resultVar.data!)');
               break;
             case retrofit.Parser.JsonSerializable:
               final genericArgumentFactories = isGenericArgumentFactories(returnType);
 
               // print('genericArgumentFactories:$genericArgumentFactories');
-              var typeArgs = returnType is ParameterizedType
-                  ? returnType.typeArguments
-                  : [];
-              var mapperVal;
+              var typeArgs = returnType is ParameterizedType ? returnType.typeArguments : [];
 
               if (typeArgs.length > 0 && genericArgumentFactories) {
-                mapperVal =
-                    "final value = ${_displayString(returnType)}.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)});";
+                mapperCode = refer(
+                    '${_displayString(returnType)}.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)})');
               } else {
-                mapperVal =
-                    "final value = ${_displayString(returnType)}.fromJson($_resultVar.data!);";
+                mapperCode = refer('${_displayString(returnType)}.fromJson($_resultVar.data!)');
               }
-              blocks.add(Code(mapperVal));
               break;
             case retrofit.Parser.DartJsonMapper:
-              blocks.add(Code(
-                  "final value = JsonMapper.fromMap<${_displayString(returnType)}>($_resultVar.data!)!;"));
+              mapperCode = refer('JsonMapper.fromMap<${_displayString(returnType)}>($_resultVar.data!)!');
               break;
             default:
               throw ArgumentError('No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
           }
+          blocks.add(refer('$_resultVar.data')
+              .conditionalIsNullIf(
+                thisNullable: returnType.isNullable,
+                whenFalse: mapperCode,
+              )
+              .assignFinal('value')
+              .statement);
         }
       }
       if (isWrappered) {
@@ -1419,9 +1429,9 @@ extension DartTypeStreamAnnotation on DartType {
   }
 }
 
-String _displayString(dynamic e) {
+String _displayString(dynamic e, [bool withNullability = false]) {
   try {
-    return e.getDisplayString(withNullability: false);
+    return e.getDisplayString(withNullability: withNullability);
   } catch (error) {
     if (error is TypeError) {
       return e.getDisplayString();
@@ -1429,6 +1439,28 @@ String _displayString(dynamic e) {
       rethrow;
     }
   }
+}
+
+extension DartTypeExt on DartType {
+  bool get isNullable => this.nullabilitySuffix == NullabilitySuffix.question;
+}
+
+extension ReferenceExt on Reference {
+  Reference asNoNull() => refer('${this.symbol}!');
+
+  Reference asNoNullIf({required bool returnNullable}) => returnNullable ? this : this.asNoNull();
+
+  Expression propertyIf({
+    required bool thisNullable,
+    required String name,
+  }) =>
+      thisNullable ? this.nullSafeProperty(name) : this.asNoNull().property(name);
+
+  Expression conditionalIsNullIf({
+    required bool thisNullable,
+    required Expression whenFalse,
+  }) =>
+      thisNullable ? this.equalTo(literalNull).conditional(literalNull, whenFalse) : whenFalse;
 }
 
 extension IterableExtension<T> on Iterable<T> {
