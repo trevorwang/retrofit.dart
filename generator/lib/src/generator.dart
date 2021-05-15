@@ -291,7 +291,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     return Method((mm) {
       mm
-        ..returns = refer(_displayString(m.type.returnType, true))
+        ..returns = refer(_displayString(m.type.returnType, withNullability: true))
         ..name = m.displayName
         ..types.addAll(m.typeParameters.map((e) => refer(e.name)))
         ..modifier = m.returnType.isDartAsyncFuture
@@ -1429,7 +1429,7 @@ extension DartTypeStreamAnnotation on DartType {
   }
 }
 
-String _displayString(dynamic e, [bool withNullability = false]) {
+String _displayString(dynamic e, {bool withNullability = false}) {
   try {
     return e.getDisplayString(withNullability: withNullability);
   } catch (error) {
