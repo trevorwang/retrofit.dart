@@ -1205,3 +1205,18 @@ abstract class NoBodyGeneratesNullBody {
   @NoBody()
   Future<GenericUser<dynamic>> puy();
 }
+
+mixin MethodInMixin {
+  @GET("https://httpbin.org/")
+  Future<void> someGet();
+}
+
+@ShouldGenerate(
+  r'''
+  @override
+  Future<void> someGet() async {
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class NoMethods with MethodInMixin {}

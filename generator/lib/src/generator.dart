@@ -161,7 +161,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       });
 
   Iterable<Method> _parseMethods(ClassElement element) =>
-      element.methods.where((MethodElement m) {
+      (element.methods..addAll(element.mixins.expand((i) => i.methods)))
+          .where((MethodElement m) {
         final methodAnnot = _getMethodAnnotation(m);
         return methodAnnot != null &&
             m.isAbstract &&
