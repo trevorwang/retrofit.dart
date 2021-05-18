@@ -718,8 +718,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .toList()
     """;
           } else {
-            StringBuffer stringBuffer =
-                new StringBuffer(); // = genericTypeString == 'Map<String, dynamic>'? '.from': '.fromJson'
+            StringBuffer stringBuffer = new StringBuffer();
             if (genericTypeString == 'dynamic') {
               stringBuffer.write(' i as Map<String, dynamic>');
             } else {
