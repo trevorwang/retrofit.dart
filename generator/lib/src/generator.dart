@@ -703,12 +703,23 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 )
             .toList()
     """;
-          }else
-            {
-              mapperVal = """
+          } else {
+            StringBuffer stringBuffer = new StringBuffer();
+            if (genericTypeString == 'dynamic') {
+              stringBuffer.write(' i as Map<String, dynamic>');
+            } else {
+              stringBuffer.write(genericTypeString);
+            }
+            stringBuffer.write('.from');
+            if (!genericTypeString.startsWith('Map<')) {
+              stringBuffer.write('Json');
+            }
+            stringBuffer.write('(  i as Map<String, dynamic> )  ');
+
+            mapperVal = """
     (json)=>(json as List<dynamic>)
             .map<${genericTypeString}>((i) =>
-            ${genericTypeString == 'dynamic' ? ' i as Map<String, dynamic>' : genericTypeString + '.fromJson(  i as Map<String, dynamic> )  '}
+            ${stringBuffer.toString()}
     )
             .toList()
     """;
@@ -727,10 +738,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 _typeChecker(BuiltList).isExactlyType(arg)) {
               mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
             }else{
-              if (isGenericArgumentFactories(arg))
-              mappedVal += "(json)=>${_displayString(arg)}.fromJson(json,${_getInnerJsonSerializableMapperFn(arg)}),";
-              else
-                mappedVal += "(json)=>${_displayString(arg)}.fromJson(json),";
+              if (isGenericArgumentFactories(arg)) {
+                mappedVal +=
+                  "(json)=>${_displayString(arg)}.fromJson(json,${_getInnerJsonSerializableMapperFn(arg)}),";
+              } else {
+                mappedVal +=
+                  "(json)=>${_displayString(arg)}.from${_displayString(arg).startsWith('Map<') ? '' : 'Json'}(json),";
+              }
             }
           else{
             mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
