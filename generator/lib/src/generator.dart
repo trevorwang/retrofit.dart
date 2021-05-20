@@ -1137,8 +1137,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   ${p.displayName}.map((i) => MapEntry(
                 '${fieldName}',
                 MultipartFile.fromBytes(i,
-
-                filename:${literal(fileName ?? null)},
+                    filename:${literal(fileName ?? null)},
                     ${conType}
                     )))
                   ''')
