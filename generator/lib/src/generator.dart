@@ -801,8 +801,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       blocks.add(newOptions
           .property('headers')
           .property('addAll')
-          .call([extraOptions.remove('headers')!
-          .operatorAdd(refer(_dioVar).property('options').property('headers'))])
+          .call([refer(_dioVar).property('options').property('headers')])
+        .statement);
+      blocks.add(newOptions
+          .property('headers')
+          .property('addAll')
+          .call([extraOptions.remove('headers')!])
           .statement);
       return newOptions.property('copyWith').call([], Map.from(extraOptions)
         ..[_queryParamsVar] = namedArguments[_queryParamsVar]!

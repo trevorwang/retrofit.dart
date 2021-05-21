@@ -748,7 +748,8 @@ abstract class TestModelList {
 @ShouldGenerate(r'''
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
-    newOptions.headers.addAll(<String, dynamic>{} + _dio.options.headers);
+    newOptions.headers.addAll(_dio.options.headers);
+    newOptions.headers.addAll(<String, dynamic>{});
     await _dio.fetch<void>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
