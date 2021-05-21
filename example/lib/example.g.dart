@@ -652,10 +652,10 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(<String, dynamic>{} + _dio.options.headers);
     final _result = await _dio.fetch<String>(newOptions.copyWith(
         method: 'GET',
-        baseUrl: baseUrl,
+        baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
         path: '')
       ..data = _data);
