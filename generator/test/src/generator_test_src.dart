@@ -195,6 +195,19 @@ abstract class GenericCast {
 
 @ShouldGenerate(
   r'''
+    final value = _result.data == null ? null : User.fromJson(_result.data!);
+    return value;
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class NullableGenericCast {
+  @POST("/users/1")
+  Future<User?> getUser();
+}
+
+@ShouldGenerate(
+  r'''
     yield value;
 ''',
   contains: true,
@@ -283,6 +296,19 @@ abstract class AbstractUser with AbstractUserMixin {
 abstract class GenericCastBasicType {
   @POST("/users/1")
   Future<String> getUser();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data;
+    return value;
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class NullableGenericCastBasicType {
+  @POST("/users/1")
+  Future<String?> getUser();
 }
 
 @ShouldGenerate(
@@ -390,7 +416,7 @@ abstract class TestCustomObjectBody {
         (v as List)
             .map((i) => User.fromJson(i as Map<String, dynamic>))
             .toList()));
-
+    return value;
 ''',
   contains: true,
 )
@@ -402,8 +428,26 @@ abstract class TestMapBody {
 
 @ShouldGenerate(
   r'''
+    var value = _result.data?.map((k, dynamic v) => MapEntry(
+        k,
+        (v as List)
+            .map((i) => User.fromJson(i as Map<String, dynamic>))
+            .toList()));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class NullableTestMapBody {
+  @GET("/xx")
+  Future<Map<String, List<User>>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
     var value = _result.data!.map((k, dynamic v) =>
         MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
+    return value;
 ''',
   contains: true,
 )
@@ -411,6 +455,20 @@ abstract class TestMapBody {
 abstract class TestMapBody2 {
   @GET("/xx")
   Future<Map<String, User>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data?.map((k, dynamic v) =>
+        MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class NullableTestMapBody2 {
+  @GET("/xx")
+  Future<Map<String, User>?> getResult();
 }
 
 @ShouldGenerate(
@@ -428,6 +486,19 @@ abstract class TestBasicListString {
 
 @ShouldGenerate(
   r'''
+    final value = _result.data?.cast<String>();
+    return value;
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class NullableTestBasicListString {
+  @GET("/xx")
+  Future<List<String>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
     final value = _result.data!.cast<bool>();
     return value;
 ''',
@@ -437,6 +508,19 @@ abstract class TestBasicListString {
 abstract class TestBasicListBool {
   @GET("/xx")
   Future<List<bool>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data?.cast<bool>();
+    return value;
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class NullableTestBasicListBool {
+  @GET("/xx")
+  Future<List<bool>?> getResult();
 }
 
 @ShouldGenerate(
@@ -454,6 +538,19 @@ abstract class TestBasicListInt {
 
 @ShouldGenerate(
   r'''
+    final value = _result.data?.cast<int>();
+    return value;
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class NullableTestBasicListInt {
+  @GET("/xx")
+  Future<List<int>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
     final value = _result.data!.cast<double>();
     return value;
 ''',
@@ -463,6 +560,19 @@ abstract class TestBasicListInt {
 abstract class TestBasicListDouble {
   @GET("/xx")
   Future<List<double>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data?.cast<double>();
+    return value;
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class NullableTestBasicListDouble {
+  @GET("/xx")
+  Future<List<double>?> getResult();
 }
 
 @ShouldGenerate(
@@ -670,10 +780,28 @@ abstract class JsonMapperGenericCast {
 
 @ShouldGenerate(
   r'''
+    final value =
+        _result.data == null ? null : JsonMapper.fromMap<User>(_result.data!)!;
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.DartJsonMapper,
+)
+abstract class NullableJsonMapperGenericCast {
+  @POST("/xx")
+  Future<User?> getUser();
+}
+
+@ShouldGenerate(
+  r'''
     var value = _result.data!
         .map(
             (dynamic i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
         .toList();
+    return value;
 ''',
   contains: true,
 )
@@ -693,7 +821,7 @@ abstract class JsonMapperTestListBody {
         (v as List)
             .map((i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
             .toList()));
-
+    return value;
 ''',
   contains: true,
 )
@@ -710,6 +838,7 @@ abstract class JsonMapperTestMapBody {
   r'''
     var value = _result.data!.map((k, dynamic v) =>
         MapEntry(k, JsonMapper.fromMap<User>(v as Map<String, dynamic>)!));
+    return value;
 ''',
   contains: true,
 )
@@ -740,9 +869,26 @@ abstract class MapSerializableGenericCast {
 
 @ShouldGenerate(
   r'''
+    final value = _result.data == null ? null : User.fromMap(_result.data!);
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.MapSerializable,
+)
+abstract class NullableMapSerializableGenericCast {
+  @POST("/xx")
+  Future<User?> getUser();
+}
+
+@ShouldGenerate(
+  r'''
     var value = _result.data!
         .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
         .toList();
+    return value;
 ''',
   contains: true,
 )
@@ -757,12 +903,30 @@ abstract class MapSerializableTestListBody {
 
 @ShouldGenerate(
   r'''
+    var value = _result.data
+        ?.map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
+        .toList();
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.MapSerializable,
+)
+abstract class NullableMapSerializableTestListBody {
+  @GET("/xx")
+  Future<List<User>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
     var value = _result.data!.map((k, dynamic v) => MapEntry(
         k,
         (v as List)
             .map((i) => User.fromMap(i as Map<String, dynamic>))
             .toList()));
-
+    return value;
 ''',
   contains: true,
 )
@@ -777,8 +941,29 @@ abstract class MapSerializableTestMapBody {
 
 @ShouldGenerate(
   r'''
+    var value = _result.data?.map((k, dynamic v) => MapEntry(
+        k,
+        (v as List)
+            .map((i) => User.fromMap(i as Map<String, dynamic>))
+            .toList()));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.MapSerializable,
+)
+abstract class NullableMapSerializableTestMapBody {
+  @GET("/xx")
+  Future<Map<String, List<User>>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
     var value = _result.data!.map(
         (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
+    return value;
 ''',
   contains: true,
 )
@@ -789,6 +974,23 @@ abstract class MapSerializableTestMapBody {
 abstract class MapSerializableTestMapBody2 {
   @GET("/xx")
   Future<Map<String, User>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data?.map(
+        (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.MapSerializable,
+)
+abstract class NullableMapSerializableTestMapBody2 {
+  @GET("/xx")
+  Future<Map<String, User>?> getResult();
 }
 
 @ShouldGenerate(
@@ -846,6 +1048,7 @@ abstract class ListBodyShouldNotBeCleanTest {
       _result.data!,
       (json) => json as dynamic,
     );
+    return value;
   ''',
   contains: true,
 )
@@ -862,6 +1065,7 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
         (json) => (json as List<dynamic>)
             .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
             .toList());
+    return value;
   ''',
   contains: true,
 )
@@ -873,10 +1077,30 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   r'''
+    final value = _result.data == null
+        ? null
+        : GenericUser<List<User>>.fromJson(
+            _result.data!,
+            (json) => (json as List<dynamic>)
+                .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
+                .toList());
+    return value;
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class NullableDynamicInnerListGenericTypeShouldBeCastedRecursively {
+  @PUT("/")
+  Future<GenericUser<List<User>>?> get();
+}
+
+@ShouldGenerate(
+  r'''
     final value = GenericUser<User>.fromJson(
       _result.data!,
       (json) => User.fromJson(json as Map<String, dynamic>),
     );
+    return value;
   ''',
   contains: true,
 )
@@ -888,10 +1112,29 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   r'''
+    final value = _result.data == null
+        ? null
+        : GenericUser<User>.fromJson(
+            _result.data!,
+            (json) => User.fromJson(json as Map<String, dynamic>),
+          );
+    return value;
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class NullableDynamicInnerGenericTypeShouldBeCastedAsMap {
+  @PUT("/")
+  Future<GenericUser<User>?> get();
+}
+
+@ShouldGenerate(
+  r'''
     final value = GenericUser<List<double>>.fromJson(
         _result.data!,
         (json) =>
             (json as List<dynamic>).map<double>((i) => i as double).toList());
+    return value;
   ''',
   contains: true,
 )
@@ -903,8 +1146,28 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   r'''
+    final value = _result.data == null
+        ? null
+        : GenericUser<List<double>>.fromJson(
+            _result.data!,
+            (json) => (json as List<dynamic>)
+                .map<double>((i) => i as double)
+                .toList());
+    return value;
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class NullableDynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
+  @PUT("/")
+  Future<GenericUser<List<double>>?> get();
+}
+
+@ShouldGenerate(
+  r'''
     final value = GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
         _result.data!);
+    return value;
   ''',
   contains: true,
 )
@@ -912,6 +1175,22 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
 abstract class DynamicInnerGenericTypeShouldBeWithoutGenericArgumentType {
   @PUT("/")
   Future<GenericUserWithoutGenericArgumentFactories<dynamic>> get();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data == null
+        ? null
+        : GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
+            _result.data!);
+    return value;
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class NullableDynamicInnerGenericTypeShouldBeWithoutGenericArgumentType {
+  @PUT("/")
+  Future<GenericUserWithoutGenericArgumentFactories<dynamic>?> get();
 }
 
 @ShouldGenerate(
@@ -926,3 +1205,18 @@ abstract class NoBodyGeneratesNullBody {
   @NoBody()
   Future<GenericUser<dynamic>> puy();
 }
+
+mixin MethodInMixin {
+  @GET("https://httpbin.org/")
+  Future<void> someGet();
+}
+
+@ShouldGenerate(
+  r'''
+  @override
+  Future<void> someGet() async {
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class NoMethods with MethodInMixin {}
