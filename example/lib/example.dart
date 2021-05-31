@@ -96,11 +96,11 @@ abstract class RestClient {
       @Part(contentType: 'application/json') File file);
 
   @POST("/post")
-  Future<String> postFormData3(
-      {@Part(value: "customfiles", contentType: 'application/json')
-      required List<File> files,
-      @Part(fileName: "abc.txt")
-      required File file});
+  Future<String> postFormData3({
+    @Part(value: "customfiles", contentType: 'application/json')
+        required List<File> files,
+    @Part(fileName: "abc.txt") required File file,
+  });
 
   @POST("/post")
   Future<String> postFormData6(
@@ -145,12 +145,15 @@ abstract class RestClient {
   Future<String> cancelRequest(@CancelRequest() CancelToken cancelToken);
 
   @PUT('/progress')
-  Future<String> sendProgress(@CancelRequest() CancelToken cancelToken, {@SendProgress() ProgressCallback? sendProgress});
+  Future<String> sendProgress(@CancelRequest() CancelToken cancelToken,
+      {@SendProgress() ProgressCallback? sendProgress});
 
   @PUT('/boBody')
   @NoBody()
   Future<String> sendWithoutBody();
 
+  @GET('/nestGeneric')
+  Future<ValueWrapper<ValueWrapper<String>>> nestGeneric();
 }
 
 @JsonSerializable()
@@ -209,4 +212,18 @@ class TaskGroup {
       _$TaskGroupFromJson(json);
 
   Map<String, dynamic> toJson() => _$TaskGroupToJson(this);
+}
+
+@JsonSerializable(genericArgumentFactories: true)
+class ValueWrapper<T> {
+  const ValueWrapper({required this.value});
+
+  final T value;
+
+  factory ValueWrapper.fromJson(
+          Map<String, dynamic> json, T Function(Object? json) fromJsonT) =>
+      _$ValueWrapperFromJson(json, fromJsonT);
+
+  Map<String, dynamic> toJson(Object? Function(T value) toJsonT) =>
+      _$ValueWrapperToJson(this, toJsonT);
 }

@@ -88,6 +88,23 @@ Map<String, dynamic> _$TaskGroupToJson(TaskGroup instance) => <String, dynamic>{
       'inProgress': instance.inProgress,
     };
 
+ValueWrapper<T> _$ValueWrapperFromJson<T>(
+  Map<String, dynamic> json,
+  T Function(Object? json) fromJsonT,
+) {
+  return ValueWrapper<T>(
+    value: fromJsonT(json['value']),
+  );
+}
+
+Map<String, dynamic> _$ValueWrapperToJson<T>(
+  ValueWrapper<T> instance,
+  Object? Function(T value) toJsonT,
+) =>
+    <String, dynamic>{
+      'value': toJsonT(instance.value),
+    };
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -521,6 +538,7 @@ class _RestClient implements RestClient {
         'customfiles',
         MultipartFile.fromBytes(
           i,
+          filename: null,
         ))));
     _data.files.add(MapEntry(
         'file',
@@ -708,6 +726,27 @@ class _RestClient implements RestClient {
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<ValueWrapper<ValueWrapper<String>>> nestGeneric() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ValueWrapper<ValueWrapper<String>>>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/nestGeneric',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ValueWrapper<ValueWrapper<String>>.fromJson(
+      _result.data!,
+      (json) => ValueWrapper<String>.fromJson(
+        json as Map<String, dynamic>,
+        (json) => json as String,
+      ),
+    );
     return value;
   }
 
