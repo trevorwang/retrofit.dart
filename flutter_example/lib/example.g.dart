@@ -8,7 +8,6 @@ part of 'example.dart';
 
 class _RestClient implements RestClient {
   _RestClient(this._dio, {this.baseUrl}) {
-    ArgumentError.checkNotNull(_dio, '_dio');
     baseUrl ??= 'http://baidu.com';
   }
 
@@ -25,8 +24,12 @@ class _RestClient implements RestClient {
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(<String, dynamic>{});
-    final _result = await _dio.fetch<List<dynamic>>(
-        newOptions.copyWith(method: 'GET', baseUrl: baseUrl));
+    final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
+        method: 'GET',
+        baseUrl: baseUrl,
+        queryParameters: queryParameters,
+        path: '/tags')
+      ..data = _data);
     final value = _result.data!.cast<String>();
     return value;
   }
@@ -54,5 +57,18 @@ class _RestClient implements RestClient {
       responseDecoder: options.responseDecoder,
       path: '',
     );
+  }
+
+  RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
+    if (T != dynamic &&
+        !(requestOptions.responseType == ResponseType.bytes ||
+            requestOptions.responseType == ResponseType.stream)) {
+      if (T == String) {
+        requestOptions.responseType = ResponseType.plain;
+      } else {
+        requestOptions.responseType = ResponseType.json;
+      }
+    }
+    return requestOptions;
   }
 }

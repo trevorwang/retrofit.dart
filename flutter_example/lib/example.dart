@@ -15,11 +15,12 @@ void test() {
   final dio = Dio();
   dio.httpClientAdapter = MockAdapter();
 
-  dio.interceptors.add(InterceptorsWrapper(onRequest: (options) {
+  dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
     print(options.extra);
     print(options.baseUrl);
     print(options.method);
     print(options.headers);
+    handler.next(options);
   }));
   final api = RestClient(dio, baseUrl: MockAdapter.mockBase);
   api.getTags().then((it) {
