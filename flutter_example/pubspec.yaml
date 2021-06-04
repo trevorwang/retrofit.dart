@@ -32,7 +32,7 @@ dev_dependencies:
     sdk: flutter
   test:
   retrofit_generator:
-  build_runner: ^1.11.5
+  build_runner: any
   json_serializable: any
   mock_web_server:
 

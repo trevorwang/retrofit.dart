@@ -728,9 +728,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
             }else{
               if (isGenericArgumentFactories(arg))
-              mappedVal += "(json)=>${_displayString(arg)}.fromJson(json,${_getInnerJsonSerializableMapperFn(arg)}),";
+                mappedVal += "(json)=>${_displayString(arg)}.fromJson(json as Map<String, dynamic>,${_getInnerJsonSerializableMapperFn(arg)}),";
               else
-                mappedVal += "(json)=>${_displayString(arg)}.fromJson(json),";
+                mappedVal += "(json)=>${_displayString(arg)}.fromJson(json as Map<String, dynamic>),";
             }
           else{
             mappedVal += "${_getInnerJsonSerializableMapperFn(arg)}";
