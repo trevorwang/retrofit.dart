@@ -761,6 +761,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final baseUrl = args.remove(_baseUrlVar)!;
       final cancelToken = args.remove(_cancelToken);
       final sendProgress = args.remove(_onSendProgress);
+      final receiveProgress = args.remove(_onReceiveProgress);
 
       final type = refer(_displayString(_getResponseType(m.returnType)));
 
@@ -770,6 +771,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       }
       if (sendProgress != null){
         composeArguments[_onSendProgress] = sendProgress;
+      }
+      if (receiveProgress != null) {
+        composeArguments[_onReceiveProgress] = receiveProgress;
       }
 
       return refer('_setStreamType').call([
