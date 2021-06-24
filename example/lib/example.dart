@@ -144,9 +144,15 @@ abstract class RestClient {
   @GET('/cancel')
   Future<String> cancelRequest(@CancelRequest() CancelToken cancelToken);
 
-  @PUT('/progress')
+  @PUT('/sendProgress')
   Future<String> sendProgress(@CancelRequest() CancelToken cancelToken,
       {@SendProgress() ProgressCallback? sendProgress});
+
+  @PUT('/receiveProgress')
+  Future<String> receiveProgress(
+    @CancelRequest() CancelToken cancelToken, {
+    @ReceiveProgress() ProgressCallback? receiveProgress,
+  });
 
   @PUT('/boBody')
   @NoBody()

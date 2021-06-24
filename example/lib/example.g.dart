@@ -706,11 +706,29 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
         Options(method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/progress',
+            .compose(_dio.options, '/sendProgress',
                 queryParameters: queryParameters,
                 data: _data,
                 cancelToken: cancelToken,
                 onSendProgress: sendProgress)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<String> receiveProgress(cancelToken, {receiveProgress}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, '/receiveProgress',
+                queryParameters: queryParameters,
+                data: _data,
+                cancelToken: cancelToken,
+                onReceiveProgress: receiveProgress)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
