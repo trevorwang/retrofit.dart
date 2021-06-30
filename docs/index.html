@@ -163,7 +163,7 @@ class Task {
   @FormUrlEncoded()
   Future&lt;String&gt; postUrlEncodedFormData(@Field() String hello);
 </code></pre>
-<h3 id="get-orignal-http-reponse">Get orignal HTTP reponse</h3>
+<h3 id="get-original-http-reponse">Get original HTTP response</h3>
 <pre class="language-dart"><code class="language-dart">  @GET("/tasks/{id}")
   Future&lt;HttpResponse&lt;Task&gt;&gt; getTask(@Path("id") String id)
 
@@ -181,7 +181,7 @@ class Task {
 </ul>
 <ul>
 <li>
-<p>Add staitc HTTP headers</p>
+<p>Add static HTTP headers</p>
 <pre class="language-dart"><code class="language-dart">  @GET("/tasks")
   @Headers(&lt;String, dynamic&gt;{
       "Content-Type" : "application/json",
