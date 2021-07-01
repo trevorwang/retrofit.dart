@@ -23,7 +23,6 @@ jobs:
       - name: Run tests
         run: |
           cd generator && pub run test
-          cd example && pub run test
 
       - name: Setup credentials
         run: |
