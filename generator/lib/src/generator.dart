@@ -1067,22 +1067,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final parts = _getAnnotations(m, retrofit.Part);
     if (parts.isNotEmpty) {
-      if (m.parameters.length == 1 && m.parameters.first.type.isDartCoreMap) {
-        blocks.add(refer('FormData')
-            .newInstanceNamed('fromMap',
-                [CodeExpression(Code(m.parameters.first.displayName))])
-            .assignFinal(_dataVar)
-            .statement);
-        return;
-      }
-      else if (m.parameters.length == 2) {
-        blocks.add(refer('FormData')
-            .newInstanceNamed('fromMap',
-                [CodeExpression(Code(m.parameters[1].displayName))])
-            .assignFinal(_dataVar)
-            .statement);
-        return;
-      }
+      blocks.add(refer('FormData')
+          .newInstanceNamed('fromMap',
+              [CodeExpression(Code(m.parameters[1].displayName))])
+          .assignFinal(_dataVar)
+          .statement);
+      return;
+      
       blocks.add(
           refer('FormData').newInstance([]).assignFinal(_dataVar).statement);
 
