@@ -1075,7 +1075,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             .statement);
         return;
       }
-      else if (m.parameters.length == 2 && m.parameters[1].type.isDartCoreMap) {
+      else if (m.parameters.length == 2) {
         blocks.add(refer('FormData')
             .newInstanceNamed('fromMap',
                 [CodeExpression(Code(m.parameters[1].displayName))])
