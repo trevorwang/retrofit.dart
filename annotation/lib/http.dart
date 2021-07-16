@@ -271,3 +271,26 @@ class Part {
   final String? contentType;
   const Part({this.value, this.name, this.fileName, this.contentType});
 }
+
+@immutable
+class CacheControl {
+  final int? maxAge;
+  final int? maxStale;
+  final int? minFresh;
+  final bool noCache;
+  final bool noStore;
+  final bool noTransform;
+  final bool onlyIfCached;
+  final List<String> other;
+
+  const CacheControl({
+    this.maxAge,
+    this.maxStale,
+    this.minFresh,
+    this.noCache = false,
+    this.noStore = false,
+    this.noTransform = false,
+    this.onlyIfCached = false,
+    this.other = const [],
+  });
+}

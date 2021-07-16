@@ -769,6 +769,26 @@ class _RestClient implements RestClient {
     return value;
   }
 
+  @override
+  Future<String> cache() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+            method: 'GET',
+            headers: <String, dynamic>{
+              r'test': 'tes t',
+              r'cache-control':
+                  'max-age=180, max-stale=300, max-fresh=60, no-cache, no-store, no-transform, only-if-cached, public, proxy-revalidate'
+            },
+            extra: _extra)
+        .compose(_dio.options, 'cache',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
   RequestOptions newRequestOptions(Options? options) {
     if (options is RequestOptions) {
       return options as RequestOptions;

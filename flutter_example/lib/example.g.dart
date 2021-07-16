@@ -23,10 +23,11 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(<String, dynamic>{});
     final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
         method: 'GET',
-        baseUrl: baseUrl,
+        baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
         path: '/tags')
       ..data = _data);

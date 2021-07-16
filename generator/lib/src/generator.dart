@@ -205,9 +205,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   ConstantReader? _getHeadersAnnotation(MethodElement method) {
-    final annot = _typeChecker(retrofit.Headers)
+    final annotation = _typeChecker(retrofit.Headers)
         .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annot != null) return ConstantReader(annot);
+    if (annotation != null) return ConstantReader(annotation);
+    return null;
+  }
+
+  ConstantReader? _getCacheAnnotation(MethodElement method) {
+    final annotation = _typeChecker(retrofit.CacheControl)
+        .firstAnnotationOf(method, throwOnUnresolved: false);
+    if (annotation != null) return ConstantReader(annotation);
     return null;
   }
 
@@ -1271,7 +1278,49 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return MapEntry(value, refer(k.displayName));
     });
     headers.addAll(headersInParams);
+
+    final cacheMap = _generateCache(m);
+    headers.addAll(cacheMap);
+
     return headers;
+  }
+
+  Map<String, Expression> _generateCache(MethodElement m) {
+    final cache = _getCacheAnnotation(m);
+    final result = <String, Expression>{};
+    if (cache != null && cache.toString() != '') {
+      var maxAge = cache.peek('maxAge')?.intValue;
+      var maxStale = cache.peek('maxStale')?.intValue;
+      var minFresh = cache.peek('minFresh')?.intValue;
+      var noCache = cache.peek('noCache')?.boolValue;
+      var noStore = cache.peek('noStore')?.boolValue;
+      var noTransform = cache.peek('noTransform')?.boolValue;
+      var onlyIfCached = cache.peek('onlyIfCached')?.boolValue;
+      var other = (cache.peek('other')?.listValue ?? const []).map((e) => e.toStringValue());
+      var otherResult = <String>[];
+
+      other.forEach((element) {
+        if(element!=null){
+          otherResult.add(element);
+        }
+      });
+
+      final values = <String>[
+        maxAge != null ? 'max-age=$maxAge' : '',
+        maxStale != null ? 'max-stale=$maxStale' : '',
+        minFresh != null ? 'max-fresh=$minFresh' : '',
+        (noCache == true) ? 'no-cache' : '',
+        (noStore == true) ? 'no-store' : '',
+        (noTransform == true) ? 'no-transform' : '',
+        (onlyIfCached == true) ? 'only-if-cached' : '',
+        ...otherResult
+      ];
+
+      final value=values.where((element) => element != '').join(', ');
+
+      result.putIfAbsent(HttpHeaders.cacheControlHeader, () => literal(value));
+    }
+    return result;
   }
 
   void _generateExtra(
