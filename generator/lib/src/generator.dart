@@ -205,16 +205,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   ConstantReader? _getHeadersAnnotation(MethodElement method) {
-    final annot = _typeChecker(retrofit.Headers)
+    final annotation = _typeChecker(retrofit.Headers)
         .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annot != null) return ConstantReader(annot);
+    if (annotation != null) return ConstantReader(annotation);
     return null;
   }
 
   ConstantReader? _getCacheAnnotation(MethodElement method) {
-    final annot = _typeChecker(retrofit.Cache)
+    final annotation = _typeChecker(retrofit.CacheControl)
         .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annot != null) return ConstantReader(annot);
+    if (annotation != null) return ConstantReader(annotation);
     return null;
   }
 
@@ -1287,7 +1287,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   Map<String, Expression> _generateCache(MethodElement m) {
     final cache = _getCacheAnnotation(m);
-    var result=<String,Expression>{};
+    final result = <String, Expression>{};
     if (cache != null && cache.toString() != '') {
       var maxAge = cache.peek('maxAge')?.intValue;
       var maxStale = cache.peek('maxStale')?.intValue;
@@ -1316,7 +1316,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ...otherResult
       ];
 
-      var value=values.where((element) => element != '').join(', ');
+      final value=values.where((element) => element != '').join(', ');
 
       result.putIfAbsent(HttpHeaders.cacheControlHeader, () => literal(value));
     }
