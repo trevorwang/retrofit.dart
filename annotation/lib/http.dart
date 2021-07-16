@@ -273,7 +273,7 @@ class Part {
 }
 
 @immutable
-class Cache {
+class CacheControl {
   final int? maxAge;
   final int? maxStale;
   final int? minFresh;
@@ -283,7 +283,7 @@ class Cache {
   final bool onlyIfCached;
   final List<String> other;
 
-  const Cache({
+  const CacheControl({
     this.maxAge,
     this.maxStale,
     this.minFresh,

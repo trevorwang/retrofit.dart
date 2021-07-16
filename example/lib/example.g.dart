@@ -777,7 +777,7 @@ class _RestClient implements RestClient {
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'GET',
             headers: <String, dynamic>{
-              r'test': 'test',
+              r'test': 'tes t',
               r'cache-control':
                   'max-age=180, max-stale=300, max-fresh=60, no-cache, no-store, no-transform, only-if-cached, public, proxy-revalidate'
             },

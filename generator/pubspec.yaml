@@ -22,8 +22,3 @@ dependencies:
 dev_dependencies:
   test: 1.17.4
   source_gen_test: ^1.0.0
-
-dependency_overrides:
-  retrofit:
-    path: ../annotation
-
