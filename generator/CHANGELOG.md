@@ -1,5 +1,7 @@
 # Changelog
+## 2.0.1
 
+- add CacheControl
 ## 2.0.0-beta3
 
 - Fixed CancelRequest generating invalid code (#322)
