@@ -146,7 +146,7 @@ The HTTP methods in the below sample are supported.
   Future<String> postUrlEncodedFormData(@Field() String hello);
 ```
 
-### Get orignal HTTP reponse
+### Get original HTTP response
 
 ```dart
   @GET("/tasks/{id}")
@@ -167,7 +167,7 @@ The HTTP methods in the below sample are supported.
 
   
 
-* Add staitc HTTP headers
+* Add static HTTP headers
 
   ```dart
   	@GET("/tasks")
