@@ -13,10 +13,10 @@ dependencies:
   dio: ^4.0.0
 
 dev_dependencies:
-  test: 1.16.5
+  test: ^1.17.10
   retrofit_generator:
   build_runner: ^2.0.1
-  json_serializable: ^4.0.3
+  json_serializable: ^5.0.0
   mock_web_server:
 
 dependency_overrides:

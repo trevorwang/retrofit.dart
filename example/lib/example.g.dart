@@ -6,14 +6,12 @@ part of 'example.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Task _$TaskFromJson(Map<String, dynamic> json) {
-  return Task(
-    id: json['id'] as String,
-    name: json['name'] as String,
-    avatar: json['avatar'] as String,
-    createdAt: json['createdAt'] as String,
-  );
-}
+Task _$TaskFromJson(Map<String, dynamic> json) => Task(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      avatar: json['avatar'] as String,
+      createdAt: json['createdAt'] as String,
+    );
 
 Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
       'id': instance.id,
@@ -22,13 +20,11 @@ Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
       'createdAt': instance.createdAt,
     };
 
-TaskQuery _$TaskQueryFromJson(Map<String, dynamic> json) {
-  return TaskQuery(
-    (json['statuses'] as List<dynamic>)
-        .map((e) => _$enumDecode(_$StatusEnumMap, e))
-        .toList(),
-  );
-}
+TaskQuery _$TaskQueryFromJson(Map<String, dynamic> json) => TaskQuery(
+      (json['statuses'] as List<dynamic>)
+          .map((e) => _$enumDecode(_$StatusEnumMap, e))
+          .toList(),
+    );
 
 Map<String, dynamic> _$TaskQueryToJson(TaskQuery instance) => <String, dynamic>{
       'statuses': instance.statuses.map((e) => _$StatusEnumMap[e]).toList(),
@@ -66,20 +62,18 @@ const _$StatusEnumMap = {
   Status.Closed: 'closed',
 };
 
-TaskGroup _$TaskGroupFromJson(Map<String, dynamic> json) {
-  return TaskGroup(
-    date: DateTime.parse(json['date'] as String),
-    todos: (json['todos'] as List<dynamic>)
-        .map((e) => Task.fromJson(e as Map<String, dynamic>))
-        .toList(),
-    completed: (json['completed'] as List<dynamic>)
-        .map((e) => Task.fromJson(e as Map<String, dynamic>))
-        .toList(),
-    inProgress: (json['inProgress'] as List<dynamic>)
-        .map((e) => Task.fromJson(e as Map<String, dynamic>))
-        .toList(),
-  );
-}
+TaskGroup _$TaskGroupFromJson(Map<String, dynamic> json) => TaskGroup(
+      date: DateTime.parse(json['date'] as String),
+      todos: (json['todos'] as List<dynamic>)
+          .map((e) => Task.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      completed: (json['completed'] as List<dynamic>)
+          .map((e) => Task.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      inProgress: (json['inProgress'] as List<dynamic>)
+          .map((e) => Task.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
 
 Map<String, dynamic> _$TaskGroupToJson(TaskGroup instance) => <String, dynamic>{
       'date': instance.date.toIso8601String(),
@@ -91,11 +85,10 @@ Map<String, dynamic> _$TaskGroupToJson(TaskGroup instance) => <String, dynamic>{
 ValueWrapper<T> _$ValueWrapperFromJson<T>(
   Map<String, dynamic> json,
   T Function(Object? json) fromJsonT,
-) {
-  return ValueWrapper<T>(
-    value: fromJsonT(json['value']),
-  );
-}
+) =>
+    ValueWrapper<T>(
+      value: fromJsonT(json['value']),
+    );
 
 Map<String, dynamic> _$ValueWrapperToJson<T>(
   ValueWrapper<T> instance,
