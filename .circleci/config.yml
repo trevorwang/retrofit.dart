@@ -24,7 +24,7 @@ jobs:
 
             cd example
             dart pub get
-            dart --no-sound-null-safety run test
+            dart run test
 
   test_dart_212:
     <<: *common_test
