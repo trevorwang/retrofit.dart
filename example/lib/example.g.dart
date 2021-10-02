@@ -116,15 +116,15 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'optionalHeader': optionalHeader};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<List<dynamic>>(
-        _setStreamType<List<String>>(Options(
-                method: 'GET',
-                headers: <String, dynamic>{r'optionalHeader': optionalHeader},
-                extra: _extra)
-            .compose(_dio.options, '/tags',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        _setStreamType<List<String>>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, '/tags',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!.cast<String>();
     return value;
   }
@@ -133,9 +133,10 @@ class _RestClient implements RestClient {
   Future<HttpResponse<void>> reponseWith204() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<void>(_setStreamType<HttpResponse<void>>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'GET', headers: _headers, extra: _extra)
             .compose(_dio.options, 'https://httpbin.org/status/204',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -147,10 +148,11 @@ class _RestClient implements RestClient {
   Stream<List<String>> getTagsAsStream() async* {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<List<dynamic>>(
         _setStreamType<List<String>>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options, '/tags',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -162,9 +164,10 @@ class _RestClient implements RestClient {
   Future<List<Task>> getTasks() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<List<dynamic>>(_setStreamType<List<Task>>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'GET', headers: _headers, extra: _extra)
             .compose(_dio.options, '/tasks',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -178,9 +181,10 @@ class _RestClient implements RestClient {
   Future<Task> getTask(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'GET', headers: _headers, extra: _extra)
             .compose(_dio.options, '/tasks/$id',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -192,10 +196,11 @@ class _RestClient implements RestClient {
   Future<Task> updateTaskPart(id, map) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(map);
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
-        Options(method: 'PATCH', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'PATCH', headers: _headers, extra: _extra)
             .compose(_dio.options, '/tasks/$id',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -207,10 +212,11 @@ class _RestClient implements RestClient {
   Future<Task> updateTask(id, task) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(task.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
-        Options(method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'PUT', headers: _headers, extra: _extra)
             .compose(_dio.options, '/tasks/$id',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -222,9 +228,10 @@ class _RestClient implements RestClient {
   Future<void> deleteTask(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     await _dio.fetch<void>(_setStreamType<void>(
-        Options(method: 'DELETE', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'DELETE', headers: _headers, extra: _extra)
             .compose(_dio.options, '/tasks/$id',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -235,10 +242,11 @@ class _RestClient implements RestClient {
   Future<Task> createTask(task) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(task.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/tasks',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -250,9 +258,10 @@ class _RestClient implements RestClient {
   Future<List<Task>> createTasks(tasks) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = tasks.map((e) => e.toJson()).toList();
     final _result = await _dio.fetch<List<dynamic>>(_setStreamType<List<Task>>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/tasks',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -266,10 +275,11 @@ class _RestClient implements RestClient {
   Future<List<String>> createTaskNames(tasks) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = tasks;
     final _result = await _dio.fetch<List<dynamic>>(
         _setStreamType<List<String>>(
-            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'POST', headers: _headers, extra: _extra)
                 .compose(_dio.options, '/tasks',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -281,13 +291,14 @@ class _RestClient implements RestClient {
   Future<void> createNewTaskFromFile(file) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.files.add(MapEntry(
         'file',
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last)));
     await _dio.fetch<void>(_setStreamType<void>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, 'http://httpbin.org/post',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -298,11 +309,13 @@ class _RestClient implements RestClient {
   Future<List<int>> getFile() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accept': 'image/jpeg'};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<List<dynamic>>(_setStreamType<List<int>>(
         Options(
                 method: 'GET',
-                headers: <String, dynamic>{r'accept': 'image/jpeg'},
+                headers: _headers,
                 extra: _extra,
                 responseType: ResponseType.bytes)
             .compose(_dio.options, 'http://httpbin.org/image/jpeg',
@@ -316,10 +329,11 @@ class _RestClient implements RestClient {
   Future<String> postUrlEncodedFormData(hello, {required gg}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = {'hello': hello, 'gg': gg};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'POST',
-            headers: <String, dynamic>{},
+            headers: _headers,
             extra: _extra,
             contentType: 'application/x-www-form-urlencoded')
         .compose(_dio.options, 'http://httpbin.org/post',
@@ -333,9 +347,10 @@ class _RestClient implements RestClient {
   Future<String> headRequest() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'HEAD', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'HEAD', headers: _headers, extra: _extra)
             .compose(_dio.options, '/',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -347,9 +362,10 @@ class _RestClient implements RestClient {
   Future<String?> headRequestNullable() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'HEAD', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'HEAD', headers: _headers, extra: _extra)
             .compose(_dio.options, '/',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -361,9 +377,10 @@ class _RestClient implements RestClient {
   Future<dynamic> headRquest2() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch(_setStreamType<dynamic>(
-        Options(method: 'HEAD', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'HEAD', headers: _headers, extra: _extra)
             .compose(_dio.options, '/',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -375,9 +392,10 @@ class _RestClient implements RestClient {
   Future<HttpResponse<dynamic>> headRquest3() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch(_setStreamType<HttpResponse<dynamic>>(
-        Options(method: 'HEAD', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'HEAD', headers: _headers, extra: _extra)
             .compose(_dio.options, '/',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -390,10 +408,11 @@ class _RestClient implements RestClient {
   Future<List<TaskGroup>> grouppedTaskByDate() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<List<dynamic>>(
         _setStreamType<List<TaskGroup>>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options, '/task/group',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -407,10 +426,11 @@ class _RestClient implements RestClient {
   Future<HttpResponse<List<Task>>> getTasksWithReponse() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<List<dynamic>>(
         _setStreamType<HttpResponse<List<Task>>>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options, '/task',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -425,10 +445,11 @@ class _RestClient implements RestClient {
   Future<HttpResponse<List<Task>?>> getTasksWithReponseNullable() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<List<dynamic>>(
         _setStreamType<HttpResponse<List<Task>>>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options, '/task',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -443,9 +464,10 @@ class _RestClient implements RestClient {
   Future<HttpResponse<void>> deleteTaskWithResponse(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<void>(_setStreamType<HttpResponse<void>>(
-        Options(method: 'DELETE', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'DELETE', headers: _headers, extra: _extra)
             .compose(_dio.options, '/tasks/$id',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -458,6 +480,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('task', jsonEncode(task ?? <String, dynamic>{})));
     _data.files.add(MapEntry(
@@ -465,7 +488,7 @@ class _RestClient implements RestClient {
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last)));
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/post',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -478,6 +501,7 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = FormData();
     task.forEach((i) {
       _data.fields.add(MapEntry('task', jsonEncode(i)));
@@ -491,7 +515,7 @@ class _RestClient implements RestClient {
             filename: file.path.split(Platform.pathSeparator).last,
             contentType: MediaType.parse('application/json'))));
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/post',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -503,6 +527,7 @@ class _RestClient implements RestClient {
   Future<String> postFormData3({required files, required file}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.files.addAll(files.map((i) => MapEntry(
         'customfiles',
@@ -514,7 +539,7 @@ class _RestClient implements RestClient {
     _data.files.add(MapEntry(
         'file', MultipartFile.fromFileSync(file.path, filename: 'abc.txt')));
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/post',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -526,6 +551,7 @@ class _RestClient implements RestClient {
   Future<String> postFormData6({required files, required file}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.files.addAll(files.map((i) => MapEntry(
         'customfiles',
@@ -540,7 +566,7 @@ class _RestClient implements RestClient {
           filename: 'abc.txt',
         )));
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/post',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -552,6 +578,7 @@ class _RestClient implements RestClient {
   Future<String> postFormData4(tasks, file) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('tasks', jsonEncode(tasks)));
     _data.files.add(MapEntry(
@@ -559,7 +586,7 @@ class _RestClient implements RestClient {
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last)));
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/post',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -572,6 +599,7 @@ class _RestClient implements RestClient {
       {required b, required c, required d}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('tasks', jsonEncode(tasks)));
     _data.fields.add(MapEntry('map', jsonEncode(map)));
@@ -580,7 +608,7 @@ class _RestClient implements RestClient {
     _data.fields.add(MapEntry('c', c.toString()));
     _data.fields.add(MapEntry('d', d));
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options, '/post',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -593,9 +621,10 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(queries);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'GET', headers: _headers, extra: _extra)
             .compose(_dio.options, '/demo',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -607,9 +636,10 @@ class _RestClient implements RestClient {
   Future<String> queryByEnum(query) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'tasks': query.toJson()};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'GET', headers: _headers, extra: _extra)
             .compose(_dio.options, '/enums',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -627,9 +657,10 @@ class _RestClient implements RestClient {
       r'from': from
     };
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'GET', headers: _headers, extra: _extra)
             .compose(_dio.options, '/get',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -641,17 +672,17 @@ class _RestClient implements RestClient {
   Future<String> postFile({required file}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{
+      r'$Content-Type': 'application/octet-stream',
+      r'Ocp-Apim-Subscription-Key': 'abc'
+    };
+    _headers.removeWhere((k, v) => v == null);
     final _data = Stream.fromIterable(file.readAsBytesSync().map((i) => [i]));
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST',
-            headers: <String, dynamic>{
-              r'$Content-Type': 'application/octet-stream',
-              r'Ocp-Apim-Subscription-Key': 'abc'
-            },
-            extra: _extra)
-        .compose(_dio.options, '/postfile',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'POST', headers: _headers, extra: _extra)
+            .compose(_dio.options, '/postfile',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -660,11 +691,12 @@ class _RestClient implements RestClient {
   Future<String> testCustomOptions(options) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<String>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -679,9 +711,10 @@ class _RestClient implements RestClient {
   Future<String> cancelRequest(cancelToken) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'GET', headers: _headers, extra: _extra)
             .compose(_dio.options, '/cancel',
                 queryParameters: queryParameters,
                 data: _data,
@@ -696,9 +729,10 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'PUT', headers: _headers, extra: _extra)
             .compose(_dio.options, '/sendProgress',
                 queryParameters: queryParameters,
                 data: _data,
@@ -714,9 +748,10 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'PUT', headers: _headers, extra: _extra)
             .compose(_dio.options, '/receiveProgress',
                 queryParameters: queryParameters,
                 data: _data,
@@ -731,9 +766,10 @@ class _RestClient implements RestClient {
   Future<String> sendWithoutBody() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final String? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'PUT', headers: _headers, extra: _extra)
             .compose(_dio.options, '/boBody',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -745,10 +781,11 @@ class _RestClient implements RestClient {
   Future<ValueWrapper<ValueWrapper<String>>> nestGeneric() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ValueWrapper<ValueWrapper<String>>>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options, '/nestGeneric',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -766,18 +803,18 @@ class _RestClient implements RestClient {
   Future<String> cache() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{
+      r'test': 'tes t',
+      r'cache-control':
+          'max-age=180, max-stale=300, max-fresh=60, no-cache, no-store, no-transform, only-if-cached, public, proxy-revalidate'
+    };
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET',
-            headers: <String, dynamic>{
-              r'test': 'tes t',
-              r'cache-control':
-                  'max-age=180, max-stale=300, max-fresh=60, no-cache, no-store, no-transform, only-if-cached, public, proxy-revalidate'
-            },
-            extra: _extra)
-        .compose(_dio.options, 'cache',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'GET', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'cache',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
