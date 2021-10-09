@@ -28,6 +28,8 @@ class RetrofitOptions {
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const String _baseUrlVar = 'baseUrl';
   static const _queryParamsVar = "queryParameters";
+  static const _localHeadersVar = "_headers";
+  static const _headersVar = "headers";
   static const _dataVar = "data";
   static const _localDataVar = "_data";
   static const _dioVar = "_dio";
@@ -347,14 +349,22 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     _generateQueries(m, blocks, _queryParamsVar);
     Map<String, Expression> headers = _generateHeaders(m);
+    blocks.add(literalMap(
+            headers.map((k, v) => MapEntry(literalString(k, raw: true), v)),
+            refer("String"),
+            refer("dynamic"))
+        .assignFinal(_localHeadersVar)
+        .statement);
+
+    if (headers.isNotEmpty) {
+      blocks.add(Code("${_localHeadersVar}.removeWhere((k, v) => v == null);"));
+    }
+
     _generateRequestBody(blocks, _localDataVar, m);
 
     final extraOptions = {
       "method": literal(httpMethod.peek("method")?.stringValue),
-      "headers": literalMap(
-          headers.map((k, v) => MapEntry(literalString(k, raw: true), v)),
-          refer("String"),
-          refer("dynamic")),
+      _headersVar: refer(_localHeadersVar),
       _extraVar: refer(_localExtraVar),
     };
 

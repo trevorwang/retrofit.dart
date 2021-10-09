@@ -1,7 +1,6 @@
 name: retrofit_example
 description: Retrofit generator
 version: 0.0.1
-author: Trevor Wang <trevor.wang@qq.com>
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -17,7 +16,7 @@ dev_dependencies:
   retrofit_generator:
   build_runner: ^2.0.1
   json_serializable: ^5.0.0
-  mock_web_server:
+  mock_web_server: ^5.0.0-nullsafety.1
 
 dependency_overrides:
   retrofit:
