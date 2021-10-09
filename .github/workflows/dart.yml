@@ -30,4 +30,7 @@ jobs:
           echo ${{secrets.PUB_CREDENTIALS}} | base64 --decode > ~/.pub-cache/credentials.json
       - name: Release new version
         run: |
-          cd generator && pub publish -f
+          cd generator
+          RELEASE=${GITHUB_REF##*/}
+          sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml 
+          pub publish -f
