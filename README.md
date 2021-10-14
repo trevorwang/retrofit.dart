@@ -228,7 +228,7 @@ Add "ignore files and folders"
 
 `*.g.dart`
  
+ ## Credits
  
-
-
+ - [JetBrains](https://www.jetbrains.com/). Thanks for providing the great IDE tools.
 
