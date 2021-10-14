@@ -1,5 +1,5 @@
 {
-  "projectName": "retrofit",
+  "projectName": "retrofit.dart",
   "projectOwner": "trevorwang",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -9,6 +9,19 @@
   "imageSize": 100,
   "commit": true,
   "commitConvention": "none",
-  "contributors": [],
-  "contributorsPerLine": 7
+  "contributors": [
+    {
+      "login": "trevorwang",
+      "name": "Trevor Wang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/121966?v=4",
+      "profile": "http://mings.in",
+      "contributions": [
+        "infra",
+        "test",
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true
 }

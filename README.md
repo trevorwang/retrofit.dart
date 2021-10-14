@@ -1,6 +1,6 @@
 # Retrofit For Dart
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![retrofit](https://img.shields.io/pub/v/retrofit?label=retrofit&style=flat-square)](https://pub.dartlang.org/packages/retrofit)
@@ -243,8 +243,15 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="http://mings.in"><img src="https://avatars.githubusercontent.com/u/121966?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Trevor Wang</b></sub></a><br /><a href="#infra-trevorwang" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/trevorwang/retrofit.dart/commits?author=trevorwang" title="Tests">⚠️</a> <a href="https://github.com/trevorwang/retrofit.dart/commits?author=trevorwang" title="Code">💻</a></td>
+  </tr>
+</table>
+
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
