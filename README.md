@@ -9,7 +9,7 @@
 [![CircleCI](https://circleci.com/gh/trevorwang/retrofit.dart.svg?style=svg)](https://circleci.com/gh/trevorwang/retrofit.dart)
 [![Build Status](https://cloud.drone.io/api/badges/trevorwang/retrofit.dart/status.svg)](https://cloud.drone.io/trevorwang/retrofit.dart)
 
-retrofit.dart is a type conversion [dio](https://github.com/flutterchina/dio/) client generator using [source_gen](https://github.com/dart-lang/source_gen) and inspired by [Chopper](https://github.com/lejard-h/chopper) and [Retrofit](https://github.com/square/retrofit).
+retrofit.dart is a type conversion [dio_http](https://github.com/dart-tools/dio_http) client generator using [source_gen](https://github.com/dart-lang/source_gen) and inspired by [Chopper](https://github.com/lejard-h/chopper) and [Retrofit](https://github.com/square/retrofit).
 
 ## Usage
 
@@ -32,7 +32,7 @@ dev_dependencies:
 ```dart
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:dio/dio.dart';
+import 'package:dio_http/dio_http.dart';
 
 part 'example.g.dart';
 
@@ -74,7 +74,7 @@ flutter pub run build_runner build
 ```dart
 import 'package:logger/logger.dart';
 import 'package:retrofit_example/example.dart';
-import 'package:dio/dio.dart';
+import 'package:dio_http/dio_http.dart';
 
 final logger = Logger();
 void main(List<String> args) {
