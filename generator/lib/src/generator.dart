@@ -1129,31 +1129,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             blocks.add(literalMap({}, refer("String"), refer("dynamic"))
                 .assignFinal(_dataVar)
                 .statement);
-
-            final _bodyType = _bodyName.type;
-            final genericArgumentFactories =
-                isGenericArgumentFactories(_bodyType);
-
-            var typeArgs =
-                _bodyType is ParameterizedType ? _bodyType.typeArguments : [];
-
-            String toJsonCode = '';
-            if (typeArgs.length > 0 && genericArgumentFactories) {
-              toJsonCode = _getInnerJsonDeSerializableMapperFn(_bodyType);
-            }
-
             if (_bodyName.type.nullabilitySuffix !=
                 NullabilitySuffix.question) {
-              blocks.add(refer("$_dataVar.addAll").call([
-                refer('${_bodyName.displayName}.toJson($toJsonCode)')
-              ]).statement);
+              blocks.add(refer("$_dataVar.addAll").call(
+                  [refer("${_bodyName.displayName}.toJson()")]).statement);
             } else {
               blocks.add(refer("$_dataVar.addAll").call([
                 refer(
-                    '${_bodyName.displayName}?.toJson($toJsonCode) ?? <String,dynamic>{}')
+                    "${_bodyName.displayName}?.toJson() ?? <String,dynamic>{}")
               ]).statement);
             }
-
             if (nullToAbsent)
               blocks.add(Code("$_dataVar.removeWhere((k, v) => v == null);"));
           }
