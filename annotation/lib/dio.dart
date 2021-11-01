@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import 'package:dio/dio.dart';
+import 'package:dio_http/dio_http.dart';
 
 /// Extra data that will be passed to dio's request, response, transformer and interceptors.
 @immutable
