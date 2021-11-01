@@ -39,4 +39,10 @@ workflows:
   build_and_test:
     jobs:
       - test_dart_212
+        branches:
+          ignore:
+            - gh-pages
       - test_dart_latest
+        branches:
+          ignore:
+            - gh-pages
