@@ -1,6 +1,7 @@
 version: 2
 jobs:
   test_base: &common_test
+  
     docker:
       - image: google/dart:${DART_VERSION}
     steps:
@@ -38,11 +39,13 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - test_dart_212
-        branches:
-          ignore:
-            - gh-pages
-      - test_dart_latest
-        branches:
-          ignore:
-            - gh-pages
+      - test_dart_212:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - test_dart_latest:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
