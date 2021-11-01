@@ -22,7 +22,7 @@ jobs:
             dart pub get
             dart run test
 
-            cd example
+            cd ../example
             dart pub get
             dart run test
 
