@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:dio_http/dio_http.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:source_gen_test/annotations.dart';
 

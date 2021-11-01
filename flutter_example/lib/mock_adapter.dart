@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:dio/dio.dart';
+import 'package:dio_http/dio_http.dart';
 import 'package:dio/adapter.dart';
 
 class MockAdapter extends HttpClientAdapter {
