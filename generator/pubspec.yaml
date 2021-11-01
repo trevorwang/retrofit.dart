@@ -22,3 +22,6 @@ dependencies:
 dev_dependencies:
   test: ^1.17.10
   source_gen_test: ^1.0.0
+
+dependency_overrides:
+  code_builder: ^4.0.0
