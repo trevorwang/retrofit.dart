@@ -1251,11 +1251,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             blocks.add(returnCode);
           }
         } else if (_displayString(p.type) == "List<int>") {
+          final optionalFile = m.parameters
+              .firstWhereOrNull((pp) => pp.displayName == p.displayName)
+              ?.isOptional ??
+              false;
           final fileName = r.peek("fileName")?.stringValue;
           final conType = contentType == null
               ? ""
               : 'contentType: MediaType.parse(${literal(contentType)}),';
-          blocks.add(refer(_dataVar).property('files').property("add").call([
+          final returnCode =refer(_dataVar).property('files').property("add").call([
             refer(''' 
                   MapEntry(
                 '${fieldName}',
@@ -1265,7 +1269,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     ${conType}
                     ))
                   ''')
-          ]).statement);
+          ]).statement;
+          if (optionalFile) {
+            final condition =
+                refer(p.displayName).notEqualTo(literalNull).code;
+            blocks.addAll(
+                [Code("if("), condition, Code(") {"), returnCode, Code("}")]);
+          } else {
+            blocks.add(returnCode);
+          }
+
         } else if (_typeChecker(List).isExactlyType(p.type) ||
             _typeChecker(BuiltList).isExactlyType(p.type)) {
           var innerType = _genericOf(p.type);
