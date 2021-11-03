@@ -109,6 +109,49 @@ class Task {
 
 
 
+### Generic Models
+
+> Before you use generic models, please make sure that a ` factory Task.fromJson(Map<String, dynamic> json, Function fromJsonModel)` must be provided for each generic model class.
+
+
+Model
+```dart
+...
+@immutable
+class GenericListResponse<T> {
+
+  const CategoryList({
+    required this.count,
+    this.next,
+    this.previous,
+    required this.results,
+  });
+
+  final int count;
+  final String? next;
+  final String? previous;
+  final T results;
+
+  factory CategoryList.fromJson(Map<String,dynamic> json, Function fromJsonModel) => GenericListResponse(
+    count: json['count'] as int,
+    next: json['next'] != null ? json['next'] as String : null,
+    previous: json['previous'] != null ? json['previous'] as String : null,
+    results: fromJsonModel(json['results']) as T
+  );
+
+```
+
+
+Client
+```dart
+...
+@GET("/tasks")
+  Future<GenericListResponse<List<Task>>> getTasks();
+}
+
+```
+
+
 ### HTTP Methods
 
 The HTTP methods in the below sample are supported.
