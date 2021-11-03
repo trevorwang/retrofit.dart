@@ -649,7 +649,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     '${_displayString(returnType)}.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)})');
               } else {
                 mapperCode = refer(
-                    '${_displayString(returnType)}.fromJson($_resultVar.data!)');
+                    '${_displayString(returnType)}.fromJson($_resultVar.data!${_getTemplateSerializableMapperFn(returnType)})');
               }
               break;
             case retrofit.Parser.DartJsonMapper:
@@ -702,6 +702,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     return genericArgumentFactories;
+  }
+
+  String _getTemplateSerializableMapperFn(DartType dartType) {
+    var type = _genericOf(dartType);
+    var isList = type.toString().startsWith("List<");
+    var mapperVal = type != null
+        ? isList
+            ? ", " + _getInnerJsonSerializableMapperFn(type)
+            : ", (json)=>${type}.fromJson(json${_getTemplateSerializableMapperFn(type)})"
+        : "";
+    return mapperVal;
   }
 
   String _getInnerJsonSerializableMapperFn(DartType dartType) {
@@ -1252,14 +1263,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           }
         } else if (_displayString(p.type) == "List<int>") {
           final optionalFile = m.parameters
-              .firstWhereOrNull((pp) => pp.displayName == p.displayName)
-              ?.isOptional ??
+                  .firstWhereOrNull((pp) => pp.displayName == p.displayName)
+                  ?.isOptional ??
               false;
           final fileName = r.peek("fileName")?.stringValue;
           final conType = contentType == null
               ? ""
               : 'contentType: MediaType.parse(${literal(contentType)}),';
-          final returnCode =refer(_dataVar).property('files').property("add").call([
+          final returnCode =
+              refer(_dataVar).property('files').property("add").call([
             refer(''' 
                   MapEntry(
                 '${fieldName}',
@@ -1271,14 +1283,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   ''')
           ]).statement;
           if (optionalFile) {
-            final condition =
-                refer(p.displayName).notEqualTo(literalNull).code;
+            final condition = refer(p.displayName).notEqualTo(literalNull).code;
             blocks.addAll(
                 [Code("if("), condition, Code(") {"), returnCode, Code("}")]);
           } else {
             blocks.add(returnCode);
           }
-
         } else if (_typeChecker(List).isExactlyType(p.type) ||
             _typeChecker(BuiltList).isExactlyType(p.type)) {
           var innerType = _genericOf(p.type);
