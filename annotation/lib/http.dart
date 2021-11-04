@@ -23,7 +23,10 @@ enum Parser {
 
   /// Each model class must add annotation '@jsonSerializable'
   /// For more detail, please visit 'https://github.com/k-paxian/dart-json-mapper'
-  DartJsonMapper
+  DartJsonMapper,
+
+  /// Parse on a separate isolate using compute (Flutter only)
+  Compute,
 }
 
 /// Define an API.
@@ -51,9 +54,13 @@ class RestApi {
   final String? baseUrl;
 
   /// if you don't specify the [parser]. It will be [Parser.JsonSerializable]
-  final Parser? parser;
+  final Parser parser;
 
-  const RestApi({this.baseUrl, this.autoCastResponse, this.parser});
+  const RestApi({
+    this.baseUrl,
+    this.autoCastResponse,
+    this.parser = Parser.JsonSerializable,
+  });
 
   /// Automatically cast response to proper type for all methods in this client
   ///
