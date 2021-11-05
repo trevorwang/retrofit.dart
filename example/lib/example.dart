@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio_http/dio_http.dart' hide Headers;
+import 'package:dio/dio.dart' hide Headers;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';

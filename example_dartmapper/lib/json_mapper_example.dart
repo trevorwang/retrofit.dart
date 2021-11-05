@@ -1,6 +1,6 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:dio_http/dio_http.dart' hide Headers;
+import 'package:dio/dio.dart' hide Headers;
 import 'json_mapper_example.reflectable.dart' show initializeReflectable;
 
 part 'json_mapper_example.g.dart';
