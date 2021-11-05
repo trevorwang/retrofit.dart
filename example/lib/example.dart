@@ -162,8 +162,16 @@ abstract class RestClient {
   Future<ValueWrapper<ValueWrapper<String>>> nestGeneric();
 
   @GET('cache')
-  @CacheControl(maxAge: 180,maxStale: 300,minFresh: 60,noCache: true,noStore: true,noTransform: true,onlyIfCached: true,other: ['public','proxy-revalidate'])
-  @Headers({'test':'tes t'})
+  @CacheControl(
+      maxAge: 180,
+      maxStale: 300,
+      minFresh: 60,
+      noCache: true,
+      noStore: true,
+      noTransform: true,
+      onlyIfCached: true,
+      other: ['public', 'proxy-revalidate'])
+  @Headers({'test': 'tes t'})
   Future<String> cache();
 
   @POST('post')
