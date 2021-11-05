@@ -53,6 +53,20 @@ abstract class RestClient {
   Future<User> getUser({@DioOptions() Options? options});
   @GET('/userNullable')
   Future<User?> getUserNullable({@DioOptions() Options? options});
+
+  @POST('/users')
+  Future<void> postUsers(
+      {@Body() required List<User> users, @DioOptions() Options? options});
+  @POST('/usersOptions')
+  Future<void> postUsersOptions(
+      {@Body() required Map<String, List<User>> users,
+      @DioOptions() Options? options});
+  @POST('/user')
+  Future<void> postUser(
+      {@Body() required User users, @DioOptions() Options? options});
+  @POST('/userNullable')
+  Future<void> postUserNullable(
+      {@Body() required User? users, @DioOptions() Options? options});
 }
 
 void test() {

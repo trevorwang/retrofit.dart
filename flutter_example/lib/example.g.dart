@@ -6,11 +6,9 @@ part of 'example.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) {
-  return User(
-    string: json['string'] as String,
-  );
-}
+User _$UserFromJson(Map<String, dynamic> json) => User(
+      string: json['string'] as String,
+    );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'string': instance.string,
@@ -34,11 +32,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -54,11 +53,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -74,11 +74,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -94,11 +95,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -114,11 +116,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<String>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -134,11 +137,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<String>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -154,11 +158,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -175,11 +180,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -198,11 +204,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -220,11 +227,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -244,11 +252,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -268,11 +277,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -288,11 +298,12 @@ class _RestClient implements RestClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(<String, dynamic>{});
+    newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
@@ -302,6 +313,89 @@ class _RestClient implements RestClient {
     final value =
         _result.data == null ? null : await compute(parseUser, _result.data!);
     return value;
+  }
+
+  @override
+  Future<void> postUsers({required users, options}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = users.map((e) => e.toJson()).toList();
+    final newOptions = newRequestOptions(options);
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(_dio.options.headers);
+    newOptions.headers.addAll(_headers);
+    await _dio.fetch<void>(newOptions.copyWith(
+        method: 'POST',
+        baseUrl: baseUrl ?? _dio.options.baseUrl,
+        queryParameters: queryParameters,
+        path: '/users')
+      ..data = _data);
+    return null;
+  }
+
+  @override
+  Future<void> postUsersOptions({required users, options}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(users);
+    final newOptions = newRequestOptions(options);
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(_dio.options.headers);
+    newOptions.headers.addAll(_headers);
+    await _dio.fetch<void>(newOptions.copyWith(
+        method: 'POST',
+        baseUrl: baseUrl ?? _dio.options.baseUrl,
+        queryParameters: queryParameters,
+        path: '/usersOptions')
+      ..data = _data);
+    return null;
+  }
+
+  @override
+  Future<void> postUser({required users, options}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(users.toJson());
+    final newOptions = newRequestOptions(options);
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(_dio.options.headers);
+    newOptions.headers.addAll(_headers);
+    await _dio.fetch<void>(newOptions.copyWith(
+        method: 'POST',
+        baseUrl: baseUrl ?? _dio.options.baseUrl,
+        queryParameters: queryParameters,
+        path: '/user')
+      ..data = _data);
+    return null;
+  }
+
+  @override
+  Future<void> postUserNullable({users, options}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(users?.toJson() ?? <String, dynamic>{});
+    final newOptions = newRequestOptions(options);
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(_dio.options.headers);
+    newOptions.headers.addAll(_headers);
+    await _dio.fetch<void>(newOptions.copyWith(
+        method: 'POST',
+        baseUrl: baseUrl ?? _dio.options.baseUrl,
+        queryParameters: queryParameters,
+        path: '/userNullable')
+      ..data = _data);
+    return null;
   }
 
   RequestOptions newRequestOptions(Options? options) {
