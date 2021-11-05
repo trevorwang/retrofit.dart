@@ -1005,6 +1005,153 @@ abstract class NullableMapSerializableTestMapBody2 {
 }
 
 @ShouldGenerate(
+  r'''
+    final value = await compute(parseUser, _result.data!);
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.Compute,
+)
+abstract class ComputeGenericCast {
+  @POST("/xx")
+  Future<User> getUser();
+}
+
+@ShouldGenerate(
+  r'''
+    final value =
+        _result.data == null ? null : await compute(parseUser, _result.data!);
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.Compute,
+)
+abstract class NullableComputeGenericCast {
+  @POST("/xx")
+  Future<User?> getUser();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = await Future.wait(_result.data!
+        .map((dynamic i) => compute(parseUser, i as Map<String, dynamic>)));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.Compute,
+)
+abstract class ComputeTestListBody {
+  @GET("/xx")
+  Future<List<User>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data == null
+        ? null
+        : await Future.wait(_result.data!
+            .map((dynamic i) => compute(parseUser, i as Map<String, dynamic>)));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.Compute,
+)
+abstract class NullableComputeTestListBody {
+  @GET("/xx")
+  Future<List<User>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+        (e) async => MapEntry(
+            e.key,
+            await Future.wait((e.value as List)
+                .map((e) => compute(parseUser, e as Map<String, dynamic>)))))));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.Compute,
+)
+abstract class ComputeTestMapBody {
+  @GET("/xx")
+  Future<Map<String, List<User>>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+        (e) async => MapEntry(
+            e.key,
+            await Future.wait((e.value as List)
+                .map((e) => compute(parseUser, e as Map<String, dynamic>)))))));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.Compute,
+)
+abstract class NullableComputeTestMapBody {
+  @GET("/xx")
+  Future<Map<String, List<User>>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+        (e) async => MapEntry(e.key,
+            await compute(parseUser, e.value as Map<String, dynamic>)))));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.Compute,
+)
+abstract class ComputeTestMapBody2 {
+  @GET("/xx")
+  Future<Map<String, User>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data == null
+        ? null
+        : Map.fromEntries(await Future.wait(_result.data!.entries.map(
+            (e) async => MapEntry(e.key,
+                await compute(parseUser, e.value as Map<String, dynamic>)))));
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.Compute,
+)
+abstract class NullableComputeTestMapBody2 {
+  @GET("/xx")
+  Future<Map<String, User>?> getResult();
+}
+
+@ShouldGenerate(
   '_data.removeWhere((k, v) => v == null);',
   contains: true,
 )
