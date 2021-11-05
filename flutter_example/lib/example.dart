@@ -19,7 +19,7 @@ class User {
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
-@RestApi(baseUrl: "http://baidu.com", parser: Parser.Compute)
+@RestApi(baseUrl: "http://baidu.com", parser: Parser.FlutterCompute)
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 

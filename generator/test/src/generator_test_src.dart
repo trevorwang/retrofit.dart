@@ -1013,7 +1013,7 @@ abstract class NullableMapSerializableTestMapBody2 {
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
-  parser: Parser.Compute,
+  parser: Parser.FlutterCompute,
 )
 abstract class ComputeGenericCast {
   @POST("/xx")
@@ -1030,7 +1030,7 @@ abstract class ComputeGenericCast {
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
-  parser: Parser.Compute,
+  parser: Parser.FlutterCompute,
 )
 abstract class NullableComputeGenericCast {
   @POST("/xx")
@@ -1047,7 +1047,7 @@ abstract class NullableComputeGenericCast {
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
-  parser: Parser.Compute,
+  parser: Parser.FlutterCompute,
 )
 abstract class ComputeTestListBody {
   @GET("/xx")
@@ -1066,7 +1066,7 @@ abstract class ComputeTestListBody {
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
-  parser: Parser.Compute,
+  parser: Parser.FlutterCompute,
 )
 abstract class NullableComputeTestListBody {
   @GET("/xx")
@@ -1086,7 +1086,7 @@ abstract class NullableComputeTestListBody {
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
-  parser: Parser.Compute,
+  parser: Parser.FlutterCompute,
 )
 abstract class ComputeTestMapBody {
   @GET("/xx")
@@ -1106,7 +1106,7 @@ abstract class ComputeTestMapBody {
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
-  parser: Parser.Compute,
+  parser: Parser.FlutterCompute,
 )
 abstract class NullableComputeTestMapBody {
   @GET("/xx")
@@ -1124,7 +1124,7 @@ abstract class NullableComputeTestMapBody {
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
-  parser: Parser.Compute,
+  parser: Parser.FlutterCompute,
 )
 abstract class ComputeTestMapBody2 {
   @GET("/xx")
@@ -1144,7 +1144,7 @@ abstract class ComputeTestMapBody2 {
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
-  parser: Parser.Compute,
+  parser: Parser.FlutterCompute,
 )
 abstract class NullableComputeTestMapBody2 {
   @GET("/xx")

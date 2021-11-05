@@ -25,8 +25,25 @@ enum Parser {
   /// For more detail, please visit 'https://github.com/k-paxian/dart-json-mapper'
   DartJsonMapper,
 
-  /// Parse on a separate isolate using compute (Flutter only)
-  Compute,
+  /// Parse on a separate isolate using `compute` (Flutter only).
+  ///
+  /// Each model class must define a top-level function, taking the form
+  /// ```
+  /// T parseT(Map<String, dynamic> json);
+  /// ```
+  ///
+  /// E.g.
+  /// ----
+  /// _In file user.dart_
+  /// ```
+  /// User parseUser(Map<String, dynamic> json) => User.fromJson(json);
+  ///
+  /// @JsonSerializable()
+  /// class User {
+  ///   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  /// }
+  /// ```
+  FlutterCompute,
 }
 
 /// Define an API.

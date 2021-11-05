@@ -503,7 +503,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               mapperCode = refer(
                   '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!');
               break;
-            case retrofit.Parser.Compute:
+            case retrofit.Parser.FlutterCompute:
               future = true;
               mapperCode = refer(
                   '(dynamic i) => compute(parse${_displayString(innerReturnType)}, i as Map<String,dynamic>)');
@@ -580,7 +580,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 )
             """);
                 break;
-              case retrofit.Parser.Compute:
+              case retrofit.Parser.FlutterCompute:
                 future = true;
                 mapperCode = refer("""
                 (e) async => MapEntry(
@@ -623,7 +623,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 mapperCode = refer(
                     '(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v as Map<String, dynamic>)!)');
                 break;
-              case retrofit.Parser.Compute:
+              case retrofit.Parser.FlutterCompute:
                 future = true;
                 mapperCode = refer("""
                 (e) async => MapEntry(
@@ -716,7 +716,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               mapperCode = refer(
                   'JsonMapper.fromMap<${_displayString(returnType)}>($_resultVar.data!)!');
               break;
-            case retrofit.Parser.Compute:
+            case retrofit.Parser.FlutterCompute:
               mapperCode = refer(
                   'await compute(parse${_displayString(returnType)}, $_resultVar.data!)');
               break;
@@ -1081,7 +1081,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           case retrofit.Parser.DartJsonMapper:
             value = refer(p.displayName);
             break;
-          case retrofit.Parser.Compute:
+          case retrofit.Parser.FlutterCompute:
             value = refer(p.displayName);
             break;
         }
@@ -1114,7 +1114,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           case retrofit.Parser.DartJsonMapper:
             value = refer(displayName);
             break;
-          case retrofit.Parser.Compute:
+          case retrofit.Parser.FlutterCompute:
             value = refer(displayName);
             break;
         }
