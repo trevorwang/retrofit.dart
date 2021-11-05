@@ -9,5 +9,5 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  dio_http: ^5.0.4
+  dio: ^4.0.0
   meta: ^1.3.0

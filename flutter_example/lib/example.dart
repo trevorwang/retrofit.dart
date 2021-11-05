@@ -1,6 +1,6 @@
 import 'mock_adapter.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:dio_http/dio_http.dart' hide Headers;
+import 'package:dio/dio.dart' hide Headers;
 
 part 'example.g.dart';
 
