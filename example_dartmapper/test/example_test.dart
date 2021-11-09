@@ -146,7 +146,8 @@ void main() {
 
 class DateTimeInterceptor extends Interceptor {
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
     options.queryParameters = options.queryParameters.map((key, value) {
       if (value is DateTime) {
         //may be change to string from any you use object
