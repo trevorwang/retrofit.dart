@@ -1,7 +1,14 @@
 # Changelog
+
+## 2.2.0
+
+- rollback to dio
+- update dio to 4.0.1
+
 ## 2.0.1
 
 - add CacheControl
+
 ## 2.0.0
 
 ## 2.0.0-beta1
