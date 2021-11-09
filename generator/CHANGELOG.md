@@ -1,5 +1,10 @@
 # Changelog
 
+
+## 2.2.0
+
+- rollback to dio from dip_http
+
 ## 2.1.0
 
 - replace dio by dio_http
