@@ -84,7 +84,7 @@ class _RestClient implements RestClient {
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
-        path: '/tagsOptions')
+        path: '/tagByKey')
       ..data = _data);
     final value = _result.data!.cast<String, String>();
     return value;
@@ -105,7 +105,7 @@ class _RestClient implements RestClient {
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
-        path: '/tagsOptionsNullable')
+        path: '/tagByKeyNullable')
       ..data = _data);
     final value = _result.data?.cast<String, String>();
     return value;
@@ -126,7 +126,7 @@ class _RestClient implements RestClient {
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
-        path: '/tags')
+        path: '/tag')
       ..data = _data);
     final value = _result.data!;
     return value;
@@ -147,7 +147,7 @@ class _RestClient implements RestClient {
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
-        path: '/tagsNullable')
+        path: '/tagNullable')
       ..data = _data);
     final value = _result.data;
     return value;
@@ -214,7 +214,7 @@ class _RestClient implements RestClient {
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
-        path: '/userOptions')
+        path: '/userByKey')
       ..data = _data);
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(e.key,
@@ -237,7 +237,7 @@ class _RestClient implements RestClient {
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
-        path: '/userOptionsNullable')
+        path: '/userByKeyNullable')
       ..data = _data);
     var value = _result.data == null
         ? null
@@ -264,7 +264,7 @@ class _RestClient implements RestClient {
         method: 'GET',
         baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
-        path: '/usersOptions')
+        path: '/usersByKey')
       ..data = _data);
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
@@ -335,53 +335,6 @@ class _RestClient implements RestClient {
         baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
         path: '/users')
-      ..data = _data);
-    return null;
-  }
-
-  @override
-  Future<void> postUsersByKey({required users, options}) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(Map.fromEntries(await Future.wait(users.entries.map(
-        (e) async => MapEntry(
-            e.key,
-            await Future.wait(
-                e.value.map((e) => compute(serializeUser, e))))))));
-    final newOptions = newRequestOptions(options);
-    newOptions.extra.addAll(_extra);
-    newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(_headers);
-    await _dio.fetch<void>(newOptions.copyWith(
-        method: 'POST',
-        baseUrl: baseUrl ?? _dio.options.baseUrl,
-        queryParameters: queryParameters,
-        path: '/usersOptions')
-      ..data = _data);
-    return null;
-  }
-
-  @override
-  Future<void> postUserByKey({required users, options}) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(Map.fromEntries(await Future.wait(users.entries.map(
-        (e) async => MapEntry(e.key, await compute(serializeUser, e.value))))));
-    final newOptions = newRequestOptions(options);
-    newOptions.extra.addAll(_extra);
-    newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(_headers);
-    await _dio.fetch<void>(newOptions.copyWith(
-        method: 'POST',
-        baseUrl: baseUrl ?? _dio.options.baseUrl,
-        queryParameters: queryParameters,
-        path: '/usersOptions')
       ..data = _data);
     return null;
   }

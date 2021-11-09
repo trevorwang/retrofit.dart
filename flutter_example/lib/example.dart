@@ -58,14 +58,6 @@ abstract class RestClient {
   @POST('/users')
   Future<void> postUsers(
       {@Body() required List<User> users, @DioOptions() Options? options});
-  @POST('/usersByKey')
-  Future<void> postUsersByKey(
-      {@Body() required Map<String, List<User>> users,
-      @DioOptions() Options? options});
-  @POST('/userByKey')
-  Future<void> postUserByKey(
-      {@Body() required Map<String, User> users,
-      @DioOptions() Options? options});
   @POST('/user')
   Future<void> postUser(
       {@Body() required User user, @DioOptions() Options? options});
