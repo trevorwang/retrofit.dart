@@ -7,7 +7,8 @@ import 'mock_adapter.dart';
 
 part 'example.g.dart';
 
-User parseUser(Map<String, dynamic> json) => User.fromJson(json);
+User deserializeUser(Map<String, dynamic> json) => User.fromJson(json);
+Map<String, dynamic> serializeUser(User object) => object.toJson();
 
 @JsonSerializable()
 class User {
@@ -27,27 +28,27 @@ abstract class RestClient {
   Future<List<String>> getTags({@DioOptions() Options? options});
   @GET('/tagsNullable')
   Future<List<String>?> getTagsNullable({@DioOptions() Options? options});
-  @GET('/tagsOptions')
-  Future<Map<String, String>> getTagOptions({@DioOptions() Options? options});
-  @GET('/tagsOptionsNullable')
-  Future<Map<String, String>?> getTagOptionsNullable(
+  @GET('/tagByKey')
+  Future<Map<String, String>> getTagByKey({@DioOptions() Options? options});
+  @GET('/tagByKeyNullable')
+  Future<Map<String, String>?> getTagByKeyNullable(
       {@DioOptions() Options? options});
-  @GET('/tags')
+  @GET('/tag')
   Future<String> getTag({@DioOptions() Options? options});
-  @GET('/tagsNullable')
+  @GET('/tagNullable')
   Future<String?> getTagNullable({@DioOptions() Options? options});
 
   @GET('/users')
   Future<List<User>> getUsers({@DioOptions() Options? options});
   @GET('/usersNullable')
   Future<List<User>?> getUsersNullable({@DioOptions() Options? options});
-  @GET('/userOptions')
-  Future<Map<String, User>> getUserOptions({@DioOptions() Options? options});
-  @GET('/userOptionsNullable')
-  Future<Map<String, User>?> getUserOptionsNullable(
+  @GET('/userByKey')
+  Future<Map<String, User>> getUserByKey({@DioOptions() Options? options});
+  @GET('/userByKeyNullable')
+  Future<Map<String, User>?> getUserByKeyNullable(
       {@DioOptions() Options? options});
-  @GET('/usersOptions')
-  Future<Map<String, List<User>>> getUsersOptions(
+  @GET('/usersByKey')
+  Future<Map<String, List<User>>> getUsersByKey(
       {@DioOptions() Options? options});
   @GET('/user')
   Future<User> getUser({@DioOptions() Options? options});
@@ -57,16 +58,20 @@ abstract class RestClient {
   @POST('/users')
   Future<void> postUsers(
       {@Body() required List<User> users, @DioOptions() Options? options});
-  @POST('/usersOptions')
-  Future<void> postUsersOptions(
+  @POST('/usersByKey')
+  Future<void> postUsersByKey(
       {@Body() required Map<String, List<User>> users,
+      @DioOptions() Options? options});
+  @POST('/userByKey')
+  Future<void> postUserByKey(
+      {@Body() required Map<String, User> users,
       @DioOptions() Options? options});
   @POST('/user')
   Future<void> postUser(
-      {@Body() required User users, @DioOptions() Options? options});
+      {@Body() required User user, @DioOptions() Options? options});
   @POST('/userNullable')
   Future<void> postUserNullable(
-      {@Body() required User? users, @DioOptions() Options? options});
+      {@Body() required User? user, @DioOptions() Options? options});
 }
 
 void test() {

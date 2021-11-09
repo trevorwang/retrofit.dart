@@ -70,7 +70,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Map<String, String>> getTagOptions({options}) async {
+  Future<Map<String, String>> getTagByKey({options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -91,7 +91,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Map<String, String>?> getTagOptionsNullable({options}) async {
+  Future<Map<String, String>?> getTagByKeyNullable({options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -170,8 +170,8 @@ class _RestClient implements RestClient {
         queryParameters: queryParameters,
         path: '/users')
       ..data = _data);
-    var value = await Future.wait(_result.data!
-        .map((dynamic i) => compute(parseUser, i as Map<String, dynamic>)));
+    var value = await Future.wait(_result.data!.map(
+        (dynamic i) => compute(deserializeUser, i as Map<String, dynamic>)));
     return value;
   }
 
@@ -194,13 +194,13 @@ class _RestClient implements RestClient {
       ..data = _data);
     var value = _result.data == null
         ? null
-        : await Future.wait(_result.data!
-            .map((dynamic i) => compute(parseUser, i as Map<String, dynamic>)));
+        : await Future.wait(_result.data!.map((dynamic i) =>
+            compute(deserializeUser, i as Map<String, dynamic>)));
     return value;
   }
 
   @override
-  Future<Map<String, User>> getUserOptions({options}) async {
+  Future<Map<String, User>> getUserByKey({options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -218,12 +218,12 @@ class _RestClient implements RestClient {
       ..data = _data);
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(e.key,
-            await compute(parseUser, e.value as Map<String, dynamic>)))));
+            await compute(deserializeUser, e.value as Map<String, dynamic>)))));
     return value;
   }
 
   @override
-  Future<Map<String, User>?> getUserOptionsNullable({options}) async {
+  Future<Map<String, User>?> getUserByKeyNullable({options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -242,13 +242,15 @@ class _RestClient implements RestClient {
     var value = _result.data == null
         ? null
         : Map.fromEntries(await Future.wait(_result.data!.entries.map(
-            (e) async => MapEntry(e.key,
-                await compute(parseUser, e.value as Map<String, dynamic>)))));
+            (e) async => MapEntry(
+                e.key,
+                await compute(
+                    deserializeUser, e.value as Map<String, dynamic>)))));
     return value;
   }
 
   @override
-  Future<Map<String, List<User>>> getUsersOptions({options}) async {
+  Future<Map<String, List<User>>> getUsersByKey({options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -267,8 +269,8 @@ class _RestClient implements RestClient {
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
             e.key,
-            await Future.wait((e.value as List)
-                .map((e) => compute(parseUser, e as Map<String, dynamic>)))))));
+            await Future.wait((e.value as List).map((e) =>
+                compute(deserializeUser, e as Map<String, dynamic>)))))));
     return value;
   }
 
@@ -289,7 +291,7 @@ class _RestClient implements RestClient {
         queryParameters: queryParameters,
         path: '/user')
       ..data = _data);
-    final value = await compute(parseUser, _result.data!);
+    final value = await compute(deserializeUser, _result.data!);
     return value;
   }
 
@@ -310,8 +312,9 @@ class _RestClient implements RestClient {
         queryParameters: queryParameters,
         path: '/userNullable')
       ..data = _data);
-    final value =
-        _result.data == null ? null : await compute(parseUser, _result.data!);
+    final value = _result.data == null
+        ? null
+        : await compute(deserializeUser, _result.data!);
     return value;
   }
 
@@ -321,7 +324,8 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = users.map((e) => e.toJson()).toList();
+    final _data =
+        await Future.wait(users.map((e) => compute(serializeUser, e)));
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
@@ -336,13 +340,17 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<void> postUsersOptions({required users, options}) async {
+  Future<void> postUsersByKey({required users, options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(users);
+    _data.addAll(Map.fromEntries(await Future.wait(users.entries.map(
+        (e) async => MapEntry(
+            e.key,
+            await Future.wait(
+                e.value.map((e) => compute(serializeUser, e))))))));
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
@@ -357,13 +365,35 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<void> postUser({required users, options}) async {
+  Future<void> postUserByKey({required users, options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(users.toJson());
+    _data.addAll(Map.fromEntries(await Future.wait(users.entries.map(
+        (e) async => MapEntry(e.key, await compute(serializeUser, e.value))))));
+    final newOptions = newRequestOptions(options);
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(_dio.options.headers);
+    newOptions.headers.addAll(_headers);
+    await _dio.fetch<void>(newOptions.copyWith(
+        method: 'POST',
+        baseUrl: baseUrl ?? _dio.options.baseUrl,
+        queryParameters: queryParameters,
+        path: '/usersOptions')
+      ..data = _data);
+    return null;
+  }
+
+  @override
+  Future<void> postUser({required user, options}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(await compute(serializeUser, user));
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
@@ -378,13 +408,15 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<void> postUserNullable({users, options}) async {
+  Future<void> postUserNullable({user, options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(users?.toJson() ?? <String, dynamic>{});
+    _data.addAll(user == null
+        ? <String, dynamic>{}
+        : await compute(serializeUser, user));
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
