@@ -29,7 +29,7 @@ enum Parser {
   ///
   /// Each model class must define a top-level function, taking the form
   /// ```
-  /// T parseT(Map<String, dynamic> json);
+  /// FutureOr<T> parseT(Map<String, dynamic> json);
   /// ```
   ///
   /// E.g.
