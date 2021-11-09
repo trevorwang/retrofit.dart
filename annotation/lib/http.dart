@@ -29,18 +29,21 @@ enum Parser {
   ///
   /// Each model class must define a top-level function, taking the form
   /// ```
-  /// FutureOr<T> parseT(Map<String, dynamic> json);
+  /// FutureOr<T> deserializeT(Map<String, dynamic> json);
+  /// FutureOr<Map<String, dynamic>> serializeTask(T object);
   /// ```
   ///
   /// E.g.
   /// ----
   /// _In file user.dart_
   /// ```
-  /// User parseUser(Map<String, dynamic> json) => User.fromJson(json);
+  /// User deserializeUser(Map<String, dynamic> json) => User.fromJson(json);
+  /// Map<String, dynamic> serializeUser(User object) => object.toJson();
   ///
   /// @JsonSerializable()
   /// class User {
   ///   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  ///   Map<String, dynamic> toJson() => _$UserToJson(this);
   /// }
   /// ```
   FlutterCompute,

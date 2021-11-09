@@ -220,8 +220,13 @@ If you want to use the base url from `dio.option.baseUrl`, which has lowest prio
 
 If you want to parse models on a separate thread, you can take advantage of the `compute` function, just like Dio does when converting String data responses into json objects.
 
-You will need to define a `FutureOr<Task> parseTask(Map<String, dynamic> json)` function for each model that you use.
+For each model that you use you will need to define 2 top-level functions:
+```dart
+FutureOr<Task> deserializeTask(Map<String, dynamic> json);
+FutureOr<Map<String, dynamic>> serializeTask(Task object);
+```
 
+E.g.
 ```dart
 @RestApi(
   baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/",
@@ -232,13 +237,17 @@ abstract class RestClient {
 
   @GET("/tasks")
   Future<List<Task>> getTasks();
+
+  @POST("/tasks")
+  Future<void> updateTasks(List<Task> tasks);
 }
 
-Task parseTask(Map<String, dynamic> json) => Task.fromJson(json);
+Task deserializeTask(Map<String, dynamic> json) => Task.fromJson(json);
+Map<String, dynamic> serializeTask(User object) => object.toJson();
 ```
 
 N.B.
-It is recommended to have just a single object returned, if possible, as then only one background thread will be spawned to perform the computation. If you use a list or a map it will spawn a thread for each element.
+It is recommended to use just a single object, if possible, as then only one background thread will be spawned to perform the computation. If you use a list or a map it will spawn a thread for each element.
 
 ```dart
 abstract class RestClient {
@@ -251,7 +260,7 @@ abstract class RestClient {
   Future<TaskList> getTasksList(); // GOOD
 }
 
-TaskList parseTaskList(Map<String, dynamic> json) => TaskList.fromJson(json);
+TaskList deserializeTaskList(Map<String, dynamic> json) => TaskList.fromJson(json);
 
 @JsonSerializable
 class TaskList {
@@ -260,7 +269,6 @@ class TaskList {
   final List<Task> tasks;
 
   factory TaskList.fromJson(Map<String, dynamic> json) => _$TaskListFromJson(json);
-  Map<String, dynamic> toJson() => _$TaskListToJson(this);
 }
 ```
 
