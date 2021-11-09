@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dio_http/dio_http.dart';
+import 'package:dio/dio.dart';
 import 'package:mock_web_server/mock_web_server.dart';
 import 'package:retrofit_example/json_mapper_example.dart';
 import 'package:retrofit_example/json_mapper_example.reflectable.dart'
@@ -146,7 +146,8 @@ void main() {
 
 class DateTimeInterceptor extends Interceptor {
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
     options.queryParameters = options.queryParameters.map((key, value) {
       if (value is DateTime) {
         //may be change to string from any you use object

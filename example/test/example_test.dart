@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dio_http/dio_http.dart';
+import 'package:dio/dio.dart';
 import 'package:mock_web_server/mock_web_server.dart';
 import 'package:test/test.dart';
 import '../lib/example.dart';

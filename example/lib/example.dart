@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio_http/dio_http.dart' hide Headers;
+import 'package:dio/dio.dart' hide Headers;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
@@ -162,8 +162,16 @@ abstract class RestClient {
   Future<ValueWrapper<ValueWrapper<String>>> nestGeneric();
 
   @GET('cache')
-  @CacheControl(maxAge: 180,maxStale: 300,minFresh: 60,noCache: true,noStore: true,noTransform: true,onlyIfCached: true,other: ['public','proxy-revalidate'])
-  @Headers({'test':'tes t'})
+  @CacheControl(
+      maxAge: 180,
+      maxStale: 300,
+      minFresh: 60,
+      noCache: true,
+      noStore: true,
+      noTransform: true,
+      onlyIfCached: true,
+      other: ['public', 'proxy-revalidate'])
+  @Headers({'test': 'tes t'})
   Future<String> cache();
 
   @POST('post')
