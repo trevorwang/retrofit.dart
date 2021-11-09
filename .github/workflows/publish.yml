@@ -1,0 +1,36 @@
+name: Dart CI
+
+on:
+  release:
+    branches:
+      - master
+    types: [published]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: google/dart:latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Generate code
+        run: cd example && pub get && pub run build_runner build --delete-conflicting-outputs
+      - name: Analyze packages
+        run: PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
+      - name: Install dependencies
+        run: cd generator && pub get
+      - name: Run tests
+        run: |
+          cd generator && pub run test
+
+      - name: Setup credentials
+        run: |
+          mkdir -p ~/.pub-cache/
+          echo ${{secrets.PUB_CREDENTIALS}} | base64 --decode > ~/.pub-cache/credentials.json
+      - name: Release new version
+        run: |
+          cd generator
+          RELEASE=${GITHUB_REF##*/}
+          sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml 
+          pub publish -f

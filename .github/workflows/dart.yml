@@ -1,36 +1,71 @@
+# Created with package:mono_repo v5.0.4
 name: Dart CI
-
 on:
-  release:
+  push:
     branches:
+      - main
       - master
-    types: [published]
+  pull_request:
+defaults:
+  run:
+    shell: bash
+env:
+  PUB_ENVIRONMENT: bot.github
+
 jobs:
-  build:
+  job_001:
+    name: "analyze; PKG: example; `dart analyze`"
     runs-on: ubuntu-latest
-
-    container:
-      image: google/dart:latest
-
     steps:
-      - uses: actions/checkout@v2
-      - name: Generate code
-        run: cd example && pub get && pub run build_runner build --delete-conflicting-outputs
-      - name: Analyze packages
-        run: PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
-      - name: Install dependencies
-        run: cd generator && pub get
-      - name: Run tests
-        run: |
-          cd generator && pub run test
-
-      - name: Setup credentials
-        run: |
-          mkdir -p ~/.pub-cache/
-          echo ${{secrets.PUB_CREDENTIALS}} | base64 --decode > ~/.pub-cache/credentials.json
-      - name: Release new version
-        run: |
-          cd generator
-          RELEASE=${GITHUB_REF##*/}
-          sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml 
-          pub publish -f
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2.1.6
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:example;commands:analyze"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:example
+            os:ubuntu-latest;pub-cache-hosted;dart:dev
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: dev
+      - id: checkout
+        uses: actions/checkout@v2.3.5
+      - id: example_pub_upgrade
+        name: example; dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: example
+        run: dart pub upgrade
+      - name: example; dart analyze
+        if: "always() && steps.example_pub_upgrade.conclusion == 'success'"
+        working-directory: example
+        run: dart analyze
+  job_002:
+    name: "analyze; PKG: example_dartmapper; `dart analyze`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@v2.1.6
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:example_dartmapper;commands:analyze"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;dart:dev;packages:example_dartmapper
+            os:ubuntu-latest;pub-cache-hosted;dart:dev
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: dev
+      - id: checkout
+        uses: actions/checkout@v2.3.5
+      - id: example_dartmapper_pub_upgrade
+        name: example_dartmapper; dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: example_dartmapper
+        run: dart pub upgrade
+      - name: example_dartmapper; dart analyze
+        if: "always() && steps.example_dartmapper_pub_upgrade.conclusion == 'success'"
+        working-directory: example_dartmapper
+        run: dart analyze
