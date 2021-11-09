@@ -12,9 +12,9 @@ Map<String, dynamic> serializeUser(User object) => object.toJson();
 
 @JsonSerializable()
 class User {
-  User({required this.string});
+  User({required this.id});
 
-  final String string;
+  final String id;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
@@ -54,6 +54,13 @@ abstract class RestClient {
   Future<User> getUser({@DioOptions() Options? options});
   @GET('/userNullable')
   Future<User?> getUserNullable({@DioOptions() Options? options});
+
+  @PATCH('/user/{user}')
+  Future<void> patchUser(
+      {@Query('u') required User user, @DioOptions() Options? options});
+  @PATCH('/userMap/{user}')
+  Future<void> patchUserMap(
+      {@Queries() required User user, @DioOptions() Options? options});
 
   @POST('/users')
   Future<void> postUsers(

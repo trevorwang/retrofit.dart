@@ -1082,7 +1082,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             value = refer(p.displayName);
             break;
           case retrofit.Parser.FlutterCompute:
-            value = refer(p.displayName);
+            value = refer(
+                'await compute(serialize${_displayString(p.type)}, ${p.displayName})');
             break;
         }
       }
@@ -1115,7 +1116,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             value = refer(displayName);
             break;
           case retrofit.Parser.FlutterCompute:
-            value = refer(displayName);
+            value = refer(
+                'await compute(serialize${_displayString(p.type)}, ${p.displayName})');
             break;
         }
       }

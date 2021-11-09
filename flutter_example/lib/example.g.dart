@@ -7,11 +7,11 @@ part of 'example.dart';
 // **************************************************************************
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
-      string: json['string'] as String,
+      id: json['id'] as String,
     );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
-      'string': instance.string,
+      'id': instance.id,
     };
 
 // **************************************************************************
@@ -316,6 +316,49 @@ class _RestClient implements RestClient {
         ? null
         : await compute(deserializeUser, _result.data!);
     return value;
+  }
+
+  @override
+  Future<void> patchUser({required user, options}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'u': await compute(serializeUser, user)
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final newOptions = newRequestOptions(options);
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(_dio.options.headers);
+    newOptions.headers.addAll(_headers);
+    await _dio.fetch<void>(newOptions.copyWith(
+        method: 'PATCH',
+        baseUrl: baseUrl ?? _dio.options.baseUrl,
+        queryParameters: queryParameters,
+        path: '/user/{user}')
+      ..data = _data);
+    return null;
+  }
+
+  @override
+  Future<void> patchUserMap({required user, options}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(await compute(serializeUser, user));
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final newOptions = newRequestOptions(options);
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(_dio.options.headers);
+    newOptions.headers.addAll(_headers);
+    await _dio.fetch<void>(newOptions.copyWith(
+        method: 'PATCH',
+        baseUrl: baseUrl ?? _dio.options.baseUrl,
+        queryParameters: queryParameters,
+        path: '/userMap/{user}')
+      ..data = _data);
+    return null;
   }
 
   @override
