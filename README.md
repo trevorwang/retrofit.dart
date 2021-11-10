@@ -223,7 +223,7 @@ If you want to parse models on a separate thread, you can take advantage of the 
 For each model that you use you will need to define 2 top-level functions:
 ```dart
 FutureOr<Task> deserializeTask(Map<String, dynamic> json);
-FutureOr<Map<String, dynamic>> serializeTask(Task object);
+FutureOr<dynamic> serializeTask(Task object);
 ```
 
 E.g.

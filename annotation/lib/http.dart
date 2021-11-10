@@ -38,7 +38,7 @@ enum Parser {
   /// _In file user.dart_
   /// ```
   /// User deserializeUser(Map<String, dynamic> json) => User.fromJson(json);
-  /// Map<String, dynamic> serializeUser(User object) => object.toJson();
+  /// dynamic serializeUser(User object) => object.toJson();
   ///
   /// @JsonSerializable()
   /// class User {
