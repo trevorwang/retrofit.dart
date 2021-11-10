@@ -78,11 +78,12 @@ import 'package:dio/dio.dart';
 
 final logger = Logger();
 void main(List<String> args) {
-  final dio = Dio();   // Provide a dio instance
-  dio.options.headers["Demo-Header"] = "demo header";   // config your dio headers globally
+  final dio = Dio(); // Provide a dio instance
+  dio.options.headers["Demo-Header"] = "demo header"; // config your dio headers globally
   final client = RestClient(dio);
-  
+
   client.getTasks().then((it) => logger.i(it));
+}
 ```
 
 
@@ -94,10 +95,7 @@ void main(List<String> args) {
 > Before you use the type conversion, please make sure that a ` factory Task.fromJson(Map<String, dynamic> json)` must be provided for each model class. `json_serializable` is the recommanded to be used as the serialization tool.
 
 ```dart
-...
-@GET("/tasks")
-  Future<List<Task>> getTasks();
-}
+@GET("/tasks") Future<List<Task>> getTasks();
 
 @JsonSerializable()
 class Task {
@@ -153,10 +151,10 @@ The HTTP methods in the below sample are supported.
 
 ```dart
   @GET("/tasks/{id}")
-  Future<HttpResponse<Task>> getTask(@Path("id") String id)
+  Future<HttpResponse<Task>> getTask(@Path("id") String id);
 
   @GET("/tasks")
-  Future<HttpResponse<List<Task>>>> getTasks()
+  Future<HttpResponse<List<Task>>> getTasks();
 ```
 
 ### HTTP Header
@@ -188,21 +186,20 @@ The HTTP methods in the below sample are supported.
 `catchError(Object)` should be used for capturing the exception and failed response. You can get the detailed response info from `DioError.response`.
 
 ```dart
- client.getTask("2").then((it){
-   logger.i(it);
- }).catchError((Object obj) {
-    // non-200 error goes here.
-    switch (obj.runtimeType) {
-      case DioError:
-        // Here's the sample to get the failed response error code and message
-        final res = (obj as DioError).response;
-        logger.e("Got error : ${res.statusCode} -> ${res.statusMessage}");
-        break;
-      default:
-    }
-  });
-
-}
+client.getTask("2").then((it) {
+  logger.i(it);
+}).catchError((Object obj) {
+  // non-200 error goes here.
+  switch (obj.runtimeType) {
+    case DioError:
+      // Here's the sample to get the failed response error code and message
+      final res = (obj as DioError).response;
+      logger.e("Got error : ${res.statusCode} -> ${res.statusMessage}");
+      break;
+    default:
+      break;
+  }
+});
 ```
 ### Multiple endpoints support
 
@@ -218,6 +215,62 @@ final client = RestClient(dio, baseUrl: "your base url");
 ```
 
 If you want to use the base url from `dio.option.baseUrl`, which has lowest priority, please don't pass any parameter to `RestApi` annotation and `RestClient`'s structure method. 
+
+### Multithreading (Flutter only)
+
+If you want to parse models on a separate thread, you can take advantage of the `compute` function, just like Dio does when converting String data responses into json objects.
+
+For each model that you use you will need to define 2 top-level functions:
+```dart
+FutureOr<Task> deserializeTask(Map<String, dynamic> json);
+FutureOr<Map<String, dynamic>> serializeTask(Task object);
+```
+
+E.g.
+```dart
+@RestApi(
+  baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/",
+  parser: Parser.FlutterCompute,
+)
+abstract class RestClient {
+  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+
+  @GET("/tasks")
+  Future<List<Task>> getTasks();
+
+  @POST("/tasks")
+  Future<void> updateTasks(List<Task> tasks);
+}
+
+Task deserializeTask(Map<String, dynamic> json) => Task.fromJson(json);
+Map<String, dynamic> serializeTask(User object) => object.toJson();
+```
+
+N.B.
+It is recommended to use just a single object, if possible, as then only one background thread will be spawned to perform the computation. If you use a list or a map it will spawn a thread for each element.
+
+```dart
+abstract class RestClient {
+  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+
+  @GET("/tasks")
+  Future<List<Task>> getTasks(); // BAD
+
+  @GET("/tasks_list")
+  Future<TaskList> getTasksList(); // GOOD
+}
+
+TaskList deserializeTaskList(Map<String, dynamic> json) => TaskList.fromJson(json);
+
+@JsonSerializable
+class TaskList {
+  const TaskList({required this.tasks});
+
+  final List<Task> tasks;
+
+  factory TaskList.fromJson(Map<String, dynamic> json) => _$TaskListFromJson(json);
+}
+```
 
 ### Hide generated files
 
