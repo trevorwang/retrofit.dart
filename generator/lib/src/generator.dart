@@ -1136,8 +1136,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     if (m.parameters
-        .where((p) => (p.type.nullabilitySuffix == NullabilitySuffix.question))
-        .isNotEmpty) {
+        .any((p) => (p.type.nullabilitySuffix == NullabilitySuffix.question))) {
       blocks.add(Code("$_queryParamsVar.removeWhere((k, v) => v == null);"));
     }
   }

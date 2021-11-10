@@ -1006,7 +1006,7 @@ abstract class NullableMapSerializableTestMapBody2 {
 
 @ShouldGenerate(
   r'''
-    final value = await compute(parseUser, _result.data!);
+    final value = await compute(deserializeUser, _result.data!);
     return value;
 ''',
   contains: true,
@@ -1022,8 +1022,9 @@ abstract class ComputeGenericCast {
 
 @ShouldGenerate(
   r'''
-    final value =
-        _result.data == null ? null : await compute(parseUser, _result.data!);
+    final value = _result.data == null
+        ? null
+        : await compute(deserializeUser, _result.data!);
     return value;
 ''',
   contains: true,
@@ -1039,8 +1040,8 @@ abstract class NullableComputeGenericCast {
 
 @ShouldGenerate(
   r'''
-    var value = await Future.wait(_result.data!
-        .map((dynamic i) => compute(parseUser, i as Map<String, dynamic>)));
+    var value = await Future.wait(_result.data!.map(
+        (dynamic i) => compute(deserializeUser, i as Map<String, dynamic>)));
     return value;
 ''',
   contains: true,
@@ -1058,8 +1059,8 @@ abstract class ComputeTestListBody {
   r'''
     var value = _result.data == null
         ? null
-        : await Future.wait(_result.data!
-            .map((dynamic i) => compute(parseUser, i as Map<String, dynamic>)));
+        : await Future.wait(_result.data!.map((dynamic i) =>
+            compute(deserializeUser, i as Map<String, dynamic>)));
     return value;
 ''',
   contains: true,
@@ -1078,8 +1079,8 @@ abstract class NullableComputeTestListBody {
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
             e.key,
-            await Future.wait((e.value as List)
-                .map((e) => compute(parseUser, e as Map<String, dynamic>)))))));
+            await Future.wait((e.value as List).map((e) =>
+                compute(deserializeUser, e as Map<String, dynamic>)))))));
     return value;
 ''',
   contains: true,
@@ -1098,8 +1099,8 @@ abstract class ComputeTestMapBody {
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
             e.key,
-            await Future.wait((e.value as List)
-                .map((e) => compute(parseUser, e as Map<String, dynamic>)))))));
+            await Future.wait((e.value as List).map((e) =>
+                compute(deserializeUser, e as Map<String, dynamic>)))))));
     return value;
 ''',
   contains: true,
@@ -1117,7 +1118,7 @@ abstract class NullableComputeTestMapBody {
   r'''
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(e.key,
-            await compute(parseUser, e.value as Map<String, dynamic>)))));
+            await compute(deserializeUser, e.value as Map<String, dynamic>)))));
     return value;
 ''',
   contains: true,
@@ -1136,8 +1137,10 @@ abstract class ComputeTestMapBody2 {
     var value = _result.data == null
         ? null
         : Map.fromEntries(await Future.wait(_result.data!.entries.map(
-            (e) async => MapEntry(e.key,
-                await compute(parseUser, e.value as Map<String, dynamic>)))));
+            (e) async => MapEntry(
+                e.key,
+                await compute(
+                    deserializeUser, e.value as Map<String, dynamic>)))));
     return value;
 ''',
   contains: true,
@@ -1149,6 +1152,89 @@ abstract class ComputeTestMapBody2 {
 abstract class NullableComputeTestMapBody2 {
   @GET("/xx")
   Future<Map<String, User>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    final queryParameters = <String, dynamic>{
+      r'u': await compute(serializeUser, user)
+    };
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class ComputeQuery {
+  @GET("/xx")
+  Future<void> getResult(@Query('u') User user);
+}
+
+@ShouldGenerate(
+  r'''
+    final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(await compute(serializeUser, user));
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class ComputeQueries {
+  @GET("/xx")
+  Future<void> getResult(@Queries() User user);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = <String, dynamic>{};
+    _data.addAll(await compute(serializeUser, user));
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class TestComputeObjectBody {
+  @GET("/xx")
+  Future<void> getResult(@Body() User user);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data =
+        await Future.wait(users.map((e) => compute(serializeUser, e)));
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class TestComputeObjectListBody {
+  @GET("/xx")
+  Future<void> getResult(@Body() List<User> users);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = <String, dynamic>{};
+    _data.addAll(user == null
+        ? <String, dynamic>{}
+        : await compute(serializeUser, user));
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class TestComputeNullableObjectBody {
+  @GET("/xx")
+  Future<void> getResult(@Body() User? user);
 }
 
 @ShouldGenerate(
