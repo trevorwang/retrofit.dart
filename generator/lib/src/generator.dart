@@ -1223,6 +1223,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 "It is programmer's responsibility to make sure the ${_displayString(_bodyName.type)} is properly serialized");
             blocks.add(
                 refer(_bodyName.displayName).assignFinal(_dataVar).statement);
+          } else if (_missingSerialize(ele.enclosingElement, _bodyName.type)) {
+            log.warning(
+                "${_displayString(_bodyName.type)} must provide a `serialize${_displayString(_bodyName.type)}()` method which returns a Map.\n"
+                "It is programmer's responsibility to make sure the ${_displayString(_bodyName.type)} is properly serialized");
+            blocks.add(
+                refer(_bodyName.displayName).assignFinal(_dataVar).statement);
           } else {
             blocks.add(literalMap({}, refer("String"), refer("dynamic"))
                 .assignFinal(_dataVar)
@@ -1637,6 +1643,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       case retrofit.Parser.MapSerializable:
       case retrofit.Parser.FlutterCompute:
         return false;
+    }
+  }
+
+  bool _missingSerialize(CompilationUnitElement ele, DartType type) {
+    switch (clientAnnotation.parser) {
+      case retrofit.Parser.JsonSerializable:
+      case retrofit.Parser.DartJsonMapper:
+      case retrofit.Parser.MapSerializable:
+        return false;
+      case retrofit.Parser.FlutterCompute:
+        return !ele.functions.any((element) =>
+            element.name == 'serialize${_displayString(type)}' &&
+            element.parameters.length == 1 &&
+            element.parameters[0].type == type);
     }
   }
 }
