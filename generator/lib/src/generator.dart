@@ -504,6 +504,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!');
               break;
             case retrofit.Parser.FlutterCompute:
+              log.warning(
+                  'Return types should not be collections when running `Parser.FlutterCompute`, as spawning an isolate per object is extremely intensive');
               future = true;
               mapperCode = refer(
                   '(dynamic i) => compute(deserialize${_displayString(innerReturnType)}, i as Map<String,dynamic>)');
@@ -581,6 +583,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             """);
                 break;
               case retrofit.Parser.FlutterCompute:
+                log.warning(
+                    'Return types should not be collections when running `Parser.FlutterCompute`, as spawning an isolate per object is extremely intensive');
                 future = true;
                 mapperCode = refer("""
                 (e) async => MapEntry(
@@ -624,6 +628,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     '(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v as Map<String, dynamic>)!)');
                 break;
               case retrofit.Parser.FlutterCompute:
+                log.warning(
+                    'Return types should not be collections when running `Parser.FlutterCompute`, as spawning an isolate per object is extremely intensive');
                 future = true;
                 mapperCode = refer("""
                 (e) async => MapEntry(
@@ -1184,6 +1190,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ''').assignFinal(_dataVar).statement);
             break;
           case retrofit.Parser.FlutterCompute:
+            log.warning(
+                'Body types should not be collections when running `Parser.FlutterCompute`, as spawning an isolate per object is extremely intensive');
             blocks.add(refer('''
             await Future.wait(${_bodyName.displayName}.map((e) => compute(serialize${_displayString(_genericOf(_bodyName.type))}, e)))
             ''').assignFinal(_dataVar).statement);
@@ -1656,7 +1664,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         return !ele.functions.any((element) =>
             element.name == 'serialize${_displayString(type)}' &&
             element.parameters.length == 1 &&
-            element.parameters[0].type == type);
+            _displayString(element.parameters[0].type) == _displayString(type));
     }
   }
 }
