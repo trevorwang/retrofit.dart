@@ -580,9 +580,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 break;
               case retrofit.Parser.FlutterCompute:
                 log.warning('''
-                Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
-                You should create a new class to encapsulate the response.
-                    ''');
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+''');
                 future = true;
                 mapperCode = refer("""
                 (e) async => MapEntry(
@@ -626,8 +626,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     '(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v as Map<String, dynamic>)!)');
                 break;
               case retrofit.Parser.FlutterCompute:
-                log.warning(
-                    'Return types should not be collections when running `Parser.FlutterCompute`, as spawning an isolate per object is extremely intensive');
+                log.warning('''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+''');
                 future = true;
                 mapperCode = refer("""
                 (e) async => MapEntry(

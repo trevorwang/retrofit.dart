@@ -1040,8 +1040,8 @@ abstract class NullableComputeGenericCast {
 
 @ShouldGenerate(
   r'''
-    var value = await Future.wait(_result.data!.map(
-        (dynamic i) => compute(deserializeUser, i as Map<String, dynamic>)));
+    var value = await compute(
+        deserializeUserList, _result.data!.cast<Map<String, dynamic>>());
     return value;
 ''',
   contains: true,
@@ -1059,8 +1059,8 @@ abstract class ComputeTestListBody {
   r'''
     var value = _result.data == null
         ? null
-        : await Future.wait(_result.data!.map((dynamic i) =>
-            compute(deserializeUser, i as Map<String, dynamic>)));
+        : await compute(
+            deserializeUserList, _result.data!.cast<Map<String, dynamic>>());
     return value;
 ''',
   contains: true,
@@ -1079,11 +1079,17 @@ abstract class NullableComputeTestListBody {
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
             e.key,
-            await Future.wait((e.value as List).map((e) =>
-                compute(deserializeUser, e as Map<String, dynamic>)))))));
+            await compute(deserializeUserList,
+                (e.value as List).cast<Map<String, dynamic>>())))));
     return value;
 ''',
   contains: true,
+  expectedLogItems: [
+    '''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+'''
+  ],
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
@@ -1099,11 +1105,17 @@ abstract class ComputeTestMapBody {
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
             e.key,
-            await Future.wait((e.value as List).map((e) =>
-                compute(deserializeUser, e as Map<String, dynamic>)))))));
+            await compute(deserializeUserList,
+                (e.value as List).cast<Map<String, dynamic>>())))));
     return value;
 ''',
   contains: true,
+  expectedLogItems: [
+    '''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+'''
+  ],
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
@@ -1122,6 +1134,12 @@ abstract class NullableComputeTestMapBody {
     return value;
 ''',
   contains: true,
+  expectedLogItems: [
+    '''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+'''
+  ],
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
@@ -1144,6 +1162,12 @@ abstract class ComputeTestMapBody2 {
     return value;
 ''',
   contains: true,
+  expectedLogItems: [
+    '''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+'''
+  ],
 )
 @RestApi(
   baseUrl: "https://httpbin.org/",
@@ -1205,8 +1229,7 @@ abstract class TestComputeObjectBody {
 
 @ShouldGenerate(
   r'''
-    final _data =
-        await Future.wait(users.map((e) => compute(serializeUser, e)));
+    final _data = await compute(serializeUserList, users);
 ''',
   contains: true,
 )
