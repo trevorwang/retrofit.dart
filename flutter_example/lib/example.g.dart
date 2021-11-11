@@ -171,7 +171,7 @@ class _RestClient implements RestClient {
         path: '/users')
       ..data = _data);
     var value = await compute(
-        deserializeUserList, _result.data! as List<Map<String, dynamic>>);
+        deserializeUserList, _result.data!.cast<Map<String, dynamic>>());
     return value;
   }
 
@@ -195,7 +195,7 @@ class _RestClient implements RestClient {
     var value = _result.data == null
         ? null
         : await compute(
-            deserializeUserList, _result.data! as List<Map<String, dynamic>>);
+            deserializeUserList, _result.data!.cast<Map<String, dynamic>>());
     return value;
   }
 
@@ -269,8 +269,8 @@ class _RestClient implements RestClient {
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
             e.key,
-            await compute(
-                deserializeUserList, e.value as List<Map<String, dynamic>>)))));
+            await compute(deserializeUserList,
+                (e.value as List).cast<Map<String, dynamic>>())))));
     return value;
   }
 

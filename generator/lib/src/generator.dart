@@ -495,7 +495,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     whenFalse: refer('await compute').call([
                       refer(
                           'deserialize${_displayString(innerReturnType)}List'),
-                      refer('$_resultVar.data! as List<Map<String,dynamic>>')
+                      refer('$_resultVar.data!.cast<Map<String,dynamic>>()')
                     ]))
                 .assignVar('value')
                 .statement);
@@ -587,7 +587,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 mapperCode = refer("""
                 (e) async => MapEntry(
                     e.key,
-                    await compute(deserialize${_displayString(type)}List, e.value as List<Map<String, dynamic>>))
+                    await compute(deserialize${_displayString(type)}List,
+                        (e.value as List).cast<Map<String, dynamic>>()))
             """);
                 break;
             }
