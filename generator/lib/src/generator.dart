@@ -488,39 +488,35 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar)
                 .statement,
           );
-          final Reference mapperCode;
-          var future = false;
-          switch (clientAnnotation.parser) {
-            case retrofit.Parser.MapSerializable:
-              mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)');
-              break;
-            case retrofit.Parser.JsonSerializable:
-              mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)');
-              break;
-            case retrofit.Parser.DartJsonMapper:
-              mapperCode = refer(
-                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!');
-              break;
-            case retrofit.Parser.FlutterCompute:
-              log.warning(
-                  'Return types should not be collections when running `Parser.FlutterCompute`, as spawning an isolate per object is extremely intensive');
-              future = true;
-              mapperCode = refer(
-                  '(dynamic i) => compute(deserialize${_displayString(innerReturnType)}, i as Map<String,dynamic>)');
-              break;
-          }
-          if (future) {
+          if (clientAnnotation.parser == retrofit.Parser.FlutterCompute) {
             blocks.add(refer('$_resultVar.data')
                 .conditionalIsNullIf(
                     thisNullable: returnType.isNullable,
-                    whenFalse: refer('await Future.wait').call([
-                      refer('$_resultVar.data!.map').call([mapperCode])
+                    whenFalse: refer('await compute').call([
+                      refer(
+                          'deserialize${_displayString(innerReturnType)}List'),
+                      refer('$_resultVar.data! as List<Map<String,dynamic>>')
                     ]))
                 .assignVar('value')
                 .statement);
           } else {
+            final Reference mapperCode;
+            switch (clientAnnotation.parser) {
+              case retrofit.Parser.MapSerializable:
+                mapperCode = refer(
+                    '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)');
+                break;
+              case retrofit.Parser.JsonSerializable:
+                mapperCode = refer(
+                    '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)');
+                break;
+              case retrofit.Parser.DartJsonMapper:
+                mapperCode = refer(
+                    '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!');
+                break;
+              case retrofit.Parser.FlutterCompute:
+                throw Exception('Unreachable code');
+            }
             blocks.add(
               refer('$_resultVar.data')
                   .propertyIf(thisNullable: returnType.isNullable, name: 'map')
@@ -583,14 +579,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             """);
                 break;
               case retrofit.Parser.FlutterCompute:
-                log.warning(
-                    'Return types should not be collections when running `Parser.FlutterCompute`, as spawning an isolate per object is extremely intensive');
+                log.warning('''
+                Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+                You should create a new class to encapsulate the response.
+                    ''');
                 future = true;
                 mapperCode = refer("""
                 (e) async => MapEntry(
                     e.key,
-                    await Future.wait((e.value as List)
-                        .map((e) => compute(deserialize${_displayString(type)}, e as Map<String, dynamic>))))
+                    await compute(deserialize${_displayString(type)}List, e.value as List<Map<String, dynamic>>))
             """);
                 break;
             }
@@ -1190,10 +1187,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ''').assignFinal(_dataVar).statement);
             break;
           case retrofit.Parser.FlutterCompute:
-            log.warning(
-                'Body types should not be collections when running `Parser.FlutterCompute`, as spawning an isolate per object is extremely intensive');
             blocks.add(refer('''
-            await Future.wait(${_bodyName.displayName}.map((e) => compute(serialize${_displayString(_genericOf(_bodyName.type))}, e)))
+            await compute(serialize${_displayString(_genericOf(_bodyName.type))}List, ${_bodyName.displayName})
             ''').assignFinal(_dataVar).statement);
             break;
         }

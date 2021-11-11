@@ -226,6 +226,13 @@ FutureOr<Task> deserializeTask(Map<String, dynamic> json);
 FutureOr<dynamic> serializeTask(Task object);
 ```
 
+If you want to handle lists of objects, either as return types or parameters, you should provide List counterparts.
+
+```dart
+FutureOr<List<Task>> deserializeTaskList(Map<String, dynamic> json);
+FutureOr<dynamic> serializeTaskList(List<Task> objects);
+```
+
 E.g.
 ```dart
 @RestApi(
@@ -235,40 +242,54 @@ E.g.
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
+  @GET("/task")
+  Future<Task> getTask();
   @GET("/tasks")
   Future<List<Task>> getTasks();
 
+  @POST("/task")
+  Future<void> updateTasks(Task task);
   @POST("/tasks")
   Future<void> updateTasks(List<Task> tasks);
 }
 
 Task deserializeTask(Map<String, dynamic> json) => Task.fromJson(json);
-Map<String, dynamic> serializeTask(User object) => object.toJson();
+List<Task> deserializeTaskList(List<Map<String, dynamic>> json) =>
+    json.map((e) => Task.fromJson(e)).toList();
+Map<String, dynamic> serializeTask(Task object) => object.toJson();
+List<Map<String, dynamic>> serializeTaskList(List<Task> objects) =>
+    objects.map((e) => e.toJson()).toList();
 ```
 
 N.B.
-It is recommended to use just a single object, if possible, as then only one background thread will be spawned to perform the computation. If you use a list or a map it will spawn a thread for each element.
+Avoid using Map values, otherwise multiple background isolates will be spawned to perform the computation, which is extremely intensive for Dart.
 
 ```dart
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
+  // BAD
   @GET("/tasks")
-  Future<List<Task>> getTasks(); // BAD
+  Future<Map<String, Task>> getTasks();
+  @POST("/tasks")
+  Future<void> updateTasks(Map<String, Task> tasks);
 
-  @GET("/tasks_list")
-  Future<TaskList> getTasksList(); // GOOD
+  // GOOD
+  @GET("/tasks_names")
+  Future<TaskNames> getTaskNames();
+  @POST("/tasks_names")
+  Future<void> updateTasks(TaskNames tasks);
 }
 
-TaskList deserializeTaskList(Map<String, dynamic> json) => TaskList.fromJson(json);
+TaskNames deserializeTaskNames(Map<String, dynamic> json) => TaskNames.fromJson(json);
 
 @JsonSerializable
-class TaskList {
-  const TaskList({required this.tasks});
+class TaskNames {
+  const TaskNames({required this.tasks});
 
-  final List<Task> tasks;
+  final Map<String, Task> taskNames;
 
-  factory TaskList.fromJson(Map<String, dynamic> json) => _$TaskListFromJson(json);
+  factory TaskNames.fromJson(Map<String, dynamic> json) => _$TaskNamesFromJson(json);
 }
 ```
 
