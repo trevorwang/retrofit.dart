@@ -170,8 +170,8 @@ class _RestClient implements RestClient {
         queryParameters: queryParameters,
         path: '/users')
       ..data = _data);
-    var value = await Future.wait(_result.data!.map(
-        (dynamic i) => compute(deserializeUser, i as Map<String, dynamic>)));
+    var value = await compute(
+        deserializeUserList, _result.data! as List<Map<String, dynamic>>);
     return value;
   }
 
@@ -194,8 +194,8 @@ class _RestClient implements RestClient {
       ..data = _data);
     var value = _result.data == null
         ? null
-        : await Future.wait(_result.data!.map((dynamic i) =>
-            compute(deserializeUser, i as Map<String, dynamic>)));
+        : await compute(
+            deserializeUserList, _result.data! as List<Map<String, dynamic>>);
     return value;
   }
 
@@ -269,8 +269,8 @@ class _RestClient implements RestClient {
     var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
             e.key,
-            await Future.wait((e.value as List).map((e) =>
-                compute(deserializeUser, e as Map<String, dynamic>)))))));
+            await compute(
+                deserializeUserList, e.value as List<Map<String, dynamic>>)))));
     return value;
   }
 
@@ -367,8 +367,7 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data =
-        await Future.wait(users.map((e) => compute(serializeUser, e)));
+    final _data = await compute(serializeUserList, users);
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);

@@ -8,7 +8,11 @@ import 'mock_adapter.dart';
 part 'example.g.dart';
 
 User deserializeUser(Map<String, dynamic> json) => User.fromJson(json);
+List<User> deserializeUserList(List<Map<String, dynamic>> json) =>
+    json.map((e) => User.fromJson(e)).toList();
 Map<String, dynamic> serializeUser(User object) => object.toJson();
+List<Map<String, dynamic>> serializeUserList(List<User> objects) =>
+    objects.map((e) => e.toJson()).toList();
 
 @JsonSerializable()
 class User {
