@@ -19,7 +19,7 @@ Add the generator to your dev dependencies
 
 ```yaml
 dependencies:
-  retrofit: any
+  retrofit: '>2.0.0 <3.0.0'
   logger: any  #for logging purpose
 
 dev_dependencies:
