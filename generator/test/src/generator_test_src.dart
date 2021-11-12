@@ -290,6 +290,8 @@ abstract class AbstractUser with AbstractUserMixin {
       User.fromJson(json);
 }
 
+Map<String, dynamic> serializeUser(User object) => object.toJson();
+
 @ShouldGenerate(
   r'''
     final value = _result.data!;
