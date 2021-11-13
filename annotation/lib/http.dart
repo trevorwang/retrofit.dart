@@ -23,7 +23,41 @@ enum Parser {
 
   /// Each model class must add annotation '@jsonSerializable'
   /// For more detail, please visit 'https://github.com/k-paxian/dart-json-mapper'
-  DartJsonMapper
+  DartJsonMapper,
+
+  /// Parse on a separate isolate using `compute` (Flutter only).
+  ///
+  /// Each model class must define a top-level function, taking the form
+  /// ```
+  /// FutureOr<T> deserializeT(Map<String, dynamic> json);
+  /// FutureOr<dynamic> serializeTask(T object);
+  /// ```
+  ///
+  /// If you want to handle lists of objects, either as return types or parameters, you should provide List counterparts.
+  ///
+  /// ```
+  /// FutureOr<List<T>> deserializeTList(Map<String, dynamic> json);
+  /// FutureOr<dynamic> serializeTList(List<T> objects);
+  /// ```
+  ///
+  /// E.g.
+  /// ----
+  /// _In file user.dart_
+  /// ```
+  /// User deserializeUser(Map<String, dynamic> json) => User.fromJson(json);
+  /// List<User> deserializeUserList(List<Map<String, dynamic>> json) =>
+  ///     json.map((e) => User.fromJson(e)).toList();
+  /// Map<String, dynamic> serializeUser(User object) => object.toJson();
+  /// List<Map<String, dynamic>> serializeUserList(List<User> objects) =>
+  ///     objects.map((e) => e.toJson()).toList();
+  ///
+  /// @JsonSerializable()
+  /// class User {
+  ///   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  ///   Map<String, dynamic> toJson() => _$UserToJson(this);
+  /// }
+  /// ```
+  FlutterCompute,
 }
 
 /// Define an API.
@@ -51,9 +85,13 @@ class RestApi {
   final String? baseUrl;
 
   /// if you don't specify the [parser]. It will be [Parser.JsonSerializable]
-  final Parser? parser;
+  final Parser parser;
 
-  const RestApi({this.baseUrl, this.autoCastResponse, this.parser});
+  const RestApi({
+    this.baseUrl,
+    this.autoCastResponse,
+    this.parser = Parser.JsonSerializable,
+  });
 
   /// Automatically cast response to proper type for all methods in this client
   ///

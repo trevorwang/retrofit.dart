@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0
+
+- add `compute` support
+
 ## 2.2.0
 
 - rollback to dio

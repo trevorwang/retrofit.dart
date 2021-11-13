@@ -290,6 +290,8 @@ abstract class AbstractUser with AbstractUserMixin {
       User.fromJson(json);
 }
 
+Map<String, dynamic> serializeUser(User object) => object.toJson();
+
 @ShouldGenerate(
   r'''
     final value = _result.data!;
@@ -1002,6 +1004,262 @@ abstract class MapSerializableTestMapBody2 {
 abstract class NullableMapSerializableTestMapBody2 {
   @GET("/xx")
   Future<Map<String, User>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = await compute(deserializeUser, _result.data!);
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class ComputeGenericCast {
+  @POST("/xx")
+  Future<User> getUser();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data == null
+        ? null
+        : await compute(deserializeUser, _result.data!);
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class NullableComputeGenericCast {
+  @POST("/xx")
+  Future<User?> getUser();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = await compute(
+        deserializeUserList, _result.data!.cast<Map<String, dynamic>>());
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class ComputeTestListBody {
+  @GET("/xx")
+  Future<List<User>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data == null
+        ? null
+        : await compute(
+            deserializeUserList, _result.data!.cast<Map<String, dynamic>>());
+    return value;
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class NullableComputeTestListBody {
+  @GET("/xx")
+  Future<List<User>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+        (e) async => MapEntry(
+            e.key,
+            await compute(deserializeUserList,
+                (e.value as List).cast<Map<String, dynamic>>())))));
+    return value;
+''',
+  contains: true,
+  expectedLogItems: [
+    '''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+'''
+  ],
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class ComputeTestMapBody {
+  @GET("/xx")
+  Future<Map<String, List<User>>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+        (e) async => MapEntry(
+            e.key,
+            await compute(deserializeUserList,
+                (e.value as List).cast<Map<String, dynamic>>())))));
+    return value;
+''',
+  contains: true,
+  expectedLogItems: [
+    '''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+'''
+  ],
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class NullableComputeTestMapBody {
+  @GET("/xx")
+  Future<Map<String, List<User>>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+        (e) async => MapEntry(e.key,
+            await compute(deserializeUser, e.value as Map<String, dynamic>)))));
+    return value;
+''',
+  contains: true,
+  expectedLogItems: [
+    '''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+'''
+  ],
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class ComputeTestMapBody2 {
+  @GET("/xx")
+  Future<Map<String, User>> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    var value = _result.data == null
+        ? null
+        : Map.fromEntries(await Future.wait(_result.data!.entries.map(
+            (e) async => MapEntry(
+                e.key,
+                await compute(
+                    deserializeUser, e.value as Map<String, dynamic>)))));
+    return value;
+''',
+  contains: true,
+  expectedLogItems: [
+    '''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+'''
+  ],
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class NullableComputeTestMapBody2 {
+  @GET("/xx")
+  Future<Map<String, User>?> getResult();
+}
+
+@ShouldGenerate(
+  r'''
+    final queryParameters = <String, dynamic>{
+      r'u': await compute(serializeUser, user)
+    };
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class ComputeQuery {
+  @GET("/xx")
+  Future<void> getResult(@Query('u') User user);
+}
+
+@ShouldGenerate(
+  r'''
+    final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(await compute(serializeUser, user));
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class ComputeQueries {
+  @GET("/xx")
+  Future<void> getResult(@Queries() User user);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = <String, dynamic>{};
+    _data.addAll(await compute(serializeUser, user));
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class TestComputeObjectBody {
+  @GET("/xx")
+  Future<void> getResult(@Body() User user);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = await compute(serializeUserList, users);
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class TestComputeObjectListBody {
+  @GET("/xx")
+  Future<void> getResult(@Body() List<User> users);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = <String, dynamic>{};
+    _data.addAll(user == null
+        ? <String, dynamic>{}
+        : await compute(serializeUser, user));
+''',
+  contains: true,
+)
+@RestApi(
+  baseUrl: "https://httpbin.org/",
+  parser: Parser.FlutterCompute,
+)
+abstract class TestComputeNullableObjectBody {
+  @GET("/xx")
+  Future<void> getResult(@Body() User? user);
 }
 
 @ShouldGenerate(

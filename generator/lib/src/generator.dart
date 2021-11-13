@@ -488,33 +488,45 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar)
                 .statement,
           );
-          Reference mapperCode;
-          switch (clientAnnotation.parser) {
-            case retrofit.Parser.MapSerializable:
-              mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)');
-              break;
-            case retrofit.Parser.JsonSerializable:
-              mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)');
-              break;
-            case retrofit.Parser.DartJsonMapper:
-              mapperCode = refer(
-                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!');
-              break;
-            default:
-              throw ArgumentError(
-                  'No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
-          }
-          blocks.add(
-            refer('$_resultVar.data')
-                .propertyIf(thisNullable: returnType.isNullable, name: 'map')
-                .call([mapperCode])
-                .property('toList')
-                .call([])
+          if (clientAnnotation.parser == retrofit.Parser.FlutterCompute) {
+            blocks.add(refer('$_resultVar.data')
+                .conditionalIsNullIf(
+                    thisNullable: returnType.isNullable,
+                    whenFalse: refer('await compute').call([
+                      refer(
+                          'deserialize${_displayString(innerReturnType)}List'),
+                      refer('$_resultVar.data!.cast<Map<String,dynamic>>()')
+                    ]))
                 .assignVar('value')
-                .statement,
-          );
+                .statement);
+          } else {
+            final Reference mapperCode;
+            switch (clientAnnotation.parser) {
+              case retrofit.Parser.MapSerializable:
+                mapperCode = refer(
+                    '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)');
+                break;
+              case retrofit.Parser.JsonSerializable:
+                mapperCode = refer(
+                    '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)');
+                break;
+              case retrofit.Parser.DartJsonMapper:
+                mapperCode = refer(
+                    '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!');
+                break;
+              case retrofit.Parser.FlutterCompute:
+                throw Exception('Unreachable code');
+            }
+            blocks.add(
+              refer('$_resultVar.data')
+                  .propertyIf(thisNullable: returnType.isNullable, name: 'map')
+                  .call([mapperCode])
+                  .property('toList')
+                  .call([])
+                  .assignVar('value')
+                  .statement,
+            );
+          }
         }
       } else if (_typeChecker(Map).isExactlyType(returnType) ||
           _typeChecker(BuiltMap).isExactlyType(returnType)) {
@@ -528,11 +540,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
         /// assume the first type is a basic type
         if (types.length > 1) {
+          final firstType = types[0];
           final secondType = types[1];
           if (_typeChecker(List).isExactlyType(secondType) ||
               _typeChecker(BuiltList).isExactlyType(secondType)) {
             final type = _getResponseType(secondType);
-            Reference mapperCode;
+            final Reference mapperCode;
+            var future = false;
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
                 mapperCode = refer("""
@@ -564,17 +578,39 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 )
             """);
                 break;
-              default:
-                throw ArgumentError(
-                    'No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
+              case retrofit.Parser.FlutterCompute:
+                log.warning('''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+''');
+                future = true;
+                mapperCode = refer("""
+                (e) async => MapEntry(
+                    e.key,
+                    await compute(deserialize${_displayString(type)}List,
+                        (e.value as List).cast<Map<String, dynamic>>()))
+            """);
+                break;
             }
-            blocks.add(refer('$_resultVar.data')
-                .propertyIf(thisNullable: returnType.isNullable, name: 'map')
-                .call([mapperCode])
-                .assignVar('value')
-                .statement);
+            if (future) {
+              blocks.add(refer('Map.fromEntries')
+                  .call([
+                    refer('await Future.wait').call([
+                      refer('$_resultVar.data!.entries.map').call([mapperCode])
+                    ])
+                  ])
+                  .assignVar('value')
+                  .statement);
+            } else {
+              blocks.add(refer('$_resultVar.data')
+                  .propertyIf(thisNullable: returnType.isNullable, name: 'map')
+                  .call([mapperCode])
+                  .assignVar('value')
+                  .statement);
+            }
           } else if (!_isBasicType(secondType)) {
-            Reference mapperCode;
+            final Reference mapperCode;
+            var future = false;
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
                 mapperCode = refer(
@@ -589,14 +625,45 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 mapperCode = refer(
                     '(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v as Map<String, dynamic>)!)');
                 break;
-              default:
-                throw ArgumentError(
-                    'No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
+              case retrofit.Parser.FlutterCompute:
+                log.warning('''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+''');
+                future = true;
+                mapperCode = refer("""
+                (e) async => MapEntry(
+                    e.key, await compute(deserialize${_displayString(secondType)}, e.value as Map<String, dynamic>))
+            """);
+                break;
             }
+            if (future) {
+              blocks.add(refer('$_resultVar.data')
+                  .conditionalIsNullIf(
+                      thisNullable: returnType.isNullable,
+                      whenFalse: refer('Map.fromEntries').call([
+                        refer('await Future.wait').call([
+                          refer('$_resultVar.data!.entries.map')
+                              .call([mapperCode])
+                        ])
+                      ]))
+                  .assignVar('value')
+                  .statement);
+            } else {
+              blocks.add(refer('$_resultVar.data')
+                  .propertyIf(thisNullable: returnType.isNullable, name: 'map')
+                  .call([mapperCode])
+                  .assignVar('value')
+                  .statement);
+            }
+          } else {
             blocks.add(refer('$_resultVar.data')
-                .propertyIf(thisNullable: returnType.isNullable, name: 'map')
-                .call([mapperCode])
-                .assignVar('value')
+                .propertyIf(thisNullable: returnType.isNullable, name: 'cast')
+                .call([], {}, [
+                  refer('${_displayString(firstType)}'),
+                  refer('${_displayString(secondType)}'),
+                ])
+                .assignFinal('value')
                 .statement);
           }
         } else {
@@ -639,7 +706,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               final genericArgumentFactories =
                   isGenericArgumentFactories(returnType);
 
-              // print('genericArgumentFactories:$genericArgumentFactories');
               var typeArgs = returnType is ParameterizedType
                   ? returnType.typeArguments
                   : [];
@@ -656,9 +722,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               mapperCode = refer(
                   'JsonMapper.fromMap<${_displayString(returnType)}>($_resultVar.data!)!');
               break;
-            default:
-              throw ArgumentError(
-                  'No parser set. Use either MapSerializable, JsonSerializable or DartJsonMapper');
+            case retrofit.Parser.FlutterCompute:
+              mapperCode = refer(
+                  'await compute(deserialize${_displayString(returnType)}, $_resultVar.data!)');
+              break;
           }
           blocks.add(refer('$_resultVar.data')
               .conditionalIsNullIf(
@@ -1011,19 +1078,32 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final queries = _getAnnotations(m, retrofit.Query);
     final queryParameters = queries.map((p, ConstantReader r) {
       final key = r.peek("value")?.stringValue ?? p.displayName;
-      final value = (_isBasicType(p.type) ||
-              p.type.isDartCoreList ||
-              p.type.isDartCoreMap)
-          ? refer(p.displayName)
-          : clientAnnotation.parser == retrofit.Parser.DartJsonMapper
-              ? refer(p.displayName)
-              : clientAnnotation.parser == retrofit.Parser.JsonSerializable
-                  ? p.type.nullabilitySuffix == NullabilitySuffix.question
-                      ? refer(p.displayName).nullSafeProperty('toJson').call([])
-                      : refer(p.displayName).property('toJson').call([])
-                  : p.type.nullabilitySuffix == NullabilitySuffix.question
-                      ? refer(p.displayName).nullSafeProperty('toMap').call([])
-                      : refer(p.displayName).property('toMap').call([]);
+      final Expression value;
+      if (_isBasicType(p.type) ||
+          p.type.isDartCoreList ||
+          p.type.isDartCoreMap) {
+        value = refer(p.displayName);
+      } else {
+        switch (clientAnnotation.parser) {
+          case retrofit.Parser.JsonSerializable:
+            value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                ? refer(p.displayName).nullSafeProperty('toJson').call([])
+                : refer(p.displayName).property('toJson').call([]);
+            break;
+          case retrofit.Parser.MapSerializable:
+            value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                ? refer(p.displayName).nullSafeProperty('toMap').call([])
+                : refer(p.displayName).property('toMap').call([]);
+            break;
+          case retrofit.Parser.DartJsonMapper:
+            value = refer(p.displayName);
+            break;
+          case retrofit.Parser.FlutterCompute:
+            value = refer(
+                'await compute(serialize${_displayString(p.type)}, ${p.displayName})');
+            break;
+        }
+      }
       return MapEntry(literalString(key, raw: true), value);
     });
 
@@ -1034,19 +1114,30 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     for (final p in queryMap.keys) {
       final type = p.type;
       final displayName = p.displayName;
-      final value = (_isBasicType(type) ||
-              type.isDartCoreList ||
-              type.isDartCoreMap)
-          ? refer(displayName)
-          : clientAnnotation.parser == retrofit.Parser.DartJsonMapper
-              ? refer(displayName)
-              : clientAnnotation.parser == retrofit.Parser.JsonSerializable
-                  ? type.nullabilitySuffix == NullabilitySuffix.question
-                      ? refer(displayName).nullSafeProperty('toJson').call([])
-                      : refer(displayName).property('toJson').call([])
-                  : type.nullabilitySuffix == NullabilitySuffix.question
-                      ? refer(displayName).nullSafeProperty('toMap').call([])
-                      : refer(displayName).property('toMap').call([]);
+      final Expression value;
+      if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
+        value = refer(displayName);
+      } else {
+        switch (clientAnnotation.parser) {
+          case retrofit.Parser.JsonSerializable:
+            value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                ? refer(displayName).nullSafeProperty('toJson').call([])
+                : refer(displayName).property('toJson').call([]);
+            break;
+          case retrofit.Parser.MapSerializable:
+            value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                ? refer(displayName).nullSafeProperty('toMap').call([])
+                : refer(displayName).property('toMap').call([]);
+            break;
+          case retrofit.Parser.DartJsonMapper:
+            value = refer(displayName);
+            break;
+          case retrofit.Parser.FlutterCompute:
+            value = refer(
+                'await compute(serialize${_displayString(p.type)}, ${p.displayName})');
+            break;
+        }
+      }
 
       /// workaround until this is merged in code_builder
       /// https://github.com/dart-lang/code_builder/pull/269
@@ -1062,8 +1153,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     if (m.parameters
-        .where((p) => (p.type.nullabilitySuffix == NullabilitySuffix.question))
-        .isNotEmpty) {
+        .any((p) => (p.type.nullabilitySuffix == NullabilitySuffix.question))) {
       blocks.add(Code("$_queryParamsVar.removeWhere((k, v) => v == null);"));
     }
   }
@@ -1098,9 +1188,24 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ((_typeChecker(List).isExactly(bodyTypeElement) ||
                   _typeChecker(BuiltList).isExactly(bodyTypeElement)) &&
               !_isBasicInnerType(_bodyName.type))) {
-        blocks.add(refer('''
+        switch (clientAnnotation.parser) {
+          case retrofit.Parser.JsonSerializable:
+          case retrofit.Parser.DartJsonMapper:
+            blocks.add(refer('''
             ${_bodyName.displayName}.map((e) => e.toJson()).toList()
             ''').assignFinal(_dataVar).statement);
+            break;
+          case retrofit.Parser.MapSerializable:
+            blocks.add(refer('''
+            ${_bodyName.displayName}.map((e) => e.toMap()).toList()
+            ''').assignFinal(_dataVar).statement);
+            break;
+          case retrofit.Parser.FlutterCompute:
+            blocks.add(refer('''
+            await compute(serialize${_displayString(_genericOf(_bodyName.type))}List, ${_bodyName.displayName})
+            ''').assignFinal(_dataVar).statement);
+            break;
+        }
       } else if (bodyTypeElement != null &&
           _typeChecker(File).isExactly(bodyTypeElement)) {
         blocks.add(refer("Stream")
@@ -1129,10 +1234,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ]).statement);
           }
         } else {
-          final toJson = ele.lookUpMethod('toJson', ele.library);
-          if (toJson == null) {
+          if (_missingToJson(ele)) {
             log.warning(
                 "${_displayString(_bodyName.type)} must provide a `toJson()` method which return a Map.\n"
+                "It is programmer's responsibility to make sure the ${_displayString(_bodyName.type)} is properly serialized");
+            blocks.add(
+                refer(_bodyName.displayName).assignFinal(_dataVar).statement);
+          } else if (_missingSerialize(ele.enclosingElement, _bodyName.type)) {
+            log.warning(
+                "${_displayString(_bodyName.type)} must provide a `serialize${_displayString(_bodyName.type)}()` method which returns a Map.\n"
                 "It is programmer's responsibility to make sure the ${_displayString(_bodyName.type)} is properly serialized");
             blocks.add(
                 refer(_bodyName.displayName).assignFinal(_dataVar).statement);
@@ -1153,16 +1263,40 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               toJsonCode = _getInnerJsonDeSerializableMapperFn(_bodyType);
             }
 
-            if (_bodyName.type.nullabilitySuffix !=
-                NullabilitySuffix.question) {
-              blocks.add(refer("$_dataVar.addAll").call([
-                refer('${_bodyName.displayName}.toJson($toJsonCode)')
-              ]).statement);
-            } else {
-              blocks.add(refer("$_dataVar.addAll").call([
-                refer(
-                    '${_bodyName.displayName}?.toJson($toJsonCode) ?? <String,dynamic>{}')
-              ]).statement);
+            switch (clientAnnotation.parser) {
+              case retrofit.Parser.JsonSerializable:
+              case retrofit.Parser.DartJsonMapper:
+                if (_bodyName.type.nullabilitySuffix !=
+                    NullabilitySuffix.question) {
+                  blocks.add(refer("$_dataVar.addAll").call([
+                    refer('${_bodyName.displayName}.toJson($toJsonCode)')
+                  ]).statement);
+                } else {
+                  blocks.add(refer("$_dataVar.addAll").call([
+                    refer(
+                        '${_bodyName.displayName}?.toJson($toJsonCode) ?? <String,dynamic>{}')
+                  ]).statement);
+                }
+                break;
+              case retrofit.Parser.FlutterCompute:
+                if (_bodyName.type.nullabilitySuffix !=
+                    NullabilitySuffix.question) {
+                  blocks.add(refer("$_dataVar.addAll").call([
+                    refer(
+                        'await compute(serialize${_displayString(_bodyName.type)}, ${_bodyName.displayName})')
+                  ]).statement);
+                } else {
+                  blocks.add(refer("$_dataVar.addAll").call([
+                    refer('''${_bodyName.displayName} == null
+                      ? <String, dynamic>{}
+                      : await compute(serialize${_displayString(_bodyName.type)}, ${_bodyName.displayName})
+                  ''')
+                  ]).statement);
+                }
+                break;
+              case retrofit.Parser.MapSerializable:
+                // Unreachable code
+                break;
             }
 
             if (nullToAbsent)
@@ -1353,8 +1487,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ]).statement);
           } else if (innerType?.element is ClassElement) {
             final ele = innerType!.element as ClassElement;
-            final toJson = ele.lookUpMethod('toJson', ele.library);
-            if (toJson == null) {
+            if (_missingToJson(ele)) {
               throw Exception("toJson() method have to add to ${p.type}");
             } else {
               blocks
@@ -1390,8 +1523,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ]).statement);
         } else if (p.type.element is ClassElement) {
           final ele = p.type.element as ClassElement;
-          final toJson = ele.lookUpMethod('toJson', ele.library);
-          if (toJson == null) {
+          if (_missingToJson(ele)) {
             throw Exception("toJson() method have to add to ${p.type}");
           } else {
             blocks.add(refer(_dataVar).property('fields').property("add").call([
@@ -1516,6 +1648,32 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         refer('String'),
         refer('dynamic'),
       ).assignConst(localExtraVar).statement);
+    }
+  }
+
+  bool _missingToJson(ClassElement ele) {
+    switch (clientAnnotation.parser) {
+      case retrofit.Parser.JsonSerializable:
+      case retrofit.Parser.DartJsonMapper:
+        final toJson = ele.lookUpMethod('toJson', ele.library);
+        return toJson == null;
+      case retrofit.Parser.MapSerializable:
+      case retrofit.Parser.FlutterCompute:
+        return false;
+    }
+  }
+
+  bool _missingSerialize(CompilationUnitElement ele, DartType type) {
+    switch (clientAnnotation.parser) {
+      case retrofit.Parser.JsonSerializable:
+      case retrofit.Parser.DartJsonMapper:
+      case retrofit.Parser.MapSerializable:
+        return false;
+      case retrofit.Parser.FlutterCompute:
+        return !ele.functions.any((element) =>
+            element.name == 'serialize${_displayString(type)}' &&
+            element.parameters.length == 1 &&
+            _displayString(element.parameters[0].type) == _displayString(type));
     }
   }
 }
