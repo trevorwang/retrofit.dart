@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 3.0.0
+
+- Support `Parser.FlutterCompute` for generating data on separate isolates (#408)
+
 ## 2.2.0
 
 - rollback to dio from dip_http
