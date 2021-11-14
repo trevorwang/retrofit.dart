@@ -19,11 +19,11 @@ Add the generator to your dev dependencies
 
 ```yaml
 dependencies:
-  retrofit: '>2.0.0 <3.0.0'
+  retrofit: '>=3.0.0 <4.0.0'
   logger: any  #for logging purpose
 
 dev_dependencies:
-  retrofit_generator: any
+  retrofit_generator: '>=3.0.0 <4.0.0'
   build_runner: any
 ```
 
