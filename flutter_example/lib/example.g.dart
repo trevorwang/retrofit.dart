@@ -112,11 +112,12 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<String> getTag({options}) async {
+  Future<String> getTag({options, required contentType}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Content-Type': contentType};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
@@ -124,6 +125,7 @@ class _RestClient implements RestClient {
     newOptions.headers.addAll(_headers);
     final _result = await _dio.fetch<String>(newOptions.copyWith(
         method: 'GET',
+        contentType: contentType,
         baseUrl: baseUrl ?? _dio.options.baseUrl,
         queryParameters: queryParameters,
         path: '/tag')
