@@ -133,6 +133,16 @@ abstract class FormUrlEncodedTest {
 }
 
 @ShouldGenerate(
+  r"/image/${id}_XL.png",
+  contains: true,
+)
+@RestApi()
+abstract class PathTest {
+  @GET("/image/{id}_XL.png")
+  Future<HttpResponse> getImage(@Path('id') String id);
+}
+
+@ShouldGenerate(
   r'''
     final _data = FormData();
     _data.files.add(MapEntry(
