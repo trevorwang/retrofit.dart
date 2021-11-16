@@ -1,6 +1,6 @@
 # Retrofit For Dart
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-27-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-28-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![retrofit](https://img.shields.io/pub/v/retrofit?label=retrofit&style=flat-square)](https://pub.dartlang.org/packages/retrofit)
@@ -352,6 +352,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/JasonHezz"><img src="https://avatars.githubusercontent.com/u/15358765?v=4?s=100" width="100px;" alt=""/><br /><sub><b>JasonHezz</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=JasonHezz" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/gfranks"><img src="https://avatars.githubusercontent.com/u/2064984?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Garrett Franks</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=gfranks" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/xoltawn"><img src="https://avatars.githubusercontent.com/u/86798241?v=4?s=100" width="100px;" alt=""/><br /><sub><b>xoltawn</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=xoltawn" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/FaKenKoala"><img src="https://avatars.githubusercontent.com/u/60820399?v=4?s=100" width="100px;" alt=""/><br /><sub><b>FaKenKoala</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=FaKenKoala" title="Code">💻</a> <a href="#example-FaKenKoala" title="Examples">💡</a></td>
   </tr>
 </table>
 
