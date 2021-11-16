@@ -312,53 +312,8 @@ Add "ignore files and folders"
 
 ## Contributors ✨
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks goes to these wonderful people:
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="http://mings.in"><img src="https://avatars.githubusercontent.com/u/121966?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Trevor Wang</b></sub></a><br /><a href="#infra-trevorwang" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/trevorwang/retrofit.dart/commits?author=trevorwang" title="Tests">⚠️</a> <a href="https://github.com/trevorwang/retrofit.dart/commits?author=trevorwang" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/devkabiir"><img src="https://avatars.githubusercontent.com/u/18462563?v=4?s=100" width="100px;" alt=""/><br /><sub><b>devkabiir</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=devkabiir" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/NicolaVerbeeck"><img src="https://avatars.githubusercontent.com/u/7778415?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Nicola Verbeeck</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=NicolaVerbeeck" title="Code">💻</a></td>
-    <td align="center"><a href="https://ipcjs.top/"><img src="https://avatars.githubusercontent.com/u/4396864?v=4?s=100" width="100px;" alt=""/><br /><sub><b>ipcjs</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=ipcjs" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/jiechic"><img src="https://avatars.githubusercontent.com/u/518977?v=4?s=100" width="100px;" alt=""/><br /><sub><b>戒尺</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=jiechic" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/mohn93"><img src="https://avatars.githubusercontent.com/u/11969733?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mohaned Benmesken</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=mohn93" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/2ZeroSix"><img src="https://avatars.githubusercontent.com/u/14371067?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Bogdan Lukin</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=2ZeroSix" title="Code">💻</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://sooxt98.space/"><img src="https://avatars.githubusercontent.com/u/13378059?v=4?s=100" width="100px;" alt=""/><br /><sub><b>sooxt98</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=sooxt98" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/SBNTT"><img src="https://avatars.githubusercontent.com/u/20710321?v=4?s=100" width="100px;" alt=""/><br /><sub><b>SBNTT</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=SBNTT" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/Czocher"><img src="https://avatars.githubusercontent.com/u/95644?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Paweł Czochański</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=Czocher" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/bar4488"><img src="https://avatars.githubusercontent.com/u/36762719?v=4?s=100" width="100px;" alt=""/><br /><sub><b>bar4488</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=bar4488" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/via-guy"><img src="https://avatars.githubusercontent.com/u/74960121?v=4?s=100" width="100px;" alt=""/><br /><sub><b>via-guy</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=via-guy" title="Code">💻</a> <a href="https://github.com/trevorwang/retrofit.dart/commits?author=via-guy" title="Tests">⚠️</a> <a href="https://github.com/trevorwang/retrofit.dart/commits?author=via-guy" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/martinellimarco"><img src="https://avatars.githubusercontent.com/u/6640057?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Marco Martinelli</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=martinellimarco" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/LeonColt"><img src="https://avatars.githubusercontent.com/u/34907762?v=4?s=100" width="100px;" alt=""/><br /><sub><b>LeonColt</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=LeonColt" title="Code">💻</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://github.com/alexaf2000"><img src="https://avatars.githubusercontent.com/u/37296203?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alex A.F.</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=alexaf2000" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/woprandi"><img src="https://avatars.githubusercontent.com/u/1449422?v=4?s=100" width="100px;" alt=""/><br /><sub><b>William Oprandi</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=woprandi" title="Code">💻</a> <a href="https://github.com/trevorwang/retrofit.dart/issues?q=author%3Awoprandi" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://github.com/Brazol"><img src="https://avatars.githubusercontent.com/u/5622717?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Maciej Brażewicz</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=Brazol" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/lyqiai"><img src="https://avatars.githubusercontent.com/u/22760358?v=4?s=100" width="100px;" alt=""/><br /><sub><b>river</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=lyqiai" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/srburton"><img src="https://avatars.githubusercontent.com/u/15394508?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Renato Burton</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=srburton" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/teddichiiwa"><img src="https://avatars.githubusercontent.com/u/32252270?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Teddy</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=teddichiiwa" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/ignacioberdinas"><img src="https://avatars.githubusercontent.com/u/19497384?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ignacio Berdiñas</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=ignacioberdinas" title="Code">💻</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://github.com/themadmrj"><img src="https://avatars.githubusercontent.com/u/11475495?v=4?s=100" width="100px;" alt=""/><br /><sub><b>themadmrj</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=themadmrj" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/stewemetal"><img src="https://avatars.githubusercontent.com/u/5860632?v=4?s=100" width="100px;" alt=""/><br /><sub><b>István Juhos</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=stewemetal" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/Akash98Sky"><img src="https://avatars.githubusercontent.com/u/37451227?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Akash Mondal</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=Akash98Sky" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/JasonHezz"><img src="https://avatars.githubusercontent.com/u/15358765?v=4?s=100" width="100px;" alt=""/><br /><sub><b>JasonHezz</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=JasonHezz" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/gfranks"><img src="https://avatars.githubusercontent.com/u/2064984?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Garrett Franks</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=gfranks" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/xoltawn"><img src="https://avatars.githubusercontent.com/u/86798241?v=4?s=100" width="100px;" alt=""/><br /><sub><b>xoltawn</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=xoltawn" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/FaKenKoala"><img src="https://avatars.githubusercontent.com/u/60820399?v=4?s=100" width="100px;" alt=""/><br /><sub><b>FaKenKoala</b></sub></a><br /><a href="https://github.com/trevorwang/retrofit.dart/commits?author=FaKenKoala" title="Code">💻</a> <a href="#example-FaKenKoala" title="Examples">💡</a></td>
-  </tr>
-</table>
+<a href="https://github.com/trevorwang/retrofit.dart/graphs/contributors"><img src="https://opencollective.com/retrofitdart/contributors.svg?width=890&button=false" /></a>
 
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+Contributions of any kind welcome!
