@@ -178,6 +178,34 @@ abstract class FilePartWithCustomNameTest {
 @ShouldGenerate(
   r'''
     final _data = FormData();
+    _data.files.addAll(images.map((i) => MapEntry('images', i)));
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class FilePartWithMultipartListTest {
+  @POST("/profile")
+  Future<String> setProfile(@Part() List<MultipartFile> images);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = FormData();
+    if (images != null) {
+      _data.files.addAll(images.map((i) => MapEntry('images', i)));
+    }
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class FilePartWithNullableMultipartListTest {
+  @POST("/profile")
+  Future<String> setProfile(@Part() List<MultipartFile>? images);
+}
+
+@ShouldGenerate(
+  r'''
+    final _data = FormData();
     _data.files.add(MapEntry(
         'image',
         MultipartFile.fromFileSync(image.path,
