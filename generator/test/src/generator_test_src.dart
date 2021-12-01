@@ -730,7 +730,7 @@ abstract class TestFileList {
   Future<void> testFileList(@Part() List<File> files);
 
   @POST("/")
-  Future<void> testFileList(@Part() List<File>? files);
+  Future<void> testOptionalFileList(@Part() List<File>? files);
 
   @POST("/")
   Future<void> testOptionalFile({@Part() File file});
