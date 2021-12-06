@@ -264,6 +264,14 @@ class Queries {
   const Queries({this.encoded = false});
 }
 
+/// An interface for annotation which has mime type.
+/// Such as [FormUrlEncoded] and [MultiPart].
+abstract class _MimeType {
+  abstract final String mime;
+
+  const _MimeType();
+}
+
 /// Denotes that the request body will use form URL encoding. Fields should be declared as
 /// parameters and annotated with [Field].
 ///
@@ -271,7 +279,8 @@ class Queries {
 /// type. Field names and values will be UTF-8 encoded before being URI-encoded in accordance to
 /// [RFC-3986](http://tools.ietf.org/html/rfc3986)
 @immutable
-class FormUrlEncoded {
+class FormUrlEncoded extends _MimeType {
+  @override
   final mime = 'application/x-www-form-urlencoded';
   const FormUrlEncoded();
 }
@@ -279,7 +288,11 @@ class FormUrlEncoded {
 /// Denotes that the request body is multi-part. Parts should be declared as parameters and
 /// annotated with [Part].
 @immutable
-class MultiPart {
+class MultiPart extends _MimeType {
+
+  @override
+  final mime = 'multipart/form-data';
+
   const MultiPart();
 }
 
