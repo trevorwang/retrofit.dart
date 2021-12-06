@@ -226,7 +226,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final formUrlEncoded = _getFormUrlEncodedAnnotation(method);
 
     if (multipart != null && formUrlEncoded != null) {
-      throw Exception('Two content-type annotation on one request ${method.name}');
+      throw InvalidGenerationSourceError('Two content-type annotation on one request ${method.name}');
     }
 
     return multipart ?? formUrlEncoded;
@@ -400,7 +400,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     final contentType = _getContentTypeAnnotation(m);
-    print('DEVVV: $contentType');
     if (contentType != null) {
       extraOptions[_contentType] =
           literal(contentType.peek("mime")?.stringValue);
