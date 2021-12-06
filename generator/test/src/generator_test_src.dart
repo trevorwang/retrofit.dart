@@ -143,6 +143,15 @@ abstract class MultipartTest {
   Future<String> ip();
 }
 
+@ShouldThrow('Two content-type annotation on one request ip', element: false)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TwoContentTypeAnnotationOnSameMethodTest {
+  @POST("/get")
+  @MultiPart()
+  @FormUrlEncoded()
+  Future<String> ip();
+}
+
 @ShouldGenerate(
   r"/image/${id}_XL.png",
   contains: true,
