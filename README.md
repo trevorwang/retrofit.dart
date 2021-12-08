@@ -21,6 +21,7 @@ dependencies:
 dev_dependencies:
   retrofit_generator: '>=3.0.0 <4.0.0'
   build_runner: '>2.3.0 <4.0.0' 
+  json_serializable: '>4.4.0'
 ```
 
 ### Define and Generate your API
