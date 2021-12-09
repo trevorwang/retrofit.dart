@@ -1412,6 +1412,35 @@ You should create a new class to encapsulate the response.
           } else {
             blocks.add(returnCode);
           }
+        } else if (_displayString(p.type) == "Map<String, List<int>>") {
+          final optionalFile = p.type.isNullable;
+
+          final returnCodes = [
+            refer('<MapEntry<String, MultipartFile>>[]')
+                .assignFinal('_files')
+                .statement,
+            refer(''' 
+                  ${p.displayName}.forEach((name, file){
+                   _files.add(MapEntry(
+                '${fieldName}',
+                MultipartFile.fromBytes(file,
+                    filename: name))); 
+                  });
+                  ''').code,
+            refer(_dataVar)
+                .property('files')
+                .property("addAll")
+                .call([refer('_files')]).statement
+          ];
+
+          if (optionalFile) {
+            final condition = refer(p.displayName).notEqualTo(literalNull).code;
+            blocks.addAll([Code("if("), condition, Code(") {")]);
+            blocks.addAll(returnCodes);
+            blocks.add(Code("}"));
+          } else {
+            blocks.addAll(returnCodes);
+          }
         } else if (_typeChecker(List).isExactlyType(p.type) ||
             _typeChecker(BuiltList).isExactlyType(p.type)) {
           var innerType = _genericOf(p.type);
