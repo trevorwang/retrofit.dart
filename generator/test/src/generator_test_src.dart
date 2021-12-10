@@ -1560,3 +1560,22 @@ mixin MethodInMixin {
 )
 @RestApi()
 abstract class NoMethods with MethodInMixin {}
+
+@ShouldGenerate(
+  r'''
+    final _data = FormData();
+    final _files = <MapEntry<String, MultipartFile>>[];
+    images.forEach((name, image) {
+      _files.add(
+          MapEntry('images[]', MultipartFile.fromBytes(image, filename: name)));
+    });
+
+    _data.files.addAll(_files);
+''',
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class UploadFileMapTest {
+  @POST("/profile")
+  Future<String> setProfile(@Part(name: 'images[]') Map<String, List<int>> images);
+}
