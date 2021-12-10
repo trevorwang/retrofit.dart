@@ -1577,5 +1577,6 @@ abstract class NoMethods with MethodInMixin {}
 @RestApi(baseUrl: "https://httpbin.org/")
 abstract class UploadFileMapTest {
   @POST("/profile")
+  @MultiPart()
   Future<String> setProfile(@Part(name: 'images[]') Map<String, List<int>> images);
 }
