@@ -726,6 +726,17 @@ abstract class TestHttpResponseArray {
         ))));
 ''', contains: true)
 @ShouldGenerate(r'''
+    final _data = FormData();
+    if (files != null) {
+      _data.files.addAll(files.map((i) => MapEntry(
+          'files',
+          MultipartFile.fromFileSync(
+            i.path,
+            filename: i.path.split(Platform.pathSeparator).last,
+          ))));
+    }
+''', contains: true)
+@ShouldGenerate(r'''
     if (file != null) {
       _data.files.add(MapEntry(
           'file',
@@ -737,6 +748,9 @@ abstract class TestHttpResponseArray {
 abstract class TestFileList {
   @POST("/")
   Future<void> testFileList(@Part() List<File> files);
+
+  @POST("/")
+  Future<void> testOptionalFileList(@Part() List<File>? files);
 
   @POST("/")
   Future<void> testOptionalFile({@Part() File file});

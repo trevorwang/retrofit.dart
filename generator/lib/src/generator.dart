@@ -1472,6 +1472,9 @@ You should create a new class to encapsulate the response.
             final conType = contentType == null
                 ? ""
                 : 'contentType: MediaType.parse(${literal(contentType)}),';
+            if (p.type.isNullable) {
+              blocks.add(Code("if (${p.displayName} != null) {"));
+            }
             blocks
                 .add(refer(_dataVar).property('files').property("addAll").call([
               refer(''' 
@@ -1483,6 +1486,9 @@ You should create a new class to encapsulate the response.
                     )))
                   ''')
             ]).statement);
+            if (p.type.isNullable) {
+              blocks.add(Code("}"));
+            }
           } else if (innerType != null &&
               _typeChecker(MultipartFile).isExactlyType(innerType)) {
             if (p.type.isNullable) {
