@@ -1560,3 +1560,23 @@ mixin MethodInMixin {
 )
 @RestApi()
 abstract class NoMethods with MethodInMixin {}
+
+@ShouldGenerate(
+  r'''await _dio.fetch<Map<String, dynamic>?>''',
+  contains: true,
+)
+@RestApi()
+abstract class NullableGenericCastFetch {
+  @GET("/")
+  Future<User?> get();
+}
+
+@ShouldGenerate(
+  r'''await _dio.fetch<Map<String, dynamic>>''',
+  contains: true,
+)
+@RestApi()
+abstract class GenericCastFetch {
+  @GET("/")
+  Future<User> get();
+}

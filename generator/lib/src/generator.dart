@@ -690,8 +690,11 @@ You should create a new class to encapsulate the response.
           );
           blocks.add(Code("final value = $_resultVar.data;"));
         } else {
+          final fetchType = returnType.isNullable
+              ? "Map<String,dynamic>?"
+              : "Map<String,dynamic>";
           blocks.add(
-            refer("await $_dioVar.fetch<Map<String,dynamic>>")
+            refer("await $_dioVar.fetch<$fetchType>")
                 .call([options])
                 .assignFinal(_resultVar)
                 .statement,
