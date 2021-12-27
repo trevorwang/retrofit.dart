@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1
+
+- add mtultupart mime type (#437)
+
 ## 3.0.0
 
 - add `compute` support

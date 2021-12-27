@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.1
+
+- Generate code for Multipart mime-type
 
 ## 3.0.0
 

@@ -221,6 +221,24 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
+  ConstantReader? _getContentTypeAnnotation(MethodElement method) {
+    final multipart = _getMultipartAnnotation(method);
+    final formUrlEncoded = _getFormUrlEncodedAnnotation(method);
+
+    if (multipart != null && formUrlEncoded != null) {
+      throw InvalidGenerationSourceError('Two content-type annotation on one request ${method.name}');
+    }
+
+    return multipart ?? formUrlEncoded;
+  }
+
+  ConstantReader? _getMultipartAnnotation(MethodElement method) {
+    final annotation = _typeChecker(retrofit.MultiPart)
+        .firstAnnotationOf(method, throwOnUnresolved: false);
+    if (annotation != null) return ConstantReader(annotation);
+    return null;
+  }
+
   ConstantReader? _getFormUrlEncodedAnnotation(MethodElement method) {
     final annotation = _typeChecker(retrofit.FormUrlEncoded)
         .firstAnnotationOf(method, throwOnUnresolved: false);
@@ -381,11 +399,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       extraOptions[_contentType] = contentTypeInHeader;
     }
 
-    final contentType = _getFormUrlEncodedAnnotation(m);
+    final contentType = _getContentTypeAnnotation(m);
     if (contentType != null) {
       extraOptions[_contentType] =
           literal(contentType.peek("mime")?.stringValue);
     }
+
     extraOptions[_baseUrlVar] = refer(_baseUrlVar);
 
     final responseType = _getResponseTypeAnnotation(m);

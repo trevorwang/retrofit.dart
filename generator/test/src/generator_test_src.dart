@@ -133,6 +133,26 @@ abstract class FormUrlEncodedTest {
 }
 
 @ShouldGenerate(
+  r"contentType: 'multipart/form-data'",
+  contains: true,
+)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class MultipartTest {
+  @POST("/get")
+  @MultiPart()
+  Future<String> ip();
+}
+
+@ShouldThrow('Two content-type annotation on one request ip', element: false)
+@RestApi(baseUrl: "https://httpbin.org/")
+abstract class TwoContentTypeAnnotationOnSameMethodTest {
+  @POST("/get")
+  @MultiPart()
+  @FormUrlEncoded()
+  Future<String> ip();
+}
+
+@ShouldGenerate(
   r"/image/${id}_XL.png",
   contains: true,
 )
