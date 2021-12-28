@@ -14,6 +14,8 @@ import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
 
+const _analyzerIgnores = '// ignore_for_file: unnecessary_brace_in_string_interps';
+
 class RetrofitOptions {
   final bool? autoCastResponse;
 
@@ -101,7 +103,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     });
 
     final emitter = DartEmitter();
-    return DartFormatter().format('${classBuilder.accept(emitter)}');
+    return DartFormatter().format([_analyzerIgnores, classBuilder.accept(emitter)].join('\n\n'));
   }
 
   Field _buildDioFiled() => Field((m) => m
