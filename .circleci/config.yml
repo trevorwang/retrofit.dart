@@ -30,7 +30,7 @@ jobs:
   test_dart_212:
     <<: *common_test
     environment:
-      DART_VERSION: '2.12'
+      DART_VERSION: '2.14'
   test_dart_latest:
     <<: *common_test
     environment:
