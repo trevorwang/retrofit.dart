@@ -1404,10 +1404,10 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
 @ShouldGenerate(
   r'''
     final value = GenericUser<List<User>>.fromJson(
-        _result.data!,
-        (json) => (json as List<dynamic>)
-            .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
-            .toList(),
+      _result.data!,
+      (json) => (json as List<dynamic>)
+          .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
+          .toList(),
     );
     return value;
   ''',
@@ -1495,9 +1495,9 @@ abstract class NullableDynamicInnerGenericTypeShouldBeCastedAsMap {
 @ShouldGenerate(
   r'''
     final value = GenericUser<List<double>>.fromJson(
-        _result.data!,
-        (json) =>
-            (json as List<dynamic>).map<double>((i) => i as double).toList(),
+      _result.data!,
+      (json) =>
+          (json as List<dynamic>).map<double>((i) => i as double).toList(),
     );
     return value;
   ''',

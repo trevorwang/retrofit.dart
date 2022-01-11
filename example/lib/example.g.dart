@@ -22,39 +22,13 @@ Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
 
 TaskQuery _$TaskQueryFromJson(Map<String, dynamic> json) => TaskQuery(
       (json['statuses'] as List<dynamic>)
-          .map((e) => _$enumDecode(_$StatusEnumMap, e))
+          .map((e) => $enumDecode(_$StatusEnumMap, e))
           .toList(),
     );
 
 Map<String, dynamic> _$TaskQueryToJson(TaskQuery instance) => <String, dynamic>{
       'statuses': instance.statuses.map((e) => _$StatusEnumMap[e]).toList(),
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
 
 const _$StatusEnumMap = {
   Status.New: 'new',
@@ -101,6 +75,8 @@ Map<String, dynamic> _$ValueWrapperToJson<T>(
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
+
+// ignore_for_file: unnecessary_brace_in_string_interps
 
 class _RestClient implements RestClient {
   _RestClient(this._dio, {this.baseUrl}) {
@@ -185,7 +161,7 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
         Options(method: 'GET', headers: _headers, extra: _extra)
-            .compose(_dio.options, '/tasks/$id',
+            .compose(_dio.options, '/tasks/${id}',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Task.fromJson(_result.data!);
@@ -201,7 +177,7 @@ class _RestClient implements RestClient {
     _data.addAll(map);
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
         Options(method: 'PATCH', headers: _headers, extra: _extra)
-            .compose(_dio.options, '/tasks/$id',
+            .compose(_dio.options, '/tasks/${id}',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Task.fromJson(_result.data!);
@@ -217,7 +193,7 @@ class _RestClient implements RestClient {
     _data.addAll(task.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<Task>(
         Options(method: 'PUT', headers: _headers, extra: _extra)
-            .compose(_dio.options, '/tasks/$id',
+            .compose(_dio.options, '/tasks/${id}',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Task.fromJson(_result.data!);
@@ -232,7 +208,7 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     await _dio.fetch<void>(_setStreamType<void>(
         Options(method: 'DELETE', headers: _headers, extra: _extra)
-            .compose(_dio.options, '/tasks/$id',
+            .compose(_dio.options, '/tasks/${id}',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     return null;
@@ -468,7 +444,7 @@ class _RestClient implements RestClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<void>(_setStreamType<HttpResponse<void>>(
         Options(method: 'DELETE', headers: _headers, extra: _extra)
-            .compose(_dio.options, '/tasks/$id',
+            .compose(_dio.options, '/tasks/${id}',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final httpResponse = HttpResponse(null, _result);
