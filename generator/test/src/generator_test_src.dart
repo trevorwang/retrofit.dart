@@ -1495,7 +1495,8 @@ abstract class NullableDynamicInnerGenericTypeShouldBeCastedAsMap {
     final value = GenericUser<List<double>>.fromJson(
         _result.data!,
         (json) =>
-            (json as List<dynamic>).map<double>((i) => i as double).toList());
+            (json as List<dynamic>).map<double>((i) => i as double).toList(),
+    );
     return value;
   ''',
   contains: true,
@@ -1514,7 +1515,8 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
             _result.data!,
             (json) => (json as List<dynamic>)
                 .map<double>((i) => i as double)
-                .toList());
+                .toList(),
+          );
     return value;
   ''',
   contains: true,
