@@ -1407,7 +1407,8 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
         _result.data!,
         (json) => (json as List<dynamic>)
             .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
-            .toList());
+            .toList(),
+    );
     return value;
   ''',
   contains: true,
@@ -1426,7 +1427,8 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
             _result.data!,
             (json) => (json as List<dynamic>)
                 .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
-                .toList());
+                .toList(),
+          );
     return value;
   ''',
   contains: true,
