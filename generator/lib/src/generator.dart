@@ -815,7 +815,7 @@ You should create a new class to encapsulate the response.
             .map<${genericTypeString}>((i) => ${genericTypeString}.fromJson(
                   i as Map<String, dynamic>,${_getInnerJsonSerializableMapperFn(genericType)}
                 ))
-            .toList()
+            .toList(),
     """;
         } else {
           if (_isBasicType(genericType)) {
@@ -824,7 +824,7 @@ You should create a new class to encapsulate the response.
             .map<${genericTypeString}>((i) => 
                   i as ${genericTypeString}
                 )
-            .toList()
+            .toList(),
     """;
           } else {
             mapperVal = """
@@ -832,7 +832,7 @@ You should create a new class to encapsulate the response.
             .map<${genericTypeString}>((i) =>
             ${genericTypeString == 'dynamic' ? ' i as Map<String, dynamic>' : genericTypeString + '.fromJson(  i as Map<String, dynamic> )  '}
     )
-            .toList()
+            .toList(),
     """;
           }
         }
