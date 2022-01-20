@@ -1011,7 +1011,7 @@ You should create a new class to encapsulate the response.
         /// required parameters
         ..requiredParameters.add(Parameter((p) {
           p.name = "options";
-          p.type = refer("Options?").type;
+          p.type = refer("Object?").type;
         }))
 
         /// add method body
@@ -1019,25 +1019,25 @@ You should create a new class to encapsulate the response.
          if (options is RequestOptions) {
             return options as RequestOptions;
           }
-          if (options == null) {
-            return RequestOptions(path: '');
+          if (options is Options) {
+            return RequestOptions(
+              method: options.method,
+              sendTimeout: options.sendTimeout,
+              receiveTimeout: options.receiveTimeout,
+              extra: options.extra,
+              headers: options.headers,
+              responseType: options.responseType,
+              contentType: options.contentType.toString(),
+              validateStatus: options.validateStatus,
+              receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+              followRedirects: options.followRedirects,
+              maxRedirects: options.maxRedirects,
+              requestEncoder: options.requestEncoder,
+              responseDecoder: options.responseDecoder,
+              path: '',
+            );
           }
-          return RequestOptions(
-            method: options.method,
-            sendTimeout: options.sendTimeout,
-            receiveTimeout: options.receiveTimeout,
-            extra: options.extra,
-            headers: options.headers,
-            responseType: options.responseType,
-            contentType: options.contentType.toString(),
-            validateStatus: options.validateStatus,
-            receiveDataWhenStatusError: options.receiveDataWhenStatusError,
-            followRedirects: options.followRedirects,
-            maxRedirects: options.maxRedirects,
-            requestEncoder: options.requestEncoder,
-            responseDecoder: options.responseDecoder,
-            path: '',
-          );
+          return RequestOptions(path: '');
         ''');
     });
   }
