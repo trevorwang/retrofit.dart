@@ -27,7 +27,7 @@ jobs:
             dart pub get
             dart run test
 
-  test_dart_212:
+  test_dart_2.14:
     <<: *common_test
     environment:
       DART_VERSION: '2.14'
@@ -39,7 +39,7 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - test_dart_212:
+      - test_dart_2.14:
           filters:
             branches:
               ignore:

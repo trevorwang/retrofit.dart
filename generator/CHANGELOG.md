@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.1
+
+- fix: Code generation will fail if you use the DioResponseType annotation. #452
+
 ## 4.0.0
 
 - [BREAKING CHANGE] update analyzer to 3.x and dart to 2.14
