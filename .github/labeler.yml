@@ -1,4 +1,4 @@
-annotation: annotation/**/*
+retrofit: retrofit/**/*
 generator: generator/**/*
 docs:
   - docs/**/*

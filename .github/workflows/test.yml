@@ -1,0 +1,28 @@
+name: test on multiple dart sdk
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        sdk: [stable, 2.14.4, 2.15.1]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+      - name: Generate code
+        run: cd example && pub get && pub run build_runner build --delete-conflicting-outputs
+      - name: Analyze packages
+        run: PKGS="example retrofit generator" ./tool/travis.sh dartanalyzer
+      - name: Install dependencies
+        run: cd generator && pub get
+      - name: Run tests
+        run: |
+          cd generator && pub run test

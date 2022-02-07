@@ -4,14 +4,14 @@ language: dart
 jobs:
   include:
     - stage: analyze
-      name: "SDK: dev; PKG: all; TASKS: `dartanalyzer .`"
-      env: PKGS="example annotation generator"
+      name: 'SDK: dev; PKG: all; TASKS: `dartanalyzer .`'
+      env: PKGS="example retrofit generator"
       script: ./tool/travis.sh dartanalyzer
     # - stage: formatting
     # name: "Checking code style"
     # scripts: dartfmt . -n --set-exit-if-changed --fix
     - stage: test
-      name: "Test generator"
+      name: 'Test generator'
       script: |
         cd generator 
         pub get
@@ -29,4 +29,4 @@ branches:
 
 cache:
   directories:
-    - "$HOME/.pub-cache"
+    - '$HOME/.pub-cache'
