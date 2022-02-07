@@ -289,7 +289,6 @@ class FormUrlEncoded extends _MimeType {
 /// annotated with [Part].
 @immutable
 class MultiPart extends _MimeType {
-
   @override
   final mime = 'multipart/form-data';
 
