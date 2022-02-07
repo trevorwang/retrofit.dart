@@ -20,7 +20,7 @@ dev_dependencies:
 
 dependency_overrides:
   retrofit:
-    path: ../annotation
+    path: ../retrofit
   retrofit_generator:
     path: ../generator
   source_gen: ^1.0.0

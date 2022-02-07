@@ -16,7 +16,7 @@ jobs:
           command: |
             ./tool/travis.sh dartanalyzer
           environment:
-            PKGS: 'example annotation generator'
+            PKGS: 'example retrofit generator'
       - run:
           command: |
             cd generator

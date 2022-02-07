@@ -17,7 +17,7 @@ jobs:
       - name: Generate code
         run: cd example && pub get && pub run build_runner build --delete-conflicting-outputs
       - name: Analyze packages
-        run: PKGS="example annotation generator" ./tool/travis.sh dartanalyzer
+        run: PKGS="example retrofit generator" ./tool/travis.sh dartanalyzer
       - name: Install dependencies
         run: cd generator && pub get
       - name: Run tests
