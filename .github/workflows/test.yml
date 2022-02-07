@@ -1,4 +1,4 @@
-name: Dart CI
+name: test on multiple dart sdk
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest]
         sdk: [stable, 2.14.4, 2.15.1]
     steps:
       - uses: actions/checkout@v2
