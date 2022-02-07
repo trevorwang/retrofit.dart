@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1+1
+
+- fix pub warning
+
 ## 3.0.1
 
 - add mtultupart mime type (#437)
