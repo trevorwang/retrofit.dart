@@ -155,13 +155,17 @@ abstract class TwoContentTypeAnnotationOnSameMethodTest {
 }
 
 @ShouldGenerate(
-  r"/image/${id}_XL.png",
+  r"/image/${imageType.name}/${id}_XL.png",
   contains: true,
 )
 @RestApi()
 abstract class PathTest {
-  @GET("/image/{id}_XL.png")
-  Future<HttpResponse> getImage(@Path('id') String id);
+  @GET("/image/{imageType}/{id}_XL.png")
+  Future<HttpResponse> getImage(@Path('imageType') ImageType imageType, @Path('id') String id);
+}
+
+enum ImageType {
+  icon, large  
 }
 
 @ShouldGenerate(
