@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build docs
         run: |
-          cd annotation
+          cd retrofit
           dartdoc
           mv doc/api ../public
       - name: GitHub Pages
