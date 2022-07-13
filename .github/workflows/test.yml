@@ -11,18 +11,18 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        sdk: [stable, 2.14.4, 2.15.1]
+        sdk: [stable, 2.14.4, 2.15.1, 2.16.2]
     steps:
       - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ matrix.sdk }}
       - name: Generate code
-        run: cd example && pub get && pub run build_runner build --delete-conflicting-outputs
+        run: cd example && dart pub get && dart pub run build_runner build --delete-conflicting-outputs
       - name: Analyze packages
         run: PKGS="example retrofit generator" ./tool/travis.sh dartanalyzer
       - name: Install dependencies
-        run: cd generator && pub get
+        run: cd generator && dart pub get
       - name: Run tests
         run: |
-          cd generator && pub run test
+          cd generator && dart pub run test
