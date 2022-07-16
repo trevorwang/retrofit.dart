@@ -1645,13 +1645,13 @@ You should create a new class to encapsulate the response.
 
   void _generateExtra(
       MethodElement m, List<Code> blocks, String localExtraVar) {
-    final extra = _typeChecker(retrofit.Extra)
-        .firstAnnotationOf(m, throwOnUnresolved: false);
+    final extras =
+        _typeChecker(retrofit.Extra).annotationsOf(m, throwOnUnresolved: false);
 
-    if (extra != null) {
-      final c = ConstantReader(extra);
       blocks.add(literalMap(
-        c.peek('data')?.mapValue.map((k, v) {
+      extras
+          .map((e) => ConstantReader(e).peek('data'))
+          .map((data) => data?.mapValue.map((k, v) {
               return MapEntry(
                 k?.toStringValue() ??
                     (throw InvalidGenerationSourceError(
@@ -1670,18 +1670,11 @@ You should create a new class to encapsulate the response.
                     (v?.toTypeValue() ??
                         (v != null ? Code(revivedLiteral(v)) : Code('null'))),
               );
-            }) ??
-            {},
+              }))
+          .fold<Map<String, Object>>({}, (p, e) => p..addAll(e ?? {})),
         refer('String'),
         refer('dynamic'),
       ).assignConst(localExtraVar).statement);
-    } else {
-      blocks.add(literalMap(
-        {},
-        refer('String'),
-        refer('dynamic'),
-      ).assignConst(localExtraVar).statement);
-    }
   }
 
   bool _missingToJson(ClassElement ele) {

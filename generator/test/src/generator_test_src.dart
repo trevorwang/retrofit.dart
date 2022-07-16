@@ -58,6 +58,20 @@ abstract class ExtrasWithPrimitiveValues {
 
 @ShouldGenerate(
   r'''
+    const _extra = <String, dynamic>{'key': 'value', 'key2': 'value2'};
+''',
+  contains: true,
+)
+@RestApi()
+abstract class MultipleExtrasWithPrimitiveValues {
+  @GET('/list/')
+  @Extra({'key': 'value'})
+  @Extra({'key2': 'value2'})
+  Future<void> list();
+}
+
+@ShouldGenerate(
+  r'''
     const _extra = <String, dynamic>{'key': CustomConstant()};
 ''',
   contains: true,
