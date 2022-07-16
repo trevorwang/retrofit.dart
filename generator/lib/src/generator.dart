@@ -197,9 +197,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   ConstantReader? _getMethodAnnotation(MethodElement method) {
     for (final type in _methodsAnnotations) {
-      final annot = _typeChecker(type)
-          .firstAnnotationOf(method, throwOnUnresolved: false);
-      if (annot != null) return ConstantReader(annot);
+      final annot = _getMethodAnnotationByType(method, type);
+      if (annot != null) return annot;
     }
     return null;
   }
@@ -212,17 +211,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   ConstantReader? _getHeadersAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.Headers)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
+    return _getMethodAnnotationByType(method, retrofit.Headers);
   }
 
   ConstantReader? _getCacheAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.CacheControl)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
+    return _getMethodAnnotationByType(method, retrofit.CacheControl);
   }
 
   ConstantReader? _getContentTypeAnnotation(MethodElement method) {
@@ -238,24 +231,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   ConstantReader? _getMultipartAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.MultiPart)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
+    return _getMethodAnnotationByType(method, retrofit.MultiPart);
   }
 
   ConstantReader? _getFormUrlEncodedAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.FormUrlEncoded)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
+    return _getMethodAnnotationByType(method, retrofit.FormUrlEncoded);
   }
 
   ConstantReader? _getResponseTypeAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.DioResponseType)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
+    return _getMethodAnnotationByType(method, retrofit.DioResponseType);
   }
 
   Map<ParameterElement, ConstantReader> _getAnnotations(
