@@ -210,10 +210,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
-  ConstantReader? _getHeadersAnnotation(MethodElement method) {
-    return _getMethodAnnotationByType(method, retrofit.Headers);
-  }
-
   ConstantReader? _getCacheAnnotation(MethodElement method) {
     return _getMethodAnnotationByType(method, retrofit.CacheControl);
   }
@@ -240,6 +236,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   ConstantReader? _getResponseTypeAnnotation(MethodElement method) {
     return _getMethodAnnotationByType(method, retrofit.DioResponseType);
+  }
+
+  Iterable<ConstantReader> _getMethodAnnotations(
+      MethodElement method, Type type) {
+    return _typeChecker(type)
+        .annotationsOf(method, throwOnUnresolved: false)
+        .map((e) => ConstantReader(e));
   }
 
   Map<ParameterElement, ConstantReader> _getAnnotations(
@@ -1568,12 +1571,15 @@ You should create a new class to encapsulate the response.
   }
 
   Map<String, Expression> _generateHeaders(MethodElement m) {
-    final anno = _getHeadersAnnotation(m);
-    final headersMap = anno?.peek("value")?.mapValue ?? {};
-    final headers = headersMap.map((k, v) {
+    final headers = _getMethodAnnotations(m, retrofit.Headers)
+        .map((e) => e.peek('value'))
+        .map((value) => value?.mapValue.map((k, v) {
       return MapEntry(
-          k?.toStringValue() ?? 'null', literal(v?.toStringValue()));
-    });
+                k?.toStringValue() ?? 'null',
+                literal(v?.toStringValue()),
+              );
+            }))
+        .fold<Map<String, Expression>>({}, (p, e) => p..addAll(e ?? {}));
 
     final annosInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annosInParam.map((k, v) {
@@ -1629,12 +1635,9 @@ You should create a new class to encapsulate the response.
 
   void _generateExtra(
       MethodElement m, List<Code> blocks, String localExtraVar) {
-    final extras =
-        _typeChecker(retrofit.Extra).annotationsOf(m, throwOnUnresolved: false);
-
       blocks.add(literalMap(
-      extras
-          .map((e) => ConstantReader(e).peek('data'))
+      _getMethodAnnotations(m, retrofit.Extra)
+          .map((e) => e.peek('data'))
           .map((data) => data?.mapValue.map((k, v) {
               return MapEntry(
                 k?.toStringValue() ??
