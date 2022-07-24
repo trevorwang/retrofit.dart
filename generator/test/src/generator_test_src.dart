@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 import 'package:source_gen_test/annotations.dart';
 
@@ -58,6 +58,20 @@ abstract class ExtrasWithPrimitiveValues {
 
 @ShouldGenerate(
   r'''
+    const _extra = <String, dynamic>{'key': 'value', 'key2': 'value2'};
+''',
+  contains: true,
+)
+@RestApi()
+abstract class MultipleExtrasWithPrimitiveValues {
+  @GET('/list/')
+  @Extra({'key': 'value'})
+  @Extra({'key2': 'value2'})
+  Future<void> list();
+}
+
+@ShouldGenerate(
+  r'''
     const _extra = <String, dynamic>{'key': CustomConstant()};
 ''',
   contains: true,
@@ -71,6 +85,46 @@ abstract class ExtrasWithCustomConstant {
 
 class CustomConstant {
   const CustomConstant();
+}
+
+@ShouldGenerate(
+  r'''
+    final _headers = <String, dynamic>{};
+''',
+  contains: true,
+)
+@RestApi()
+abstract class EmptyHeaders {
+  @GET('/list/')
+  @Headers(<String, dynamic>{})
+  Future<void> list();
+}
+
+@ShouldGenerate(
+  r'''
+    final _headers = <String, dynamic>{r'key': 'value'};
+''',
+  contains: true,
+)
+@RestApi()
+abstract class HeadersWithPrimitiveValues {
+  @GET('/list/')
+  @Headers({'key': 'value'})
+  Future<void> list();
+}
+
+@ShouldGenerate(
+  r'''
+    final _headers = <String, dynamic>{r'key': 'value', r'key2': 'value2'};
+''',
+  contains: true,
+)
+@RestApi()
+abstract class MultipleHeadersWithPrimitiveValues {
+  @GET('/list/')
+  @Headers({'key': 'value'})
+  @Headers({'key2': 'value2'})
+  Future<void> list();
 }
 
 @ShouldGenerate(

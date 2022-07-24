@@ -197,9 +197,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   ConstantReader? _getMethodAnnotation(MethodElement method) {
     for (final type in _methodsAnnotations) {
-      final annot = _typeChecker(type)
-          .firstAnnotationOf(method, throwOnUnresolved: false);
-      if (annot != null) return ConstantReader(annot);
+      final annot = _getMethodAnnotationByType(method, type);
+      if (annot != null) return annot;
     }
     return null;
   }
@@ -211,18 +210,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
-  ConstantReader? _getHeadersAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.Headers)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
-  }
-
   ConstantReader? _getCacheAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.CacheControl)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
+    return _getMethodAnnotationByType(method, retrofit.CacheControl);
   }
 
   ConstantReader? _getContentTypeAnnotation(MethodElement method) {
@@ -238,24 +227,22 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   ConstantReader? _getMultipartAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.MultiPart)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
+    return _getMethodAnnotationByType(method, retrofit.MultiPart);
   }
 
   ConstantReader? _getFormUrlEncodedAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.FormUrlEncoded)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
+    return _getMethodAnnotationByType(method, retrofit.FormUrlEncoded);
   }
 
   ConstantReader? _getResponseTypeAnnotation(MethodElement method) {
-    final annotation = _typeChecker(retrofit.DioResponseType)
-        .firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annotation != null) return ConstantReader(annotation);
-    return null;
+    return _getMethodAnnotationByType(method, retrofit.DioResponseType);
+  }
+
+  Iterable<ConstantReader> _getMethodAnnotations(
+      MethodElement method, Type type) {
+    return _typeChecker(type)
+        .annotationsOf(method, throwOnUnresolved: false)
+        .map((e) => ConstantReader(e));
   }
 
   Map<ParameterElement, ConstantReader> _getAnnotations(
@@ -1584,12 +1571,15 @@ You should create a new class to encapsulate the response.
   }
 
   Map<String, Expression> _generateHeaders(MethodElement m) {
-    final anno = _getHeadersAnnotation(m);
-    final headersMap = anno?.peek("value")?.mapValue ?? {};
-    final headers = headersMap.map((k, v) {
+    final headers = _getMethodAnnotations(m, retrofit.Headers)
+        .map((e) => e.peek('value'))
+        .map((value) => value?.mapValue.map((k, v) {
       return MapEntry(
-          k?.toStringValue() ?? 'null', literal(v?.toStringValue()));
-    });
+                k?.toStringValue() ?? 'null',
+                literal(v?.toStringValue()),
+              );
+            }))
+        .fold<Map<String, Expression>>({}, (p, e) => p..addAll(e ?? {}));
 
     final annosInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annosInParam.map((k, v) {
@@ -1645,13 +1635,10 @@ You should create a new class to encapsulate the response.
 
   void _generateExtra(
       MethodElement m, List<Code> blocks, String localExtraVar) {
-    final extra = _typeChecker(retrofit.Extra)
-        .firstAnnotationOf(m, throwOnUnresolved: false);
-
-    if (extra != null) {
-      final c = ConstantReader(extra);
       blocks.add(literalMap(
-        c.peek('data')?.mapValue.map((k, v) {
+      _getMethodAnnotations(m, retrofit.Extra)
+          .map((e) => e.peek('data'))
+          .map((data) => data?.mapValue.map((k, v) {
               return MapEntry(
                 k?.toStringValue() ??
                     (throw InvalidGenerationSourceError(
@@ -1670,18 +1657,11 @@ You should create a new class to encapsulate the response.
                     (v?.toTypeValue() ??
                         (v != null ? Code(revivedLiteral(v)) : Code('null'))),
               );
-            }) ??
-            {},
+              }))
+          .fold<Map<String, Object>>({}, (p, e) => p..addAll(e ?? {})),
         refer('String'),
         refer('dynamic'),
       ).assignConst(localExtraVar).statement);
-    } else {
-      blocks.add(literalMap(
-        {},
-        refer('String'),
-        refer('dynamic'),
-      ).assignConst(localExtraVar).statement);
-    }
   }
 
   bool _missingToJson(ClassElement ele) {
