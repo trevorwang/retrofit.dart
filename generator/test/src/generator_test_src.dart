@@ -5,7 +5,7 @@ import 'package:retrofit/retrofit.dart';
 import 'package:source_gen_test/annotations.dart';
 
 @ShouldGenerate(r'''
-// ignore_for_file: unnecessary_brace_in_string_interps
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
 class _RestClient implements RestClient {
   _RestClient(this._dio, {this.baseUrl});
