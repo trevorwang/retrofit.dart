@@ -223,11 +223,19 @@ FutureOr<Task> deserializeTask(Map<String, dynamic> json);
 FutureOr<dynamic> serializeTask(Task object);
 ```
 
-If you want to handle lists of objects, either as return types or parameters, you should provide List counterparts.
+If you want to handle lists of objects, either as return types or parameters, you should provide List counterparts:
 
 ```dart
 FutureOr<List<Task>> deserializeTaskList(Map<String, dynamic> json);
 FutureOr<dynamic> serializeTaskList(List<Task> objects);
+```
+
+Finally, make sure you set your `@RestApi` to use the `Parser.FlutterCompute` parser:
+
+```dart
+@RestApi(
+  parser: Parser.FlutterCompute,
+)
 ```
 
 E.g.
