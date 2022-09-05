@@ -1492,6 +1492,46 @@ abstract class NullableDynamicInnerGenericTypeShouldBeCastedAsMap {
   Future<GenericUser<User>?> get();
 }
 
+
+
+@ShouldGenerate(
+  r'''
+    final value = GenericUser<User?>.fromJson(
+      _result.data!,
+      (json) =>
+          json == null ? null : User.fromJson(json as Map<String, dynamic>),
+    );
+    return value;
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class DynamicNullableInnerGenericTypeShouldBeCastedAsMap {
+  @PUT("/")
+  Future<GenericUser<User?>> get();
+}
+
+@ShouldGenerate(
+  r'''
+    final value = _result.data == null
+        ? null
+        : GenericUser<User?>.fromJson(
+            _result.data!,
+            (json) => json == null
+                ? null
+                : User.fromJson(json as Map<String, dynamic>),
+          );
+    return value;
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class NullableDynamicNullableInnerGenericTypeShouldBeCastedAsMap {
+  @PUT("/")
+  Future<GenericUser<User?>?> get();
+}
+
+
 @ShouldGenerate(
   r'''
     final value = GenericUser<List<double>>.fromJson(

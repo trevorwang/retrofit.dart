@@ -14,6 +14,13 @@ abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
   @GET("/tasks/{id}")
+  Future<ApiResult<Task?>> getNestApiResultGenericsInnerTypeNullable();
+
+
+  @GET("/tasks/{id}")
+  Future<HttpResponse<List<String?>>> getNestAutoCastBasicInnerTypeNullable();
+  
+  @GET("/tasks/{id}")
   Future<HttpResponse<List<String?>>> getAutoCastBasicInnerTypeNullable();
   
   @GET("/tasks/{id}")
@@ -26,12 +33,12 @@ abstract class RestClient {
   @GET("/tasks/{id}")
   Future<List<Task?>> getGenericsInnerTypeNullable();
 
+  
   @GET("/tasks/{id}")
   Future<ApiResult<String?>> getApiResultBasicInnerTypeNullable();
 
   @GET("/tasks/{id}")
   Future<ApiResult<Task?>> getApiResultGenericsInnerTypeNullable();
-
 
   @GET("/tags")
   Future<List<String>> getTags(

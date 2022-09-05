@@ -752,11 +752,18 @@ You should create a new class to encapsulate the response.
                   : [];
 
               if (typeArgs.length > 0 && genericArgumentFactories) {
+                //Remove the outermost nullable modifier
+                //see NullableDynamicNullableInnerGenericTypeShouldBeCastedAsMap from generator/test/src/generator_test_src.dart:1529 
+                var displayString = _displayString(returnType,
+                    withNullability: innerReturnType?.isNullable ?? false);
+                displayString = displayString.endsWith("?")
+                    ? displayString.substring(0, displayString.length - 1)
+                    : displayString;
                 mapperCode = refer(
-                    '${_displayString(returnType, withNullability: innerReturnType?.isNullable ?? false)}.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)})');
+                    '${displayString}.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)})');
               } else {
                 mapperCode = refer(
-                    '${_displayString(returnType, withNullability: innerReturnType?.isNullable ?? false)}.fromJson($_resultVar.data!)');
+                    '${_displayString(returnType)}.fromJson($_resultVar.data!)');
               }
               break;
             case retrofit.Parser.DartJsonMapper:
