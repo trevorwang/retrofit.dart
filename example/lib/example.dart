@@ -5,12 +5,40 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
+import 'package:retrofit_example/api_result.dart';
 
 part 'example.g.dart';
 
 @RestApi(baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/")
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+
+  @GET("/tasks/{id}")
+  Future<ApiResult<Task?>> getNestApiResultGenericsInnerTypeNullable();
+
+
+  @GET("/tasks/{id}")
+  Future<HttpResponse<List<String?>>> getNestAutoCastBasicInnerTypeNullable();
+  
+  @GET("/tasks/{id}")
+  Future<HttpResponse<List<String?>>> getAutoCastBasicInnerTypeNullable();
+  
+  @GET("/tasks/{id}")
+  Future<HttpResponse<List<Task?>>> getAutoCastGenericsInnerTypeNullable();
+
+
+  @GET("/tasks/{id}")
+  Future<List<String?>> getBasicInnerTypeNullable();
+
+  @GET("/tasks/{id}")
+  Future<List<Task?>> getGenericsInnerTypeNullable();
+
+  
+  @GET("/tasks/{id}")
+  Future<ApiResult<String?>> getApiResultBasicInnerTypeNullable();
+
+  @GET("/tasks/{id}")
+  Future<ApiResult<Task?>> getApiResultGenericsInnerTypeNullable();
 
   @GET("/tags")
   Future<List<String>> getTags(
@@ -78,13 +106,14 @@ abstract class RestClient {
   Future<List<TaskGroup>> grouppedTaskByDate();
 
   @GET("/task")
-  Future<HttpResponse<List<Task>>> getTasksWithReponse();
+  Future<HttpResponse<List<Task>>> getTasksWithResponse();
 
   @GET("/task")
-  Future<HttpResponse<List<Task>?>> getTasksWithReponseNullable();
+  Future<HttpResponse<List<Task>?>> getTasksWithResponseNullable();
 
   @DELETE("/tasks/{id}")
   Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
+
 
   @POST("/post")
   Future<String> postFormData(@Part() Task? task, {@Part() required File file});

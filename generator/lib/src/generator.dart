@@ -492,9 +492,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assignFinal(_resultVar)
                 .statement,
           );
+
           blocks.add(refer('$_resultVar.data')
               .propertyIf(thisNullable: returnType.isNullable, name: 'cast')
-              .call([], {}, [refer('${_displayString(innerReturnType)}')])
+              .call([], {}, [
+                refer(
+                    '${_displayString(innerReturnType, withNullability: innerReturnType?.isNullable ?? false)}')
+              ])
               .assignFinal('value')
               .statement);
         } else {
@@ -523,8 +527,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)');
                 break;
               case retrofit.Parser.JsonSerializable:
-                mapperCode = refer(
-                    '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)');
+                if (innerReturnType?.isNullable == true) {
+                  mapperCode = refer(
+                      '(dynamic i) => i == null ? null : ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)');
+                } else {
+                  mapperCode = refer(
+                      '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)');
+                }
                 break;
               case retrofit.Parser.DartJsonMapper:
                 mapperCode = refer(
@@ -730,8 +739,15 @@ You should create a new class to encapsulate the response.
                   : [];
 
               if (typeArgs.length > 0 && genericArgumentFactories) {
+                //Remove the outermost nullable modifier
+                //see NullableDynamicNullableInnerGenericTypeShouldBeCastedAsMap from generator/test/src/generator_test_src.dart:1529 
+                var displayString = _displayString(returnType,
+                    withNullability: innerReturnType?.isNullable ?? false);
+                displayString = displayString.endsWith("?")
+                    ? displayString.substring(0, displayString.length - 1)
+                    : displayString;
                 mapperCode = refer(
-                    '${_displayString(returnType)}.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)})');
+                    '${displayString}.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)})');
               } else {
                 mapperCode = refer(
                     '${_displayString(returnType)}.fromJson($_resultVar.data!)');
@@ -856,9 +872,13 @@ You should create a new class to encapsulate the response.
       }
     } else {
       if (_displayString(dartType) == 'dynamic' || _isBasicType(dartType)) {
-        return "(json)=>json as ${_displayString(dartType)},";
+        return "(json)=>json as ${_displayString(dartType, withNullability: dartType.isNullable)},";
       } else {
-        return "(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),";
+        if (dartType.isNullable) {
+          return "(json)=> json == null ? null : ${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),";
+        } else {
+          return "(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),";
+        }
       }
     }
   }
