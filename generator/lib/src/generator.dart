@@ -1655,12 +1655,11 @@ You should create a new class to encapsulate the response.
             refer("MapEntry").newInstance([literal(fieldName), uploadFileInfo])
           ]).statement;
           if (optionalFile) {
-            final condication =
-                refer(p.displayName).notEqualTo(literalNull).code;
+            final condition = refer(p.displayName).notEqualTo(literalNull).code;
             blocks.addAll(
               [
                 const Code("if("),
-                condication,
+                condition,
                 const Code(") {"),
                 returnCode,
                 const Code("}")
