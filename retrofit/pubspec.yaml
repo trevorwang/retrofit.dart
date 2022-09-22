@@ -10,3 +10,4 @@ environment:
 
 dependencies:
   dio: ^4.0.1
+  meta: ^1.8.0

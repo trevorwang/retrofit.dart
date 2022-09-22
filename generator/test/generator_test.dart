@@ -9,7 +9,9 @@ import 'package:source_gen_test/src/test_annotated_classes.dart';
 
 Future<void> main() async {
   final reader = await initializeLibraryReaderForDirectory(
-      'test/src', 'generator_test_src.dart');
+    'test/src',
+    'generator_test_src.dart',
+  );
   initializeBuildLogTracking();
   testAnnotatedElements<http.RestApi>(
     reader,
