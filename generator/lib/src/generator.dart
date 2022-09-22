@@ -385,7 +385,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final paths = _getAnnotations(m, retrofit.Path);
     String? definePath = method.peek("path")?.stringValue;
     paths.forEach((k, v) {
-      final value = v.peek("value")?.stringValue ?? k.displayName;
+      final value = v.peek(_valueVar)?.stringValue ?? k.displayName;
       definePath = definePath?.replaceFirst(
         "{$value}",
         "\${${k.displayName}${k.type.element2?.kind == ElementKind.ENUM ? '.name' : ''}}",
@@ -1259,7 +1259,7 @@ You should create a new class to encapsulate the response.
   ) {
     final queries = _getAnnotations(m, retrofit.Query);
     final queryParameters = queries.map((p, ConstantReader r) {
-      final key = r.peek("value")?.stringValue ?? p.displayName;
+      final key = r.peek(_valueVar)?.stringValue ?? p.displayName;
       final Expression value;
       if (_isBasicType(p.type) ||
           p.type.isDartCoreList ||
@@ -1568,7 +1568,7 @@ You should create a new class to encapsulate the response.
     var anyNullable = false;
     final fields = _getAnnotations(m, retrofit.Field).map((p, r) {
       anyNullable |= p.type.nullabilitySuffix == NullabilitySuffix.question;
-      final fieldName = r.peek("value")?.stringValue ?? p.displayName;
+      final fieldName = r.peek(_valueVar)?.stringValue ?? p.displayName;
       final isFileField = _typeChecker(File).isAssignableFromType(p.type);
       if (isFileField) {
         log.severe(
@@ -1622,7 +1622,7 @@ You should create a new class to encapsulate the response.
 
       parts.forEach((p, r) {
         final fieldName = r.peek("name")?.stringValue ??
-            r.peek("value")?.stringValue ??
+            r.peek(_valueVar)?.stringValue ??
             p.displayName;
         final isFileField = _typeChecker(File).isAssignableFromType(p.type);
         final contentType = r.peek('contentType')?.stringValue;
@@ -1878,7 +1878,7 @@ You should create a new class to encapsulate the response.
 
     final annotationsInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annotationsInParam.map((k, v) {
-      final value = v.peek("value")?.stringValue ?? k.displayName;
+      final value = v.peek(_valueVar)?.stringValue ?? k.displayName;
       return MapEntry(value, refer(k.displayName));
     });
     headers.addAll(headersInParams);
