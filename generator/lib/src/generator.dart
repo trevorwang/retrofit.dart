@@ -436,9 +436,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       namedArguments[_onReceiveProgress] =
           refer(receiveProgress.item1.displayName);
 
-    final wrapperedReturnType = _getResponseType(m.returnType);
-    final autoCastResponse = (globalOptions.autoCastResponse ??
-        (clientAnnotation.autoCastResponse ?? true));
+    final wrappedReturnType = _getResponseType(m.returnType);
+    final autoCastResponse = globalOptions.autoCastResponse ??
+        (clientAnnotation.autoCastResponse ?? true);
 
     final options = _parseOptions(m, namedArguments, blocks, extraOptions);
 
@@ -450,8 +450,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return Block.of(blocks);
     }
 
-    if (wrapperedReturnType == null ||
-        "void" == wrapperedReturnType.toString()) {
+    if (wrappedReturnType == null || "void" == wrappedReturnType.toString()) {
       blocks.add(
         refer("await $_dioVar.fetch")
             .call([options], {}, [refer("void")]).statement,
