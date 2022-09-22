@@ -12,10 +12,10 @@ dependencies:
   analyzer: '>=4.6.0 <6.0.0'
   build: ^2.3.1
   built_collection: ^5.1.1
-  code_builder: 4.2.0
+  code_builder: '>=4.0.0 <4.3.0'
   dart_style: ^2.2.4
   dio: ^4.0.6
-  retrofit: ^3.0.2
+  retrofit: ^3.0.1
   source_gen: ^1.2.5
   tuple: ^2.0.0
 
