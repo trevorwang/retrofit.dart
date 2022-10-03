@@ -107,7 +107,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       c.methods.add(_generateTypeSetterMethod());
     });
 
-    final emitter = DartEmitter();
+    final emitter = DartEmitter(useNullSafetySyntax: true);
     return DartFormatter()
         .format([_analyzerIgnores, classBuilder.accept(emitter)].join('\n\n'));
   }
@@ -1329,7 +1329,7 @@ You should create a new class to encapsulate the response.
 
       /// workaround until this is merged in code_builder
       /// https://github.com/dart-lang/code_builder/pull/269
-      final emitter = DartEmitter();
+      final emitter = DartEmitter(useNullSafetySyntax: true);
       final buffer = StringBuffer();
       value.accept(emitter, buffer);
       if (type.nullabilitySuffix == NullabilitySuffix.question) {
@@ -2013,7 +2013,7 @@ String revivedLiteral(
   Object object, {
   DartEmitter? dartEmitter,
 }) {
-  dartEmitter ??= DartEmitter();
+  dartEmitter ??= DartEmitter(useNullSafetySyntax: true);
 
   ArgumentError.checkNotNull(object, 'object');
 
