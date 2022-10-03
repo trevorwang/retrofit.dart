@@ -60,7 +60,7 @@ then run the generator
 
 ```sh
 # dart
-pub run build_runner build
+dart pub run build_runner build
 
 # flutter	
 flutter pub run build_runner build

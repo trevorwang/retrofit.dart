@@ -1,12 +1,16 @@
 # Changelog
 
+## 3.0.2
+
+- add recommended dart lints to project
+
 ## 3.0.1+1
 
 - fix pub warning
 
 ## 3.0.1
 
-- add mtultupart mime type (#437)
+- add multipart mime type (#437)
 
 ## 3.0.0
 
@@ -33,11 +37,11 @@
 
 ## 1.3.3
 
-- [BERAKING CHANGE] Change `Part`'s params to named parameters from optional ones.
+- [BREAKING CHANGE] Change `Part`'s params to named parameters from optional ones.
 
 ## 1.3.2
 
-- Add `contentType` to `Part` annotaion
+- Add `contentType` to `Part` annotation
 
 ## 1.3.1
 
@@ -118,7 +122,7 @@
   ```dart
   @http.POST('/path/')
   @dio.Extra({'my_key':'my_value'})
-  Future<String>> myMethod();
+  Future<String> myMethod();
   ```
 
 - Fixed general dart style and code conventions
