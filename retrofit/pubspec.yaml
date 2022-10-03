@@ -11,3 +11,6 @@ environment:
 dependencies:
   dio: ^4.0.6
   meta: ^1.8.0
+
+dev_dependencies:
+  lints: ^2.0.0

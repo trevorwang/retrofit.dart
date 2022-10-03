@@ -2,13 +2,13 @@ import 'package:meta/meta.dart';
 
 /// A holder that includes all http methods which are supported by retrofit.
 class HttpMethod {
-  static const String GET = "GET";
-  static const String POST = "POST";
-  static const String PATCH = "PATCH";
-  static const String PUT = "PUT";
-  static const String DELETE = "DELETE";
-  static const String HEAD = "HEAD";
-  static const String OPTIONS = "OPTIONS";
+  static const String GET = 'GET';
+  static const String POST = 'POST';
+  static const String PATCH = 'PATCH';
+  static const String PUT = 'PUT';
+  static const String DELETE = 'DELETE';
+  static const String HEAD = 'HEAD';
+  static const String OPTIONS = 'OPTIONS';
 }
 
 /// Define how to parse response json
@@ -63,6 +63,12 @@ enum Parser {
 /// Define an API.
 @immutable
 class RestApi {
+  const RestApi({
+    this.baseUrl,
+    this.autoCastResponse,
+    this.parser = Parser.JsonSerializable,
+  });
+
   /// Set the API base URL.
   ///
   /// Base URLs should always end in `/`.
@@ -79,19 +85,13 @@ class RestApi {
   /// * Endpoint: `foo/bar/`
   /// * Result: `http://example.com/foo/bar/`
   ///
-  /// When you don't specify the [baseUrl]. The [dio] instance passed to the constructor should have it defined.
+  /// When you don't specify the [baseUrl]. The [Dio] instance passed to the constructor should have it defined.
   /// Otherwise the `path` field of any [HttpMethod] like [POST] should have the full URL.
 
   final String? baseUrl;
 
   /// if you don't specify the [parser]. It will be [Parser.JsonSerializable]
   final Parser parser;
-
-  const RestApi({
-    this.baseUrl,
-    this.autoCastResponse,
-    this.parser = Parser.JsonSerializable,
-  });
 
   /// Automatically cast response to proper type for all methods in this client
   ///
@@ -102,6 +102,13 @@ class RestApi {
 
 @immutable
 class Method {
+  const Method(
+    this.method,
+    this.path, {
+    @Deprecated('Use `HttpResponse` to get the original response, will be removed in the future release.')
+        this.autoCastResponse = true,
+  });
+
   /// HTTP request method which can be found in [HttpMethod].
   final String method;
 
@@ -110,18 +117,14 @@ class Method {
   /// See [RestApi.baseUrl] for details of how this is resolved against a base URL
   /// to create the full endpoint URL.
   final String path;
-  const Method(
-    this.method,
-    this.path, {
-    this.autoCastResponse = true,
-  });
 
   /// Automatically cast response to proper type for this method only
   ///
   /// This is experimental, Currently there's no perfect solution for this.
   @experimental
   @Deprecated(
-      "Use `HttpResponse` to get the original response, will be removed in the future release.")
+    'Use `HttpResponse` to get the original response, will be removed in the future release.',
+  )
   final bool autoCastResponse;
 }
 
@@ -182,8 +185,9 @@ class OPTIONS extends Method {
 /// Adds headers specified in the [value] map.
 @immutable
 class Headers {
-  final Map<String, dynamic>? value;
   const Headers([this.value]);
+
+  final Map<String, dynamic>? value;
 }
 
 /// Replaces the header with the value of its target.
@@ -191,8 +195,9 @@ class Headers {
 /// Header parameters may be `null` which will omit them from the request.
 @immutable
 class Header {
-  final String value;
   const Header(this.value);
+
+  final String value;
 }
 
 /// Use this annotation on a service method param when you want to directly control the request body
@@ -202,8 +207,9 @@ class Header {
 /// Body parameters may not be `null`.
 @immutable
 class Body {
-  final bool nullToAbsent;
   const Body({this.nullToAbsent = false});
+
+  final bool nullToAbsent;
 }
 
 /// Use this annotation on a service method param when you want to indicate that no body should be
@@ -226,8 +232,9 @@ class NoBody {
 /// `foo=Bob+Smith&bar=President`.
 @immutable
 class Field {
-  final String? value;
   const Field([this.value]);
+
+  final String? value;
 }
 
 /// Named replacement in a URL path segment.
@@ -235,8 +242,9 @@ class Field {
 /// Path parameters may not be `null`.
 @immutable
 class Path {
-  final String? value;
   const Path([this.value]);
+
+  final String? value;
 }
 
 /// Query parameter appended to the URL.
@@ -250,9 +258,10 @@ class Path {
 /// Calling with `foo.friends(1)` yields `/get?bar=1`.
 @immutable
 class Query {
+  const Query(this.value, {this.encoded = false});
+
   final String value;
   final bool encoded;
-  const Query(this.value, {this.encoded = false});
 }
 
 /// Query parameter keys and values appended to the URL.
@@ -260,16 +269,17 @@ class Query {
 /// A `null` value for the map, as a key, or as a value is not allowed.
 @immutable
 class Queries {
-  final bool encoded;
   const Queries({this.encoded = false});
+
+  final bool encoded;
 }
 
 /// An interface for annotation which has mime type.
 /// Such as [FormUrlEncoded] and [MultiPart].
 abstract class _MimeType {
-  abstract final String mime;
-
   const _MimeType();
+
+  abstract final String mime;
 }
 
 /// Denotes that the request body will use form URL encoding. Fields should be declared as
@@ -280,19 +290,20 @@ abstract class _MimeType {
 /// [RFC-3986](http://tools.ietf.org/html/rfc3986)
 @immutable
 class FormUrlEncoded extends _MimeType {
-  @override
-  final mime = 'application/x-www-form-urlencoded';
   const FormUrlEncoded();
+
+  @override
+  String get mime => 'application/x-www-form-urlencoded';
 }
 
 /// Denotes that the request body is multi-part. Parts should be declared as parameters and
 /// annotated with [Part].
 @immutable
 class MultiPart extends _MimeType {
-  @override
-  final mime = 'multipart/form-data';
-
   const MultiPart();
+
+  @override
+  String get mime => 'multipart/form-data';
 }
 
 /// Denotes a single part of a multi-part request.
@@ -309,6 +320,13 @@ class MultiPart extends _MimeType {
 /// ```
 @immutable
 class Part {
+  const Part({
+    @Deprecated('future release') this.value,
+    this.name,
+    this.fileName,
+    this.contentType,
+  });
+
   @Deprecated('future release')
   final String? value;
   final String? name;
@@ -319,20 +337,10 @@ class Part {
 
   // To identify the content type of a file
   final String? contentType;
-  const Part({this.value, this.name, this.fileName, this.contentType});
 }
 
 @immutable
 class CacheControl {
-  final int? maxAge;
-  final int? maxStale;
-  final int? minFresh;
-  final bool noCache;
-  final bool noStore;
-  final bool noTransform;
-  final bool onlyIfCached;
-  final List<String> other;
-
   const CacheControl({
     this.maxAge,
     this.maxStale,
@@ -343,4 +351,13 @@ class CacheControl {
     this.onlyIfCached = false,
     this.other = const [],
   });
+
+  final int? maxAge;
+  final int? maxStale;
+  final int? minFresh;
+  final bool noCache;
+  final bool noStore;
+  final bool noTransform;
+  final bool onlyIfCached;
+  final List<String> other;
 }

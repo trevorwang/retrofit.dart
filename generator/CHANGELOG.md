@@ -1,5 +1,25 @@
 # Changelog
 
+## 4.1.2
+
+- add recommended dart lints to project
+
+## 4.1.1
+
+- fix error with code_builder version above 4.3.x
+
+## 4.1.0+1
+
+- use dart doc instead of dartdoc
+
+## 4.1.0
+
+- [BREAKING CHANGE] update analyzer to 4.7.x and Dart version to 2.17
+
+## 4.0.3
+
+- fix null compatibility
+
 ## 4.0.1
 
 - fix: Code generation will fail if you use the DioResponseType annotation. #452
@@ -24,7 +44,7 @@
 
 - replace dio by dio_http
 
-- fix generic use toJson method in Post @Body  
+- fix generic use toJson method in Post @Body
 
 - nullable list of int was added to generator
 
@@ -56,7 +76,7 @@
 
 ## 1.3.8
 
-- Send list params duplicatedly in multipart
+- Send list params duplicative in multipart
 
 ## 1.3.7
 
@@ -82,7 +102,7 @@
 
 ## 1.3.1+4
 
-- add workaroud for [#143]
+- add workaround for [#143]
 
 ## 1.3.1
 
@@ -103,7 +123,7 @@
 
 ## 1.2.2
 
-- stringify models in formdata #111
+- stringify models in FormData #111
 
 ## 1.2.1
 
@@ -111,7 +131,7 @@
 
 ## 1.2.0
 
-- Add `HttpReposne` to handle the original resposne
+- Add `HttpReposne` to handle the original response
 
 ## 1.1.0
 
@@ -216,7 +236,7 @@ Added support for generic serialization.
   ```dart
   @http.POST('/path/')
   @dio.Extra({'my_key':'my_value'})
-  Future<String>> myMethod();
+  Future<String> myMethod();
   ```
 
 - Fixed general dart style and code conventions
