@@ -293,7 +293,7 @@ class FormUrlEncoded extends _MimeType {
   const FormUrlEncoded();
 
   @override
-  String get mime => 'application/x-www-form-urlencoded';
+  final String mime = 'application/x-www-form-urlencoded';
 }
 
 /// Denotes that the request body is multi-part. Parts should be declared as parameters and
@@ -303,7 +303,7 @@ class MultiPart extends _MimeType {
   const MultiPart();
 
   @override
-  String get mime => 'multipart/form-data';
+  final String mime = 'multipart/form-data';
 }
 
 /// Denotes a single part of a multi-part request.
