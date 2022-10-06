@@ -78,7 +78,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final parser = retrofit.Parser.values
         .firstWhereOrNull((e) => e.toString() == enumString);
     clientAnnotation = retrofit.RestApi(
-      autoCastResponse: annotation?.peek('autoCastResponse')?.boolValue,
       baseUrl: annotation?.peek(_baseUrlVar)?.stringValue ?? '',
       parser: parser ?? retrofit.Parser.JsonSerializable,
     );
@@ -490,18 +489,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     final wrappedReturnType = _getResponseType(m.returnType);
-    final autoCastResponse = globalOptions.autoCastResponse ??
-        (clientAnnotation.autoCastResponse ?? true);
 
     final options = _parseOptions(m, namedArguments, blocks, extraOptions);
-
-    /// If autoCastResponse is false, return the response as it is
-    if (!autoCastResponse) {
-      blocks.add(
-        refer('$_dioVar.fetch').call([options]).returned.statement,
-      );
-      return Block.of(blocks);
-    }
 
     if (wrappedReturnType == null || 'void' == wrappedReturnType.toString()) {
       blocks

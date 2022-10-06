@@ -65,7 +65,6 @@ enum Parser {
 class RestApi {
   const RestApi({
     this.baseUrl,
-    this.autoCastResponse,
     this.parser = Parser.JsonSerializable,
   });
 
@@ -92,22 +91,14 @@ class RestApi {
 
   /// if you don't specify the [parser]. It will be [Parser.JsonSerializable]
   final Parser parser;
-
-  /// Automatically cast response to proper type for all methods in this client
-  ///
-  /// This is experimental, Currently there's no perfect solution for this.
-  @experimental
-  final bool? autoCastResponse;
 }
 
 @immutable
 class Method {
   const Method(
     this.method,
-    this.path, {
-    @Deprecated('Use `HttpResponse` to get the original response, will be removed in the future release.')
-        this.autoCastResponse = true,
-  });
+    this.path,
+  );
 
   /// HTTP request method which can be found in [HttpMethod].
   final String method;
@@ -117,15 +108,6 @@ class Method {
   /// See [RestApi.baseUrl] for details of how this is resolved against a base URL
   /// to create the full endpoint URL.
   final String path;
-
-  /// Automatically cast response to proper type for this method only
-  ///
-  /// This is experimental, Currently there's no perfect solution for this.
-  @experimental
-  @Deprecated(
-    'Use `HttpResponse` to get the original response, will be removed in the future release.',
-  )
-  final bool autoCastResponse;
 }
 
 /// Make a `GET` request
@@ -136,50 +118,43 @@ class Method {
 /// ```
 @immutable
 class GET extends Method {
-  const GET(String path, {bool autoCastResponse = true})
-      : super(HttpMethod.GET, path, autoCastResponse: autoCastResponse);
+  const GET(String path) : super(HttpMethod.GET, path);
 }
 
 /// Make a `POST` request
 @immutable
 class POST extends Method {
-  const POST(String path, {bool autoCastResponse = true})
-      : super(HttpMethod.POST, path, autoCastResponse: autoCastResponse);
+  const POST(String path) : super(HttpMethod.POST, path);
 }
 
 /// Make a `PATCH` request
 @immutable
 class PATCH extends Method {
-  const PATCH(final String path, {bool autoCastResponse = true})
-      : super(HttpMethod.PATCH, path, autoCastResponse: autoCastResponse);
+  const PATCH(final String path) : super(HttpMethod.PATCH, path);
 }
 
 /// Make a `PUT` request
 @immutable
 class PUT extends Method {
-  const PUT(final String path, {bool autoCastResponse = true})
-      : super(HttpMethod.PUT, path, autoCastResponse: autoCastResponse);
+  const PUT(final String path) : super(HttpMethod.PUT, path);
 }
 
 /// Make a `DELETE` request
 @immutable
 class DELETE extends Method {
-  const DELETE(final String path, {bool autoCastResponse = true})
-      : super(HttpMethod.DELETE, path, autoCastResponse: autoCastResponse);
+  const DELETE(final String path) : super(HttpMethod.DELETE, path);
 }
 
 /// Make a `HEAD` request
 @immutable
 class HEAD extends Method {
-  const HEAD(String path, {bool autoCastResponse = true})
-      : super(HttpMethod.HEAD, path, autoCastResponse: autoCastResponse);
+  const HEAD(String path) : super(HttpMethod.HEAD, path);
 }
 
 /// Make a `OPTIONS` request
 @immutable
 class OPTIONS extends Method {
-  const OPTIONS(String path, {bool autoCastResponse = true})
-      : super(HttpMethod.OPTIONS, path, autoCastResponse: autoCastResponse);
+  const OPTIONS(String path) : super(HttpMethod.OPTIONS, path);
 }
 
 /// Adds headers specified in the [value] map.
