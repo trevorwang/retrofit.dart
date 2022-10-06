@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.0
+
+- remove autoCastResponse annotation
+
 ## 3.0.2
 
 - add recommended dart lints to project
