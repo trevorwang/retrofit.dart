@@ -1011,7 +1011,7 @@ abstract class TestModelList {
       queryParameters: queryParameters,
       path: '',
     )..data = _data);
-    ''',
+  ''',
   contains: true,
 )
 @RestApi()

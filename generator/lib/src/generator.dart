@@ -493,12 +493,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final options = _parseOptions(m, namedArguments, blocks, extraOptions);
 
     if (wrappedReturnType == null || 'void' == wrappedReturnType.toString()) {
-      blocks
-        ..add(
-          refer('await $_dioVar.fetch')
-              .call([options], {}, [refer('void')]).statement,
-        )
-        ..add(Code('$returnAsyncWrapper null;'));
+      blocks.add(
+        refer('await $_dioVar.fetch')
+            .call([options], {}, [refer('void')]).statement,
+      );
       return Block.of(blocks);
     }
 
@@ -520,12 +518,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       '''),
           );
       } else {
-        blocks
-          ..add(
-            refer('await $_dioVar.fetch')
-                .call([options], {}, [refer('void')]).statement,
-          )
-          ..add(Code('$returnAsyncWrapper null;'));
+        blocks.add(
+          refer('await $_dioVar.fetch')
+              .call([options], {}, [refer('void')]).statement,
+        );
       }
     } else {
       final innerReturnType = _getResponseInnerType(returnType);

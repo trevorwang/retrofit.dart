@@ -30,3 +30,4 @@ node_modules
 .settings
 yarn.lock
 *.reflectable.dart
+*.g.dart
