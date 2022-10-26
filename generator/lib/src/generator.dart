@@ -2011,7 +2011,7 @@ ${bodyName.displayName} == null
       ..type = MethodType.getter
       ..name = 'dio'
       ..lambda = true
-      ..body = Code('() => _dio');
+      ..body = Code('_dio');
     return builder.build();
   }
 }
