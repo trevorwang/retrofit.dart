@@ -94,6 +94,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             (e) => _generateConstructor(baseUrl, superClassConst: e),
           ),
         )
+        ..methods.add(_buildDioGetter())
         ..methods.addAll(_parseMethods(element));
       if (annotClassConsts.isEmpty) {
         c.constructors.add(_generateConstructor(baseUrl));
@@ -960,7 +961,7 @@ You should create a new class to encapsulate the response.
           if (_isBasicType(genericType)) {
             mapperVal = '''
     (json)=>(json as List<dynamic>)
-            .map<$genericTypeString>((i) => 
+            .map<$genericTypeString>((i) =>
                   i as $genericTypeString
                 )
             .toList(),
@@ -2002,6 +2003,16 @@ ${bodyName.displayName} == null
                   _displayString(type),
         );
     }
+  }
+
+  Method _buildDioGetter() {
+    final builder = MethodBuilder()
+      ..returns = refer('Dio')
+      ..type = MethodType.getter
+      ..name = 'dio'
+      ..lambda = true
+      ..body = Code('() => _dio');
+    return builder.build();
   }
 }
 
