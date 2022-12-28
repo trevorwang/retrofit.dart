@@ -168,6 +168,10 @@ The HTTP methods in the below sample are supported.
 * Add static HTTP headers
 
   ```dart
+    import 'package:dio/dio.dart' hide Headers;
+    
+    ...
+    
   	@GET("/tasks")
   	@Headers(<String, dynamic>{
   		"Content-Type" : "application/json",
