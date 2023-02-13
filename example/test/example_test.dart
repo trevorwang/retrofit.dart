@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
+import 'package:diox/diox.dart';
 import 'package:mock_web_server/mock_web_server.dart';
 import 'package:test/test.dart';
+
 import '../lib/example.dart';
 import 'task_data.dart';
 
@@ -34,9 +35,7 @@ void main() {
 
   test("test tag list", () async {
     print(jsonEncode(["tag1", "tag2"]));
-    _server.enqueue(
-        body: jsonEncode(["tag1", "tag2"]),
-        headers: {"Content-Type": "application/json"});
+    _server.enqueue(body: jsonEncode(["tag1", "tag2"]), headers: {"Content-Type": "application/json"});
     final tasks = await _client.getTags();
     expect(tasks, isNotNull);
     expect(tasks.length, 2);
@@ -44,9 +43,7 @@ void main() {
 
   test("test stream tag list", () async {
     print(jsonEncode(["tag1", "tag2"]));
-    _server.enqueue(
-        body: jsonEncode(["tag1", "tag2"]),
-        headers: {"Content-Type": "application/json"});
+    _server.enqueue(body: jsonEncode(["tag1", "tag2"]), headers: {"Content-Type": "application/json"});
     final tasksStream = await _client.getTagsAsStream();
     final tasks = await tasksStream.first;
     expect(tasks, isNotNull);
@@ -54,8 +51,7 @@ void main() {
   });
 
   test("test empy task list", () async {
-    _server.enqueue(
-        body: demoEmptyListJson, headers: {"Content-Type": "application/json"});
+    _server.enqueue(body: demoEmptyListJson, headers: {"Content-Type": "application/json"});
     final tasks = await _client.getTasks();
     expect(tasks, isNotNull);
     expect(tasks.length, 0);

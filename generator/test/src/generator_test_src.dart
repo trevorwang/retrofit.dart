@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart' hide Headers;
+import 'package:diox/diox.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 import 'package:source_gen_test/annotations.dart';
 
@@ -415,8 +415,7 @@ class GenericUser<T> implements AbstractUser {
 class GenericUserWithoutGenericArgumentFactories<T> implements AbstractUser {
   GenericUserWithoutGenericArgumentFactories();
 
-  factory GenericUserWithoutGenericArgumentFactories.fromJson() =>
-      GenericUserWithoutGenericArgumentFactories<T>();
+  factory GenericUserWithoutGenericArgumentFactories.fromJson() => GenericUserWithoutGenericArgumentFactories<T>();
 
   @override
   Map<String, dynamic> toJson() => <String, dynamic>{};
@@ -435,8 +434,7 @@ mixin AbstractUserMixin {
 abstract class AbstractUser with AbstractUserMixin {
   factory AbstractUser() = User;
 
-  factory AbstractUser.fromJson(Map<String, dynamic> json) =>
-      User.fromJson(json);
+  factory AbstractUser.fromJson(Map<String, dynamic> json) => User.fromJson(json);
 }
 
 Map<String, dynamic> serializeUser(User object) => object.toJson();

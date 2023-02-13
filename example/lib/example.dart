@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart' hide Headers;
+import 'package:diox/diox.dart' hide Headers;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
@@ -16,16 +16,14 @@ abstract class RestClient {
   @GET("/tasks/{id}")
   Future<ApiResult<Task?>> getNestApiResultGenericsInnerTypeNullable();
 
-
   @GET("/tasks/{id}")
   Future<HttpResponse<List<String?>>> getNestAutoCastBasicInnerTypeNullable();
-  
+
   @GET("/tasks/{id}")
   Future<HttpResponse<List<String?>>> getAutoCastBasicInnerTypeNullable();
-  
+
   @GET("/tasks/{id}")
   Future<HttpResponse<List<Task?>>> getAutoCastGenericsInnerTypeNullable();
-
 
   @GET("/tasks/{id}")
   Future<List<String?>> getBasicInnerTypeNullable();
@@ -33,7 +31,6 @@ abstract class RestClient {
   @GET("/tasks/{id}")
   Future<List<Task?>> getGenericsInnerTypeNullable();
 
-  
   @GET("/tasks/{id}")
   Future<ApiResult<String?>> getApiResultBasicInnerTypeNullable();
 
@@ -41,8 +38,7 @@ abstract class RestClient {
   Future<ApiResult<Task?>> getApiResultGenericsInnerTypeNullable();
 
   @GET("/tags")
-  Future<List<String>> getTags(
-      {@Header("optionalHeader") String? optionalHeader});
+  Future<List<String>> getTags({@Header("optionalHeader") String? optionalHeader});
 
   @GET("https://httpbin.org/status/204")
   Future<HttpResponse<void>> reponseWith204();
@@ -57,8 +53,7 @@ abstract class RestClient {
   Future<Task> getTask(@Path("id") String id);
 
   @PATCH("/tasks/{id}")
-  Future<Task> updateTaskPart(
-      @Path() String id, @Body() Map<String, dynamic> map);
+  Future<Task> updateTaskPart(@Path() String id, @Body() Map<String, dynamic> map);
 
   @PUT("/tasks/{id}")
   Future<Task> updateTask(@Path() String id, @Body() Task task);
@@ -114,27 +109,22 @@ abstract class RestClient {
   @DELETE("/tasks/{id}")
   Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
 
-
   @POST("/post")
   Future<String> postFormData(@Part() Task? task, {@Part() required File file});
 
   @POST("/post")
-  Future<String> postFormData2(
-      @Part() List<Map<String, dynamic>> task,
-      @Part() List<String>? tags,
+  Future<String> postFormData2(@Part() List<Map<String, dynamic>> task, @Part() List<String>? tags,
       @Part(contentType: 'application/json') File file);
 
   @POST("/post")
   Future<String> postFormData3({
-    @Part(value: "customfiles", contentType: 'application/json')
-        required List<File> files,
+    @Part(value: "customfiles", contentType: 'application/json') required List<File> files,
     @Part(fileName: "abc.txt") required File file,
   });
 
   @POST("/post")
   Future<String> postFormData6(
-      {@Part(value: "customfiles") required List<List<int>> files,
-      @Part(fileName: "abc.txt") required List<int> file});
+      {@Part(value: "customfiles") required List<List<int>> files, @Part(fileName: "abc.txt") required List<int> file});
 
   @POST("/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
@@ -156,15 +146,12 @@ abstract class RestClient {
   Future<String> queryByEnum(@Query('tasks') TaskQuery query);
 
   @GET("/get")
-  Future<String> namedExample(@Query("\$apikey") String apiKey,
-      @Query("scope") String scope, @Query("type") String type,
+  Future<String> namedExample(
+      @Query("\$apikey") String apiKey, @Query("scope") String scope, @Query("type") String type,
       {@Query("from") int? from});
 
   @POST("/postfile")
-  @Headers(<String, dynamic>{
-    "\$Content-Type": "application/octet-stream",
-    "Ocp-Apim-Subscription-Key": "abc"
-  })
+  @Headers(<String, dynamic>{"\$Content-Type": "application/octet-stream", "Ocp-Apim-Subscription-Key": "abc"})
   Future<String> postFile({@Body() required File file});
 
   @GET("")
@@ -216,20 +203,16 @@ abstract class RestClient {
   Future<String> genericListBase(@Body() ValueWrapper<List<String>> request);
 
   @POST('post')
-  Future<String> genericListOther(
-      @Body() ValueWrapper<List<TaskQuery>> request);
+  Future<String> genericListOther(@Body() ValueWrapper<List<TaskQuery>> request);
 
   @POST('post')
-  Future<String> genericListGeneric(
-      @Body() ValueWrapper<List<ValueWrapper<TaskQuery>>> request);
+  Future<String> genericListGeneric(@Body() ValueWrapper<List<ValueWrapper<TaskQuery>>> request);
 
   @POST('post')
-  Future<String> nestedGenericBase(
-      @Body() ValueWrapper<ValueWrapper<String>> request);
+  Future<String> nestedGenericBase(@Body() ValueWrapper<ValueWrapper<String>> request);
 
   @POST('post')
-  Future<String> nestedGenericOther(
-      @Body() ValueWrapper<ValueWrapper<TaskQuery>> request);
+  Future<String> nestedGenericOther(@Body() ValueWrapper<ValueWrapper<TaskQuery>> request);
 }
 
 @JsonSerializable()
@@ -239,11 +222,7 @@ class Task {
   String avatar;
   String createdAt;
 
-  Task(
-      {required this.id,
-      required this.name,
-      required this.avatar,
-      required this.createdAt});
+  Task({required this.id, required this.name, required this.avatar, required this.createdAt});
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
@@ -265,8 +244,7 @@ class TaskQuery {
 
   TaskQuery(this.statuses);
 
-  factory TaskQuery.fromJson(Map<String, dynamic> json) =>
-      _$TaskQueryFromJson(json);
+  factory TaskQuery.fromJson(Map<String, dynamic> json) => _$TaskQueryFromJson(json);
 
   Map<String, dynamic> toJson() => _$TaskQueryToJson(this);
 }
@@ -278,14 +256,9 @@ class TaskGroup {
   List<Task> completed;
   List<Task> inProgress;
 
-  TaskGroup(
-      {required this.date,
-      required this.todos,
-      required this.completed,
-      required this.inProgress});
+  TaskGroup({required this.date, required this.todos, required this.completed, required this.inProgress});
 
-  factory TaskGroup.fromJson(Map<String, dynamic> json) =>
-      _$TaskGroupFromJson(json);
+  factory TaskGroup.fromJson(Map<String, dynamic> json) => _$TaskGroupFromJson(json);
 
   Map<String, dynamic> toJson() => _$TaskGroupToJson(this);
 }
@@ -296,10 +269,8 @@ class ValueWrapper<T> {
 
   final T value;
 
-  factory ValueWrapper.fromJson(
-          Map<String, dynamic> json, T Function(Object? json) fromJsonT) =>
+  factory ValueWrapper.fromJson(Map<String, dynamic> json, T Function(Object? json) fromJsonT) =>
       _$ValueWrapperFromJson(json, fromJsonT);
 
-  Map<String, dynamic> toJson(Object? Function(T value) toJsonT) =>
-      _$ValueWrapperToJson(this, toJsonT);
+  Map<String, dynamic> toJson(Object? Function(T value) toJsonT) => _$ValueWrapperToJson(this, toJsonT);
 }
