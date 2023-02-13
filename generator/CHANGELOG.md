@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.0
+
+- Update dio to ^5.0.0
+
 ## 4.1.2
 
 - add recommended dart lints to project

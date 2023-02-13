@@ -15,13 +15,13 @@ Add the generator to your dev dependencies
 
 ```yaml
 dependencies:
-  retrofit: '>=3.0.0 <4.0.0'
+  retrofit: '>=4.0.0 <5.0.0'
   logger: any  #for logging purpose
 
 dev_dependencies:
-  retrofit_generator: '>=4.0.0 <5.0.0'
-  build_runner: '>2.3.0 <4.0.0' 
-  json_serializable: '>4.4.0'
+  retrofit_generator: '>=5.0.0 <6.0.0'
+  build_runner: '>=2.3.0 <4.0.0' 
+  json_serializable: ^4.4.0
 ```
 
 ### Define and Generate your API
