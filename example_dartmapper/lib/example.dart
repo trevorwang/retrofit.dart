@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:diox/diox.dart' hide Headers;
+import 'package:dio/dio.dart' hide Headers;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
@@ -25,7 +25,8 @@ abstract class RestClient {
   Future<Task> getTask(@Path("id") String id);
 
   @PATCH("/tasks/{id}")
-  Future<Task> updateTaskPart(@Path() String id, @Body() Map<String, dynamic> map);
+  Future<Task> updateTaskPart(
+      @Path() String id, @Body() Map<String, dynamic> map);
 
   @PUT("/tasks/{id}")
   Future<Task> updateTask(@Path() String id, @Body() Task task);
@@ -73,17 +74,22 @@ abstract class RestClient {
   Future<String> postFormData(@Part() Task task, {@Part() required File file});
 
   @POST("/post")
-  Future<String> postFormData2(@Part() List<Map<String, dynamic>> task, @Part() List<String> tags,
+  Future<String> postFormData2(
+      @Part() List<Map<String, dynamic>> task,
+      @Part() List<String> tags,
       @Part(contentType: 'application/json') File file);
 
   @POST("/post")
   Future<String> postFormData3(
-      {@Part(value: "customfiles", contentType: 'application/json') required List<File> files,
-      @Part() required File file});
+      {@Part(value: "customfiles", contentType: 'application/json')
+          required List<File> files,
+      @Part()
+          required File file});
 
   @POST("/post")
   Future<String> postFormData6(
-      {@Part(value: "customfiles") required List<List<int>> files, @Part() required List<int> file});
+      {@Part(value: "customfiles") required List<List<int>> files,
+      @Part() required List<int> file});
 
   @POST("/post")
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
@@ -105,12 +111,15 @@ abstract class RestClient {
   Future<String> queryByEnum(@Query('tasks') TaskQuery query);
 
   @GET("/get")
-  Future<String> namedExample(
-      @Query("\$apikey") String apiKey, @Query("scope") String scope, @Query("type") String type,
+  Future<String> namedExample(@Query("\$apikey") String apiKey,
+      @Query("scope") String scope, @Query("type") String type,
       {@Query("from") int? from});
 
   @POST("/postfile")
-  @Headers(<String, dynamic>{"\$Content-Type": "application/octet-stream", "Ocp-Apim-Subscription-Key": "abc"})
+  @Headers(<String, dynamic>{
+    "\$Content-Type": "application/octet-stream",
+    "Ocp-Apim-Subscription-Key": "abc"
+  })
   Future<String> postFile({@Body() required File file});
 
   @GET("")
@@ -151,7 +160,8 @@ class TaskQuery {
 
   TaskQuery(this.statuses);
 
-  factory TaskQuery.fromJson(Map<String, dynamic> json) => _$TaskQueryFromJson(json);
+  factory TaskQuery.fromJson(Map<String, dynamic> json) =>
+      _$TaskQueryFromJson(json);
 
   Map<String, dynamic> toJson() => _$TaskQueryToJson(this);
 }
@@ -170,7 +180,8 @@ class TaskGroup {
     this.inProgress,
   });
 
-  factory TaskGroup.fromJson(Map<String, dynamic> json) => _$TaskGroupFromJson(json);
+  factory TaskGroup.fromJson(Map<String, dynamic> json) =>
+      _$TaskGroupFromJson(json);
 
   Map<String, dynamic> toJson() => _$TaskGroupToJson(this);
 }

@@ -1,10 +1,11 @@
 import 'dart:io';
 
-import 'package:diox/diox.dart';
 import 'package:logger/logger.dart';
+import 'package:dio/dio.dart';
 import 'package:retrofit_example/example.dart';
 import 'package:retrofit_example/json_mapper_example.dart' hide Task;
-import 'package:retrofit_example/json_mapper_example.reflectable.dart' show initializeReflectable;
+import 'package:retrofit_example/json_mapper_example.reflectable.dart'
+    show initializeReflectable;
 
 final logger = Logger();
 void main(List<String> args) {
@@ -30,11 +31,16 @@ void main(List<String> args) {
     logger.i(it.toJson());
   });
 
-  client.updateTask("3", Task(id: "4", avatar: "1.png", name: "number 3")).then((it) {
+  client
+      .updateTask("3", Task(id: "4", avatar: "1.png", name: "number 3"))
+      .then((it) {
     logger.i(it.toJson());
   });
 
-  client.updateTaskPart("4", Task(id: "4", avatar: "1.png", name: "number 4").toJson()).then((it) {
+  client
+      .updateTaskPart(
+          "4", Task(id: "4", avatar: "1.png", name: "number 4").toJson())
+      .then((it) {
     logger.i(it.toJson());
   });
 
