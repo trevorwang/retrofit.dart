@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:diox/diox.dart';
 import 'package:meta/meta.dart';
 
 /// Extra data that will be passed to dio's request, response, transformer and interceptors.
