@@ -230,8 +230,9 @@ class _RestClient implements RestClient {
       queryParameters: queryParameters,
       path: '/userByKey',
     )..data = _data);
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries
-        .map((e) async => MapEntry(e.key, await compute(deserializeUser, e.value as Map<String, dynamic>)))));
+    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+        (e) async => MapEntry(e.key,
+            await compute(deserializeUser, e.value as Map<String, dynamic>)))));
     return value;
   }
 
@@ -254,8 +255,11 @@ class _RestClient implements RestClient {
     )..data = _data);
     var value = _result.data == null
         ? null
-        : Map.fromEntries(await Future.wait(_result.data!.entries
-            .map((e) async => MapEntry(e.key, await compute(deserializeUser, e.value as Map<String, dynamic>)))));
+        : Map.fromEntries(await Future.wait(_result.data!.entries.map(
+            (e) async => MapEntry(
+                e.key,
+                await compute(
+                    deserializeUser, e.value as Map<String, dynamic>)))));
     return value;
   }
 
@@ -276,8 +280,11 @@ class _RestClient implements RestClient {
       queryParameters: queryParameters,
       path: '/usersByKey',
     )..data = _data);
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map((e) async =>
-        MapEntry(e.key, await compute(deserializeUserList, (e.value as List).cast<Map<String, dynamic>>())))));
+    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+        (e) async => MapEntry(
+            e.key,
+            await compute(deserializeUserList,
+                (e.value as List).cast<Map<String, dynamic>>())))));
     return value;
   }
 
@@ -319,7 +326,9 @@ class _RestClient implements RestClient {
       queryParameters: queryParameters,
       path: '/userNullable',
     )..data = _data);
-    final value = _result.data == null ? null : await compute(deserializeUser, _result.data!);
+    final value = _result.data == null
+        ? null
+        : await compute(deserializeUser, _result.data!);
     return value;
   }
 
@@ -329,7 +338,9 @@ class _RestClient implements RestClient {
     options,
   }) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'u': await compute(serializeUser, user)};
+    final queryParameters = <String, dynamic>{
+      r'u': await compute(serializeUser, user)
+    };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
@@ -423,7 +434,9 @@ class _RestClient implements RestClient {
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(user == null ? <String, dynamic>{} : await compute(serializeUser, user));
+    _data.addAll(user == null
+        ? <String, dynamic>{}
+        : await compute(serializeUser, user));
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
@@ -463,7 +476,8 @@ class _RestClient implements RestClient {
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
-        !(requestOptions.responseType == ResponseType.bytes || requestOptions.responseType == ResponseType.stream)) {
+        !(requestOptions.responseType == ResponseType.bytes ||
+            requestOptions.responseType == ResponseType.stream)) {
       if (T == String) {
         requestOptions.responseType = ResponseType.plain;
       } else {

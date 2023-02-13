@@ -36,7 +36,7 @@ abstract class RestClient {
   Future<Map<String, String>?> getTagByKeyNullable({@DioOptions() Options? options});
 
   @GET('/tag')
-  Future<String> getTag({@DioOptions() Options? options, @Header("Content-Type") contentType});
+  Future<String> getTag({@DioOptions() Options? options, @Header("Content-Type") required contentType});
 
   @GET('/tagNullable')
   Future<String?> getTagNullable({@DioOptions() Options? options});
