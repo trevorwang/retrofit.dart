@@ -1,6 +1,6 @@
 name: retrofit_generator
 description: retrofit generator is an dio client generator using source_gen and inspired by Chopper and Retrofit.
-version: 4.2.0
+version: 5.0.0
 
 homepage: https://mings.in/retrofit.dart/
 repository: https://github.com/trevorwang/retrofit.dart/
@@ -14,12 +14,12 @@ dependencies:
   built_collection: ^5.1.1
   code_builder: ^4.3.0
   dart_style: ^2.2.4
-  dio: ^4.0.6
+  dio: ^5.0.0
   retrofit: ^3.3.1
   source_gen: ^1.2.5
   tuple: ^2.0.0
 
 dev_dependencies:
-  lints: ^2.0.0
+  lints: ^2.0.1
   source_gen_test: ^1.0.4
   test: ^1.21.4
