@@ -15,7 +15,7 @@ dependencies:
   code_builder: ^4.3.0
   dart_style: ^2.2.4
   dio: ^5.0.0
-  retrofit: ^3.3.1
+  retrofit: ^4.0.1
   source_gen: ^1.2.5
   tuple: ^2.0.0
 
