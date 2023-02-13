@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:diox/diox.dart';
+import 'package:dio/dio.dart';
 import 'package:mock_web_server/mock_web_server.dart';
 import 'package:retrofit_example/json_mapper_example.dart';
 import 'package:retrofit_example/json_mapper_example.reflectable.dart' show initializeReflectable;

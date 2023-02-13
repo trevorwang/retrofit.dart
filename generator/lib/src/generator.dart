@@ -9,7 +9,7 @@ import 'package:build/build.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:diox/diox.dart';
+import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';

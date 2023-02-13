@@ -29,7 +29,7 @@ dev_dependencies:
 ```dart
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:diox/diox.dart';
+import 'package:dio/dio.dart';
 
 part 'example.g.dart';
 
@@ -71,7 +71,7 @@ flutter pub run build_runner build
 ```dart
 import 'package:logger/logger.dart';
 import 'package:retrofit_example/example.dart';
-import 'package:diox/diox.dart';
+import 'package:dio/dio.dart';
 
 final logger = Logger();
 void main(List<String> args) {
@@ -168,7 +168,7 @@ The HTTP methods in the below sample are supported.
 * Add static HTTP headers
 
   ```dart
-    import 'package:diox/diox.dart' hide Headers;
+    import 'package:dio/dio.dart' hide Headers;
     
     ...
     

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:diox/diox.dart';
+import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:retrofit_example/example.dart';
 import 'package:retrofit_example/json_mapper_example.dart' hide Task;

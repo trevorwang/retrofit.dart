@@ -75,7 +75,7 @@ dev_dependencies:
 <h3 id="define-and-generate-your-api">Define and Generate your API</h3>
 <pre class="language-dart"><code class="language-dart">import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:diox/diox.dart';
+import 'package:dio/dio.dart';
 
 part 'example.g.dart';
 
@@ -111,7 +111,7 @@ flutter pub run build_runner build
 <h3 id="use-it">Use it</h3>
 <pre class="language-dart"><code class="language-dart">import 'package:logger/logger.dart';
 import 'package:retrofit_example/example.dart';
-import 'package:diox/diox.dart';
+import 'package:dio/dio.dart';
 
 final logger = Logger();
 void main(List&lt;String&gt; args) {

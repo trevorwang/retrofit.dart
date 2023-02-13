@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:diox/diox.dart' hide Headers;
+import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 import 'package:source_gen_test/annotations.dart';
 

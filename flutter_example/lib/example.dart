@@ -1,4 +1,4 @@
-import 'package:diox/diox.dart' hide Headers;
+import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
