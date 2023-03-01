@@ -1860,8 +1860,8 @@ ${bodyName.displayName} == null
 
     /// There is no body
     blocks.add(
-      declareFinal(dataVar)
-          .assign(literalMap({}, refer('String'), refer('dynamic')))
+      declareFinal(dataVar, type: refer('Map<String, dynamic>?'))
+          .assign(literalNull)
           .statement,
     );
   }
