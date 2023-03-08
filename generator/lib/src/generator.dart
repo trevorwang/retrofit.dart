@@ -1871,10 +1871,26 @@ ${bodyName.displayName} == null
         .map((e) => e.peek(_valueVar))
         .map(
           (value) => value?.mapValue.map(
-            (k, v) => MapEntry(
-              k?.toStringValue() ?? 'null',
-              literal(v?.toStringValue()),
-            ),
+            (k, v) {
+              dynamic val;
+              if (v == null) {
+                val = null;
+              } else if (v.type?.isDartCoreBool == true) {
+                val = v.toBoolValue();
+              } else if (v.type?.isDartCoreString == true) {
+                val = v.toStringValue();
+              } else if (v.type?.isDartCoreDouble == true) {
+                val = v.toDoubleValue();
+              } else if (v.type?.isDartCoreInt == true) {
+                val = v.toIntValue();
+              } else {
+                val = v.toStringValue();
+              }
+              return MapEntry(
+                k?.toStringValue() ?? 'null',
+                literal(val),
+              );
+            },
           ),
         )
         .fold<Map<String, Expression>>({}, (p, e) => p..addAll(e ?? {}));
