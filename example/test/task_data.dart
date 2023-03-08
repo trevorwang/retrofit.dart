@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../lib/example.dart';
+import 'package:retrofit_example/example.dart';
 
 final demoTask = Task(
   id: '123455151',

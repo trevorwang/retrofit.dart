@@ -9,7 +9,7 @@ dependencies:
   retrofit:
   json_annotation:
   logger: ^1.2.2
-  dio: ^5.0.0
+  dio: ^5.0.1
 
 dev_dependencies:
   test: ^1.23.1

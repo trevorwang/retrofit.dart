@@ -1,7 +1,8 @@
-import 'dart:convert';
+import 'dart:convert' show jsonEncode;
 import 'dart:io';
 
 import 'package:dio/dio.dart' hide Headers;
+import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:retrofit_example/api_result.dart';
@@ -244,7 +245,7 @@ abstract class RestClient {
 
 @JsonSerializable()
 class Task {
-  Task({
+  const Task({
     required this.id,
     required this.name,
     required this.avatar,
@@ -253,10 +254,10 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
-  String id;
-  String name;
-  String avatar;
-  String createdAt;
+  final String id;
+  final String name;
+  final String avatar;
+  final String createdAt;
 
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 }
@@ -273,19 +274,19 @@ enum Status {
 
 @JsonSerializable()
 class TaskQuery {
-  TaskQuery(this.statuses);
+  const TaskQuery(this.statuses);
 
   factory TaskQuery.fromJson(Map<String, dynamic> json) =>
       _$TaskQueryFromJson(json);
 
-  List<Status> statuses;
+  final List<Status> statuses;
 
   Map<String, dynamic> toJson() => _$TaskQueryToJson(this);
 }
 
 @JsonSerializable()
 class TaskGroup {
-  TaskGroup({
+  const TaskGroup({
     required this.date,
     required this.todos,
     required this.completed,
@@ -295,10 +296,10 @@ class TaskGroup {
   factory TaskGroup.fromJson(Map<String, dynamic> json) =>
       _$TaskGroupFromJson(json);
 
-  DateTime date;
-  List<Task> todos;
-  List<Task> completed;
-  List<Task> inProgress;
+  final DateTime date;
+  final List<Task> todos;
+  final List<Task> completed;
+  final List<Task> inProgress;
 
   Map<String, dynamic> toJson() => _$TaskGroupToJson(this);
 }

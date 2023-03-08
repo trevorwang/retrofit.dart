@@ -22,9 +22,7 @@ class ApiResult<T> {
   final String? msg;
 
   ///业务接口执行成功
-  bool get isSuccess {
-    return code == success;
-  }
+  bool get isSuccess => code == success;
 
   Map<String, dynamic> toJson(Object? Function(T) toJsonT) =>
       _$ApiResultToJson(this, toJsonT);
