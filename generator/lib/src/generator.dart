@@ -1872,25 +1872,25 @@ ${bodyName.displayName} == null
         .map(
           (value) => value?.mapValue.map(
             (k, v) {
-              dynamic? val;
-              if(v == null){
+              dynamic val;
+              if (v == null) {
                 val = null;
-              }else if(v.type.isDartCoreBool){
-                val = v?.toBoolValue();
-              }else if(v.type.isDartCoreString){
-                val = v?.toStringValue();
-              }else if(v?.type.isDartCoreDouble){
-                val = v?.toDoubleValue();
-              }else if(v.type.isDartCoreInt){
-                val = v?.toIntValue();
-              }else {
-                val = v?.toStringValue();
-              }      
+              } else if (v.type?.isDartCoreBool == true) {
+                val = v.toBoolValue();
+              } else if (v.type?.isDartCoreString == true) {
+                val = v.toStringValue();
+              } else if (v.type?.isDartCoreDouble == true) {
+                val = v.toDoubleValue();
+              } else if (v.type?.isDartCoreInt == true) {
+                val = v.toIntValue();
+              } else {
+                val = v.toStringValue();
+              }
               return MapEntry(
-                  k?.toStringValue() ?? 'null',
-                  literal(v?.toStringValue()),
-                )
-              },
+                k?.toStringValue() ?? 'null',
+                literal(val),
+              );
+            },
           ),
         )
         .fold<Map<String, Expression>>({}, (p, e) => p..addAll(e ?? {}));
