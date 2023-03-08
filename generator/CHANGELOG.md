@@ -1,5 +1,16 @@
 # Changelog
 
+## 5.0.1
+
+- Update dependencies
+- Update example
+- Fix link in readme
+
+## 5.0.0+1
+
+- Support multi parameter types for headers
+- Make data null when it is empty
+
 ## 5.0.0
 
 - Update dio to ^5.0.0
