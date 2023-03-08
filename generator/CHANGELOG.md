@@ -2,6 +2,7 @@
 
 ## 5.0.1
 
+- Update to Dart sdk >=2.18
 - Update dependencies
 - Update example
 - Fix link in readme

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart' hide Headers;
@@ -156,7 +157,7 @@ abstract class RestClient {
 
   @GET('/get')
   Future<String> namedExample(
-    @Query(r'$apikey') String apiKey,
+    @Query(r'$apiKey') String apiKey,
     @Query('scope') String scope,
     @Query('type') String type, {
     @Query('from') int? from,
@@ -260,6 +261,7 @@ class Task {
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 }
 
+// ignore_for_file: constant_identifier_names
 enum Status {
   @JsonValue('new')
   New,

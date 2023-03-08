@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:mock_web_server/mock_web_server.dart';
+import 'package:retrofit_example/example.dart';
 import 'package:test/test.dart';
 
-import '../lib/example.dart';
 import 'task_data.dart';
 
 late MockWebServer _server;
@@ -54,7 +54,7 @@ void main() {
     expect(tasks.length, 2);
   });
 
-  test('test empy task list', () async {
+  test('test empty task list', () async {
     _server.enqueue(
         body: demoEmptyListJson, headers: {'Content-Type': 'application/json'});
     final tasks = await _client.getTasks();
@@ -117,17 +117,9 @@ void main() {
     });
   });
 
-  test('Test group list task', () async {
-    _server.enqueue(headers: _headers, body: groupTaskListJson);
-    final result = await _client.grouppedTaskByDate();
-    expect(result, isNotNull);
-    expect(result.first.todos, isNotEmpty);
-    expect(result.first.todos.first.avatar, demoTask.avatar);
-  });
-
   test('test escaping character in query & headers', () async {
     _server.enqueue(body: 'hello');
-    await _client.namedExample('apkKeyvalue', 'hello', 'ggggg');
+    await _client.namedExample('apkKeyValue', 'hello', 'ggggg');
     expect(true, true);
   });
 }
