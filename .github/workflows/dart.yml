@@ -13,7 +13,7 @@ jobs:
       image: dart:stable
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.3.0
       - name: Generate code
         run: cd example && dart pub get && dart pub run build_runner build --delete-conflicting-outputs
       - name: Analyze packages

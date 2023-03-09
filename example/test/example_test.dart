@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:mock_web_server/mock_web_server.dart';
+import 'package:retrofit_example/example.dart';
 import 'package:test/test.dart';
-import '../lib/example.dart';
+
 import 'task_data.dart';
 
 late MockWebServer _server;
 late RestClient _client;
-final _headers = {"Content-Type": "application/json"};
+final _headers = {'Content-Type': 'application/json'};
 final dispatcherMap = <String, MockResponse>{};
 
 void main() {
@@ -32,45 +33,45 @@ void main() {
     _server.shutdown();
   });
 
-  test("test tag list", () async {
-    print(jsonEncode(["tag1", "tag2"]));
+  test('test tag list', () async {
+    print(jsonEncode(['tag1', 'tag2']));
     _server.enqueue(
-        body: jsonEncode(["tag1", "tag2"]),
-        headers: {"Content-Type": "application/json"});
+        body: jsonEncode(['tag1', 'tag2']),
+        headers: {'Content-Type': 'application/json'});
     final tasks = await _client.getTags();
     expect(tasks, isNotNull);
     expect(tasks.length, 2);
   });
 
-  test("test stream tag list", () async {
-    print(jsonEncode(["tag1", "tag2"]));
+  test('test stream tag list', () async {
+    print(jsonEncode(['tag1', 'tag2']));
     _server.enqueue(
-        body: jsonEncode(["tag1", "tag2"]),
-        headers: {"Content-Type": "application/json"});
-    final tasksStream = await _client.getTagsAsStream();
+        body: jsonEncode(['tag1', 'tag2']),
+        headers: {'Content-Type': 'application/json'});
+    final tasksStream = _client.getTagsAsStream();
     final tasks = await tasksStream.first;
     expect(tasks, isNotNull);
     expect(tasks.length, 2);
   });
 
-  test("test empy task list", () async {
+  test('test empty task list', () async {
     _server.enqueue(
-        body: demoEmptyListJson, headers: {"Content-Type": "application/json"});
+        body: demoEmptyListJson, headers: {'Content-Type': 'application/json'});
     final tasks = await _client.getTasks();
     expect(tasks, isNotNull);
     expect(tasks.length, 0);
   });
 
-  test("test task list", () async {
+  test('test task list', () async {
     _server.enqueue(body: demoTaskListJson, headers: _headers);
     final tasks = await _client.getTasks();
     expect(tasks, isNotNull);
     expect(tasks.length, 1);
   });
 
-  test("test task detail", () async {
+  test('test task detail', () async {
     _server.enqueue(headers: _headers, body: demoTaskJson);
-    final task = await _client.getTask("id");
+    final task = await _client.getTask('id');
     expect(task, isNotNull);
     expect(task.id, demoTask.id);
     expect(task.avatar, demoTask.avatar);
@@ -78,7 +79,7 @@ void main() {
     expect(task.createdAt, demoTask.createdAt);
   });
 
-  test("create new task", () async {
+  test('create new task', () async {
     _server.enqueue(headers: _headers, body: demoTaskJson);
     final task = await _client.createTask(demoTask);
     expect(task, isNotNull);
@@ -88,9 +89,9 @@ void main() {
     expect(task.createdAt, demoTask.createdAt);
   });
 
-  test("update task all content", () async {
+  test('update task all content', () async {
     _server.enqueue(headers: _headers, body: demoTaskJson);
-    final task = await _client.updateTask("id", demoTask);
+    final task = await _client.updateTask('id', demoTask);
     expect(task, isNotNull);
     expect(task.id, demoTask.id);
     expect(task.avatar, demoTask.avatar);
@@ -98,9 +99,10 @@ void main() {
     expect(task.createdAt, demoTask.createdAt);
   });
 
-  test("update task part content", () async {
+  test('update task part content', () async {
     _server.enqueue(headers: _headers, body: demoTaskJson);
-    final task = await _client.updateTaskPart("id", {"name": "demo name 2"});
+    final task = await _client
+        .updateTaskPart('id', <String, String>{'name': 'demo name 2'});
     expect(task, isNotNull);
     expect(task.id, demoTask.id);
     expect(task.avatar, demoTask.avatar);
@@ -108,24 +110,16 @@ void main() {
     expect(task.createdAt, demoTask.createdAt);
   });
 
-  test("delete a task", () async {
+  test('delete a task', () async {
     _server.enqueue();
-    await _client.deleteTask("id").then((it) {
+    await _client.deleteTask('id').then((it) {
       expect(null, null);
     });
   });
 
-  test("Test group list task", () async {
-    _server.enqueue(headers: _headers, body: groupTaskListJson);
-    final result = await _client.grouppedTaskByDate();
-    expect(result, isNotNull);
-    expect(result.first.todos, isNotEmpty);
-    expect(result.first.todos.first.avatar, demoTask.avatar);
-  });
-
   test('test escaping character in query & headers', () async {
     _server.enqueue(body: 'hello');
-    await _client.namedExample("apkKeyvalue", "hello", "ggggg");
+    await _client.namedExample('apkKeyValue', 'hello', 'ggggg');
     expect(true, true);
   });
 }

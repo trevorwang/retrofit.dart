@@ -388,7 +388,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final value = v.peek(_valueVar)?.stringValue ?? k.displayName;
       definePath = definePath?.replaceFirst(
         '{$value}',
-        "\${${k.displayName}${k.type.element2?.kind == ElementKind.ENUM ? '.name' : ''}}",
+        "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? '.name' : ''}}",
       );
     });
     return literal(definePath);
@@ -911,7 +911,7 @@ You should create a new class to encapsulate the response.
   }
 
   bool isGenericArgumentFactories(DartType? dartType) {
-    final metaData = dartType?.element2?.metadata;
+    final metaData = dartType?.element?.metadata;
     if (metaData == null || dartType == null) {
       return false;
     }
@@ -1372,7 +1372,7 @@ if (T != dynamic &&
     if (bodyName != null) {
       final nullToAbsent =
           annotation!.item2.peek('nullToAbsent')?.boolValue ?? false;
-      final bodyTypeElement = bodyName.type.element2;
+      final bodyTypeElement = bodyName.type.element;
       if (const TypeChecker.fromRuntime(Map)
           .isAssignableFromType(bodyName.type)) {
         blocks
@@ -1444,8 +1444,8 @@ if (T != dynamic &&
               )
               .statement,
         );
-      } else if (bodyName.type.element2 is ClassElement) {
-        final ele = bodyName.type.element2! as ClassElement;
+      } else if (bodyName.type.element is ClassElement) {
+        final ele = bodyName.type.element! as ClassElement;
         if (clientAnnotation.parser == retrofit.Parser.MapSerializable) {
           final toMap = ele.lookUpMethod('toMap', ele.library);
           if (toMap == null) {
@@ -1484,7 +1484,7 @@ if (T != dynamic &&
                   .assign(refer(bodyName.displayName))
                   .statement,
             );
-          } else if (_missingSerialize(ele.enclosingElement3, bodyName.type)) {
+          } else if (_missingSerialize(ele.enclosingElement, bodyName.type)) {
             log.warning(
                 '${_displayString(bodyName.type)} must provide a `serialize${_displayString(bodyName.type)}()` method which returns a Map.\n'
                 "It is programmer's responsibility to make sure the ${_displayString(bodyName.type)} is properly serialized");
@@ -1792,8 +1792,8 @@ ${bodyName.displayName} == null
             if (p.type.isNullable) {
               blocks.add(const Code('}'));
             }
-          } else if (innerType?.element2 is ClassElement) {
-            final ele = innerType!.element2! as ClassElement;
+          } else if (innerType?.element is ClassElement) {
+            final ele = innerType!.element! as ClassElement;
             if (_missingToJson(ele)) {
               throw Exception('toJson() method have to add to ${p.type}');
             } else {
@@ -1836,8 +1836,8 @@ ${bodyName.displayName} == null
               )
             ]).statement,
           );
-        } else if (p.type.element2 is ClassElement) {
-          final ele = p.type.element2! as ClassElement;
+        } else if (p.type.element is ClassElement) {
+          final ele = p.type.element! as ClassElement;
           if (_missingToJson(ele)) {
             throw Exception('toJson() method have to add to ${p.type}');
           } else {
@@ -1866,8 +1866,8 @@ ${bodyName.displayName} == null
 
     /// There is no body
     blocks.add(
-      declareFinal(dataVar)
-          .assign(literalMap({}, refer('String'), refer('dynamic')))
+      declareFinal(dataVar, type: refer('Map<String, dynamic>?'))
+          .assign(literalNull)
           .statement,
     );
   }
@@ -1877,10 +1877,26 @@ ${bodyName.displayName} == null
         .map((e) => e.peek(_valueVar))
         .map(
           (value) => value?.mapValue.map(
-            (k, v) => MapEntry(
-              k?.toStringValue() ?? 'null',
-              literal(v?.toStringValue()),
-            ),
+            (k, v) {
+              dynamic val;
+              if (v == null) {
+                val = null;
+              } else if (v.type?.isDartCoreBool == true) {
+                val = v.toBoolValue();
+              } else if (v.type?.isDartCoreString == true) {
+                val = v.toStringValue();
+              } else if (v.type?.isDartCoreDouble == true) {
+                val = v.toDoubleValue();
+              } else if (v.type?.isDartCoreInt == true) {
+                val = v.toIntValue();
+              } else {
+                val = v.toStringValue();
+              }
+              return MapEntry(
+                k?.toStringValue() ?? 'null',
+                literal(val),
+              );
+            },
           ),
         )
         .fold<Map<String, Expression>>({}, (p, e) => p..addAll(e ?? {}));
@@ -2143,11 +2159,11 @@ String revivedLiteral(
 
 extension DartTypeStreamAnnotation on DartType {
   bool get isDartAsyncStream {
-    final element = element2 != null ? null : element2! as ClassElement;
-    if (element == null) {
+    final e = element != null ? null : element! as ClassElement;
+    if (e == null) {
       return false;
     }
-    return element.name == 'Stream' && element.library.isDartAsync;
+    return e.name == 'Stream' && e.library.isDartAsync;
   }
 }
 
