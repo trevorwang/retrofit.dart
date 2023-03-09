@@ -1579,9 +1579,11 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
   '''
     final value = GenericUser<List<User>>.fromJson(
       _result.data!,
-      (json) => (json as List<dynamic>)
-          .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
-          .toList(),
+      (json) => json is List<dynamic>
+          ? json
+              .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
+              .toList()
+          : List.empty(),
     );
     return value;
   ''',
@@ -1599,9 +1601,11 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
         ? null
         : GenericUser<List<User>>.fromJson(
             _result.data!,
-            (json) => (json as List<dynamic>)
-                .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
-                .toList(),
+            (json) => json is List<dynamic>
+                ? json
+                    .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
+                    .toList()
+                : List.empty(),
           );
     return value;
   ''',
@@ -1707,8 +1711,9 @@ abstract class NullableDynamicNullableInnerGenericTypeShouldBeCastedAsMap {
   '''
     final value = GenericUser<List<double>>.fromJson(
       _result.data!,
-      (json) =>
-          (json as List<dynamic>).map<double>((i) => i as double).toList(),
+      (json) => json is List<dynamic>
+          ? json.map<double>((i) => i as double).toList()
+          : List.empty(),
     );
     return value;
   ''',
@@ -1726,9 +1731,9 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
         ? null
         : GenericUser<List<double>>.fromJson(
             _result.data!,
-            (json) => (json as List<dynamic>)
-                .map<double>((i) => i as double)
-                .toList(),
+            (json) => json is List<dynamic>
+                ? json.map<double>((i) => i as double).toList()
+                : List.empty(),
           );
     return value;
   ''',
