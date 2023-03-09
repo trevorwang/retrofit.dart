@@ -950,28 +950,34 @@ You should create a new class to encapsulate the response.
             isGenericArgumentFactories(genericType) &&
             genericType != null) {
           mapperVal = '''
-    (json)=> (json as List<dynamic>)
+    (json)=> json is List<dynamic>
+          ? json
             .map<$genericTypeString>((i) => $genericTypeString.fromJson(
                   i as Map<String, dynamic>,${_getInnerJsonSerializableMapperFn(genericType)}
                 ))
-            .toList(),
+            .toList()
+          : List.empty(),
     ''';
         } else {
           if (_isBasicType(genericType)) {
             mapperVal = '''
-    (json)=>(json as List<dynamic>)
+    (json)=> json is List<dynamic>
+          ? json
             .map<$genericTypeString>((i) => 
                   i as $genericTypeString
                 )
-            .toList(),
+            .toList()
+          : List.empty(),
     ''';
           } else {
             mapperVal = """
-    (json)=>(json as List<dynamic>)
+    (json)=> json is List<dynamic>
+          ? json
             .map<$genericTypeString>((i) =>
             ${genericTypeString == 'dynamic' ? ' i as Map<String, dynamic>' : '$genericTypeString.fromJson(  i as Map<String, dynamic> )  '}
     )
-            .toList(),
+            .toList()
+          : List.empty(),
     """;
           }
         }
