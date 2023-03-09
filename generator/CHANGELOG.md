@@ -1,9 +1,8 @@
 # Changelog
 
-## 5.0.1
+## 6.0.0
 
-- Update to Dart sdk >=2.18
-- Update dependencies
+- [BREAKING CHANGE] Update min Dart sdk to 2.18
 - Update example
 - Fix link in readme
 
