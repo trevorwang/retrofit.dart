@@ -1,5 +1,16 @@
 # Changelog
 
+## 6.0.0
+
+- [BREAKING CHANGE] Update min Dart sdk to 2.18
+- Update example
+- Fix link in readme
+
+## 5.0.0+1
+
+- Support multi parameter types for headers
+- Make data null when it is empty
+
 ## 5.0.0
 
 - Update dio to ^5.0.0
