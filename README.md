@@ -19,7 +19,7 @@ dependencies:
   logger: any  #for logging purpose
 
 dev_dependencies:
-  retrofit_generator: '>=6.0.0 <7.0.0'
+  retrofit_generator: '>=6.0.0 <7.0.0'   // only support dart >=2.18
   build_runner: '>=2.3.0 <4.0.0'
   json_serializable: ^6.6.0
 ```
