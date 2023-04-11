@@ -22,7 +22,7 @@ class RetrofitOptions {
 
   RetrofitOptions.fromOptions([BuilderOptions? options])
       : autoCastResponse = (options?.config['auto_cast_response']?.toString() ?? 'true') == 'true',
-        emptyRequestBody = (options?.config['empty_request_body']?.toString() ?? 'true') == 'true';
+        emptyRequestBody = (options?.config['empty_request_body']?.toString() ?? 'false') == 'true';
 
   final bool? autoCastResponse;
   final bool? emptyRequestBody;
