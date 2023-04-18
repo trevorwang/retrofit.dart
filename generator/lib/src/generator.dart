@@ -18,14 +18,14 @@ const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
 
 class RetrofitOptions {
-  RetrofitOptions({this.autoCastResponse});
+  RetrofitOptions({this.autoCastResponse, this.emptyRequestBody});
 
   RetrofitOptions.fromOptions([BuilderOptions? options])
-      : autoCastResponse =
-            (options?.config['auto_cast_response']?.toString() ?? 'true') ==
-                'true';
+      : autoCastResponse = (options?.config['auto_cast_response']?.toString() ?? 'true') == 'true',
+        emptyRequestBody = (options?.config['empty_request_body']?.toString() ?? 'false') == 'true';
 
   final bool? autoCastResponse;
+  final bool? emptyRequestBody;
 }
 
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
@@ -1865,11 +1865,15 @@ ${bodyName.displayName} == null
     }
 
     /// There is no body
-    blocks.add(
-      declareFinal(dataVar, type: refer('Map<String, dynamic>?'))
-          .assign(literalNull)
-          .statement,
-    );
+    if (globalOptions.emptyRequestBody == true) {
+      blocks.add(
+        declareFinal(dataVar).assign(literalMap({}, refer('String'), refer('dynamic'))).statement,
+      );
+    } else {
+      blocks.add(
+        declareFinal(dataVar, type: refer('Map<String, dynamic>?')).assign(literalNull).statement,
+      );
+    }
   }
 
   Map<String, Expression> _generateHeaders(MethodElement m) {
