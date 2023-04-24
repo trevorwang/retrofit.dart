@@ -17,6 +17,7 @@ Add the generator to your dev dependencies
 dependencies:
   retrofit: '>=4.0.0 <5.0.0'
   logger: any  #for logging purpose
+  json_annotation: ^4.8.0
 
 dev_dependencies:
   retrofit_generator: '>=6.0.0 <7.0.0'   // only support dart >=2.18
