@@ -21,8 +21,12 @@ class RetrofitOptions {
   RetrofitOptions({this.autoCastResponse, this.emptyRequestBody});
 
   RetrofitOptions.fromOptions([BuilderOptions? options])
-      : autoCastResponse = (options?.config['auto_cast_response']?.toString() ?? 'true') == 'true',
-        emptyRequestBody = (options?.config['empty_request_body']?.toString() ?? 'false') == 'true';
+      : autoCastResponse =
+            (options?.config['auto_cast_response']?.toString() ?? 'true') ==
+                'true',
+        emptyRequestBody =
+            (options?.config['empty_request_body']?.toString() ?? 'false') ==
+                'true';
 
   final bool? autoCastResponse;
   final bool? emptyRequestBody;
@@ -356,7 +360,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               (it) => Parameter(
                 (p) => p
                   ..name = it.name
-                  ..named = it.isNamed,
+                  ..named = it.isNamed
+                  ..type =
+                      refer(it.type.getDisplayString(withNullability: true)),
               ),
             ),
       );
@@ -371,6 +377,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                       !it.hasDefaultValue)
                   ..name = it.name
                   ..named = it.isNamed
+                  ..type =
+                      refer(it.type.getDisplayString(withNullability: true))
                   ..defaultTo = it.defaultValueCode == null
                       ? null
                       : Code(it.defaultValueCode!),
@@ -1867,11 +1875,15 @@ ${bodyName.displayName} == null
     /// There is no body
     if (globalOptions.emptyRequestBody == true) {
       blocks.add(
-        declareFinal(dataVar).assign(literalMap({}, refer('String'), refer('dynamic'))).statement,
+        declareFinal(dataVar)
+            .assign(literalMap({}, refer('String'), refer('dynamic')))
+            .statement,
       );
     } else {
       blocks.add(
-        declareFinal(dataVar, type: refer('Map<String, dynamic>?')).assign(literalNull).statement,
+        declareFinal(dataVar, type: refer('Map<String, dynamic>?'))
+            .assign(literalNull)
+            .statement,
       );
     }
   }
