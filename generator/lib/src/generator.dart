@@ -876,7 +876,7 @@ You should create a new class to encapsulate the response.
                 );
               } else {
                 mapperCode = refer(
-                  '${_displayString(returnType)}.fromJson($_resultVar.data!)',
+                  '${_displayString(returnType, withNullability: (returnType.isNullable || (innerReturnType?.isNullable ?? false)))}.fromJson($_resultVar.data!)',
                 );
               }
               break;
@@ -1104,7 +1104,11 @@ You should create a new class to encapsulate the response.
       final sendProgress = args.remove(_onSendProgress);
       final receiveProgress = args.remove(_onReceiveProgress);
 
-      final type = refer(_displayString(_getResponseType(m.returnType)));
+      final responseType = _getResponseType(m.returnType);
+      final innerType = _getResponseInnerType(m.returnType);
+      final type = refer(_displayString(responseType,
+          withNullability: ((responseType?.isNullable ?? false) ||
+              (innerType?.isNullable ?? false))));
 
       final composeArguments = <String, Expression>{
         _queryParamsVar: queryParams,
