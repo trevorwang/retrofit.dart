@@ -15,7 +15,7 @@ dependencies:
   dart_style: ^2.2.5
   dio: ^5.0.0
   retrofit: ^4.0.1
-  source_gen: ^1.2.3
+  source_gen: ^1.2.7
   tuple: ^2.0.1
 
 dev_dependencies:
