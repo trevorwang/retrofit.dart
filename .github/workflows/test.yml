@@ -11,10 +11,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        sdk: [stable, 2.18.7]
+        sdk: [stable, 2.19.6]
     steps:
-      - uses: actions/checkout@v3.3.0
-      - uses: dart-lang/setup-dart@v1.4
+      - uses: actions/checkout@v3.5.2
+      - uses: dart-lang/setup-dart@v1.5.0
         with:
           sdk: ${{ matrix.sdk }}
       - name: Generate code
