@@ -1,11 +1,12 @@
 # Changelog
-## 6.0.1
+## 7.0.0
 
-- Fix deprecated warning with analyzer 5.12.0
+- Fix deprecated warnings with analyzer 5.12.0
+- **[BREAKING CHANGE]** Require Dart >= 2.19 for new analyzer
 
 ## 6.0.0
 
-- [BREAKING CHANGE] Update min Dart sdk to 2.18
+- **[BREAKING CHANGE]** Update min Dart sdk to 2.18
 - Update example
 - Fix link in readme
 
