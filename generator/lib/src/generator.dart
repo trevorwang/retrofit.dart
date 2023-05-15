@@ -325,7 +325,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return type;
     }
 
-    if (generic.isDynamic) {
+    if (generic is DynamicType) {
       return null;
     }
 
@@ -2135,7 +2135,7 @@ String revivedLiteral(
     }
 
     if (constant.isSymbol) {
-      return Code('Symbol(${constant.symbolValue.toString()})');
+      return Code('Symbol(${constant.symbolValue})');
       // return literal(constant.symbolValue);
     }
 

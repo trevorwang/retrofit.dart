@@ -1,4 +1,7 @@
 # Changelog
+## 6.0.1
+
+- Fix deprecated warning with analyzer 5.12.0
 
 ## 6.0.0
 
