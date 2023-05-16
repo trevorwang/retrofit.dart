@@ -24,14 +24,14 @@ jobs:
         run: |
           cd generator && dart pub run test
 
-      - name: Setup credentials
-        run: |
-          mkdir -p ~/.pub-cache/
-          echo ${{secrets.PUB_CREDENTIALS}} | base64 --decode > ~/.pub-cache/credentials.json
       - name: Release new version
         run: |
-          cp -r example generator/
-          cd generator
           RELEASE=${GITHUB_REF##*/}
-          sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml 
-          dart pub publish -f
+          sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml
+
+      - name: '>> Publish package <<'
+        uses: k-paxian/dart-package-publisher@master
+        with:
+          force: true
+          accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
+          refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
