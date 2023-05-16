@@ -24,15 +24,7 @@ jobs:
         run: |
           cd generator && dart pub run test
 
-      - name: Release new version
-        run: |
-          cd generator 
-          RELEASE=${GITHUB_REF##*/}
-          sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml
-
-      - name: '>> Publish package <<'
-        uses: k-paxian/dart-package-publisher@master
-        with:
-          force: true
-          accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
-          refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+  publish:
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: generator
