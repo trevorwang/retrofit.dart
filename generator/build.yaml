@@ -1,6 +1,5 @@
 builders:
-  retrofit:
-    target: ":retrofit"
+  retrofit_generator:
     import: "package:retrofit_generator/retrofit_generator.dart"
     builder_factories: ["retrofitBuilder"]
     build_extensions: { ".dart": [".retrofit.g.part"] }

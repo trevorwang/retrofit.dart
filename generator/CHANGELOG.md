@@ -1,4 +1,9 @@
 # Changelog
+## 7.0.1
+
+- Rename `retrofit` to `retrofit_generator` in build.yaml fix for build_runner ^2.4.4
+- Add topics
+
 ## 7.0.0
 
 - Fix deprecated warnings with analyzer 5.12.0
