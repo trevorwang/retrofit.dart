@@ -108,7 +108,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       if (hasCustomOptions) {
         c.methods.add(_generateOptionsCastMethod());
       }
-      c.methods.add(_generateTypeSetterMethod());
+      c.methods.addAll([
+        _generateTypeSetterMethod(),
+        _generateCombineBaseUrlsMethod(),
+      ]);
     });
 
     final emitter = DartEmitter(useNullSafetySyntax: true);
@@ -1130,9 +1133,10 @@ You should create a new class to encapsulate the response.
             )
             .property('copyWith')
             .call([], {
-              _baseUrlVar: baseUrl.ifNullThen(
+              _baseUrlVar: refer('_combineBaseUrls').call([
                 refer(_dioVar).property('options').property('baseUrl'),
-              )
+                baseUrl,
+              ])
             })
       ], {}, [
         type
@@ -1221,6 +1225,38 @@ You should create a new class to encapsulate the response.
           }
           return RequestOptions(path: '');
         ''');
+      });
+
+  Method _generateCombineBaseUrlsMethod() => Method((m) {
+        final dioBaseUrlParam = Parameter((p) {
+          p
+            ..name = 'dioBaseUrl'
+            ..type = refer('String');
+        });
+        final baseUrlParam = Parameter((p) {
+          p
+            ..name = 'baseUrl'
+            ..type = refer('String?');
+        });
+
+        m
+          ..name = '_combineBaseUrls'
+          ..returns = refer('String')
+          ..requiredParameters =
+              ListBuilder(<Parameter>[dioBaseUrlParam, baseUrlParam])
+          ..body = const Code(r'''
+            if (baseUrl == null || baseUrl.trim().isEmpty) {
+              return dioBaseUrl;
+            }
+            
+            final url = Uri.parse(baseUrl);
+            
+            if (url.isAbsolute) {
+              return url.toString();
+            }
+            
+            return Uri.parse(dioBaseUrl).resolveUri(url).toString();
+          ''');
       });
 
   Method _generateTypeSetterMethod() => Method((m) {

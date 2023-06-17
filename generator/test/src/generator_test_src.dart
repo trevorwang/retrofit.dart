@@ -1822,3 +1822,19 @@ abstract class GenericCastFetch {
   @GET('/')
   Future<User> get();
 }
+
+@ShouldGenerate(
+  '''
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class CombineBaseUrls {
+  @GET('/')
+  Future<User> get();
+}
