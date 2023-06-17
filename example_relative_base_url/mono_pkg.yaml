@@ -1,0 +1,7 @@
+dart:
+ - dev
+
+stages:
+  # Register two jobs to run under the `analyze` stage.
+  - analyze:
+    - dartanalyzer
