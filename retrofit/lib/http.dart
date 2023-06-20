@@ -84,6 +84,7 @@ class RestApi {
   /// * Endpoint: `foo/bar/`
   /// * Result: `http://example.com/foo/bar/`
   ///
+  /// When you specify a relative [baseUrl]. The [Dio] instance passed to the constructor should have it defined.
   /// When you don't specify the [baseUrl]. The [Dio] instance passed to the constructor should have it defined.
   /// Otherwise the `path` field of any [HttpMethod] like [POST] should have the full URL.
 
