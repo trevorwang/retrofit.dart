@@ -1297,6 +1297,13 @@ if (T != dynamic &&
         _typeChecker(Float).isExactlyType(returnType);
   }
 
+  bool _isDateTime(DartType? dartType) {
+    if (dartType == null) {
+      return false;
+    }
+    return _typeChecker(DateTime).isExactlyType(dartType);
+  }
+
   bool _isBasicInnerType(DartType returnType) {
     final innerType = _genericOf(returnType);
     return _isBasicType(innerType);
@@ -1318,9 +1325,15 @@ if (T != dynamic &&
       } else {
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
-            value = p.type.nullabilitySuffix == NullabilitySuffix.question
-                ? refer(p.displayName).nullSafeProperty('toJson').call([])
-                : refer(p.displayName).property('toJson').call([]);
+            if (_isDateTime(p.type)) {
+              value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                  ? refer(p.displayName).nullSafeProperty('toIso8601String')
+                  : refer(p.displayName).property('toIso8601String');
+            } else {
+              value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                  ? refer(p.displayName).nullSafeProperty('toJson').call([])
+                  : refer(p.displayName).property('toJson').call([]);
+            }
             break;
           case retrofit.Parser.MapSerializable:
             value = p.type.nullabilitySuffix == NullabilitySuffix.question
