@@ -1,4 +1,8 @@
 # Changelog
+## 7.0.3
+
+- Add support for analyzer 6.0.0
+
 ## 7.0.2
 
 - Fixed generation of `DateTime` used as `@Query` parameters (now it is converted to `String` using `toIso8601String`)

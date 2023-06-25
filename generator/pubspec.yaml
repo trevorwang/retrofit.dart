@@ -6,12 +6,12 @@ topics:
   - build-runner
   - codegen
   - api
-version: 7.0.2
+version: 7.0.3
 environment:
   sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
-  analyzer: ^5.12.0
+  analyzer: '>=5.13.0 <7.0.0'
   build: ^2.3.1
   built_collection: ^5.1.1
   code_builder: ^4.4.0
