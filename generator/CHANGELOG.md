@@ -1,4 +1,8 @@
 # Changelog
+## 7.0.2
+
+- Fixed generation of `DateTime` used as `@Query` parameters (now it is converted to `String` using `toIso8601String`)
+
 ## 7.0.1
 
 - Rename `retrofit` to `retrofit_generator` in build.yaml fix for build_runner ^2.4.4
