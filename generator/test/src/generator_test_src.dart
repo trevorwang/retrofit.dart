@@ -560,6 +560,18 @@ class CustomObject {
 
 @ShouldGenerate(
   '''
+    final queryParameters = <String, dynamic>{r'test': date?.toIso8601String};
+''',
+  contains: true,
+)
+@RestApi()
+abstract class TestQueryParamDateTime {
+  @GET('/test')
+  Future<void> getTest(@Query('test') DateTime? date);
+}
+
+@ShouldGenerate(
+  '''
     final _data = customObject;
 ''',
   contains: true,
