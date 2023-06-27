@@ -1,4 +1,7 @@
 # Changelog
+## 7.0.5
+
+- Fix DateTime.toIso8601String() issue #586
 ## 7.0.3
 
 - Add support for analyzer 6.0.0

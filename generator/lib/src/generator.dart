@@ -1327,8 +1327,10 @@ if (T != dynamic &&
           case retrofit.Parser.JsonSerializable:
             if (_isDateTime(p.type)) {
               value = p.type.nullabilitySuffix == NullabilitySuffix.question
-                  ? refer(p.displayName).nullSafeProperty('toIso8601String')
-                  : refer(p.displayName).property('toIso8601String');
+                  ? refer(p.displayName)
+                      .nullSafeProperty('toIso8601String')
+                      .call([])
+                  : refer(p.displayName).property('toIso8601String').call([]);
             } else {
               value = p.type.nullabilitySuffix == NullabilitySuffix.question
                   ? refer(p.displayName).nullSafeProperty('toJson').call([])

@@ -560,7 +560,7 @@ class CustomObject {
 
 @ShouldGenerate(
   '''
-    final queryParameters = <String, dynamic>{r'test': date?.toIso8601String};
+    final queryParameters = <String, dynamic>{r'test': date?.toIso8601String()};
 ''',
   contains: true,
 )

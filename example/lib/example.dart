@@ -127,7 +127,7 @@ abstract class RestClient {
   @POST('/post')
   Future<String> postFormData3({
     @Part(value: 'customfiles', contentType: 'application/json')
-        required List<File> files,
+    required List<File> files,
     @Part(fileName: 'abc.txt') required File file,
   });
 
@@ -154,7 +154,10 @@ abstract class RestClient {
   Future<String> queries(@Queries() Map<String, dynamic> queries);
 
   @GET('/enums')
-  Future<String> queryByEnum(@Query('tasks') TaskQuery query);
+  Future<String> queryByEnum(
+    @Query('tasks') TaskQuery query,
+    @Query("date") DateTime time,
+  );
 
   @GET('/get')
   Future<String> namedExample(
