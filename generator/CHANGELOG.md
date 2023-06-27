@@ -1,5 +1,5 @@
 # Changelog
-## 7.0.5
+## 7.0.6
 
 - Fix DateTime.toIso8601String() issue #586
 ## 7.0.3
