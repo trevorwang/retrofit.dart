@@ -19,5 +19,12 @@ jobs:
         run:  cd generator && dart pub get
       # Here you can insert custom steps you need
       # - run: dart tool/generate-code.dart
+      - name: Config examples
+        run: cp -r example generator/example
+      - name: Release new version
+        run: |
+          cd generator
+          RELEASE=${GITHUB_REF##*/}
+          sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml
       - name: Publish
         run:  cd generator && dart pub publish --force
