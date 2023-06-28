@@ -1,7 +1,8 @@
 # Changelog
 ## 7.0.7
 
-- Enums return types are now generated iterating over the enum values instead of calling `.toJson()` method
+- Enums return types generated iterating over the enum values instead of calling `.toJson()` method
+- Enums as query parameters generated with `.name` instead of `toJson()`
 
 ## 7.0.6
 

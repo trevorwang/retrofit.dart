@@ -385,9 +385,9 @@ enum TestEnum { A, B }
 @ShouldGenerate(
   '''
     final value = TestEnum.values.firstWhere(
-      (e) => e.toString() == 'TestEnum.\$_result.data',
+      (e) => e.name == _result.data,
       orElse: () => throw ArgumentError(
-        'TestEnum does not contain value \$_result.data',
+        'TestEnum does not contain value \${_result.data}',
       ),
     );
     return value;
@@ -398,6 +398,22 @@ enum TestEnum { A, B }
 abstract class EnumReturnType {
   @GET('/')
   Future<TestEnum> getTestEnum();
+}
+
+enum EnumParam {
+  enabled, disabled,
+}
+
+@ShouldGenerate(
+  '''
+    final queryParameters = <String, dynamic>{r'test': status?.name};
+''',
+  contains: true,
+)
+@RestApi()
+abstract class TestQueryParamEnum {
+  @GET('/test')
+  Future<void> getTest(@Query('test') EnumParam? status);
 }
 
 @ShouldGenerate(

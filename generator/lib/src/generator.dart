@@ -878,10 +878,9 @@ You should create a new class to encapsulate the response.
                   '$displayString.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)})',
                 );
               } else {
-                // check if returnType is an enum
-                if (returnType.element is EnumElement) {
+                if (_isEnum(returnType)) {
                   mapperCode = refer(
-                    '${_displayString(returnType)}.values.firstWhere((e) => e.toString() == \'${_displayString(returnType)}.\${_result.data}\','
+                    '${_displayString(returnType)}.values.firstWhere((e) => e.name == _result.data,'
                     'orElse: () => throw ArgumentError('
                     '\'${_displayString(returnType)} does not contain value \${_result.data}\','
                     '),'
@@ -1308,6 +1307,12 @@ if (T != dynamic &&
         _typeChecker(Float).isExactlyType(returnType);
   }
 
+  bool _isEnum(DartType? dartType){
+    if (dartType == null || dartType.element == null){
+      return false;
+    }
+    return dartType.element is EnumElement;
+  }
   bool _isDateTime(DartType? dartType) {
     if (dartType == null) {
       return false;
@@ -1342,7 +1347,12 @@ if (T != dynamic &&
                       .nullSafeProperty('toIso8601String')
                       .call([])
                   : refer(p.displayName).property('toIso8601String').call([]);
-            } else {
+            } else if(_isEnum(p.type)) {
+              value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                  ? refer(p.displayName)
+                      .nullSafeProperty('name')
+                  : refer(p.displayName).property('name');
+            }else{
               value = p.type.nullabilitySuffix == NullabilitySuffix.question
                   ? refer(p.displayName).nullSafeProperty('toJson').call([])
                   : refer(p.displayName).property('toJson').call([]);
