@@ -878,9 +878,20 @@ You should create a new class to encapsulate the response.
                   '$displayString.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)})',
                 );
               } else {
-                mapperCode = refer(
-                  '${_displayString(returnType)}.fromJson($_resultVar.data!)',
-                );
+                // check if returnType is an enum
+                if (returnType.element is EnumElement) {
+                  mapperCode = refer(
+                    '${_displayString(returnType)}.values.firstWhere((e) => e.toString() == \'${_displayString(returnType)}.\${_result.data}\','
+                    'orElse: () => throw ArgumentError('
+                    '\'${_displayString(returnType)} does not contain value \${_result.data}\','
+                    '),'
+                    ')',
+                  );
+                } else {
+                  mapperCode = refer(
+                    '${_displayString(returnType)}.fromJson($_resultVar.data!)',
+                  );
+                }
               }
               break;
             case retrofit.Parser.DartJsonMapper:

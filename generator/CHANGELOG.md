@@ -1,4 +1,8 @@
 # Changelog
+## 7.0.7
+
+- Enums return types are now generated iterating over the enum values instead of calling `.toJson()` method
+
 ## 7.0.6
 
 - Fix DateTime.toIso8601String() issue #586

@@ -380,6 +380,26 @@ abstract class StreamReturnType {
   Stream<User> getUser();
 }
 
+enum TestEnum { A, B }
+
+@ShouldGenerate(
+  '''
+    final value = TestEnum.values.firstWhere(
+      (e) => e.toString() == 'TestEnum.\$_result.data',
+      orElse: () => throw ArgumentError(
+        'TestEnum does not contain value \$_result.data',
+      ),
+    );
+    return value;
+''',
+  contains: true,
+)
+@RestApi()
+abstract class EnumReturnType {
+  @GET('/')
+  Future<TestEnum> getTestEnum();
+}
+
 @ShouldGenerate(
   '''
   Stream<User> getUser() async* {
