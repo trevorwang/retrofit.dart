@@ -3,7 +3,7 @@
 [![retrofit](https://img.shields.io/pub/v/retrofit?label=retrofit&style=flat-square)](https://pub.dartlang.org/packages/retrofit)
 [![retrofit_generator](https://img.shields.io/pub/v/retrofit_generator?label=retrofit_generator&style=flat-square)](https://pub.dartlang.org/packages/retrofit_generator)
 ![Pub Likes](https://img.shields.io/pub/likes/retrofit)
-[![Dart CI](https://github.com/trevorwang/retrofit.dart/workflows/Dart%20CI/badge.svg)](https://github.com/trevorwang/retrofit.dart)
+[![Testing](https://github.com/trevorwang/retrofit.dart/actions/workflows/test.yml/badge.svg)](https://github.com/trevorwang/retrofit.dart/actions/workflows/test.yml)
 
 
 
