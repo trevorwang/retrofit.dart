@@ -380,6 +380,42 @@ abstract class StreamReturnType {
   Stream<User> getUser();
 }
 
+enum TestEnum { A, B }
+
+@ShouldGenerate(
+  '''
+    final value = TestEnum.values.firstWhere(
+      (e) => e.name == _result.data,
+      orElse: () => throw ArgumentError(
+        'TestEnum does not contain value \${_result.data}',
+      ),
+    );
+    return value;
+''',
+  contains: true,
+)
+@RestApi()
+abstract class EnumReturnType {
+  @GET('/')
+  Future<TestEnum> getTestEnum();
+}
+
+enum EnumParam {
+  enabled, disabled,
+}
+
+@ShouldGenerate(
+  '''
+    final queryParameters = <String, dynamic>{r'test': status?.name};
+''',
+  contains: true,
+)
+@RestApi()
+abstract class TestQueryParamEnum {
+  @GET('/test')
+  Future<void> getTest(@Query('test') EnumParam? status);
+}
+
 @ShouldGenerate(
   '''
   Stream<User> getUser() async* {
