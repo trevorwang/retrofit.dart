@@ -263,6 +263,7 @@ enum ImageType { icon, large }
       MultipartFile.fromFileSync(
         image.path,
         filename: image.path.split(Platform.pathSeparator).last,
+        headers: {},
       ),
     ));
 ''',
@@ -271,7 +272,7 @@ enum ImageType { icon, large }
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class FilePartTest {
   @POST('/profile')
-  Future<String> setProfile(@Part() File image);
+  Future<String> setProfile(@Part(keepFilePath: true) File image);
 }
 
 @ShouldGenerate(
@@ -282,6 +283,7 @@ abstract class FilePartTest {
       MultipartFile.fromFileSync(
         image.path,
         filename: 'my_profile_image.jpg',
+        headers: {'original_file_path': image.path},
       ),
     ));
 ''',
@@ -320,7 +322,8 @@ abstract class FilePartWithMultipartListTest {
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class FilePartWithNullableMultipartListTest {
   @POST('/profile')
-  Future<String> setProfile(@Part() List<MultipartFile>? images);
+  Future<String> setProfile(
+      @Part(keepFilePath: true) List<MultipartFile>? images);
 }
 
 @ShouldGenerate(
@@ -331,6 +334,7 @@ abstract class FilePartWithNullableMultipartListTest {
       MultipartFile.fromFileSync(
         image.path,
         filename: image.path.split(Platform.pathSeparator).last,
+        headers: {'original_file_path': image.path},
       ),
     ));
   ''',
@@ -339,7 +343,7 @@ abstract class FilePartWithNullableMultipartListTest {
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class UploadFileInfoPartTest {
   @POST('/profile')
-  Future<String> setProfile(@Part() File image);
+  Future<String> setProfile(@Part(keepFilePath: true) File image);
 }
 
 @ShouldGenerate(
@@ -401,7 +405,8 @@ abstract class EnumReturnType {
 }
 
 enum EnumParam {
-  enabled, disabled,
+  enabled,
+  disabled,
 }
 
 @ShouldGenerate(
@@ -894,6 +899,7 @@ abstract class TestHttpResponseArray {
         MultipartFile.fromFileSync(
           i.path,
           filename: i.path.split(Platform.pathSeparator).last,
+          headers: {},
         ))));
 ''',
   contains: true,
@@ -907,6 +913,7 @@ abstract class TestHttpResponseArray {
           MultipartFile.fromFileSync(
             i.path,
             filename: i.path.split(Platform.pathSeparator).last,
+            headers: {},
           ))));
     }
 ''',
@@ -920,6 +927,7 @@ abstract class TestHttpResponseArray {
         MultipartFile.fromFileSync(
           file.path,
           filename: file.path.split(Platform.pathSeparator).last,
+          headers: {},
         ),
       ));
     }

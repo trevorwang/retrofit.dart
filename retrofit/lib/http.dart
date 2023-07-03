@@ -301,6 +301,7 @@ class Part {
     this.name,
     this.fileName,
     this.contentType,
+    this.keepFilePath = false,
   });
 
   @Deprecated('future release')
@@ -313,6 +314,9 @@ class Part {
 
   // To identify the content type of a file
   final String? contentType;
+
+  /// If this field is a file, optionally specify whether to keep the file path for retrying requests
+  final bool? keepFilePath;
 }
 
 @immutable
