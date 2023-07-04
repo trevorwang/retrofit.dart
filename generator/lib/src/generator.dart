@@ -10,6 +10,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dio/dio.dart';
+import 'package:protobuf/protobuf.dart';
 import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
@@ -836,6 +837,15 @@ You should create a new class to encapsulate the response.
                   .statement,
             )
             ..add(const Code('final value = $_resultVar.data;'));
+        } else if (_typeChecker(GeneratedMessage).isSuperTypeOf(returnType)) {
+          blocks.add(
+            declareFinal(_resultVar)
+                .assign(
+                    refer("await $_dioVar.fetch<List<int>>").call([options]))
+                .statement,
+          );
+          blocks.add(Code(
+              "final value = await compute(${_displayString(returnType)}.fromBuffer, $_resultVar.data!);"));
         } else {
           final fetchType = returnType.isNullable
               ? 'Map<String,dynamic>?'
@@ -1307,12 +1317,13 @@ if (T != dynamic &&
         _typeChecker(Float).isExactlyType(returnType);
   }
 
-  bool _isEnum(DartType? dartType){
-    if (dartType == null || dartType.element == null){
+  bool _isEnum(DartType? dartType) {
+    if (dartType == null || dartType.element == null) {
       return false;
     }
     return dartType.element is EnumElement;
   }
+
   bool _isDateTime(DartType? dartType) {
     if (dartType == null) {
       return false;
@@ -1338,6 +1349,10 @@ if (T != dynamic &&
           p.type.isDartCoreList ||
           p.type.isDartCoreMap) {
         value = refer(p.displayName);
+      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(p.type)) {
+        value = p.type.nullabilitySuffix == NullabilitySuffix.question
+            ? refer(p.displayName).nullSafeProperty('value')
+            : refer(p.displayName).property('value');
       } else {
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
@@ -1347,12 +1362,11 @@ if (T != dynamic &&
                       .nullSafeProperty('toIso8601String')
                       .call([])
                   : refer(p.displayName).property('toIso8601String').call([]);
-            } else if(_isEnum(p.type)) {
+            } else if (_isEnum(p.type)) {
               value = p.type.nullabilitySuffix == NullabilitySuffix.question
-                  ? refer(p.displayName)
-                      .nullSafeProperty('name')
+                  ? refer(p.displayName).nullSafeProperty('name')
                   : refer(p.displayName).property('name');
-            }else{
+            } else {
               value = p.type.nullabilitySuffix == NullabilitySuffix.question
                   ? refer(p.displayName).nullSafeProperty('toJson').call([])
                   : refer(p.displayName).property('toJson').call([]);
@@ -1390,6 +1404,10 @@ if (T != dynamic &&
       final Expression value;
       if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
         value = refer(displayName);
+      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(type)) {
+        value = type.nullabilitySuffix == NullabilitySuffix.question
+            ? refer(p.displayName).nullSafeProperty('value')
+            : refer(p.displayName).property('value');
       } else {
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
@@ -1554,6 +1572,15 @@ if (T != dynamic &&
                 ).statement,
               );
           }
+        } else if (_typeChecker(GeneratedMessage)
+            .isSuperTypeOf(bodyName.type)) {
+          if (bodyName.type.nullabilitySuffix != NullabilitySuffix.none) {
+            log.warning(
+                "GeneratedMessage body ${_displayString(bodyName.type)} can not be nullable.");
+          }
+          blocks.add(declareFinal(dataVar)
+              .assign(refer(bodyName.displayName))
+              .statement);
         } else {
           if (_missingToJson(ele)) {
             log.warning(
