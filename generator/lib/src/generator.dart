@@ -1726,7 +1726,9 @@ ${bodyName.displayName} == null
                   .property('path.split(Platform.pathSeparator).last');
           final filePath = refer(p.displayName).property('path');
           final headers = keepFilePath
-              ? literalMap({'original_file_path': filePath})
+              ? literalMap({
+                  'original_file_path': [filePath]
+                })
               : literalMap({});
 
           final uploadFileInfo = refer('$MultipartFile.fromFileSync').call([
@@ -1846,7 +1848,9 @@ ${bodyName.displayName} == null
             final keepFilePath = r.peek('keepFilePath')?.boolValue ?? false;
             final filePath = refer(p.displayName).property('path');
             final headers = keepFilePath
-                ? literalMap({'original_file_path': filePath})
+                ? literalMap({
+                    'original_file_path': [filePath]
+                  })
                 : '{}';
             if (p.type.isNullable) {
               blocks.add(Code('if (${p.displayName} != null) {'));
