@@ -401,7 +401,8 @@ abstract class EnumReturnType {
 }
 
 enum EnumParam {
-  enabled, disabled,
+  enabled,
+  disabled,
 }
 
 @ShouldGenerate(
@@ -414,6 +415,51 @@ enum EnumParam {
 abstract class TestQueryParamEnum {
   @GET('/test')
   Future<void> getTest(@Query('test') EnumParam? status);
+}
+
+enum FromJsonEnum {
+  a,
+  b,
+  ;
+
+  factory FromJsonEnum.fromJson(Map<String, dynamic> json) => FromJsonEnum.a;
+}
+
+@ShouldGenerate(
+  '''
+    final value = FromJsonEnum.fromJson(_result.data!);
+    return value;
+''',
+  contains: true,
+)
+@RestApi()
+abstract class EnumFromJsonReturnType {
+  @GET('/')
+  Future<FromJsonEnum> getTestEnum();
+}
+
+enum ToJsonEnum {
+  plus(1),
+  minus(-1),
+  ;
+
+  const ToJsonEnum(this.value);
+
+  final int value;
+
+  int toJson() => value;
+}
+
+@ShouldGenerate(
+  '''
+    final queryParameters = <String, dynamic>{r'test': status?.toJson()};
+''',
+  contains: true,
+)
+@RestApi()
+abstract class TestQueryParamEnumToJson {
+  @GET('/test')
+  Future<void> getTest(@Query('test') ToJsonEnum? status);
 }
 
 @ShouldGenerate(
