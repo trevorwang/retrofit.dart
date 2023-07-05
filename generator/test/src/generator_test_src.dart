@@ -263,7 +263,9 @@ enum ImageType { icon, large }
       MultipartFile.fromFileSync(
         image.path,
         filename: image.path.split(Platform.pathSeparator).last,
-        headers: {},
+        headers: {
+          'original_file_path': [image.path]
+        },
       ),
     ));
 ''',
@@ -283,7 +285,7 @@ abstract class FilePartTest {
       MultipartFile.fromFileSync(
         image.path,
         filename: 'my_profile_image.jpg',
-        headers: {'original_file_path': [image.path]},
+        headers: {},
       ),
     ));
 ''',
@@ -334,7 +336,9 @@ abstract class FilePartWithNullableMultipartListTest {
       MultipartFile.fromFileSync(
         image.path,
         filename: image.path.split(Platform.pathSeparator).last,
-        headers: {'original_file_path': [image.path]},
+        headers: {
+          'original_file_path': [image.path]
+        },
       ),
     ));
   ''',
