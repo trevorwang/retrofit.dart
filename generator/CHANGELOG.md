@@ -1,4 +1,7 @@
 # Changelog
+## 7.0.8
+- Use `toJson()` instead of `.name` if enums have `toJson()`.
+
 ## 7.0.7
 
 - Enums return types generated iterating over the enum values instead of calling `.toJson()` method

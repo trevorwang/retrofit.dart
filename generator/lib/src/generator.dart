@@ -878,7 +878,7 @@ You should create a new class to encapsulate the response.
                   '$displayString.fromJson($_resultVar.data!,${_getInnerJsonSerializableMapperFn(returnType)})',
                 );
               } else {
-                if (_isEnum(returnType)) {
+                if (_isEnum(returnType) && !_hasFromJson(returnType)) {
                   mapperCode = refer(
                     '${_displayString(returnType)}.values.firstWhere((e) => e.name == _result.data,'
                     'orElse: () => throw ArgumentError('
@@ -1326,6 +1326,20 @@ if (T != dynamic &&
     return _isBasicType(innerType);
   }
 
+  bool _hasFromJson(DartType? dartType) {
+    if (dartType is! InterfaceType) {
+      return false;
+    }
+    return dartType.element.getNamedConstructor('fromJson') != null;
+  }
+
+  bool _hasToJson(DartType? dartType) {
+    if (dartType is! InterfaceType) {
+      return false;
+    }
+    return dartType.element.getMethod('toJson') != null;
+  }
+
   void _generateQueries(
     MethodElement m,
     List<Code> blocks,
@@ -1348,7 +1362,7 @@ if (T != dynamic &&
                       .nullSafeProperty('toIso8601String')
                       .call([])
                   : refer(p.displayName).property('toIso8601String').call([]);
-            } else if (_isEnum(p.type)) {
+            } else if (_isEnum(p.type) && !_hasToJson(p.type)) {
               value = p.type.nullabilitySuffix == NullabilitySuffix.question
                   ? refer(p.displayName).nullSafeProperty('name')
                   : refer(p.displayName).property('name');
