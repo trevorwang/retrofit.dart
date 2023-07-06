@@ -1,5 +1,5 @@
 # .github/workflows/publish.yml
-name: Publish to pub.dev
+name: Publish retrofit_generator to pub.dev
 
 on:
   push:
