@@ -1741,7 +1741,7 @@ ${bodyName.displayName} == null
           final filePath = refer(p.displayName).property('path');
           final headers = keepFilePath
               ? literalMap({
-                  'original_file_path': [filePath]
+                  'original_file_path': literalList([filePath])
                 })
               : literalMap({});
 
