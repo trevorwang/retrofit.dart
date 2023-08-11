@@ -87,7 +87,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     );
     final baseUrl = clientAnnotation.baseUrl;
     final annotClassConsts = element.constructors
-        .where((c) => !c.isFactory && !c.isDefaultConstructor);
+        .where((c) => !c.isFactory);
     final classBuilder = Class((c) {
       c
         ..name = '_$className'
