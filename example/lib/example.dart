@@ -63,6 +63,10 @@ abstract class RestClient {
   @PUT('/tasks/{id}')
   Future<Task> updateTask(@Path() String id, @Body() Task task);
 
+  @PreventNullToAbsent()
+  @PATCH('/tasks/{id}')
+  Future<Task> updateTaskAvatar(@Path() String id, @Field('avatar') String? avatar);
+
   @DELETE('/tasks/{id}')
   Future<void> deleteTask(@Path() String id);
 
