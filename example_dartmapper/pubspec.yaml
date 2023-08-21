@@ -1,0 +1,28 @@
+name: retrofit_example
+description: Retrofit generator
+version: 0.0.1
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  retrofit:
+  json_annotation: ^4.0.0
+  logger: ^1.0.0
+  dart_json_mapper: ^2.0.5
+  reflectable: ^3.0.0
+
+dev_dependencies:
+  test: 1.16.5
+  retrofit_generator:
+  build_runner: ^2.0.1
+  json_serializable: ^4.0.3
+  mock_web_server:
+
+dependency_overrides:
+  retrofit:
+    path: ../retrofit
+  retrofit_generator:
+    path: ../generator
+  analyzer: ^1.1.0
+  dart_style: ^2.0.0

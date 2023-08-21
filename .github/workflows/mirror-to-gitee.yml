@@ -1,0 +1,20 @@
+name: Mirror to Gitee
+
+on:
+  push:
+    branches:
+      - master
+      - release/*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - name: Mirror to Gitee
+        run: |
+          git fetch --unshallow
+          git remote add gitee https://trevor:${{secrets.GITEE_TOKEN}}@gitee.com/trevor/retrofit.dart.git
+          git push -f gitee origin/master:master
+          git push -f gitee origin/gh-pages:gh-pages
+          git push --tags --prune

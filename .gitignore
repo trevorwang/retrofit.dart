@@ -11,6 +11,9 @@ pubspec.lock
 # If you don't generate documentation locally you can remove this line.
 doc/api/
 
+# Reflectable
+example/lib/json_mapper_example.reflectable.dart
+
 # Avoid committing generated Javascript files:
 *.dart.js
 *.info.json      # Produced by the --dump-info flag.
@@ -20,3 +23,11 @@ doc/api/
 *.js.deps
 *.js.map
 node_modules
+.DS_Store
+.idea
+.classpath
+.project
+.settings
+yarn.lock
+*.reflectable.dart
+*.g.dart

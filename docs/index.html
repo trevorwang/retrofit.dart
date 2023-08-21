@@ -4,16 +4,17 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="generator" content="made with love by dartdoc 0.28.4">
+  <meta name="generator" content="made with love by dartdoc 0.30.0+1">
   <meta name="description" content="retrofit API docs, for the Dart programming language.">
   <title>retrofit - Dart API docs</title>
 
+  
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/github.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
-  
+  <!-- header placeholder -->
 </head>
 
 <body>
@@ -23,7 +24,7 @@
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
-    <li><a href="https://github.com/trevorwang/retrofit.dart/">retrofit package</a></li>
+    <li><a href="https://mings.in/retrofit.dart/">retrofit package</a></li>
   </ol>
   <div class="self-name">retrofit</div>
   <form class="search navbar-right" role="search">
@@ -41,7 +42,7 @@
     </header>
     
     <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
-      <li><a href="https://github.com/trevorwang/retrofit.dart/">retrofit package</a></li>
+      <li><a href="https://mings.in/retrofit.dart/">retrofit package</a></li>
     </ol>
     
     <h5 class="hidden-xs"><span class="package-name">retrofit</span> <span class="package-kind">package</span></h5>
@@ -80,7 +81,7 @@ part 'example.g.dart';
 
 @RestApi(baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/")
 abstract class RestClient {
-  factory RestClient(Dio dio) = _RestClient;
+  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
   @GET("/tasks")
   Future&lt;List&lt;Task&gt;&gt; getTasks();
@@ -116,7 +117,6 @@ final logger = Logger();
 void main(List&lt;String&gt; args) {
   final dio = Dio();   // Provide a dio instance
   dio.options.headers["Demo-Header"] = "demo header";   // config your dio headers globally
-  dio.options.headers["Content-Type"] = "application/json";
   final client = RestClient(dio);
   
   client.getTasks().then((it) =&gt; logger.i(it));
@@ -124,7 +124,8 @@ void main(List&lt;String&gt; args) {
 <h2 id="more">More</h2>
 <h3 id="type-conversion">Type Conversion</h3>
 <blockquote>
-<p>Before you use the type conversion, please make sure that a <code>factory Task.fromJson(Map&lt;String, dynamic&gt; json)</code> must be provided for each model class. <code>json_serializable</code> is the recommanded to be used as the serialization tool.</p></blockquote>
+<p>Before you use the type conversion, please make sure that a <code>factory Task.fromJson(Map&lt;String, dynamic&gt; json)</code> must be provided for each model class. <code>json_serializable</code> is the recommanded to be used as the serialization tool.</p>
+</blockquote>
 <pre class="language-dart"><code class="language-dart">...
 @GET("/tasks")
   Future&lt;List&lt;Task&gt;&gt; getTasks();
@@ -154,20 +155,42 @@ class Task {
 
   @POST("/tasks")
   Future&lt;Task&gt; createTask(@Body() Task task);
+
+  @POST("http://httpbin.org/post")
+  Future&lt;void&gt; createNewTaskFromFile(@Part() File file);
+
+  @POST("http://httpbin.org/post")
+  @FormUrlEncoded()
+  Future&lt;String&gt; postUrlEncodedFormData(@Field() String hello);
 </code></pre>
-<h3 id="http-header">HTTP Header</h3><ul><li>
+<h3 id="get-original-http-reponse">Get original HTTP response</h3>
+<pre class="language-dart"><code class="language-dart">  @GET("/tasks/{id}")
+  Future&lt;HttpResponse&lt;Task&gt;&gt; getTask(@Path("id") String id)
+
+  @GET("/tasks")
+  Future&lt;HttpResponse&lt;List&lt;Task&gt;&gt;&gt;&gt; getTasks()
+</code></pre>
+<h3 id="http-header">HTTP Header</h3>
+<ul>
+<li>
 <p>Add a HTTP header from the parameter of the method</p>
 <pre class="language-dart"><code class="language-dart">  @GET("/tasks")
   Future&lt;Task&gt; getTasks(@Header("Content-Type") String contentType );
-</code></pre></li></ul><ul><li>
-<p>Add staitc HTTP headers</p>
+</code></pre>
+</li>
+</ul>
+<ul>
+<li>
+<p>Add static HTTP headers</p>
 <pre class="language-dart"><code class="language-dart">  @GET("/tasks")
   @Headers(&lt;String, dynamic&gt;{
       "Content-Type" : "application/json",
       "Custom-Header" : "Your header"
   })
   Future&lt;Task&gt; getTasks();
-</code></pre></li></ul>
+</code></pre>
+</li>
+</ul>
 <h3 id="error-handling">Error Handling</h3>
 <p><code>catchError(Object)</code> should be used for capturing the exception and failed response. You can get the detailed response info from <code>DioError.response</code>.</p>
 <pre class="language-dart"><code class="language-dart"> client.getTask("2").then((it){
@@ -195,18 +218,21 @@ class Task {
               <span class="name"><a href="dio/dio-library.html">dio</a></span>             
             </dt>
             <dd>
-              
-            </dd>            <dt id="http">
+               
+            </dd>
+            <dt id="http">
               <span class="name"><a href="http/http-library.html">http</a></span>             
             </dt>
             <dd>
-              
-            </dd>            <dt id="retrofit">
+               
+            </dd>
+            <dt id="retrofit">
               <span class="name"><a href="retrofit/retrofit-library.html">retrofit</a></span>             
             </dt>
             <dd>
-              
-            </dd>          </dl>
+               
+            </dd>
+          </dl>
         </section>
 
   </div> <!-- /.main-content -->
@@ -218,18 +244,19 @@ class Task {
 
 <footer>
   <span class="no-break">
-    retrofit 1.0.0
+    retrofit
+      1.2.0
   </span>
 
-  
+  <!-- footer-text placeholder -->
 </footer>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="static-assets/typeahead.bundle.min.js"></script>
 <script src="static-assets/highlight.pack.js"></script>
 <script src="static-assets/URI.js"></script>
-<script src="static-assets/script.js"></script>
-
+<script id="dartdoc_script_js" src="static-assets/script.js"></script>
+<!-- footer placeholder -->
 
 </body>
 

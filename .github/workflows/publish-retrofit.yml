@@ -1,0 +1,30 @@
+# .github/workflows/publish.yml
+name: Publish retrofit to pub.dev
+
+on:
+  push:
+    tags:
+      - 'retrofit-[0-9]+.[0-9]+.[0-9]+*'
+
+# Publish using custom workflow
+jobs:
+  publish:
+    permissions:
+      id-token: write # Required for authentication using OIDC
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1
+      - name: Install dependencies
+        run:  cd retrofit && dart pub get
+      # Here you can insert custom steps you need
+      # - run: dart tool/generate-code.dart
+      - name: Config examples
+        run: cp -r example retrofit/example
+      - name: Release new version
+        run: |
+          cd retrofit
+          RELEASE=${GITHUB_REF##*/}
+          sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml
+      - name: Publish
+        run:  cd retrofit && dart pub publish --force

@@ -1,0 +1,33 @@
+name: flutter_example
+description: A new Flutter project.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  dio: ^5.0.0
+  retrofit: any
+  json_annotation: ^4.8.0
+  logger: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test:
+  retrofit_generator:
+  build_runner: any
+  json_serializable: any
+  mock_web_server:
+
+dependency_overrides:
+  retrofit:
+    path: ../retrofit
+  retrofit_generator:
+    path: ../generator
+
+flutter:
+  uses-material-design: true

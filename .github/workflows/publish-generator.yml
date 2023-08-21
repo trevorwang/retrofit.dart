@@ -1,0 +1,30 @@
+# .github/workflows/publish.yml
+name: Publish retrofit_generator to pub.dev
+
+on:
+  push:
+    tags:
+    - '[0-9]+.[0-9]+.[0-9]+*' # tag pattern on pub.dev: 'v'
+
+# Publish using custom workflow
+jobs:
+  publish:
+    permissions:
+      id-token: write # Required for authentication using OIDC
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1
+      - name: Install dependencies
+        run:  cd generator && dart pub get
+      # Here you can insert custom steps you need
+      # - run: dart tool/generate-code.dart
+      - name: Config examples
+        run: cp -r example generator/example
+      - name: Release new version
+        run: |
+          cd generator
+          RELEASE=${GITHUB_REF##*/}
+          sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml
+      - name: Publish
+        run:  cd generator && dart pub publish --force

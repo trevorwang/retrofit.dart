@@ -240,7 +240,9 @@ function initSearch(name) {
   }
 
   var jsonReq = new XMLHttpRequest();
-  jsonReq.open('GET', 'index.json', true);
+  var scriptUrl = URI(document.getElementById("dartdoc_script_js").src);
+
+  jsonReq.open('GET', URI(scriptUrl.directory() + '/..').absoluteTo(scriptUrl) + '/index.json', true);
   jsonReq.addEventListener('load', function() {
     searchIndex = JSON.parse(jsonReq.responseText);
     initTypeahead();
