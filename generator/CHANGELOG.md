@@ -1,4 +1,11 @@
 # Changelog
+
+
+## 8.0.0
+
+- Add protobuf support
+- Add PreventNullToAbsent annotation to allow null sent to server
+
 ## 7.0.8
 - Use `toJson()` instead of `.name` if enums have `toJson()`.
 
