@@ -428,7 +428,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .statement,
     );
 
-    if (headers.isNotEmpty) {
+    final preventNullToAbsent = _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
+    
+    if (preventNullToAbsent == null && headers.isNotEmpty) {
       blocks.add(
         const Code('$_localHeadersVar.removeWhere((k, v) => v == null);'),
       );
@@ -1457,9 +1459,13 @@ if (T != dynamic &&
 
       blocks.add(refer('$queryParamsVar.addAll').call([expression]).statement);
     }
+    
+    final preventNullToAbsent = _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
+    
+    final anyNullable = m.parameters
+        .any((p) => p.type.nullabilitySuffix == NullabilitySuffix.question);
 
-    if (m.parameters
-        .any((p) => p.type.nullabilitySuffix == NullabilitySuffix.question)) {
+    if (preventNullToAbsent == null && anyNullable) {
       blocks.add(Code('$queryParamsVar.removeWhere((k, v) => v == null);'));
     }
   }
@@ -1478,7 +1484,9 @@ if (T != dynamic &&
       );
       return;
     }
-
+    
+    final preventNullToAbsent = _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
+    
     final annotation = _getAnnotation(m, retrofit.Body);
     final bodyName = annotation?.item1;
     if (bodyName != null) {
@@ -1500,7 +1508,7 @@ if (T != dynamic &&
               )
             ]).statement,
           );
-        if (nullToAbsent) {
+        if (preventNullToAbsent == null && nullToAbsent) {
           blocks.add(Code('$dataVar.removeWhere((k, v) => v == null);'));
         }
       } else if (bodyTypeElement != null &&
@@ -1681,7 +1689,7 @@ ${bodyName.displayName} == null
                 break;
             }
 
-            if (nullToAbsent) {
+            if (preventNullToAbsent == null && nullToAbsent) {
               blocks.add(Code('$dataVar.removeWhere((k, v) => v == null);'));
             }
           }
@@ -1711,7 +1719,7 @@ ${bodyName.displayName} == null
 
     if (fields.isNotEmpty) {
       blocks.add(declareFinal(dataVar).assign(literalMap(fields)).statement);
-      if (anyNullable) {
+      if (preventNullToAbsent == null && anyNullable) {
         blocks.add(Code('$dataVar.removeWhere((k, v) => v == null);'));
       }
       return;
