@@ -13,6 +13,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
+import 'package:protobuf/protobuf.dart';
 
 const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
@@ -836,6 +837,15 @@ You should create a new class to encapsulate the response.
                   .statement,
             )
             ..add(const Code('final value = $_resultVar.data;'));
+        } else if (_typeChecker(GeneratedMessage).isSuperTypeOf(returnType)) {
+          blocks.add(
+            declareFinal(_resultVar)
+                .assign(
+                    refer("await $_dioVar.fetch<List<int>>").call([options]))
+                .statement,
+          );
+          blocks.add(Code(
+              "final value = await compute(${_displayString(returnType)}.fromBuffer, $_resultVar.data!);"));
         } else {
           final fetchType = returnType.isNullable
               ? 'Map<String,dynamic>?'
@@ -1353,6 +1363,10 @@ if (T != dynamic &&
           p.type.isDartCoreList ||
           p.type.isDartCoreMap) {
         value = refer(p.displayName);
+      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(p.type)) {
+        value = p.type.nullabilitySuffix == NullabilitySuffix.question
+            ? refer(p.displayName).nullSafeProperty('value')
+            : refer(p.displayName).property('value');
       } else {
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
@@ -1404,6 +1418,10 @@ if (T != dynamic &&
       final Expression value;
       if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
         value = refer(displayName);
+      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(type)) {
+        value = type.nullabilitySuffix == NullabilitySuffix.question
+            ? refer(p.displayName).nullSafeProperty('value')
+            : refer(p.displayName).property('value');
       } else {
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
@@ -1568,6 +1586,15 @@ if (T != dynamic &&
                 ).statement,
               );
           }
+        } else if (_typeChecker(GeneratedMessage)
+            .isSuperTypeOf(bodyName.type)) {
+          if (bodyName.type.nullabilitySuffix != NullabilitySuffix.none) {
+            log.warning(
+                "GeneratedMessage body ${_displayString(bodyName.type)} can not be nullable.");
+          }
+          blocks.add(declareFinal(dataVar)
+              .assign(refer("${bodyName.displayName}.writeToBuffer()"))
+              .statement);
         } else {
           if (_missingToJson(ele)) {
             log.warning(
@@ -2012,6 +2039,28 @@ ${bodyName.displayName} == null
 
     final cacheMap = _generateCache(m);
     headers.addAll(cacheMap);
+
+    /// gen code for request Accept for Protobuf
+    final returnType = _getResponseType(m.returnType);
+
+    if (returnType != null &&
+        _typeChecker(GeneratedMessage).isAssignableFromType(returnType)) {
+      headers.removeWhere(
+          (key, value) => "accept".toLowerCase() == key.toLowerCase());
+      headers.addAll({"accept": literal("application/x-protobuf")});
+    }
+
+    /// gen code for request body for content-type on Protobuf body
+    final annotation = _getAnnotation(m, retrofit.Body);
+    final bodyName = annotation?.item1;
+    if (bodyName != null) {
+      if (const TypeChecker.fromRuntime(GeneratedMessage)
+          .isAssignableFromType(bodyName.type)) {
+        headers.removeWhere(
+            (key, value) => "content-type".toLowerCase() == key.toLowerCase());
+        headers.addAll({"content-type": literal("application/x-protobuf")});
+      }
+    }
 
     return headers;
   }
