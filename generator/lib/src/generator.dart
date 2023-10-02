@@ -996,7 +996,7 @@ You should create a new class to encapsulate the response.
             mapperVal = '''
     (json)=> json is List<dynamic>
           ? json
-            .map<$genericTypeString>((i) => 
+            .map<$genericTypeString>((i) =>
                   i as $genericTypeString
                 )
             .toList()
@@ -1270,13 +1270,13 @@ You should create a new class to encapsulate the response.
             if (baseUrl == null || baseUrl.trim().isEmpty) {
               return dioBaseUrl;
             }
-            
+
             final url = Uri.parse(baseUrl);
-            
+
             if (url.isAbsolute) {
               return url.toString();
             }
-            
+
             return Uri.parse(dioBaseUrl).resolveUri(url).toString();
           ''');
       });
@@ -1767,21 +1767,29 @@ ${bodyName.displayName} == null
         final contentType = r.peek('contentType')?.stringValue;
 
         if (isFileField) {
+          final keepFilePath = r.peek('keepFilePath')?.boolValue ?? false;
           final fileNameValue = r.peek('fileName')?.stringValue;
           final fileName = fileNameValue != null
               ? literalString(fileNameValue)
               : refer(p.displayName)
                   .property('path.split(Platform.pathSeparator).last');
+          final filePath = refer(p.displayName).property('path');
+          final headers = keepFilePath
+              ? literalMap({
+                  'original_file_path': literalList([filePath])
+                })
+              : literalMap({});
 
           final uploadFileInfo = refer('$MultipartFile.fromFileSync').call([
-            refer(p.displayName).property('path')
+            filePath
           ], {
             'filename': fileName,
             if (contentType != null)
               'contentType':
                   refer('MediaType', 'package:http_parser/http_parser.dart')
                       .property('parse')
-                      .call([literal(contentType)])
+                      .call([literal(contentType)]),
+            'headers': headers,
           });
 
           final optionalFile = m.parameters
@@ -1824,7 +1832,7 @@ ${bodyName.displayName} == null
                 MultipartFile.fromBytes(${p.displayName},
 
                 filename:${literal(fileName)},
-                    $conType
+                    $conType,
                     ))
                   ''')
           ]).statement;
@@ -1858,7 +1866,7 @@ ${bodyName.displayName} == null
                 '$fieldName',
                 MultipartFile.fromBytes(i,
                     filename:${literal(fileName)},
-                    $conType
+                    $conType,
                     )))
                   ''')
               ]).statement,
@@ -1886,6 +1894,13 @@ ${bodyName.displayName} == null
             final conType = contentType == null
                 ? ''
                 : 'contentType: MediaType.parse(${literal(contentType)}),';
+            final keepFilePath = r.peek('keepFilePath')?.boolValue ?? false;
+            final filePath = refer(p.displayName).property('path');
+            final headers = keepFilePath
+                ? literalMap({
+                    'original_file_path': [filePath]
+                  })
+                : '{}';
             if (p.type.isNullable) {
               blocks.add(Code('if (${p.displayName} != null) {'));
             }
@@ -1896,7 +1911,8 @@ ${bodyName.displayName} == null
                 '$fieldName',
                 MultipartFile.fromFileSync(i.path,
                     filename: i.path.split(Platform.pathSeparator).last,
-                    $conType
+                    $conType,
+                    headers: $headers,
                     )))
                   ''')
               ]).statement,
