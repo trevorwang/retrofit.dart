@@ -459,6 +459,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           literal(contentType.peek('mime')?.stringValue);
     }
 
+    /// gen code for request body for content-type on Protobuf body
+    final annotation = _getAnnotation(m, retrofit.Body);
+    final bodyName = annotation?.item1;
+    if (bodyName != null) {
+      if (const TypeChecker.fromRuntime(GeneratedMessage)
+          .isAssignableFromType(bodyName.type)) {
+        extraOptions[_contentType] = literal(
+            "application/x-protobuf; \${${bodyName.displayName}.info_.qualifiedMessageName == \"\" ? \"\" :\"messageType=\${${bodyName.displayName}.info_.qualifiedMessageName}\"}");
+      }
+    }
+
     extraOptions[_baseUrlVar] = refer(_baseUrlVar);
 
     final responseType = _getResponseTypeAnnotation(m);
@@ -2055,19 +2066,10 @@ ${bodyName.displayName} == null
         _typeChecker(GeneratedMessage).isAssignableFromType(returnType)) {
       headers.removeWhere(
           (key, value) => "accept".toLowerCase() == key.toLowerCase());
-      headers.addAll({"accept": literal("application/x-protobuf")});
-    }
-
-    /// gen code for request body for content-type on Protobuf body
-    final annotation = _getAnnotation(m, retrofit.Body);
-    final bodyName = annotation?.item1;
-    if (bodyName != null) {
-      if (const TypeChecker.fromRuntime(GeneratedMessage)
-          .isAssignableFromType(bodyName.type)) {
-        headers.removeWhere(
-            (key, value) => "content-type".toLowerCase() == key.toLowerCase());
-        headers.addAll({"content-type": literal("application/x-protobuf")});
-      }
+      headers.addAll({
+        "accept": literal(
+            "application/x-protobuf; \${${_displayString(returnType)}.getDefault().info_.qualifiedMessageName == \"\" ? \"\" :\"messageType=\${${_displayString(returnType)}.getDefault().info_.qualifiedMessageName}\"}")
+      });
     }
 
     return headers;

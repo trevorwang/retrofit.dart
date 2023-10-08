@@ -1,6 +1,6 @@
 //
 //  Generated code. Do not modify.
-//  source: proto/query.proto
+//  source: proto/params.proto
 //
 // @dart = 2.12
 
@@ -24,16 +24,4 @@ const Params$json = {
 /// Descriptor for `Params`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List paramsDescriptor = $convert.base64Decode(
     'CgZQYXJhbXMSEAoDa2V5GAEgASgJUgNrZXk=');
-
-@$core.Deprecated('Use resultDescriptor instead')
-const Result$json = {
-  '1': 'Result',
-  '2': [
-    {'1': 'value', '3': 1, '4': 1, '5': 9, '10': 'value'},
-  ],
-};
-
-/// Descriptor for `Result`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List resultDescriptor = $convert.base64Decode(
-    'CgZSZXN1bHQSFAoFdmFsdWUYASABKAlSBXZhbHVl');
 

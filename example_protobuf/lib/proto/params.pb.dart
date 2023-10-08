@@ -27,7 +27,7 @@ class Params extends $pb.GeneratedMessage {
   factory Params.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Params.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Params', createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Params', package: const $pb.PackageName(_omitMessageNames ? '' : 'examples.enumerations'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'key')
     ..hasRequiredFields = false
   ;
@@ -61,56 +61,6 @@ class Params extends $pb.GeneratedMessage {
   $core.bool hasKey() => $_has(0);
   @$pb.TagNumber(1)
   void clearKey() => clearField(1);
-}
-
-class Result extends $pb.GeneratedMessage {
-  factory Result({
-    $core.String? value,
-  }) {
-    final $result = create();
-    if (value != null) {
-      $result.value = value;
-    }
-    return $result;
-  }
-  Result._() : super();
-  factory Result.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory Result.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Result', createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'value')
-    ..hasRequiredFields = false
-  ;
-
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  Result clone() => Result()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  Result copyWith(void Function(Result) updates) => super.copyWith((message) => updates(message as Result)) as Result;
-
-  $pb.BuilderInfo get info_ => _i;
-
-  @$core.pragma('dart2js:noInline')
-  static Result create() => Result._();
-  Result createEmptyInstance() => create();
-  static $pb.PbList<Result> createRepeated() => $pb.PbList<Result>();
-  @$core.pragma('dart2js:noInline')
-  static Result getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Result>(create);
-  static Result? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get value => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set value($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasValue() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearValue() => clearField(1);
 }
 
 
