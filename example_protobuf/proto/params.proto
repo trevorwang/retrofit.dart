@@ -1,9 +1,7 @@
 syntax = "proto3";
 
+package examples.enumerations;
+
 message Params {
   string key = 1;
-}
-
-message Result {
-  string value = 1;
 }

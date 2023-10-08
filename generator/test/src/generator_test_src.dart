@@ -1940,15 +1940,16 @@ abstract class CombineBaseUrls {
   contains: true,
 )
 @ShouldGenerate(
-  '''r'accept': 'application/x-protobuf''',
+  '''
+      r'accept':
+          'application/x-protobuf; \${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=\${Result.getDefault().info_.qualifiedMessageName}"}'
+  ''',
   contains: true,
 )
 @ShouldGenerate(
-  '''r'content-type': 'application/x-protobuf''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''contentType: 'application/x-protobuf''',
+  '''
+      contentType:
+          'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
   contains: true,
 )
 @RestApi()

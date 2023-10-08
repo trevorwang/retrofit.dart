@@ -2,7 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:flutter/foundation.dart';
 
-import 'proto/query.pbserver.dart';
+import 'proto/params.pbserver.dart';
+import 'proto/result.pbserver.dart';
 
 part 'example.g.dart';
 
@@ -10,10 +11,9 @@ part 'example.g.dart';
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
-  @GET("/tags")
+  @POST("/tags")
   Future<Result> getProtoBufInt(@Body() Params message);
 
-  
-  @GET("/tags1")
+  @POST("/tags1")
   Future<List<int>> getMessage(@Body() Params message);
 }
