@@ -1,6 +1,9 @@
 targets:
   $default:
     builders:
+      retrofit_generator:
+        options:
+            class-name: RestClientYmlp
       reflectable:
         generate_for:
           - lib/json_mapper_example.dart
