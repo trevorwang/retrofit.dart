@@ -118,8 +118,8 @@ class _RestClient implements RestClient {
 
   @override
   Future<String> getTag({
-    Options? options,
     required String contentType,
+    Options? options,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

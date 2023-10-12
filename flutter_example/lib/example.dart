@@ -47,8 +47,8 @@ abstract class RestClient {
 
   @GET('/tag')
   Future<String> getTag({
+    @Header('Content-Type') required String contentType,
     @DioOptions() Options? options,
-    @Header('Content-Type') String contentType,
   });
 
   @GET('/tagNullable')
@@ -112,6 +112,7 @@ abstract class RestClient {
 
 void test() {
   final dio = Dio();
+  // remove this line when you want to test with real server
   dio.httpClientAdapter = MockAdapter();
 
   dio.interceptors.add(
