@@ -19,7 +19,11 @@ const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
 
 class RetrofitOptions {
-  RetrofitOptions({this.autoCastResponse, this.emptyRequestBody});
+  RetrofitOptions({
+    this.autoCastResponse,
+    this.emptyRequestBody,
+    this.className,
+  });
 
   RetrofitOptions.fromOptions([BuilderOptions? options])
       : autoCastResponse =
@@ -27,10 +31,12 @@ class RetrofitOptions {
                 'true',
         emptyRequestBody =
             (options?.config['empty_request_body']?.toString() ?? 'false') ==
-                'true';
+                'true',
+        className = options?.config['class-name']?.toString();
 
   final bool? autoCastResponse;
   final bool? emptyRequestBody;
+  final String? className;
 }
 
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
@@ -78,7 +84,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   String _implementClass(ClassElement element, ConstantReader? annotation) {
-    final className = element.name;
+    final className = globalOptions.className ?? '_${element.name}';
     final enumString = annotation?.peek('parser')?.revive().accessor;
     final parser = retrofit.Parser.values
         .firstWhereOrNull((e) => e.toString() == enumString);
@@ -91,7 +97,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         .where((c) => !c.isFactory && !c.isDefaultConstructor);
     final classBuilder = Class((c) {
       c
-        ..name = '_$className'
+        ..name = className
         ..types.addAll(element.typeParameters.map((e) => refer(e.name)))
         ..fields.addAll([_buildDioFiled(), _buildBaseUrlFiled(baseUrl)])
         ..constructors.addAll(
@@ -428,8 +434,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .statement,
     );
 
-    final preventNullToAbsent = _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
-    
+    final preventNullToAbsent =
+        _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
+
     if (preventNullToAbsent == null && headers.isNotEmpty) {
       blocks.add(
         const Code('$_localHeadersVar.removeWhere((k, v) => v == null);'),
@@ -1470,9 +1477,10 @@ if (T != dynamic &&
 
       blocks.add(refer('$queryParamsVar.addAll').call([expression]).statement);
     }
-    
-    final preventNullToAbsent = _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
-    
+
+    final preventNullToAbsent =
+        _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
+
     final anyNullable = m.parameters
         .any((p) => p.type.nullabilitySuffix == NullabilitySuffix.question);
 
@@ -1495,9 +1503,10 @@ if (T != dynamic &&
       );
       return;
     }
-    
-    final preventNullToAbsent = _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
-    
+
+    final preventNullToAbsent =
+        _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
+
     final annotation = _getAnnotation(m, retrofit.Body);
     final bodyName = annotation?.item1;
     if (bodyName != null) {
