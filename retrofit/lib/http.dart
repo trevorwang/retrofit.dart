@@ -346,7 +346,7 @@ class CacheControl {
 /// ```
 /// Here, if `foo` is `null`, the generated code will not convert it to `absent`.
 /// It'll send `null` as the value of `foo`.
-/// 
+///
 /// It is useful when you want to send `null` as the value to the server.
 /// Such as, when you want to delete a field's value from the database.
 @immutable
