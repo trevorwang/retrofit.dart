@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.0.1
+
+- Add option class-name to customize the name of retrofit generator
 
 ## 8.0.0
 
