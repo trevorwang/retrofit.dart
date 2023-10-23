@@ -849,7 +849,7 @@ You should create a new class to encapsulate the response.
                   )
                   .statement,
             );
-        } else if (returnType.toString() == 'dynamic') {
+        } else if (returnType is DynamicType || returnType.isDartCoreObject) {
           blocks
             ..add(
               declareFinal(_resultVar)
