@@ -24,7 +24,7 @@ jobs:
       - name: Release new version
         run: |
           cd retrofit
-          RELEASE=${GITHUB_REF##*/}
+          RELEASE=${GITHUB_REF##*/retrofit-}
           sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml
       - name: Publish
         run:  cd retrofit && dart pub publish --force

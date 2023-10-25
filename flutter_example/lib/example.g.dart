@@ -33,7 +33,7 @@ class _RestClient implements RestClient {
   String? baseUrl;
 
   @override
-  Future<List<String>> getTags({options}) async {
+  Future<List<String>> getTags({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -54,7 +54,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<List<String>?> getTagsNullable({options}) async {
+  Future<List<String>?> getTagsNullable({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -75,7 +75,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Map<String, String>> getTagByKey({options}) async {
+  Future<Map<String, String>> getTagByKey({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -96,7 +96,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Map<String, String>?> getTagByKeyNullable({options}) async {
+  Future<Map<String, String>?> getTagByKeyNullable({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -118,8 +118,8 @@ class _RestClient implements RestClient {
 
   @override
   Future<String> getTag({
-    options,
-    required contentType,
+    required String contentType,
+    Options? options,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -143,7 +143,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<String?> getTagNullable({options}) async {
+  Future<String?> getTagNullable({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -164,7 +164,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<List<User>> getUsers({options}) async {
+  Future<List<User>> getUsers({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -188,7 +188,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<List<User>?> getUsersNullable({options}) async {
+  Future<List<User>?> getUsersNullable({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -214,7 +214,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Map<String, User>> getUserByKey({options}) async {
+  Future<Map<String, User>> getUserByKey({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -237,7 +237,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Map<String, User>?> getUserByKeyNullable({options}) async {
+  Future<Map<String, User>?> getUserByKeyNullable({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -264,7 +264,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Map<String, List<User>>> getUsersByKey({options}) async {
+  Future<Map<String, List<User>>> getUsersByKey({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -289,7 +289,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<User> getUser({options}) async {
+  Future<User> getUser({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -310,7 +310,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<User?> getUserNullable({options}) async {
+  Future<User?> getUserNullable({Options? options}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -334,8 +334,8 @@ class _RestClient implements RestClient {
 
   @override
   Future<void> patchUser({
-    required user,
-    options,
+    required User user,
+    Options? options,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -358,8 +358,8 @@ class _RestClient implements RestClient {
 
   @override
   Future<void> patchUserMap({
-    required user,
-    options,
+    required User user,
+    Options? options,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -381,8 +381,8 @@ class _RestClient implements RestClient {
 
   @override
   Future<void> postUsers({
-    required users,
-    options,
+    required List<User> users,
+    Options? options,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -403,8 +403,8 @@ class _RestClient implements RestClient {
 
   @override
   Future<void> postUser({
-    required user,
-    options,
+    required User user,
+    Options? options,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -426,8 +426,8 @@ class _RestClient implements RestClient {
 
   @override
   Future<void> postUserNullable({
-    user,
-    options,
+    User? user,
+    Options? options,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -485,5 +485,22 @@ class _RestClient implements RestClient {
       }
     }
     return requestOptions;
+  }
+
+  String _combineBaseUrls(
+    String dioBaseUrl,
+    String? baseUrl,
+  ) {
+    if (baseUrl == null || baseUrl.trim().isEmpty) {
+      return dioBaseUrl;
+    }
+
+    final url = Uri.parse(baseUrl);
+
+    if (url.isAbsolute) {
+      return url.toString();
+    }
+
+    return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }

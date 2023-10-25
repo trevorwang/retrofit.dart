@@ -4,6 +4,8 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 import 'package:source_gen_test/annotations.dart';
 
+import 'query.pb.dart';
+
 @ShouldGenerate(
   '''
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
@@ -1931,4 +1933,27 @@ abstract class GenericCastFetch {
 abstract class CombineBaseUrls {
   @GET('/')
   Future<User> get();
+}
+
+@ShouldGenerate(
+  '''final _data = params.writeToBuffer();''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+      r'accept':
+          'application/x-protobuf; \${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=\${Result.getDefault().info_.qualifiedMessageName}"}'
+  ''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+      contentType:
+          'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
+  contains: true,
+)
+@RestApi()
+abstract class ProtoSupport {
+  @GET('/')
+  Future<Result> get(@Body() Params params);
 }

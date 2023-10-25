@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 
-class MockAdapter extends HttpClientAdapter {
+class MockAdapter extends IOHttpClientAdapter {
   static const String mockHost = 'mockserver';
   static const String mockBase = 'http://$mockHost';
-  DefaultHttpClientAdapter _adapter = DefaultHttpClientAdapter();
+  final _adapter = IOHttpClientAdapter();
 
   @override
   Future<ResponseBody> fetch(

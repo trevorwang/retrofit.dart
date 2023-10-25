@@ -13,12 +13,17 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
+import 'package:protobuf/protobuf.dart';
 
 const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
 
 class RetrofitOptions {
-  RetrofitOptions({this.autoCastResponse, this.emptyRequestBody});
+  RetrofitOptions({
+    this.autoCastResponse,
+    this.emptyRequestBody,
+    this.className,
+  });
 
   RetrofitOptions.fromOptions([BuilderOptions? options])
       : autoCastResponse =
@@ -26,10 +31,12 @@ class RetrofitOptions {
                 'true',
         emptyRequestBody =
             (options?.config['empty_request_body']?.toString() ?? 'false') ==
-                'true';
+                'true',
+        className = options?.config['class-name']?.toString();
 
   final bool? autoCastResponse;
   final bool? emptyRequestBody;
+  final String? className;
 }
 
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
@@ -77,7 +84,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   String _implementClass(ClassElement element, ConstantReader? annotation) {
-    final className = element.name;
+    final className = globalOptions.className ?? '_${element.name}';
     final enumString = annotation?.peek('parser')?.revive().accessor;
     final parser = retrofit.Parser.values
         .firstWhereOrNull((e) => e.toString() == enumString);
@@ -90,7 +97,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         .where((c) => !c.isFactory && !c.isDefaultConstructor);
     final classBuilder = Class((c) {
       c
-        ..name = '_$className'
+        ..name = className
         ..types.addAll(element.typeParameters.map((e) => refer(e.name)))
         ..fields.addAll([_buildDioFiled(), _buildBaseUrlFiled(baseUrl)])
         ..constructors.addAll(
@@ -427,8 +434,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .statement,
     );
 
-    final preventNullToAbsent = _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
-    
+    final preventNullToAbsent =
+        _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
+
     if (preventNullToAbsent == null && headers.isNotEmpty) {
       blocks.add(
         const Code('$_localHeadersVar.removeWhere((k, v) => v == null);'),
@@ -456,6 +464,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     if (contentType != null) {
       extraOptions[_contentType] =
           literal(contentType.peek('mime')?.stringValue);
+    }
+
+    /// gen code for request body for content-type on Protobuf body
+    final annotation = _getAnnotation(m, retrofit.Body);
+    final bodyName = annotation?.item1;
+    if (bodyName != null) {
+      if (const TypeChecker.fromRuntime(GeneratedMessage)
+          .isAssignableFromType(bodyName.type)) {
+        extraOptions[_contentType] = literal(
+            "application/x-protobuf; \${${bodyName.displayName}.info_.qualifiedMessageName == \"\" ? \"\" :\"messageType=\${${bodyName.displayName}.info_.qualifiedMessageName}\"}");
+      }
     }
 
     extraOptions[_baseUrlVar] = refer(_baseUrlVar);
@@ -830,7 +849,7 @@ You should create a new class to encapsulate the response.
                   )
                   .statement,
             );
-        } else if (returnType.toString() == 'dynamic') {
+        } else if (returnType is DynamicType || returnType.isDartCoreObject) {
           blocks
             ..add(
               declareFinal(_resultVar)
@@ -838,6 +857,15 @@ You should create a new class to encapsulate the response.
                   .statement,
             )
             ..add(const Code('final value = $_resultVar.data;'));
+        } else if (_typeChecker(GeneratedMessage).isSuperTypeOf(returnType)) {
+          blocks.add(
+            declareFinal(_resultVar)
+                .assign(
+                    refer("await $_dioVar.fetch<List<int>>").call([options]))
+                .statement,
+          );
+          blocks.add(Code(
+              "final value = await compute(${_displayString(returnType)}.fromBuffer, $_resultVar.data!);"));
         } else {
           final fetchType = returnType.isNullable
               ? 'Map<String,dynamic>?'
@@ -1355,6 +1383,10 @@ if (T != dynamic &&
           p.type.isDartCoreList ||
           p.type.isDartCoreMap) {
         value = refer(p.displayName);
+      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(p.type)) {
+        value = p.type.nullabilitySuffix == NullabilitySuffix.question
+            ? refer(p.displayName).nullSafeProperty('value')
+            : refer(p.displayName).property('value');
       } else {
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
@@ -1406,6 +1438,10 @@ if (T != dynamic &&
       final Expression value;
       if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
         value = refer(displayName);
+      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(type)) {
+        value = type.nullabilitySuffix == NullabilitySuffix.question
+            ? refer(p.displayName).nullSafeProperty('value')
+            : refer(p.displayName).property('value');
       } else {
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
@@ -1441,9 +1477,10 @@ if (T != dynamic &&
 
       blocks.add(refer('$queryParamsVar.addAll').call([expression]).statement);
     }
-    
-    final preventNullToAbsent = _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
-    
+
+    final preventNullToAbsent =
+        _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
+
     final anyNullable = m.parameters
         .any((p) => p.type.nullabilitySuffix == NullabilitySuffix.question);
 
@@ -1466,9 +1503,10 @@ if (T != dynamic &&
       );
       return;
     }
-    
-    final preventNullToAbsent = _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
-    
+
+    final preventNullToAbsent =
+        _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
+
     final annotation = _getAnnotation(m, retrofit.Body);
     final bodyName = annotation?.item1;
     if (bodyName != null) {
@@ -1576,6 +1614,15 @@ if (T != dynamic &&
                 ).statement,
               );
           }
+        } else if (_typeChecker(GeneratedMessage)
+            .isSuperTypeOf(bodyName.type)) {
+          if (bodyName.type.nullabilitySuffix != NullabilitySuffix.none) {
+            log.warning(
+                "GeneratedMessage body ${_displayString(bodyName.type)} can not be nullable.");
+          }
+          blocks.add(declareFinal(dataVar)
+              .assign(refer("${bodyName.displayName}.writeToBuffer()"))
+              .statement);
         } else {
           if (_missingToJson(ele)) {
             log.warning(
@@ -1700,20 +1747,32 @@ ${bodyName.displayName} == null
 
     final parts = _getAnnotations(m, retrofit.Part);
     if (parts.isNotEmpty) {
-      if (parts.length == 1 && parts.keys.first.type.isDartCoreMap) {
+      if (m.parameters.length == 1 && m.parameters.first.type.isDartCoreMap) {
         blocks.add(
           declareFinal(dataVar)
               .assign(
                 refer('FormData').newInstanceNamed(
                   'fromMap',
-                  [CodeExpression(Code(parts.keys.first.displayName))],
+                  [CodeExpression(Code(m.parameters.first.displayName))],
+                ),
+              )
+              .statement,
+        );
+        return;
+      } else if (m.parameters.length == 2 &&
+          m.parameters[1].type.isDartCoreMap) {
+        blocks.add(
+          declareFinal(dataVar)
+              .assign(
+                refer('FormData').newInstanceNamed(
+                  'fromMap',
+                  [CodeExpression(Code(m.parameters[1].displayName))],
                 ),
               )
               .statement,
         );
         return;
       }
-
       blocks.add(
         declareFinal(dataVar)
             .assign(refer('FormData').newInstance([]))
@@ -2008,6 +2067,19 @@ ${bodyName.displayName} == null
 
     final cacheMap = _generateCache(m);
     headers.addAll(cacheMap);
+
+    /// gen code for request Accept for Protobuf
+    final returnType = _getResponseType(m.returnType);
+
+    if (returnType != null &&
+        _typeChecker(GeneratedMessage).isAssignableFromType(returnType)) {
+      headers.removeWhere(
+          (key, value) => "accept".toLowerCase() == key.toLowerCase());
+      headers.addAll({
+        "accept": literal(
+            "application/x-protobuf; \${${_displayString(returnType)}.getDefault().info_.qualifiedMessageName == \"\" ? \"\" :\"messageType=\${${_displayString(returnType)}.getDefault().info_.qualifiedMessageName}\"}")
+      });
+    }
 
     return headers;
   }

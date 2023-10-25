@@ -11,7 +11,7 @@ part 'example.g.dart';
 
 @RestApi(baseUrl: 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/')
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String baseUrl}) = RestClientYmlp;
 
   @GET('/tasks/{id}')
   Future<ApiResult<Task?>> getNestApiResultGenericsInnerTypeNullable();
@@ -65,7 +65,8 @@ abstract class RestClient {
 
   @PreventNullToAbsent()
   @PATCH('/tasks/{id}')
-  Future<Task> updateTaskAvatar(@Path() String id, @Field('avatar') String? avatar);
+  Future<Task> updateTaskAvatar(
+      @Path() String id, @Field('avatar') String? avatar);
 
   @DELETE('/tasks/{id}')
   Future<void> deleteTask(@Path() String id);
@@ -247,14 +248,6 @@ abstract class RestClient {
   @POST('post')
   Future<String> nestedGenericOther(
     @Body() ValueWrapper<ValueWrapper<TaskQuery>> request,
-  );
-
-  @MultiPart()
-  @POST('post/{id}/comments/{commentId}')
-  Future<String> multipartBodyWithMultiplePathParameter(
-    @Path("id") String id,
-    @Path("commentId") String commentId,
-    @Part() Map<String, dynamic> body,
   );
 }
 
