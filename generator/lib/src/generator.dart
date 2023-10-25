@@ -1700,32 +1700,20 @@ ${bodyName.displayName} == null
 
     final parts = _getAnnotations(m, retrofit.Part);
     if (parts.isNotEmpty) {
-      if (m.parameters.length == 1 && m.parameters.first.type.isDartCoreMap) {
+      if (parts.length == 1 && parts.keys.first.type.isDartCoreMap) {
         blocks.add(
           declareFinal(dataVar)
               .assign(
                 refer('FormData').newInstanceNamed(
                   'fromMap',
-                  [CodeExpression(Code(m.parameters.first.displayName))],
-                ),
-              )
-              .statement,
-        );
-        return;
-      } else if (m.parameters.length == 2 &&
-          m.parameters[1].type.isDartCoreMap) {
-        blocks.add(
-          declareFinal(dataVar)
-              .assign(
-                refer('FormData').newInstanceNamed(
-                  'fromMap',
-                  [CodeExpression(Code(m.parameters[1].displayName))],
+                  [CodeExpression(Code(parts.keys.first.displayName))],
                 ),
               )
               .statement,
         );
         return;
       }
+
       blocks.add(
         declareFinal(dataVar)
             .assign(refer('FormData').newInstance([]))

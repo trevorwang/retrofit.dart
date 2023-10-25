@@ -248,6 +248,14 @@ abstract class RestClient {
   Future<String> nestedGenericOther(
     @Body() ValueWrapper<ValueWrapper<TaskQuery>> request,
   );
+
+  @MultiPart()
+  @POST('post/{id}/comments/{commentId}')
+  Future<String> multipartBodyWithMultiplePathParameter(
+    @Path("id") String id,
+    @Path("commentId") String commentId,
+    @Part() Map<String, dynamic> body,
+  );
 }
 
 @JsonSerializable()
