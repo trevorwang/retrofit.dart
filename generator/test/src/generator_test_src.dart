@@ -1957,3 +1957,53 @@ abstract class ProtoSupport {
   @GET('/')
   Future<Result> get(@Body() Params params);
 }
+
+@ShouldGenerate(
+  '''
+    final _data = FormData.fromMap(body);
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class MultipartWithMultplePathParams {
+  @MultiPart()
+  @POST('post/{id}/comments/{commentId}')
+  Future<String> multipartBodyWithMultiplePathParameter(
+    @Path("id") String id,
+    @Path("commentId") String commentId,
+    @Part() Map<String, dynamic> body,
+  );
+}
+
+@ShouldGenerate(
+  '''
+    final _data = FormData.fromMap(body);
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class MultipartWithSinglePathParams {
+  @MultiPart()
+  @POST('post/{id}/comments')
+  Future<String> multipartBodyWithSinglePathParameter(
+    @Path("id") String id,
+    @Part() Map<String, dynamic> body,
+  );
+}
+
+@ShouldGenerate(
+  '''
+    final _data = FormData.fromMap(body);
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class MultipartWithMultplePathParamsPUT {
+  @MultiPart()
+  @PUT('post/{id}/comments/{commentId}')
+  Future<String> multipartBodyWithMultiplePathParameter(
+    @Path("id") String id,
+    @Path("commentId") String commentId,
+    @Part() Map<String, dynamic> body,
+  );
+}
