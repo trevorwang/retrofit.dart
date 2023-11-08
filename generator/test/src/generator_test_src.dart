@@ -1952,8 +1952,93 @@ abstract class CombineBaseUrls {
           'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
   contains: true,
 )
+@ShouldGenerate(
+  '''await compute(Result.fromBuffer, _result.data!);''',
+  contains: true,
+)
 @RestApi()
-abstract class ProtoSupport {
+abstract class ProtoSupportParserJsonSerializable {
+  @GET('/')
+  Future<Result> get(@Body() Params params);
+}
+
+@ShouldGenerate(
+  '''final _data = params.writeToBuffer();''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+      r'accept':
+          'application/x-protobuf; \${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=\${Result.getDefault().info_.qualifiedMessageName}"}'
+  ''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+      contentType:
+          'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''await compute(Result.fromBuffer, _result.data!);''',
+  contains: true,
+)
+@RestApi(parser: Parser.DartJsonMapper)
+abstract class ProtoSupportParserDartJsonMapper {
+  @GET('/')
+  Future<Result> get(@Body() Params params);
+}
+
+@ShouldGenerate(
+  '''final _data = params.writeToBuffer();''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+      r'accept':
+          'application/x-protobuf; \${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=\${Result.getDefault().info_.qualifiedMessageName}"}'
+  ''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+      contentType:
+          'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''await compute(Result.fromBuffer, _result.data!);''',
+  contains: true,
+)
+@RestApi(parser: Parser.MapSerializable)
+abstract class ProtoSupportParserMapSerializable {
+  @GET('/')
+  Future<Result> get(@Body() Params params);
+}
+
+@ShouldGenerate(
+  '''final _data = params.writeToBuffer();''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+      r'accept':
+          'application/x-protobuf; \${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=\${Result.getDefault().info_.qualifiedMessageName}"}'
+  ''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+      contentType:
+          'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''await compute(Result.fromBuffer, _result.data!);''',
+  contains: true,
+)
+@RestApi(parser: Parser.FlutterCompute)
+abstract class ProtoSupportParserFlutterCompute {
   @GET('/')
   Future<Result> get(@Body() Params params);
 }
