@@ -1571,6 +1571,14 @@ if (T != dynamic &&
             );
             break;
         }
+      } else if (_typeChecker(GeneratedMessage).isSuperTypeOf(bodyName.type)) {
+        if (bodyName.type.nullabilitySuffix != NullabilitySuffix.none) {
+          log.warning(
+              "GeneratedMessage body ${_displayString(bodyName.type)} can not be nullable.");
+        }
+        blocks.add(declareFinal(dataVar)
+            .assign(refer("${bodyName.displayName}.writeToBuffer()"))
+            .statement);
       } else if (bodyTypeElement != null &&
           _typeChecker(File).isExactly(bodyTypeElement)) {
         blocks.add(
@@ -1614,15 +1622,6 @@ if (T != dynamic &&
                 ).statement,
               );
           }
-        } else if (_typeChecker(GeneratedMessage)
-            .isSuperTypeOf(bodyName.type)) {
-          if (bodyName.type.nullabilitySuffix != NullabilitySuffix.none) {
-            log.warning(
-                "GeneratedMessage body ${_displayString(bodyName.type)} can not be nullable.");
-          }
-          blocks.add(declareFinal(dataVar)
-              .assign(refer("${bodyName.displayName}.writeToBuffer()"))
-              .statement);
         } else {
           if (_missingToJson(ele)) {
             log.warning(
