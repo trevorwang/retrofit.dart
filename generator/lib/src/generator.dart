@@ -406,7 +406,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final value = v.peek(_valueVar)?.stringValue ?? k.displayName;
       definePath = definePath?.replaceFirst(
         '{$value}',
-        "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? '.name' : ''}}",
+        "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? _hasToJson(k.type) ? '.toJson()' : '.name' : ''}}",
       );
     });
     return literal(definePath);
