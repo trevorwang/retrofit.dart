@@ -1,0 +1,18 @@
+apply plugin: 'java-library'
+apply plugin: 'com.vanniktech.maven.publish'
+
+dependencies {
+  api projects.retrofit
+  compileOnly libs.findBugsAnnotations
+
+  testImplementation libs.junit
+  testImplementation libs.assertj
+  testImplementation libs.mockwebserver
+  testImplementation libs.findBugsAnnotations
+}
+
+jar {
+  manifest {
+    attributes  'Automatic-Module-Name': 'retrofit2.converter.java8'
+  }
+}
