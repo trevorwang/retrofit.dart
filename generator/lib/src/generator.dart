@@ -59,7 +59,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const _onSendProgress = 'onSendProgress';
   static const _onReceiveProgress = 'onReceiveProgress';
   static const _path = 'path';
-  static const _valueVar = 'value';
+  static const _valueVar = '_value';
   bool hasCustomOptions = false;
 
   /// Global options specified in the `build.yaml`
@@ -828,7 +828,7 @@ You should create a new class to encapsulate the response.
             );
           }
         } else {
-          blocks.add(const Code('final value = $_resultVar.data!;'));
+          blocks.add(const Code('final $_valueVar = $_resultVar.data!;'));
         }
       } else {
         if (_isBasicType(returnType)) {
@@ -856,7 +856,7 @@ You should create a new class to encapsulate the response.
                   .assign(refer('await $_dioVar.fetch').call([options]))
                   .statement,
             )
-            ..add(const Code('final value = $_resultVar.data;'));
+            ..add(const Code('final $_valueVar = $_resultVar.data;'));
         } else if (_typeChecker(GeneratedMessage).isSuperTypeOf(returnType)) {
           blocks.add(
             declareFinal(_resultVar)
@@ -865,7 +865,7 @@ You should create a new class to encapsulate the response.
                 .statement,
           );
           blocks.add(Code(
-              "final value = await compute(${_displayString(returnType)}.fromBuffer, $_resultVar.data!);"));
+              "final $_valueVar = await compute(${_displayString(returnType)}.fromBuffer, $_resultVar.data!);"));
         } else {
           final fetchType = returnType.isNullable
               ? 'Map<String,dynamic>?'
@@ -954,7 +954,7 @@ You should create a new class to encapsulate the response.
       '''),
         );
       } else {
-        blocks.add(Code('$returnAsyncWrapper value;'));
+        blocks.add(Code('$returnAsyncWrapper $_valueVar;'));
       }
     }
 
