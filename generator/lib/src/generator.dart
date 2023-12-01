@@ -949,7 +949,7 @@ You should create a new class to encapsulate the response.
       if (isWrapped) {
         blocks.add(
           Code('''
-      final httpResponse = HttpResponse(value, $_resultVar);
+      final httpResponse = HttpResponse($_valueVar, $_resultVar);
       $returnAsyncWrapper httpResponse;
       '''),
         );
