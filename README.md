@@ -203,6 +203,27 @@ client.getTask('2').then((it) {
   }
 });
 ```
+
+### Relative API baseUrl
+
+If you want to use a relative `baseUrl` value in the `RestApi` annotation of the `RestClient`, you need to specify a `baseUrl` in `dio.options.baseUrl`.
+
+```dart
+@RestApi(baseUrl: '/tasks')
+abstract class RestClient {
+  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+
+  @GET('{id}')
+  Future<HttpResponse<Task>> getTask(@Path('id') String id);
+
+  @GET('')
+  Future<HttpResponse<List<Task>>> getTasks();
+}
+
+dio.options.baseUrl = 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1';
+final client = RestClient(dio);
+```
+
 ### Multiple endpoints support
 
 If you want to use multiple endpoints to your `RestClient`, you should pass your base url when you initiate `RestClient`. Any value defined in `RestApi` will be ignored.
