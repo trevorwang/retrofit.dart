@@ -10,10 +10,10 @@ import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dio/dio.dart';
+import 'package:protobuf/protobuf.dart';
 import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
-import 'package:protobuf/protobuf.dart';
 
 const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
@@ -93,7 +93,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       parser: parser ?? retrofit.Parser.JsonSerializable,
     );
     final baseUrl = clientAnnotation.baseUrl;
-    final annotClassConsts = element.constructors
+    final annotateClassConsts = element.constructors
         .where((c) => !c.isFactory && !c.isDefaultConstructor);
     final classBuilder = Class((c) {
       c
@@ -101,12 +101,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ..types.addAll(element.typeParameters.map((e) => refer(e.name)))
         ..fields.addAll([_buildDioFiled(), _buildBaseUrlFiled(baseUrl)])
         ..constructors.addAll(
-          annotClassConsts.map(
+          annotateClassConsts.map(
             (e) => _generateConstructor(baseUrl, superClassConst: e),
           ),
         )
         ..methods.addAll(_parseMethods(element));
-      if (annotClassConsts.isEmpty) {
+      if (annotateClassConsts.isEmpty) {
         c.constructors.add(_generateConstructor(baseUrl));
         c.implements.add(refer(_generateTypeParameterizedName(element)));
       } else {
@@ -205,8 +205,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ...element.methods,
         ...element.mixins.expand((i) => i.methods)
       ].where((m) {
-        final methodAnnot = _getMethodAnnotation(m);
-        return methodAnnot != null &&
+        final methodAnnotation = _getMethodAnnotation(m);
+        return methodAnnotation != null &&
             m.isAbstract &&
             (m.returnType.isDartAsyncFuture || m.returnType.isDartAsyncStream);
       }).map((m) => _generateMethod(m)!);
@@ -232,19 +232,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   ConstantReader? _getMethodAnnotation(MethodElement method) {
     for (final type in _methodsAnnotations) {
-      final annot = _getMethodAnnotationByType(method, type);
-      if (annot != null) {
-        return annot;
+      final annotation = _getMethodAnnotationByType(method, type);
+      if (annotation != null) {
+        return annotation;
       }
     }
     return null;
   }
 
   ConstantReader? _getMethodAnnotationByType(MethodElement method, Type type) {
-    final annot =
+    final annotation =
         _typeChecker(type).firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annot != null) {
-      return ConstantReader(annot);
+    if (annotation != null) {
+      return ConstantReader(annotation);
     }
     return null;
   }
@@ -286,14 +286,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     MethodElement m,
     Type type,
   ) {
-    final annot = <ParameterElement, ConstantReader>{};
+    final annotation = <ParameterElement, ConstantReader>{};
     for (final p in m.parameters) {
       final a = _typeChecker(type).firstAnnotationOf(p);
       if (a != null) {
-        annot[p] = ConstantReader(a);
+        annotation[p] = ConstantReader(a);
       }
     }
-    return annot;
+    return annotation;
   }
 
   Tuple2<ParameterElement, ConstantReader>? _getAnnotation(
