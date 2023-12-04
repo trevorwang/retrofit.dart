@@ -980,7 +980,38 @@ You should create a new class to encapsulate the response.
       } catch (_) {}
     }
 
-    return genericArgumentFactories;
+    return genericArgumentFactories ||
+        hasGenericArgumentFactoriesCompatibleSignature(dartType);
+  }
+
+  /// Checks for a compatible fromJson signature for generic argument factories
+  // TODO: But does the code work with multiple generic types?
+  bool hasGenericArgumentFactoriesCompatibleSignature(DartType? dartType) {
+    if (dartType == null) return false;
+    final element = dartType.element;
+    if (element is! InterfaceElement) return false;
+
+    final typeParameters = element.typeParameters;
+    if (typeParameters.isEmpty) return false;
+
+    final constructors = element.constructors;
+    if (constructors.isEmpty) return false;
+    final fromJson = constructors
+        .firstWhereOrNull((constructor) => constructor.name == 'fromJson');
+
+    if (fromJson == null || fromJson.parameters.length == 1) return false;
+
+    final fromJsonArguments = fromJson.parameters;
+
+    if (typeParameters.length != (fromJsonArguments.length - 1)) {
+      // TODO: better error. theoretically this should never be hit
+      // "invalid fromJson"?
+      // throw Exception(
+      //     'Not the right amount of arguments: \n$typeParameters\n$fromJsonArguments');
+      // throw Exception('Invalid fromJson found');
+      return false; // or error? we shouldn't get here at all, theoretically
+    }
+    return true;
   }
 
   String _getInnerJsonSerializableMapperFn(DartType dartType) {

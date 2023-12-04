@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.0.3
+
+- fix [#627](https://github.com/trevorwang/retrofit.dart/issues/627) where generic argument constructors on any class not directly marked with `@JsonSerializable(genericArgumentFactories: true)`
+
+- fix some typos in this changelog.
+
 ## 8.0.2
 
 - fix #630 Null check operator used on a null value
@@ -123,7 +129,7 @@
 
 ## 2.0.0-beta1
 
-- Nullsafety support
+- Null safety support
 
 ## 1.4.1
 
@@ -135,7 +141,7 @@
 
 ## 1.3.8
 
-- Send list params duplicative in multipart
+- Send list params duplication in multipart
 
 ## 1.3.7
 
@@ -190,7 +196,7 @@
 
 ## 1.2.0
 
-- Add `HttpReposne` to handle the original response
+- Add `HttpResponse` to handle the original response
 
 ## 1.1.0
 
@@ -253,11 +259,11 @@ Added bean class support for `@Body()` annotation.
 
 Here's the example.
 
-```
+```dart
     Future<String> createUser(@Body() User user);
 ```
 
-```
+```dart
     class User {
         Map<String, dynamic> toJson() => {};
     }
