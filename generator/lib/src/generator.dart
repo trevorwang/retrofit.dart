@@ -23,6 +23,7 @@ class RetrofitOptions {
     this.autoCastResponse,
     this.emptyRequestBody,
     this.className,
+    this.useResult,
   });
 
   RetrofitOptions.fromOptions([BuilderOptions? options])
@@ -32,11 +33,14 @@ class RetrofitOptions {
         emptyRequestBody =
             (options?.config['empty_request_body']?.toString() ?? 'false') ==
                 'true',
-        className = options?.config['class-name']?.toString();
+        className = options?.config['class-name']?.toString(),
+        useResult =
+            (options?.config['use_result']?.toString() ?? 'false') == 'true';
 
   final bool? autoCastResponse;
   final bool? emptyRequestBody;
   final String? className;
+  final bool? useResult;
 }
 
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
@@ -363,6 +367,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ? MethodModifier.async
             : MethodModifier.asyncStar
         ..annotations.add(const CodeExpression(Code('override')));
+
+      if (globalOptions.useResult == true) {
+        final returnType = m.returnType;
+        if (returnType is ParameterizedType &&
+            returnType.typeArguments.first is! VoidType) {
+          mm.annotations.add(const CodeExpression(Code('useResult')));
+        }
+      }
 
       /// required parameters
       mm.requiredParameters.addAll(
