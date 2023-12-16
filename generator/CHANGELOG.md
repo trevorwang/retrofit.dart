@@ -1,6 +1,10 @@
 # Changelog
 
-## 8.0.3
+## 8.0.6
+
+- @useResult
+
+## 8.0.5
 
 - fix [#627](https://github.com/trevorwang/retrofit.dart/issues/627) where generic argument constructors on any class not directly marked with `@JsonSerializable(genericArgumentFactories: true)`
 
