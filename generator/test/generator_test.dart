@@ -15,5 +15,9 @@ Future<void> main() async {
   testAnnotatedElements<http.RestApi>(
     reader,
     RetrofitGenerator(RetrofitOptions()),
+    defaultConfiguration: ['default'],
+    additionalGenerators: {
+      'use_result': RetrofitGenerator(RetrofitOptions(useResult: true))
+    },
   );
 }

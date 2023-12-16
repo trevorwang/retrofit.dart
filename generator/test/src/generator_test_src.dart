@@ -2083,7 +2083,7 @@ abstract class MultipartWithSinglePathParams {
   contains: true,
 )
 @RestApi()
-abstract class MultipartWithMultplePathParamsPUT {
+abstract class MultipartWithMultiplePathParamsPUT {
   @MultiPart()
   @PUT('post/{id}/comments/{commentId}')
   Future<String> multipartBodyWithMultiplePathParameter(
@@ -2091,4 +2091,33 @@ abstract class MultipartWithMultplePathParamsPUT {
     @Path("commentId") String commentId,
     @Part() Map<String, dynamic> body,
   );
+}
+
+@ShouldGenerate(
+  '''
+  @override
+  @useResult
+  Future<String> someGet() async {
+  ''',
+  contains: true,
+  configurations: ['use_result'],
+)
+@RestApi()
+abstract class UseResult {
+  @GET('https://httpbin.org/')
+  Future<String> someGet();
+}
+
+@ShouldGenerate(
+  '''
+  @override
+  Future<void> someGet() async {
+  ''',
+  contains: true,
+  configurations: ['use_result'],
+)
+@RestApi()
+abstract class UseResultForVoid {
+  @GET('https://httpbin.org/')
+  Future<void> someGet();
 }
