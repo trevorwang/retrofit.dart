@@ -46,7 +46,7 @@ abstract class BaseUrl {}
 
 @ShouldGenerate(
   '''
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
 ''',
   contains: true,
 )
@@ -59,7 +59,7 @@ abstract class EmptyExtras {
 
 @ShouldGenerate(
   '''
-    const _extra = <String, dynamic>{'key': 'value'};
+    final _extra = <String, dynamic>{'key': 'value'};
   ''',
   contains: true,
 )
@@ -72,7 +72,7 @@ abstract class ExtrasWithPrimitiveValues {
 
 @ShouldGenerate(
   '''
-    const _extra = <String, dynamic>{
+    final _extra = <String, dynamic>{
       'key': 'value',
       'key2': 'value2',
     };
@@ -89,7 +89,7 @@ abstract class MultipleExtrasWithPrimitiveValues {
 
 @ShouldGenerate(
   '''
-    const _extra = <String, dynamic>{'key': CustomConstant()};
+    final _extra = <String, dynamic>{'key': CustomConstant()};
 ''',
   contains: true,
 )
@@ -98,6 +98,50 @@ abstract class ExtrasWithCustomConstant {
   @GET('/list/')
   @Extra({'key': CustomConstant()})
   Future<void> list();
+}
+
+@ShouldGenerate(
+  '''
+    final _extra = <String, dynamic>{};
+    _extra.addAll(extras ?? <String, dynamic>{});
+''',
+  contains: true,
+)
+@RestApi()
+abstract class TestExtrasWithNullable {
+  @GET('/list/')
+  Future<void> list(@Extras() Map<String, dynamic>? extras);
+}
+
+@ShouldGenerate(
+  '''
+    final _extra = <String, dynamic>{'key': 'value'};
+    _extra.addAll(extras);
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class TestExtrasWithMap {
+  @GET('/list/')
+  @Extra({'key': 'value'})
+  Future<void> list(
+      @Extras() Map<String, dynamic> extras,
+      );
+}
+
+@ShouldGenerate(
+  '''
+    final _extra = <String, dynamic>{};
+    _extra.addAll(u.toJson());
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class TestExtrasWithObject {
+  @GET('/list/')
+  Future<void> list(
+      @Extras() User u,
+  );
 }
 
 class CustomConstant {
