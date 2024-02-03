@@ -2052,7 +2052,7 @@ ${bodyName.displayName} == null
       );
     } else {
       blocks.add(
-        declareFinal(dataVar, type: refer('Map<String, dynamic>?'))
+        declareConst(dataVar, type: refer('Map<String, dynamic>?'))
             .assign(literalNull)
             .statement,
       );
