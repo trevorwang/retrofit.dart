@@ -2159,7 +2159,7 @@ ${bodyName.displayName} == null
     String localExtraVar,
   ) {
     blocks.add(
-      declareConst(localExtraVar)
+      declareFinal(localExtraVar)
           .assign(
             literalMap(
               _getMethodAnnotations(m, retrofit.Extra)
@@ -2195,6 +2195,51 @@ ${bodyName.displayName} == null
           )
           .statement,
     );
+
+    final extraMap = _getAnnotations(m, retrofit.Extras);
+    for (final p in extraMap.keys) {
+      final type = p.type;
+      final displayName = p.displayName;
+      final Expression value;
+      if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
+        value = refer(displayName);
+      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(type)) {
+        value = type.nullabilitySuffix == NullabilitySuffix.question
+            ? refer(p.displayName).nullSafeProperty('value')
+            : refer(p.displayName).property('value');
+      } else {
+        switch (clientAnnotation.parser) {
+          case retrofit.Parser.JsonSerializable:
+            value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                ? refer(displayName).nullSafeProperty('toJson').call([])
+                : refer(displayName).property('toJson').call([]);
+            break;
+          case retrofit.Parser.MapSerializable:
+            value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                ? refer(displayName).nullSafeProperty('toMap').call([])
+                : refer(displayName).property('toMap').call([]);
+            break;
+          case retrofit.Parser.DartJsonMapper:
+            value = refer(displayName);
+            break;
+          case retrofit.Parser.FlutterCompute:
+            value = refer(
+              'await compute(serialize${_displayString(p.type)}, ${p.displayName})',
+            );
+            break;
+        }
+      }
+
+      final emitter = DartEmitter(useNullSafetySyntax: true);
+      final buffer = StringBuffer();
+      value.accept(emitter, buffer);
+      if (type.nullabilitySuffix == NullabilitySuffix.question) {
+        refer('?? <String,dynamic>{}').accept(emitter, buffer);
+      }
+      final expression = refer(buffer.toString());
+
+      blocks.add(refer('$localExtraVar.addAll').call([expression]).statement);
+    }
   }
 
   bool _missingToJson(ClassElement ele) {

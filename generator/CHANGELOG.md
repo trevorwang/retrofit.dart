@@ -1,5 +1,15 @@
 # Changelog
 
+## 8.1.0
+
+- Added `@Extras` to pass extra options to dio requests, response, transformer and interceptors.
+
+  Example :
+  ```dart
+  @http.POST('/path/')
+  Future<String> myMethod(@Extras() Map<String, dynamic> extras);
+  ```
+
 ## 8.0.6
 
 - @useResult
