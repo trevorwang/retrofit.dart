@@ -629,23 +629,23 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
                 mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)',
+                  '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i)',
                 );
                 break;
               case retrofit.Parser.JsonSerializable:
                 if (innerReturnType?.isNullable ?? false) {
                   mapperCode = refer(
-                    '(dynamic i) => i == null ? null : ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)',
+                    '(dynamic i) => i == null ? null : ${_displayString(innerReturnType)}.fromJson(i)',
                   );
                 } else {
                   mapperCode = refer(
-                    '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)',
+                    '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i)',
                   );
                 }
                 break;
               case retrofit.Parser.DartJsonMapper:
                 mapperCode = refer(
-                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!',
+                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i)!',
                 );
                 break;
               case retrofit.Parser.FlutterCompute:
@@ -694,7 +694,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             (k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
-                    .map((i) => ${_displayString(type)}.fromMap(i as Map<String,dynamic>))
+                    .map((i) => ${_displayString(type)}.fromMap(i))
                     .toList()
                 )
             ''');
@@ -704,7 +704,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             (k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
-                    .map((i) => ${_displayString(type)}.fromJson(i as Map<String,dynamic>))
+                    .map((i) => ${_displayString(type)}.fromJson(i))
                     .toList()
                 )
             ''');
@@ -714,7 +714,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             (k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
-                    .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i as Map<String,dynamic>)!)
+                    .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i)!)
                     .toList()
                 )
             ''');
@@ -766,18 +766,18 @@ You should create a new class to encapsulate the response.
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
                 mapperCode = refer(
-                  '(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}.fromMap(v as Map<String, dynamic>))',
+                  '(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}.fromMap(v))',
                 );
                 break;
               case retrofit.Parser.JsonSerializable:
                 mapperCode = refer(
-                  '(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}.fromJson(v as Map<String, dynamic>))',
+                  '(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}.fromJson(v))',
                 );
 
                 break;
               case retrofit.Parser.DartJsonMapper:
                 mapperCode = refer(
-                  '(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v as Map<String, dynamic>)!)',
+                  '(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v)!)',
                 );
                 break;
               case retrofit.Parser.FlutterCompute:
@@ -788,7 +788,7 @@ You should create a new class to encapsulate the response.
                 future = true;
                 mapperCode = refer('''
                 (e) async => MapEntry(
-                    e.key, await compute(deserialize${_displayString(secondType)}, e.value as Map<String, dynamic>))
+                    e.key, await compute(deserialize${_displayString(secondType)}, e.value))
             ''');
                 break;
             }
@@ -1089,10 +1089,10 @@ You should create a new class to encapsulate the response.
             } else {
               if (isGenericArgumentFactories(arg)) {
                 mappedVal +=
-                    '(json)=>${_displayString(arg)}.fromJson(json as Map<String, dynamic>,${_getInnerJsonSerializableMapperFn(arg)}),';
+                    '(json)=>${_displayString(arg)}.fromJson(json,${_getInnerJsonSerializableMapperFn(arg)}),';
               } else {
                 mappedVal +=
-                    '(json)=>${_displayString(arg)}.fromJson(json as Map<String, dynamic>),';
+                    '(json)=>${_displayString(arg)}.fromJson(json),';
               }
             }
           } else {
@@ -1106,9 +1106,9 @@ You should create a new class to encapsulate the response.
         return '(json)=>json as ${_displayString(dartType, withNullability: dartType.isNullable)},';
       } else {
         if (dartType.isNullable) {
-          return '(json)=> json == null ? null : ${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
+          return '(json)=> json == null ? null : ${_displayString(dartType)}.fromJson(json),';
         } else {
-          return '(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
+          return '(json)=>${_displayString(dartType)}.fromJson(json),';
         }
       }
     }
