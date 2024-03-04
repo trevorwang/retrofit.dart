@@ -1624,16 +1624,22 @@ if (T != dynamic &&
             .statement);
       } else if (bodyTypeElement != null &&
           _typeChecker(File).isExactly(bodyTypeElement)) {
+        var declaration = declareFinal(dataVar);
+        final streamAssignment = refer('Stream').property('fromIterable').call([
+          refer(
+            '${bodyName.displayName}.readAsBytesSync().map((i)=>[i])',
+          )
+        ]);
+        if (bodyName.type.nullabilitySuffix == NullabilitySuffix.question) {
+          declaration = declaration
+              .assign(refer(bodyName.displayName).equalTo(literalNull))
+              .conditional(literalNull, streamAssignment);
+        } else {
+          declaration = declaration.assign(streamAssignment);
+        }
+
         blocks.add(
-          declareFinal(dataVar)
-              .assign(
-                refer('Stream').property('fromIterable').call([
-                  refer(
-                    '${bodyName.displayName}.readAsBytesSync().map((i)=>[i])',
-                  )
-                ]),
-              )
-              .statement,
+          declaration.statement,
         );
       } else if (bodyName.type.element is ClassElement) {
         final ele = bodyName.type.element! as ClassElement;
