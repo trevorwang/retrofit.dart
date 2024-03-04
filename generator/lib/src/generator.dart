@@ -1555,7 +1555,7 @@ if (T != dynamic &&
     if (bodyName != null) {
       var declaration = declareFinal(dataVar);
       // Value that will be assigned to the data variable
-      Expression? assignment;
+      Expression? value;
       // Code that will be executed after the assignment
       List<Code> postAssignment = [];
 
@@ -1564,7 +1564,7 @@ if (T != dynamic &&
       final bodyTypeElement = bodyName.type.element;
       if (const TypeChecker.fromRuntime(Map)
           .isAssignableFromType(bodyName.type)) {
-        assignment = literalMap({}, refer('String'), refer('dynamic'));
+        value = literalMap({}, refer('String'), refer('dynamic'));
 
         postAssignment.add(refer('$dataVar.addAll').call([
           refer(
@@ -1583,18 +1583,18 @@ if (T != dynamic &&
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
           case retrofit.Parser.DartJsonMapper:
-            assignment = refer('''
+            value = refer('''
             ${bodyName.displayName}.map((e) => e.toJson()).toList()
             ''');
             break;
           case retrofit.Parser.MapSerializable:
-            assignment = refer('''
+            value = refer('''
             ${bodyName.displayName}.map((e) => e.toMap()).toList()
             ''');
 
             break;
           case retrofit.Parser.FlutterCompute:
-            assignment = refer('''
+            value = refer('''
             await compute(serialize${_displayString(_genericOf(bodyName.type))}List, ${bodyName.displayName})
             ''');
 
@@ -1605,10 +1605,10 @@ if (T != dynamic &&
           log.warning(
               "GeneratedMessage body ${_displayString(bodyName.type)} can not be nullable.");
         }
-        assignment = refer("${bodyName.displayName}.writeToBuffer()");
+        value = refer("${bodyName.displayName}.writeToBuffer()");
       } else if (bodyTypeElement != null &&
           _typeChecker(File).isExactly(bodyTypeElement)) {
-        assignment = refer('Stream').property('fromIterable').call([
+        value = refer('Stream').property('fromIterable').call([
           refer(
             '${bodyName.displayName}.readAsBytesSync().map((i)=>[i])',
           )
@@ -1621,9 +1621,9 @@ if (T != dynamic &&
             log.warning(
                 '${_displayString(bodyName.type)} must provide a `toMap()` method which return a Map.\n'
                 "It is programmer's responsibility to make sure the ${bodyName.type} is properly serialized");
-            assignment = refer(bodyName.displayName);
+            value = refer(bodyName.displayName);
           } else {
-            assignment = literalMap({}, refer('String'), refer('dynamic'));
+            value = literalMap({}, refer('String'), refer('dynamic'));
 
             postAssignment.add(
               refer('$dataVar.addAll').call(
@@ -1641,15 +1641,15 @@ if (T != dynamic &&
                 '${_displayString(bodyName.type)} must provide a `toJson()` method which return a Map.\n'
                 "It is programmer's responsibility to make sure the ${_displayString(bodyName.type)} is properly serialized");
 
-            assignment = refer(bodyName.displayName);
+            value = refer(bodyName.displayName);
           } else if (_missingSerialize(ele.enclosingElement, bodyName.type)) {
             log.warning(
                 '${_displayString(bodyName.type)} must provide a `serialize${_displayString(bodyName.type)}()` method which returns a Map.\n'
                 "It is programmer's responsibility to make sure the ${_displayString(bodyName.type)} is properly serialized");
 
-            assignment = refer(bodyName.displayName);
+            value = refer(bodyName.displayName);
           } else {
-            assignment = literalMap({}, refer('String'), refer('dynamic'));
+            value = literalMap({}, refer('String'), refer('dynamic'));
 
             final bodyType = bodyName.type;
             final genericArgumentFactories =
@@ -1719,16 +1719,16 @@ ${bodyName.displayName} == null
         }
       } else {
         /// @Body annotations with no type are assigned as is
-        assignment = refer(bodyName.displayName);
+        value = refer(bodyName.displayName);
       }
 
       // Assign the value to the data variable, using the conditional operator if the type is nullable
       if (bodyName.type.nullabilitySuffix == NullabilitySuffix.question) {
         declaration = declaration
             .assign(refer(bodyName.displayName).equalTo(literalNull))
-            .conditional(literalNull, assignment);
+            .conditional(literalNull, value);
       } else {
-        declaration = declaration.assign(assignment);
+        declaration = declaration.assign(value);
       }
       blocks.add(declaration.statement);
 
