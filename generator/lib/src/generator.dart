@@ -1738,7 +1738,7 @@ ${bodyName.displayName} == null
         if (bodyName.type.nullabilitySuffix == NullabilitySuffix.question) {
           postAssignment = [
             const Code('if ('),
-            refer(bodyName.displayName).notEqualTo(literalNull).code,
+            refer(dataVar).notEqualTo(literalNull).code,
             const Code(') {'),
             ...postAssignment,
             const Code('}'),
