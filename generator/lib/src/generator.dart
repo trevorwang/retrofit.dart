@@ -1739,6 +1739,8 @@ ${bodyName.displayName} == null
           postAssignment = [
             const Code('if ('),
             refer(dataVar).notEqualTo(literalNull).code,
+            Code(" && "),
+            refer(bodyName.displayName).notEqualTo(literalNull).code,
             const Code(') {'),
             ...postAssignment,
             const Code('}'),
