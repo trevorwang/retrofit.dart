@@ -16,7 +16,7 @@ import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
 
 const _analyzerIgnores =
-    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
+    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers, invalid_null_aware_operator';
 
 class RetrofitOptions {
   RetrofitOptions({
