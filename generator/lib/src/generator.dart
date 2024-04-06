@@ -660,6 +660,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                           name: 'map',
                         )
                         .call([mapperCode])
+                        .property('cast<${_displayString(innerReturnType)}>')
+                        .call([])
                         .property('toList')
                         .call([]),
                   )
