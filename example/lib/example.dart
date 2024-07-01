@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart' hide Headers;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:json_annotation/json_annotation.dart';
+import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:retrofit_example/api_result.dart';
 
@@ -180,7 +181,7 @@ abstract class RestClient {
   Future<String> postFile({@Body() required File file});
 
   @GET('')
-  Future<String> testCustomOptions(@DioOptions() Options options);
+  Future<String> testCustomOptions(@DioOptions() Options custom);
 
   @GET('/cancel')
   Future<String> cancelRequest(@CancelRequest() CancelToken cancelToken);

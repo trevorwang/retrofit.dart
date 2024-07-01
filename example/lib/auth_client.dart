@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'auth_client.g.dart';
