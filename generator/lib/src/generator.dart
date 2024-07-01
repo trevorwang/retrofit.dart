@@ -16,7 +16,7 @@ import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
 
 const _analyzerIgnores =
-    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
+    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers, invalid_null_aware_operator';
 
 class RetrofitOptions {
   RetrofitOptions({
@@ -1553,26 +1553,28 @@ if (T != dynamic &&
     final annotation = _getAnnotation(m, retrofit.Body);
     final bodyName = annotation?.item1;
     if (bodyName != null) {
+      var declaration = declareFinal(dataVar);
+      // Value that will be assigned to the data variable
+      Expression? value;
+      // Code that will be executed after the assignment
+      List<Code> postAssignment = [];
+
       final nullToAbsent =
           annotation!.item2.peek('nullToAbsent')?.boolValue ?? false;
       final bodyTypeElement = bodyName.type.element;
       if (const TypeChecker.fromRuntime(Map)
           .isAssignableFromType(bodyName.type)) {
-        blocks
-          ..add(
-            declareFinal(dataVar)
-                .assign(literalMap({}, refer('String'), refer('dynamic')))
-                .statement,
+        value = literalMap({}, refer('String'), refer('dynamic'));
+
+        postAssignment.add(refer('$dataVar.addAll').call([
+          refer(
+            "${bodyName.displayName}${m.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' : ''}",
           )
-          ..add(
-            refer('$dataVar.addAll').call([
-              refer(
-                "${bodyName.displayName}${m.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' : ''}",
-              )
-            ]).statement,
-          );
+        ]).statement);
+
         if (preventNullToAbsent == null && nullToAbsent) {
-          blocks.add(Code('$dataVar.removeWhere((k, v) => v == null);'));
+          postAssignment
+              .add(Code('$dataVar.removeWhere((k, v) => v == null);'));
         }
       } else if (bodyTypeElement != null &&
           ((_typeChecker(List).isExactly(bodyTypeElement) ||
@@ -1581,37 +1583,21 @@ if (T != dynamic &&
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
           case retrofit.Parser.DartJsonMapper:
-            blocks.add(
-              declareFinal(dataVar)
-                  .assign(
-                    refer('''
+            value = refer('''
             ${bodyName.displayName}.map((e) => e.toJson()).toList()
-            '''),
-                  )
-                  .statement,
-            );
+            ''');
             break;
           case retrofit.Parser.MapSerializable:
-            blocks.add(
-              declareFinal(dataVar)
-                  .assign(
-                    refer('''
+            value = refer('''
             ${bodyName.displayName}.map((e) => e.toMap()).toList()
-            '''),
-                  )
-                  .statement,
-            );
+            ''');
+
             break;
           case retrofit.Parser.FlutterCompute:
-            blocks.add(
-              declareFinal(dataVar)
-                  .assign(
-                    refer('''
+            value = refer('''
             await compute(serialize${_displayString(_genericOf(bodyName.type))}List, ${bodyName.displayName})
-            '''),
-                  )
-                  .statement,
-            );
+            ''');
+
             break;
         }
       } else if (_typeChecker(GeneratedMessage).isSuperTypeOf(bodyName.type)) {
@@ -1619,22 +1605,14 @@ if (T != dynamic &&
           log.warning(
               "GeneratedMessage body ${_displayString(bodyName.type)} can not be nullable.");
         }
-        blocks.add(declareFinal(dataVar)
-            .assign(refer("${bodyName.displayName}.writeToBuffer()"))
-            .statement);
+        value = refer("${bodyName.displayName}.writeToBuffer()");
       } else if (bodyTypeElement != null &&
           _typeChecker(File).isExactly(bodyTypeElement)) {
-        blocks.add(
-          declareFinal(dataVar)
-              .assign(
-                refer('Stream').property('fromIterable').call([
-                  refer(
-                    '${bodyName.displayName}.readAsBytesSync().map((i)=>[i])',
-                  )
-                ]),
-              )
-              .statement,
-        );
+        value = refer('Stream').property('fromIterable').call([
+          refer(
+            '${bodyName.displayName}.readAsBytesSync().map((i)=>[i])',
+          )
+        ]);
       } else if (bodyName.type.element is ClassElement) {
         final ele = bodyName.type.element! as ClassElement;
         if (clientAnnotation.parser == retrofit.Parser.MapSerializable) {
@@ -1643,53 +1621,35 @@ if (T != dynamic &&
             log.warning(
                 '${_displayString(bodyName.type)} must provide a `toMap()` method which return a Map.\n'
                 "It is programmer's responsibility to make sure the ${bodyName.type} is properly serialized");
-            blocks.add(
-              declareFinal(dataVar)
-                  .assign(refer(bodyName.displayName))
-                  .statement,
-            );
+            value = refer(bodyName.displayName);
           } else {
-            blocks
-              ..add(
-                declareFinal(dataVar)
-                    .assign(literalMap({}, refer('String'), refer('dynamic')))
-                    .statement,
-              )
-              ..add(
-                refer('$dataVar.addAll').call(
-                  [
-                    refer(
-                      '${bodyName.displayName}?.toMap() ?? <String,dynamic>{}',
-                    )
-                  ],
-                ).statement,
-              );
+            value = literalMap({}, refer('String'), refer('dynamic'));
+
+            postAssignment.add(
+              refer('$dataVar.addAll').call(
+                [
+                  refer(
+                    '${bodyName.displayName}?.toMap() ?? <String,dynamic>{}',
+                  )
+                ],
+              ).statement,
+            );
           }
         } else {
           if (_missingToJson(ele)) {
             log.warning(
                 '${_displayString(bodyName.type)} must provide a `toJson()` method which return a Map.\n'
                 "It is programmer's responsibility to make sure the ${_displayString(bodyName.type)} is properly serialized");
-            blocks.add(
-              declareFinal(dataVar)
-                  .assign(refer(bodyName.displayName))
-                  .statement,
-            );
+
+            value = refer(bodyName.displayName);
           } else if (_missingSerialize(ele.enclosingElement, bodyName.type)) {
             log.warning(
                 '${_displayString(bodyName.type)} must provide a `serialize${_displayString(bodyName.type)}()` method which returns a Map.\n'
                 "It is programmer's responsibility to make sure the ${_displayString(bodyName.type)} is properly serialized");
-            blocks.add(
-              declareFinal(dataVar)
-                  .assign(refer(bodyName.displayName))
-                  .statement,
-            );
+
+            value = refer(bodyName.displayName);
           } else {
-            blocks.add(
-              declareFinal(dataVar)
-                  .assign(literalMap({}, refer('String'), refer('dynamic')))
-                  .statement,
-            );
+            value = literalMap({}, refer('String'), refer('dynamic'));
 
             final bodyType = bodyName.type;
             final genericArgumentFactories =
@@ -1709,13 +1669,13 @@ if (T != dynamic &&
               case retrofit.Parser.DartJsonMapper:
                 if (bodyName.type.nullabilitySuffix !=
                     NullabilitySuffix.question) {
-                  blocks.add(
+                  postAssignment.add(
                     refer('$dataVar.addAll').call([
                       refer('${bodyName.displayName}.toJson($toJsonCode)')
                     ]).statement,
                   );
                 } else {
-                  blocks.add(
+                  postAssignment.add(
                     refer('$dataVar.addAll').call([
                       refer(
                         '${bodyName.displayName}?.toJson($toJsonCode) ?? <String,dynamic>{}',
@@ -1727,7 +1687,7 @@ if (T != dynamic &&
               case retrofit.Parser.FlutterCompute:
                 if (bodyName.type.nullabilitySuffix !=
                     NullabilitySuffix.question) {
-                  blocks.add(
+                  postAssignment.add(
                     refer('$dataVar.addAll').call([
                       refer(
                         'await compute(serialize${_displayString(bodyName.type)}, ${bodyName.displayName})',
@@ -1735,7 +1695,7 @@ if (T != dynamic &&
                     ]).statement,
                   );
                 } else {
-                  blocks.add(
+                  postAssignment.add(
                     refer('$dataVar.addAll').call([
                       refer('''
 ${bodyName.displayName} == null
@@ -1752,15 +1712,41 @@ ${bodyName.displayName} == null
             }
 
             if (preventNullToAbsent == null && nullToAbsent) {
-              blocks.add(Code('$dataVar.removeWhere((k, v) => v == null);'));
+              postAssignment
+                  .add(Code('$dataVar.removeWhere((k, v) => v == null);'));
             }
           }
         }
       } else {
         /// @Body annotations with no type are assigned as is
-        blocks.add(
-          declareFinal(dataVar).assign(refer(bodyName.displayName)).statement,
-        );
+        value = refer(bodyName.displayName);
+      }
+
+      // Assign the value to the data variable, using the conditional operator if the type is nullable
+      if (bodyName.type.nullabilitySuffix == NullabilitySuffix.question) {
+        declaration = declaration
+            .assign(refer(bodyName.displayName).equalTo(literalNull))
+            .conditional(literalNull, value);
+      } else {
+        declaration = declaration.assign(value);
+      }
+      blocks.add(declaration.statement);
+
+      // Run the post-assignment code if it exists
+      if (postAssignment.isNotEmpty) {
+        // Wrap the post-assignment code in a if statement if the type is nullable
+        if (bodyName.type.nullabilitySuffix == NullabilitySuffix.question) {
+          postAssignment = [
+            const Code('if ('),
+            refer(dataVar).notEqualTo(literalNull).code,
+            Code(" && "),
+            refer(bodyName.displayName).notEqualTo(literalNull).code,
+            const Code(') {'),
+            ...postAssignment,
+            const Code('}'),
+          ];
+        }
+        blocks.addAll(postAssignment);
       }
 
       return;
