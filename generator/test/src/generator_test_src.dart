@@ -346,8 +346,8 @@ abstract class UploadFileInfoPartTest {
 
 @ShouldGenerate(
   '''
-    final value = User.fromJson(_result.data!);
-    return value;
+    final _value = User.fromJson(_result.data!);
+    return _value;
 ''',
   contains: true,
 )
@@ -359,8 +359,8 @@ abstract class GenericCast {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null ? null : User.fromJson(_result.data!);
-    return value;
+    final _value = _result.data == null ? null : User.fromJson(_result.data!);
+    return _value;
 ''',
   contains: true,
 )
@@ -372,7 +372,7 @@ abstract class NullableGenericCast {
 
 @ShouldGenerate(
   '''
-    yield value;
+    yield _value;
 ''',
   contains: true,
 )
@@ -386,13 +386,13 @@ enum TestEnum { A, B }
 
 @ShouldGenerate(
   '''
-    final value = TestEnum.values.firstWhere(
+    final _value = TestEnum.values.firstWhere(
       (e) => e.name == _result.data,
       orElse: () => throw ArgumentError(
         'TestEnum does not contain value \${_result.data}',
       ),
     );
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -429,8 +429,8 @@ enum FromJsonEnum {
 
 @ShouldGenerate(
   '''
-    final value = FromJsonEnum.fromJson(_result.data!);
-    return value;
+    final _value = FromJsonEnum.fromJson(_result.data!);
+    return _value;
 ''',
   contains: true,
 )
@@ -527,8 +527,8 @@ Map<String, dynamic> serializeUser(User object) => object.toJson();
 
 @ShouldGenerate(
   '''
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
 ''',
   contains: true,
 )
@@ -540,8 +540,8 @@ abstract class GenericCastBasicType {
 
 @ShouldGenerate(
   '''
-    final value = _result.data;
-    return value;
+    final _value = _result.data;
+    return _value;
 ''',
   contains: true,
 )
@@ -671,12 +671,12 @@ abstract class TestCustomObjectBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) => MapEntry(
+    var _value = _result.data!.map((k, dynamic v) => MapEntry(
         k,
         (v as List)
             .map((i) => User.fromJson(i as Map<String, dynamic>))
             .toList()));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -688,12 +688,12 @@ abstract class TestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data?.map((k, dynamic v) => MapEntry(
+    var _value = _result.data?.map((k, dynamic v) => MapEntry(
         k,
         (v as List)
             .map((i) => User.fromJson(i as Map<String, dynamic>))
             .toList()));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -705,9 +705,9 @@ abstract class NullableTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) =>
+    var _value = _result.data!.map((k, dynamic v) =>
         MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -719,9 +719,9 @@ abstract class TestMapBody2 {
 
 @ShouldGenerate(
   '''
-    var value = _result.data?.map((k, dynamic v) =>
+    var _value = _result.data?.map((k, dynamic v) =>
         MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -733,8 +733,8 @@ abstract class NullableTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    final value = _result.data!.cast<String>();
-    return value;
+    final _value = _result.data!.cast<String>();
+    return _value;
 ''',
   contains: true,
 )
@@ -746,8 +746,8 @@ abstract class TestBasicListString {
 
 @ShouldGenerate(
   '''
-    final value = _result.data?.cast<String>();
-    return value;
+    final _value = _result.data?.cast<String>();
+    return _value;
 ''',
   contains: true,
 )
@@ -759,8 +759,8 @@ abstract class NullableTestBasicListString {
 
 @ShouldGenerate(
   '''
-    final value = _result.data!.cast<bool>();
-    return value;
+    final _value = _result.data!.cast<bool>();
+    return _value;
 ''',
   contains: true,
 )
@@ -772,8 +772,8 @@ abstract class TestBasicListBool {
 
 @ShouldGenerate(
   '''
-    final value = _result.data?.cast<bool>();
-    return value;
+    final _value = _result.data?.cast<bool>();
+    return _value;
 ''',
   contains: true,
 )
@@ -785,8 +785,8 @@ abstract class NullableTestBasicListBool {
 
 @ShouldGenerate(
   '''
-    final value = _result.data!.cast<int>();
-    return value;
+    final _value = _result.data!.cast<int>();
+    return _value;
 ''',
   contains: true,
 )
@@ -798,8 +798,8 @@ abstract class TestBasicListInt {
 
 @ShouldGenerate(
   '''
-    final value = _result.data?.cast<int>();
-    return value;
+    final _value = _result.data?.cast<int>();
+    return _value;
 ''',
   contains: true,
 )
@@ -811,8 +811,8 @@ abstract class NullableTestBasicListInt {
 
 @ShouldGenerate(
   '''
-    final value = _result.data!.cast<double>();
-    return value;
+    final _value = _result.data!.cast<double>();
+    return _value;
 ''',
   contains: true,
 )
@@ -824,8 +824,8 @@ abstract class TestBasicListDouble {
 
 @ShouldGenerate(
   '''
-    final value = _result.data?.cast<double>();
-    return value;
+    final _value = _result.data?.cast<double>();
+    return _value;
 ''',
   contains: true,
 )
@@ -912,7 +912,7 @@ abstract class TestHttpResponseVoid {
 
 @ShouldGenerate(
   '''
-    final httpResponse = HttpResponse(value, _result);
+    final httpResponse = HttpResponse(_value, _result);
 ''',
   contains: true,
 )
@@ -924,7 +924,7 @@ abstract class TestHttpResponseObject {
 
 @ShouldGenerate(
   '''
-    final httpResponse = HttpResponse(value, _result);
+    final httpResponse = HttpResponse(_value, _result);
 ''',
   contains: true,
 )
@@ -1118,8 +1118,8 @@ abstract class CustomOptions {
 
 @ShouldGenerate(
   '''
-    final value = JsonMapper.fromMap<User>(_result.data!)!;
-    return value;
+    final _value = JsonMapper.fromMap<User>(_result.data!)!;
+    return _value;
 ''',
   contains: true,
 )
@@ -1134,9 +1134,9 @@ abstract class JsonMapperGenericCast {
 
 @ShouldGenerate(
   '''
-    final value =
+    final _value =
         _result.data == null ? null : JsonMapper.fromMap<User>(_result.data!)!;
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1151,11 +1151,11 @@ abstract class NullableJsonMapperGenericCast {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!
+    var _value = _result.data!
         .map(
             (dynamic i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
         .toList();
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1170,12 +1170,12 @@ abstract class JsonMapperTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) => MapEntry(
+    var _value = _result.data!.map((k, dynamic v) => MapEntry(
         k,
         (v as List)
             .map((i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
             .toList()));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1190,9 +1190,9 @@ abstract class JsonMapperTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) =>
+    var _value = _result.data!.map((k, dynamic v) =>
         MapEntry(k, JsonMapper.fromMap<User>(v as Map<String, dynamic>)!));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1207,8 +1207,8 @@ abstract class JsonMapperTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    final value = User.fromMap(_result.data!);
-    return value;
+    final _value = User.fromMap(_result.data!);
+    return _value;
 ''',
   contains: true,
 )
@@ -1223,8 +1223,8 @@ abstract class MapSerializableGenericCast {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null ? null : User.fromMap(_result.data!);
-    return value;
+    final _value = _result.data == null ? null : User.fromMap(_result.data!);
+    return _value;
 ''',
   contains: true,
 )
@@ -1239,10 +1239,10 @@ abstract class NullableMapSerializableGenericCast {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!
+    var _value = _result.data!
         .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
         .toList();
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1257,10 +1257,10 @@ abstract class MapSerializableTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data
+    var _value = _result.data
         ?.map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
         .toList();
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1275,12 +1275,12 @@ abstract class NullableMapSerializableTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) => MapEntry(
+    var _value = _result.data!.map((k, dynamic v) => MapEntry(
         k,
         (v as List)
             .map((i) => User.fromMap(i as Map<String, dynamic>))
             .toList()));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1295,12 +1295,12 @@ abstract class MapSerializableTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data?.map((k, dynamic v) => MapEntry(
+    var _value = _result.data?.map((k, dynamic v) => MapEntry(
         k,
         (v as List)
             .map((i) => User.fromMap(i as Map<String, dynamic>))
             .toList()));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1315,9 +1315,9 @@ abstract class NullableMapSerializableTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map(
+    var _value = _result.data!.map(
         (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1332,9 +1332,9 @@ abstract class MapSerializableTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    var value = _result.data?.map(
+    var _value = _result.data?.map(
         (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1349,8 +1349,8 @@ abstract class NullableMapSerializableTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    final value = await compute(deserializeUser, _result.data!);
-    return value;
+    final _value = await compute(deserializeUser, _result.data!);
+    return _value;
 ''',
   contains: true,
 )
@@ -1365,10 +1365,10 @@ abstract class ComputeGenericCast {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
+    final _value = _result.data == null
         ? null
         : await compute(deserializeUser, _result.data!);
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1383,11 +1383,11 @@ abstract class NullableComputeGenericCast {
 
 @ShouldGenerate(
   '''
-    var value = await compute(
+    var _value = await compute(
       deserializeUserList,
       _result.data!.cast<Map<String, dynamic>>(),
     );
-    return value;
+    return _value;
 ''',
   contains: true,
 )
@@ -1402,13 +1402,13 @@ abstract class ComputeTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data == null
+    var _value = _result.data == null
         ? null
         : await compute(
             deserializeUserList,
             _result.data!.cast<Map<String, dynamic>>(),
           );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1423,12 +1423,12 @@ abstract class NullableComputeTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+    var _value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
             e.key,
             await compute(deserializeUserList,
                 (e.value as List).cast<Map<String, dynamic>>())))));
-    return value;
+    return _value;
 ''',
   contains: true,
   expectedLogItems: [
@@ -1449,12 +1449,12 @@ abstract class ComputeTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+    var _value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(
             e.key,
             await compute(deserializeUserList,
                 (e.value as List).cast<Map<String, dynamic>>())))));
-    return value;
+    return _value;
 ''',
   contains: true,
   expectedLogItems: [
@@ -1475,10 +1475,10 @@ abstract class NullableComputeTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+    var _value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
         (e) async => MapEntry(e.key,
             await compute(deserializeUser, e.value as Map<String, dynamic>)))));
-    return value;
+    return _value;
 ''',
   contains: true,
   expectedLogItems: [
@@ -1499,14 +1499,14 @@ abstract class ComputeTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    var value = _result.data == null
+    var _value = _result.data == null
         ? null
         : Map.fromEntries(await Future.wait(_result.data!.entries.map(
             (e) async => MapEntry(
                 e.key,
                 await compute(
                     deserializeUser, e.value as Map<String, dynamic>)))));
-    return value;
+    return _value;
 ''',
   contains: true,
   expectedLogItems: [
@@ -1657,11 +1657,11 @@ abstract class ListBodyShouldNotBeCleanTest {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<dynamic>.fromJson(
+    final _value = GenericUser<dynamic>.fromJson(
       _result.data!,
       (json) => json as dynamic,
     );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1673,7 +1673,7 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<List<User>>.fromJson(
+    final _value = GenericUser<List<User>>.fromJson(
       _result.data!,
       (json) => json is List<dynamic>
           ? json
@@ -1681,7 +1681,7 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
               .toList()
           : List.empty(),
     );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1693,7 +1693,7 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
+    final _value = _result.data == null
         ? null
         : GenericUser<List<User>>.fromJson(
             _result.data!,
@@ -1703,7 +1703,7 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
                     .toList()
                 : List.empty(),
           );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1715,11 +1715,11 @@ abstract class NullableDynamicInnerListGenericTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<User>.fromJson(
+    final _value = GenericUser<User>.fromJson(
       _result.data!,
       (json) => User.fromJson(json as Map<String, dynamic>),
     );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1731,14 +1731,14 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<GenericUser<User>>.fromJson(
+    final _value = GenericUser<GenericUser<User>>.fromJson(
       _result.data!,
       (json) => GenericUser<User>.fromJson(
         json as Map<String, dynamic>,
         (json) => User.fromJson(json as Map<String, dynamic>),
       ),
     );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1750,13 +1750,13 @@ abstract class NestGenericTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
+    final _value = _result.data == null
         ? null
         : GenericUser<User>.fromJson(
             _result.data!,
             (json) => User.fromJson(json as Map<String, dynamic>),
           );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1768,12 +1768,12 @@ abstract class NullableDynamicInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<User?>.fromJson(
+    final _value = GenericUser<User?>.fromJson(
       _result.data!,
       (json) =>
           json == null ? null : User.fromJson(json as Map<String, dynamic>),
     );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1785,7 +1785,7 @@ abstract class DynamicNullableInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
+    final _value = _result.data == null
         ? null
         : GenericUser<User?>.fromJson(
             _result.data!,
@@ -1793,7 +1793,7 @@ abstract class DynamicNullableInnerGenericTypeShouldBeCastedAsMap {
                 ? null
                 : User.fromJson(json as Map<String, dynamic>),
           );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1805,13 +1805,13 @@ abstract class NullableDynamicNullableInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<List<double>>.fromJson(
+    final _value = GenericUser<List<double>>.fromJson(
       _result.data!,
       (json) => json is List<dynamic>
           ? json.map<double>((i) => i as double).toList()
           : List.empty(),
     );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1823,7 +1823,7 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
+    final _value = _result.data == null
         ? null
         : GenericUser<List<double>>.fromJson(
             _result.data!,
@@ -1831,7 +1831,7 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
                 ? json.map<double>((i) => i as double).toList()
                 : List.empty(),
           );
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1843,9 +1843,9 @@ abstract class NullableDynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursi
 
 @ShouldGenerate(
   '''
-    final value = GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
+    final _value = GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
         _result.data!);
-    return value;
+    return _value;
   ''',
   contains: true,
 )
@@ -1857,11 +1857,11 @@ abstract class DynamicInnerGenericTypeShouldBeWithoutGenericArgumentType {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
+    final _value = _result.data == null
         ? null
         : GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
             _result.data!);
-    return value;
+    return _value;
   ''',
   contains: true,
 )

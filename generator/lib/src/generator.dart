@@ -403,7 +403,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final paths = _getAnnotations(m, retrofit.Path);
     var definePath = method.peek('path')?.stringValue;
     paths.forEach((k, v) {
-      final value = v.peek(_valueVar)?.stringValue ?? k.displayName;
+      final value = v.peek('value')?.stringValue ?? k.displayName;
       definePath = definePath?.replaceFirst(
         '{$value}',
         "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? _hasToJson(k.type) ? '.toJson()' : '.name' : ''}}",
@@ -1377,7 +1377,7 @@ if (T != dynamic &&
   ) {
     final queries = _getAnnotations(m, retrofit.Query);
     final queryParameters = queries.map((p, r) {
-      final key = r.peek(_valueVar)?.stringValue ?? p.displayName;
+      final key = r.peek('value')?.stringValue ?? p.displayName;
       final Expression value;
       if (_isBasicType(p.type) ||
           p.type.isDartCoreList ||
@@ -1726,7 +1726,7 @@ ${bodyName.displayName} == null
     var anyNullable = false;
     final fields = _getAnnotations(m, retrofit.Field).map((p, r) {
       anyNullable |= p.type.nullabilitySuffix == NullabilitySuffix.question;
-      final fieldName = r.peek(_valueVar)?.stringValue ?? p.displayName;
+      final fieldName = r.peek('value')?.stringValue ?? p.displayName;
       final isFileField = _typeChecker(File).isAssignableFromType(p.type);
       if (isFileField) {
         log.severe(
@@ -1768,7 +1768,7 @@ ${bodyName.displayName} == null
 
       parts.forEach((p, r) {
         final fieldName = r.peek('name')?.stringValue ??
-            r.peek(_valueVar)?.stringValue ??
+            r.peek('value')?.stringValue ??
             p.displayName;
         final isFileField = _typeChecker(File).isAssignableFromType(p.type);
         final contentType = r.peek('contentType')?.stringValue;
@@ -2018,7 +2018,7 @@ ${bodyName.displayName} == null
 
   Map<String, Expression> _generateHeaders(MethodElement m) {
     final headers = _getMethodAnnotations(m, retrofit.Headers)
-        .map((e) => e.peek(_valueVar))
+        .map((e) => e.peek('value'))
         .map(
           (value) => value?.mapValue.map(
             (k, v) {
@@ -2047,7 +2047,7 @@ ${bodyName.displayName} == null
 
     final annotationsInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annotationsInParam.map((k, v) {
-      final value = v.peek(_valueVar)?.stringValue ?? k.displayName;
+      final value = v.peek('value')?.stringValue ?? k.displayName;
       return MapEntry(value, refer(k.displayName));
     });
     headers.addAll(headersInParams);
