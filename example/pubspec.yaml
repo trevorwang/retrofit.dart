@@ -24,4 +24,4 @@ dependency_overrides:
     path: ../retrofit
   retrofit_generator:
     path: ../generator
-  source_gen: ">=1.3.0 <1.4.0"
+  # source_gen: '>=1.3.0 <1.4.0'
