@@ -1960,7 +1960,20 @@ ${bodyName.displayName} == null
           } else if (innerType?.element is ClassElement) {
             final ele = innerType!.element! as ClassElement;
             if (_missingToJson(ele)) {
-              throw Exception('toJson() method have to add to ${p.type}');
+              if (_isDateTime(p.type)) {
+                final expr = [
+                  p.type.nullabilitySuffix == NullabilitySuffix.question
+                      ? refer(p.displayName)
+                          .nullSafeProperty('toIso8601String')
+                          .call([])
+                      : refer(p.displayName)
+                          .property('toIso8601String')
+                          .call([])
+                ];
+                refer(dataVar).property('fields').property('add').call(expr);
+              } else {
+                throw Exception('toJson() method have to add to ${p.type}');
+              }
             } else {
               blocks.add(
                 refer(dataVar).property('fields').property('add').call([
@@ -2004,7 +2017,18 @@ ${bodyName.displayName} == null
         } else if (p.type.element is ClassElement) {
           final ele = p.type.element! as ClassElement;
           if (_missingToJson(ele)) {
-            throw Exception('toJson() method have to add to ${p.type}');
+            if (_isDateTime(p.type)) {
+              final expr = [
+                p.type.nullabilitySuffix == NullabilitySuffix.question
+                    ? refer(p.displayName)
+                        .nullSafeProperty('toIso8601String')
+                        .call([])
+                    : refer(p.displayName).property('toIso8601String').call([])
+              ];
+              refer(dataVar).property('fields').property('add').call(expr);
+            } else {
+              throw Exception('toJson() method have to add to ${p.type}');
+            }
           } else {
             if (contentType != null) {
               final uploadFileInfo = refer('$MultipartFile.fromString').call([
