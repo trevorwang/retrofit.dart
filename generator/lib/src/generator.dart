@@ -10,10 +10,10 @@ import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dio/dio.dart';
+import 'package:protobuf/protobuf.dart';
 import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
-import 'package:protobuf/protobuf.dart';
 
 const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
@@ -23,6 +23,7 @@ class RetrofitOptions {
     this.autoCastResponse,
     this.emptyRequestBody,
     this.className,
+    this.useResult,
   });
 
   RetrofitOptions.fromOptions([BuilderOptions? options])
@@ -32,11 +33,14 @@ class RetrofitOptions {
         emptyRequestBody =
             (options?.config['empty_request_body']?.toString() ?? 'false') ==
                 'true',
-        className = options?.config['class-name']?.toString();
+        className = options?.config['class-name']?.toString(),
+        useResult =
+            (options?.config['use_result']?.toString() ?? 'false') == 'true';
 
   final bool? autoCastResponse;
   final bool? emptyRequestBody;
   final String? className;
+  final bool? useResult;
 }
 
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
@@ -93,7 +97,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       parser: parser ?? retrofit.Parser.JsonSerializable,
     );
     final baseUrl = clientAnnotation.baseUrl;
-    final annotClassConsts = element.constructors
+    final annotateClassConsts = element.constructors
         .where((c) => !c.isFactory && !c.isDefaultConstructor);
     final classBuilder = Class((c) {
       c
@@ -101,12 +105,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ..types.addAll(element.typeParameters.map((e) => refer(e.name)))
         ..fields.addAll([_buildDioFiled(), _buildBaseUrlFiled(baseUrl)])
         ..constructors.addAll(
-          annotClassConsts.map(
+          annotateClassConsts.map(
             (e) => _generateConstructor(baseUrl, superClassConst: e),
           ),
         )
         ..methods.addAll(_parseMethods(element));
-      if (annotClassConsts.isEmpty) {
+      if (annotateClassConsts.isEmpty) {
         c.constructors.add(_generateConstructor(baseUrl));
         c.implements.add(refer(_generateTypeParameterizedName(element)));
       } else {
@@ -205,8 +209,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         ...element.methods,
         ...element.mixins.expand((i) => i.methods)
       ].where((m) {
-        final methodAnnot = _getMethodAnnotation(m);
-        return methodAnnot != null &&
+        final methodAnnotation = _getMethodAnnotation(m);
+        return methodAnnotation != null &&
             m.isAbstract &&
             (m.returnType.isDartAsyncFuture || m.returnType.isDartAsyncStream);
       }).map((m) => _generateMethod(m)!);
@@ -232,19 +236,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   ConstantReader? _getMethodAnnotation(MethodElement method) {
     for (final type in _methodsAnnotations) {
-      final annot = _getMethodAnnotationByType(method, type);
-      if (annot != null) {
-        return annot;
+      final annotation = _getMethodAnnotationByType(method, type);
+      if (annotation != null) {
+        return annotation;
       }
     }
     return null;
   }
 
   ConstantReader? _getMethodAnnotationByType(MethodElement method, Type type) {
-    final annot =
+    final annotation =
         _typeChecker(type).firstAnnotationOf(method, throwOnUnresolved: false);
-    if (annot != null) {
-      return ConstantReader(annot);
+    if (annotation != null) {
+      return ConstantReader(annotation);
     }
     return null;
   }
@@ -286,14 +290,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     MethodElement m,
     Type type,
   ) {
-    final annot = <ParameterElement, ConstantReader>{};
+    final annotation = <ParameterElement, ConstantReader>{};
     for (final p in m.parameters) {
       final a = _typeChecker(type).firstAnnotationOf(p);
       if (a != null) {
-        annot[p] = ConstantReader(a);
+        annotation[p] = ConstantReader(a);
       }
     }
-    return annot;
+    return annotation;
   }
 
   Tuple2<ParameterElement, ConstantReader>? _getAnnotation(
@@ -363,6 +367,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             ? MethodModifier.async
             : MethodModifier.asyncStar
         ..annotations.add(const CodeExpression(Code('override')));
+
+      if (globalOptions.useResult == true) {
+        final returnType = m.returnType;
+        if (returnType is ParameterizedType &&
+            returnType.typeArguments.first is! VoidType) {
+          mm.annotations.add(const CodeExpression(Code('useResult')));
+        }
+      }
 
       /// required parameters
       mm.requiredParameters.addAll(
@@ -980,7 +992,38 @@ You should create a new class to encapsulate the response.
       } catch (_) {}
     }
 
-    return genericArgumentFactories;
+    return genericArgumentFactories ||
+        hasGenericArgumentFactoriesCompatibleSignature(dartType);
+  }
+
+  /// Checks for a compatible fromJson signature for generic argument factories
+  // TODO: But does the code work with multiple generic types?
+  bool hasGenericArgumentFactoriesCompatibleSignature(DartType? dartType) {
+    if (dartType == null) return false;
+    final element = dartType.element;
+    if (element is! InterfaceElement) return false;
+
+    final typeParameters = element.typeParameters;
+    if (typeParameters.isEmpty) return false;
+
+    final constructors = element.constructors;
+    if (constructors.isEmpty) return false;
+    final fromJson = constructors
+        .firstWhereOrNull((constructor) => constructor.name == 'fromJson');
+
+    if (fromJson == null || fromJson.parameters.length == 1) return false;
+
+    final fromJsonArguments = fromJson.parameters;
+
+    if (typeParameters.length != (fromJsonArguments.length - 1)) {
+      // TODO: better error. theoretically this should never be hit
+      // "invalid fromJson"?
+      // throw Exception(
+      //     'Not the right amount of arguments: \n$typeParameters\n$fromJsonArguments');
+      // throw Exception('Invalid fromJson found');
+      return false; // or error? we shouldn't get here at all, theoretically
+    }
+    return true;
   }
 
   String _getInnerJsonSerializableMapperFn(DartType dartType) {
@@ -2009,7 +2052,7 @@ ${bodyName.displayName} == null
       );
     } else {
       blocks.add(
-        declareFinal(dataVar, type: refer('Map<String, dynamic>?'))
+        declareConst(dataVar, type: refer('Map<String, dynamic>?'))
             .assign(literalNull)
             .statement,
       );
@@ -2116,7 +2159,7 @@ ${bodyName.displayName} == null
     String localExtraVar,
   ) {
     blocks.add(
-      declareConst(localExtraVar)
+      declareFinal(localExtraVar)
           .assign(
             literalMap(
               _getMethodAnnotations(m, retrofit.Extra)
@@ -2152,6 +2195,51 @@ ${bodyName.displayName} == null
           )
           .statement,
     );
+
+    final extraMap = _getAnnotations(m, retrofit.Extras);
+    for (final p in extraMap.keys) {
+      final type = p.type;
+      final displayName = p.displayName;
+      final Expression value;
+      if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
+        value = refer(displayName);
+      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(type)) {
+        value = type.nullabilitySuffix == NullabilitySuffix.question
+            ? refer(p.displayName).nullSafeProperty('value')
+            : refer(p.displayName).property('value');
+      } else {
+        switch (clientAnnotation.parser) {
+          case retrofit.Parser.JsonSerializable:
+            value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                ? refer(displayName).nullSafeProperty('toJson').call([])
+                : refer(displayName).property('toJson').call([]);
+            break;
+          case retrofit.Parser.MapSerializable:
+            value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                ? refer(displayName).nullSafeProperty('toMap').call([])
+                : refer(displayName).property('toMap').call([]);
+            break;
+          case retrofit.Parser.DartJsonMapper:
+            value = refer(displayName);
+            break;
+          case retrofit.Parser.FlutterCompute:
+            value = refer(
+              'await compute(serialize${_displayString(p.type)}, ${p.displayName})',
+            );
+            break;
+        }
+      }
+
+      final emitter = DartEmitter(useNullSafetySyntax: true);
+      final buffer = StringBuffer();
+      value.accept(emitter, buffer);
+      if (type.nullabilitySuffix == NullabilitySuffix.question) {
+        refer('?? <String,dynamic>{}').accept(emitter, buffer);
+      }
+      final expression = refer(buffer.toString());
+
+      blocks.add(refer('$localExtraVar.addAll').call([expression]).statement);
+    }
   }
 
   bool _missingToJson(ClassElement ele) {

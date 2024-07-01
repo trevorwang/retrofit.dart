@@ -10,6 +10,18 @@ class Extra {
   const Extra(this.data);
 }
 
+/// Extra data that will be passed to dio's request, response, transformer and interceptors.
+/// Simple Example:
+///
+///```
+/// @GET("/get")
+/// Future<String> foo(@Extras() Map<String, dynamic> extras)
+///```
+@immutable
+class Extras {
+  const Extras();
+}
+
 @immutable
 class CancelRequest {
   const CancelRequest();
