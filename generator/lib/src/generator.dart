@@ -2006,16 +2006,55 @@ ${bodyName.displayName} == null
           if (_missingToJson(ele)) {
             throw Exception('toJson() method have to add to ${p.type}');
           } else {
-            blocks.add(
-              refer(dataVar).property('fields').property('add').call([
-                refer('MapEntry').newInstance([
-                  literal(fieldName),
-                  refer(
-                    "jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' : ''})",
-                  )
-                ])
-              ]).statement,
-            );
+            if (contentType != null) {
+              final uploadFileInfo = refer('$MultipartFile.fromString').call([
+                refer(
+                  "jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' : ''})",
+                )
+              ], {
+                'contentType':
+                    refer('MediaType', 'package:http_parser/http_parser.dart')
+                        .property('parse')
+                        .call([literal(contentType)])
+              });
+
+              final optionalFile = m.parameters
+                      .firstWhereOrNull((pp) => pp.displayName == p.displayName)
+                      ?.isOptional ??
+                  false;
+
+              final returnCode =
+                  refer(dataVar).property('files').property('add').call([
+                refer('MapEntry')
+                    .newInstance([literal(fieldName), uploadFileInfo])
+              ]).statement;
+              if (optionalFile) {
+                final condition =
+                    refer(p.displayName).notEqualTo(literalNull).code;
+                blocks.addAll(
+                  [
+                    const Code('if('),
+                    condition,
+                    const Code(') {'),
+                    returnCode,
+                    const Code('}')
+                  ],
+                );
+              } else {
+                blocks.add(returnCode);
+              }
+            } else {
+              blocks.add(
+                refer(dataVar).property('fields').property('add').call([
+                  refer('MapEntry').newInstance([
+                    literal(fieldName),
+                    refer(
+                      "jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' : ''})",
+                    )
+                  ])
+                ]).statement,
+              );
+            }
           }
         } else {
           blocks.add(
