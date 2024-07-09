@@ -1627,9 +1627,9 @@ if (T != dynamic &&
         blocks.add(
           declareFinal(dataVar)
               .assign(
-            refer(
-              '${bodyName.displayName}.openRead()',
-            ),
+                refer(
+                  '${bodyName.displayName}.openRead()',
+                ),
           )
               .statement,
         );
