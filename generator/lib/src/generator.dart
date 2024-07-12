@@ -1627,12 +1627,10 @@ if (T != dynamic &&
         blocks.add(
           declareFinal(dataVar)
               .assign(
-                refer('Stream').property('fromIterable').call([
-                  refer(
-                    '${bodyName.displayName}.readAsBytesSync().map((i)=>[i])',
-                  )
-                ]),
-              )
+                refer(
+                  '${bodyName.displayName}.openRead()',
+                ),
+          )
               .statement,
         );
       } else if (bodyName.type.element is ClassElement) {
