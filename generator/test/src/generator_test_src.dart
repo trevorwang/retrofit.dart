@@ -131,8 +131,8 @@ abstract class TestExtrasWithMap {
   @GET('/list/')
   @Extra({'key': 'value'})
   Future<void> list(
-      @Extras() Map<String, dynamic> extras,
-      );
+    @Extras() Map<String, dynamic> extras,
+  );
 }
 
 @ShouldGenerate(
@@ -146,7 +146,7 @@ abstract class TestExtrasWithMap {
 abstract class TestExtrasWithObject {
   @GET('/list/')
   Future<void> list(
-      @Extras() User u,
+    @Extras() User u,
   );
 }
 
@@ -434,6 +434,13 @@ abstract class NullableGenericCast {
 
 @ShouldGenerate(
   '''
+    late User value;
+    try {
+      value = User.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     yield value;
 ''',
   contains: true,
@@ -1082,7 +1089,15 @@ abstract class TestHttpResponseObject {
 
 @ShouldGenerate(
   '''
+    late List<String> value;
+    try {
+      value = _result.data!.cast<String>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     final httpResponse = HttpResponse(value, _result);
+    return httpResponse;
 ''',
   contains: true,
 )
