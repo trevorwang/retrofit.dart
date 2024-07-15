@@ -14,11 +14,14 @@ class _RestClient implements RestClient {
   _RestClient(
     this._dio, {
     this.baseUrl,
+    this.errorLogger,
   });
 
   final Dio _dio;
 
   String? baseUrl;
+
+  final ParseErrorLogger? errorLogger;
 ''',
   contains: true,
 )
@@ -31,6 +34,7 @@ class _BaseUrl implements BaseUrl {
   _BaseUrl(
     this._dio, {
     this.baseUrl,
+    this.errorLogger,
   }) {
     baseUrl ??= 'http://httpbin.org/';
   }
@@ -38,6 +42,8 @@ class _BaseUrl implements BaseUrl {
   final Dio _dio;
 
   String? baseUrl;
+
+  final ParseErrorLogger? errorLogger;
 ''',
   contains: true,
 )
@@ -390,7 +396,13 @@ abstract class UploadFileInfoPartTest {
 
 @ShouldGenerate(
   '''
-    final value = User.fromJson(_result.data!);
+    late User value;
+    try {
+      value = User.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -403,7 +415,13 @@ abstract class GenericCast {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null ? null : User.fromJson(_result.data!);
+    late User? value;
+    try {
+      value = _result.data == null ? null : User.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -430,12 +448,18 @@ enum TestEnum { A, B }
 
 @ShouldGenerate(
   '''
-    final value = TestEnum.values.firstWhere(
-      (e) => e.name == _result.data,
-      orElse: () => throw ArgumentError(
-        'TestEnum does not contain value \${_result.data}',
-      ),
-    );
+    late TestEnum value;
+    try {
+      value = TestEnum.values.firstWhere(
+        (e) => e.name == _result.data,
+        orElse: () => throw ArgumentError(
+          'TestEnum does not contain value \${_result.data}',
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -473,7 +497,13 @@ enum FromJsonEnum {
 
 @ShouldGenerate(
   '''
-    final value = FromJsonEnum.fromJson(_result.data!);
+    late FromJsonEnum value;
+    try {
+      value = FromJsonEnum.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -571,7 +601,13 @@ Map<String, dynamic> serializeUser(User object) => object.toJson();
 
 @ShouldGenerate(
   '''
-    final value = _result.data!;
+    late String value;
+    try {
+      value = _result.data!;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -584,7 +620,13 @@ abstract class GenericCastBasicType {
 
 @ShouldGenerate(
   '''
-    final value = _result.data;
+    late String? value;
+    try {
+      value = _result.data;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -715,11 +757,17 @@ abstract class TestCustomObjectBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) => MapEntry(
-        k,
-        (v as List)
-            .map((i) => User.fromJson(i as Map<String, dynamic>))
-            .toList()));
+    late Map<String, List<User>> value;
+    try {
+      value = _result.data!.map((k, dynamic v) => MapEntry(
+          k,
+          (v as List)
+              .map((i) => User.fromJson(i as Map<String, dynamic>))
+              .toList()));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -732,11 +780,17 @@ abstract class TestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data?.map((k, dynamic v) => MapEntry(
-        k,
-        (v as List)
-            .map((i) => User.fromJson(i as Map<String, dynamic>))
-            .toList()));
+    late Map<String, List<User>>? value;
+    try {
+      value = _result.data?.map((k, dynamic v) => MapEntry(
+          k,
+          (v as List)
+              .map((i) => User.fromJson(i as Map<String, dynamic>))
+              .toList()));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -749,8 +803,14 @@ abstract class NullableTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) =>
-        MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
+    late Map<String, User> value;
+    try {
+      value = _result.data!.map((k, dynamic v) =>
+          MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -763,8 +823,14 @@ abstract class TestMapBody2 {
 
 @ShouldGenerate(
   '''
-    var value = _result.data?.map((k, dynamic v) =>
-        MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
+    late Map<String, User>? value;
+    try {
+      value = _result.data?.map((k, dynamic v) =>
+          MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -777,7 +843,13 @@ abstract class NullableTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    final value = _result.data!.cast<String>();
+    late List<String> value;
+    try {
+      value = _result.data!.cast<String>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -790,7 +862,13 @@ abstract class TestBasicListString {
 
 @ShouldGenerate(
   '''
-    final value = _result.data?.cast<String>();
+    late List<String>? value;
+    try {
+      value = _result.data?.cast<String>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -803,7 +881,13 @@ abstract class NullableTestBasicListString {
 
 @ShouldGenerate(
   '''
-    final value = _result.data!.cast<bool>();
+    late List<bool> value;
+    try {
+      value = _result.data!.cast<bool>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -816,7 +900,13 @@ abstract class TestBasicListBool {
 
 @ShouldGenerate(
   '''
-    final value = _result.data?.cast<bool>();
+    late List<bool>? value;
+    try {
+      value = _result.data?.cast<bool>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -829,7 +919,13 @@ abstract class NullableTestBasicListBool {
 
 @ShouldGenerate(
   '''
-    final value = _result.data!.cast<int>();
+    late List<int> value;
+    try {
+      value = _result.data!.cast<int>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -842,7 +938,13 @@ abstract class TestBasicListInt {
 
 @ShouldGenerate(
   '''
-    final value = _result.data?.cast<int>();
+    late List<int>? value;
+    try {
+      value = _result.data?.cast<int>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -855,7 +957,13 @@ abstract class NullableTestBasicListInt {
 
 @ShouldGenerate(
   '''
-    final value = _result.data!.cast<double>();
+    late List<double> value;
+    try {
+      value = _result.data!.cast<double>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -868,7 +976,13 @@ abstract class TestBasicListDouble {
 
 @ShouldGenerate(
   '''
-    final value = _result.data?.cast<double>();
+    late List<double>? value;
+    try {
+      value = _result.data?.cast<double>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1145,12 +1259,13 @@ abstract class TestModelList {
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    await _dio.fetch<void>(newOptions.copyWith(
+    final options = newOptions.copyWith(
       method: 'GET',
       baseUrl: baseUrl ?? _dio.options.baseUrl,
       queryParameters: queryParameters,
       path: '',
-    )..data = _data);
+    )..data = _data;
+    await _dio.fetch<void>(options);
   ''',
   contains: true,
 )
@@ -1162,7 +1277,13 @@ abstract class CustomOptions {
 
 @ShouldGenerate(
   '''
-    final value = JsonMapper.fromMap<User>(_result.data!)!;
+    late User value;
+    try {
+      value = JsonMapper.fromMap<User>(_result.data!)!;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1178,8 +1299,15 @@ abstract class JsonMapperGenericCast {
 
 @ShouldGenerate(
   '''
-    final value =
-        _result.data == null ? null : JsonMapper.fromMap<User>(_result.data!)!;
+    late User? value;
+    try {
+      value = _result.data == null
+          ? null
+          : JsonMapper.fromMap<User>(_result.data!)!;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1195,10 +1323,16 @@ abstract class NullableJsonMapperGenericCast {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!
-        .map(
-            (dynamic i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
-        .toList();
+    late List<User> value;
+    try {
+      value = _result.data!
+          .map((dynamic i) =>
+              JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
+          .toList();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1214,11 +1348,17 @@ abstract class JsonMapperTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) => MapEntry(
-        k,
-        (v as List)
-            .map((i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
-            .toList()));
+    late Map<String, List<User>> value;
+    try {
+      value = _result.data!.map((k, dynamic v) => MapEntry(
+          k,
+          (v as List)
+              .map((i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
+              .toList()));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1234,8 +1374,14 @@ abstract class JsonMapperTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) =>
-        MapEntry(k, JsonMapper.fromMap<User>(v as Map<String, dynamic>)!));
+    late Map<String, User> value;
+    try {
+      value = _result.data!.map((k, dynamic v) =>
+          MapEntry(k, JsonMapper.fromMap<User>(v as Map<String, dynamic>)!));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1251,7 +1397,13 @@ abstract class JsonMapperTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    final value = User.fromMap(_result.data!);
+    late User value;
+    try {
+      value = User.fromMap(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1267,7 +1419,13 @@ abstract class MapSerializableGenericCast {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null ? null : User.fromMap(_result.data!);
+    late User? value;
+    try {
+      value = _result.data == null ? null : User.fromMap(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1283,9 +1441,15 @@ abstract class NullableMapSerializableGenericCast {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!
-        .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
-        .toList();
+    late List<User> value;
+    try {
+      value = _result.data!
+          .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
+          .toList();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1301,9 +1465,15 @@ abstract class MapSerializableTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data
-        ?.map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
-        .toList();
+    late List<User>? value;
+    try {
+      value = _result.data
+          ?.map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
+          .toList();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1319,11 +1489,17 @@ abstract class NullableMapSerializableTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map((k, dynamic v) => MapEntry(
-        k,
-        (v as List)
-            .map((i) => User.fromMap(i as Map<String, dynamic>))
-            .toList()));
+    late Map<String, List<User>> value;
+    try {
+      value = _result.data!.map((k, dynamic v) => MapEntry(
+          k,
+          (v as List)
+              .map((i) => User.fromMap(i as Map<String, dynamic>))
+              .toList()));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1339,11 +1515,17 @@ abstract class MapSerializableTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data?.map((k, dynamic v) => MapEntry(
-        k,
-        (v as List)
-            .map((i) => User.fromMap(i as Map<String, dynamic>))
-            .toList()));
+    late Map<String, List<User>>? value;
+    try {
+      value = _result.data?.map((k, dynamic v) => MapEntry(
+          k,
+          (v as List)
+              .map((i) => User.fromMap(i as Map<String, dynamic>))
+              .toList()));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1359,8 +1541,14 @@ abstract class NullableMapSerializableTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data!.map(
-        (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
+    late Map<String, User> value;
+    try {
+      value = _result.data!.map((k, dynamic v) =>
+          MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1376,8 +1564,14 @@ abstract class MapSerializableTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    var value = _result.data?.map(
-        (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
+    late Map<String, User>? value;
+    try {
+      value = _result.data?.map((k, dynamic v) =>
+          MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1393,7 +1587,12 @@ abstract class NullableMapSerializableTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    final value = await compute(deserializeUser, _result.data!);
+    try {
+      value = await compute(deserializeUser, _result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1409,9 +1608,15 @@ abstract class ComputeGenericCast {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
-        ? null
-        : await compute(deserializeUser, _result.data!);
+    late User? value;
+    try {
+      value = _result.data == null
+          ? null
+          : await compute(deserializeUser, _result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1427,10 +1632,15 @@ abstract class NullableComputeGenericCast {
 
 @ShouldGenerate(
   '''
-    var value = await compute(
-      deserializeUserList,
-      _result.data!.cast<Map<String, dynamic>>(),
-    );
+    try {
+      value = await compute(
+        deserializeUserList,
+        _result.data!.cast<Map<String, dynamic>>(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1446,12 +1656,18 @@ abstract class ComputeTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = _result.data == null
-        ? null
-        : await compute(
-            deserializeUserList,
-            _result.data!.cast<Map<String, dynamic>>(),
-          );
+    late List<User>? value;
+    try {
+      value = _result.data == null
+          ? null
+          : await compute(
+              deserializeUserList,
+              _result.data!.cast<Map<String, dynamic>>(),
+            );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1467,11 +1683,16 @@ abstract class NullableComputeTestListBody {
 
 @ShouldGenerate(
   '''
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
-        (e) async => MapEntry(
-            e.key,
-            await compute(deserializeUserList,
-                (e.value as List).cast<Map<String, dynamic>>())))));
+    try {
+      value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+          (e) async => MapEntry(
+              e.key,
+              await compute(deserializeUserList,
+                  (e.value as List).cast<Map<String, dynamic>>())))));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1493,11 +1714,17 @@ abstract class ComputeTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
-        (e) async => MapEntry(
-            e.key,
-            await compute(deserializeUserList,
-                (e.value as List).cast<Map<String, dynamic>>())))));
+    late Map<String, List<User>>? value;
+    try {
+      value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+          (e) async => MapEntry(
+              e.key,
+              await compute(deserializeUserList,
+                  (e.value as List).cast<Map<String, dynamic>>())))));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1519,9 +1746,17 @@ abstract class NullableComputeTestMapBody {
 
 @ShouldGenerate(
   '''
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
-        (e) async => MapEntry(e.key,
-            await compute(deserializeUser, e.value as Map<String, dynamic>)))));
+    late Map<String, User> value;
+    try {
+      value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+          (e) async => MapEntry(
+              e.key,
+              await compute(
+                  deserializeUser, e.value as Map<String, dynamic>)))));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1543,13 +1778,19 @@ abstract class ComputeTestMapBody2 {
 
 @ShouldGenerate(
   '''
-    var value = _result.data == null
-        ? null
-        : Map.fromEntries(await Future.wait(_result.data!.entries.map(
-            (e) async => MapEntry(
-                e.key,
-                await compute(
-                    deserializeUser, e.value as Map<String, dynamic>)))));
+    late Map<String, User>? value;
+    try {
+      value = _result.data == null
+          ? null
+          : Map.fromEntries(await Future.wait(_result.data!.entries.map(
+              (e) async => MapEntry(
+                  e.key,
+                  await compute(
+                      deserializeUser, e.value as Map<String, dynamic>)))));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
 ''',
   contains: true,
@@ -1674,7 +1915,7 @@ abstract class JsonSerializableBodyShouldBeCleanTest {
 @ShouldGenerate(
   '''
     final _data = str;
-    await _dio.fetch<void>(_setStreamType<void>(Options(''',
+    final options = _setStreamType<void>(Options(''',
   contains: true,
   expectedLogItems: [
     "String must provide a `toJson()` method which return a Map.\nIt is programmer's responsibility to make sure the String is properly serialized"
@@ -1689,7 +1930,23 @@ abstract class NonJsonSerializableBodyShouldNotBeCleanTest {
 @ShouldGenerate(
   '''
     final _data = users.map((e) => e.toJson()).toList();
-    await _dio.fetch<void>(_setStreamType<void>(Options(
+    final options = _setStreamType<void>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    await _dio.fetch<void>(options);
   ''',
   contains: true,
 )
@@ -1701,10 +1958,16 @@ abstract class ListBodyShouldNotBeCleanTest {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<dynamic>.fromJson(
-      _result.data!,
-      (json) => json as dynamic,
-    );
+    late GenericUser<dynamic> value;
+    try {
+      value = GenericUser<dynamic>.fromJson(
+        _result.data!,
+        (json) => json as dynamic,
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1717,14 +1980,20 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<List<User>>.fromJson(
-      _result.data!,
-      (json) => json is List<dynamic>
-          ? json
-              .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
-              .toList()
-          : List.empty(),
-    );
+    late GenericUser<List<User>> value;
+    try {
+      value = GenericUser<List<User>>.fromJson(
+        _result.data!,
+        (json) => json is List<dynamic>
+            ? json
+                .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
+                .toList()
+            : List.empty(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1737,16 +2006,23 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
-        ? null
-        : GenericUser<List<User>>.fromJson(
-            _result.data!,
-            (json) => json is List<dynamic>
-                ? json
-                    .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
-                    .toList()
-                : List.empty(),
-          );
+    late GenericUser<List<User>>? value;
+    try {
+      value = _result.data == null
+          ? null
+          : GenericUser<List<User>>.fromJson(
+              _result.data!,
+              (json) => json is List<dynamic>
+                  ? json
+                      .map<User>(
+                          (i) => User.fromJson(i as Map<String, dynamic>))
+                      .toList()
+                  : List.empty(),
+            );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1759,10 +2035,16 @@ abstract class NullableDynamicInnerListGenericTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<User>.fromJson(
-      _result.data!,
-      (json) => User.fromJson(json as Map<String, dynamic>),
-    );
+late GenericUser<User> value;
+    try {
+      value = GenericUser<User>.fromJson(
+        _result.data!,
+        (json) => User.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1775,13 +2057,19 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<GenericUser<User>>.fromJson(
-      _result.data!,
-      (json) => GenericUser<User>.fromJson(
-        json as Map<String, dynamic>,
-        (json) => User.fromJson(json as Map<String, dynamic>),
-      ),
-    );
+    late GenericUser<GenericUser<User>> value;
+    try {
+      value = GenericUser<GenericUser<User>>.fromJson(
+        _result.data!,
+        (json) => GenericUser<User>.fromJson(
+          json as Map<String, dynamic>,
+          (json) => User.fromJson(json as Map<String, dynamic>),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1794,12 +2082,18 @@ abstract class NestGenericTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
-        ? null
-        : GenericUser<User>.fromJson(
-            _result.data!,
-            (json) => User.fromJson(json as Map<String, dynamic>),
-          );
+    late GenericUser<User>? value;
+    try {
+      value = _result.data == null
+          ? null
+          : GenericUser<User>.fromJson(
+              _result.data!,
+              (json) => User.fromJson(json as Map<String, dynamic>),
+            );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1812,11 +2106,17 @@ abstract class NullableDynamicInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<User?>.fromJson(
-      _result.data!,
-      (json) =>
-          json == null ? null : User.fromJson(json as Map<String, dynamic>),
-    );
+late GenericUser<User?> value;
+    try {
+      value = GenericUser<User?>.fromJson(
+        _result.data!,
+        (json) =>
+            json == null ? null : User.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1829,14 +2129,20 @@ abstract class DynamicNullableInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
-        ? null
-        : GenericUser<User?>.fromJson(
-            _result.data!,
-            (json) => json == null
-                ? null
-                : User.fromJson(json as Map<String, dynamic>),
-          );
+    late GenericUser<User?>? value;
+    try {
+      value = _result.data == null
+          ? null
+          : GenericUser<User?>.fromJson(
+              _result.data!,
+              (json) => json == null
+                  ? null
+                  : User.fromJson(json as Map<String, dynamic>),
+            );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1849,12 +2155,18 @@ abstract class NullableDynamicNullableInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   '''
-    final value = GenericUser<List<double>>.fromJson(
-      _result.data!,
-      (json) => json is List<dynamic>
-          ? json.map<double>((i) => i as double).toList()
-          : List.empty(),
-    );
+    late GenericUser<List<double>> value;
+    try {
+      value = GenericUser<List<double>>.fromJson(
+        _result.data!,
+        (json) => json is List<dynamic>
+            ? json.map<double>((i) => i as double).toList()
+            : List.empty(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1867,14 +2179,20 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
-        ? null
-        : GenericUser<List<double>>.fromJson(
-            _result.data!,
-            (json) => json is List<dynamic>
-                ? json.map<double>((i) => i as double).toList()
-                : List.empty(),
-          );
+    late GenericUser<List<double>>? value;
+    try {
+      value = _result.data == null
+          ? null
+          : GenericUser<List<double>>.fromJson(
+              _result.data!,
+              (json) => json is List<dynamic>
+                  ? json.map<double>((i) => i as double).toList()
+                  : List.empty(),
+            );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1887,8 +2205,14 @@ abstract class NullableDynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursi
 
 @ShouldGenerate(
   '''
-    final value = GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
-        _result.data!);
+    late GenericUserWithoutGenericArgumentFactories<dynamic> value;
+    try {
+      value = GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
+          _result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1901,10 +2225,16 @@ abstract class DynamicInnerGenericTypeShouldBeWithoutGenericArgumentType {
 
 @ShouldGenerate(
   '''
-    final value = _result.data == null
-        ? null
-        : GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
-            _result.data!);
+    late GenericUserWithoutGenericArgumentFactories<dynamic>? value;
+    try {
+      value = _result.data == null
+          ? null
+          : GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
+              _result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, options);
+      rethrow;
+    }
     return value;
   ''',
   contains: true,
@@ -1965,11 +2295,11 @@ abstract class GenericCastFetch {
 
 @ShouldGenerate(
   '''
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
   ''',
   contains: true,
 )
