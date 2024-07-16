@@ -16,7 +16,7 @@ import 'package:source_gen/source_gen.dart';
 import 'package:tuple/tuple.dart';
 
 const _analyzerIgnores =
-    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
+    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element';
 
 class RetrofitOptions {
   RetrofitOptions({
@@ -63,7 +63,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const _onSendProgress = 'onSendProgress';
   static const _onReceiveProgress = 'onReceiveProgress';
   static const _path = 'path';
-  static const _valueVar = 'value';
+  static const _valueVar = '_value';
   bool hasCustomOptions = false;
 
   /// Global options specified in the `build.yaml`
@@ -415,7 +415,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final paths = _getAnnotations(m, retrofit.Path);
     var definePath = method.peek('path')?.stringValue;
     paths.forEach((k, v) {
-      final value = v.peek(_valueVar)?.stringValue ?? k.displayName;
+      final value = v.peek('value')?.stringValue ?? k.displayName;
       definePath = definePath?.replaceFirst(
         '{$value}',
         "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? _hasToJson(k.type) ? '.toJson()' : '.name' : ''}}",
@@ -840,7 +840,7 @@ You should create a new class to encapsulate the response.
             );
           }
         } else {
-          blocks.add(const Code('final value = $_resultVar.data!;'));
+          blocks.add(const Code('final $_valueVar = $_resultVar.data!;'));
         }
       } else {
         if (_isBasicType(returnType)) {
@@ -868,7 +868,7 @@ You should create a new class to encapsulate the response.
                   .assign(refer('await $_dioVar.fetch').call([options]))
                   .statement,
             )
-            ..add(const Code('final value = $_resultVar.data;'));
+            ..add(const Code('final $_valueVar = $_resultVar.data;'));
         } else if (_typeChecker(GeneratedMessage).isSuperTypeOf(returnType)) {
           blocks.add(
             declareFinal(_resultVar)
@@ -877,7 +877,7 @@ You should create a new class to encapsulate the response.
                 .statement,
           );
           blocks.add(Code(
-              "final value = await compute(${_displayString(returnType)}.fromBuffer, $_resultVar.data!);"));
+              "final $_valueVar = await compute(${_displayString(returnType)}.fromBuffer, $_resultVar.data!);"));
         } else {
           final fetchType = returnType.isNullable
               ? 'Map<String,dynamic>?'
@@ -961,12 +961,12 @@ You should create a new class to encapsulate the response.
       if (isWrapped) {
         blocks.add(
           Code('''
-      final httpResponse = HttpResponse(value, $_resultVar);
+      final httpResponse = HttpResponse($_valueVar, $_resultVar);
       $returnAsyncWrapper httpResponse;
       '''),
         );
       } else {
-        blocks.add(Code('$returnAsyncWrapper value;'));
+        blocks.add(Code('$returnAsyncWrapper $_valueVar;'));
       }
     }
 
@@ -1420,7 +1420,7 @@ if (T != dynamic &&
   ) {
     final queries = _getAnnotations(m, retrofit.Query);
     final queryParameters = queries.map((p, r) {
-      final key = r.peek(_valueVar)?.stringValue ?? p.displayName;
+      final key = r.peek('value')?.stringValue ?? p.displayName;
       final Expression value;
       if (_isBasicType(p.type) ||
           p.type.isDartCoreList ||
@@ -1627,12 +1627,10 @@ if (T != dynamic &&
         blocks.add(
           declareFinal(dataVar)
               .assign(
-                refer('Stream').property('fromIterable').call([
-                  refer(
-                    '${bodyName.displayName}.readAsBytesSync().map((i)=>[i])',
-                  )
-                ]),
-              )
+                refer(
+                  '${bodyName.displayName}.openRead()',
+                ),
+          )
               .statement,
         );
       } else if (bodyName.type.element is ClassElement) {
@@ -1769,7 +1767,7 @@ ${bodyName.displayName} == null
     var anyNullable = false;
     final fields = _getAnnotations(m, retrofit.Field).map((p, r) {
       anyNullable |= p.type.nullabilitySuffix == NullabilitySuffix.question;
-      final fieldName = r.peek(_valueVar)?.stringValue ?? p.displayName;
+      final fieldName = r.peek('value')?.stringValue ?? p.displayName;
       final isFileField = _typeChecker(File).isAssignableFromType(p.type);
       if (isFileField) {
         log.severe(
@@ -1811,7 +1809,7 @@ ${bodyName.displayName} == null
 
       parts.forEach((p, r) {
         final fieldName = r.peek('name')?.stringValue ??
-            r.peek(_valueVar)?.stringValue ??
+            r.peek('value')?.stringValue ??
             p.displayName;
         final isFileField = _typeChecker(File).isAssignableFromType(p.type);
         final contentType = r.peek('contentType')?.stringValue;
@@ -1974,7 +1972,20 @@ ${bodyName.displayName} == null
           } else if (innerType?.element is ClassElement) {
             final ele = innerType!.element! as ClassElement;
             if (_missingToJson(ele)) {
-              throw Exception('toJson() method have to add to ${p.type}');
+              if (_isDateTime(p.type)) {
+                final expr = [
+                  p.type.nullabilitySuffix == NullabilitySuffix.question
+                      ? refer(p.displayName)
+                          .nullSafeProperty('toIso8601String')
+                          .call([])
+                      : refer(p.displayName)
+                          .property('toIso8601String')
+                          .call([])
+                ];
+                refer(dataVar).property('fields').property('add').call(expr);
+              } else {
+                throw Exception('toJson() method have to add to ${p.type}');
+              }
             } else {
               blocks.add(
                 refer(dataVar).property('fields').property('add').call([
@@ -2018,7 +2029,18 @@ ${bodyName.displayName} == null
         } else if (p.type.element is ClassElement) {
           final ele = p.type.element! as ClassElement;
           if (_missingToJson(ele)) {
-            throw Exception('toJson() method have to add to ${p.type}');
+            if (_isDateTime(p.type)) {
+              final expr = [
+                p.type.nullabilitySuffix == NullabilitySuffix.question
+                    ? refer(p.displayName)
+                        .nullSafeProperty('toIso8601String')
+                        .call([])
+                    : refer(p.displayName).property('toIso8601String').call([])
+              ];
+              refer(dataVar).property('fields').property('add').call(expr);
+            } else {
+              throw Exception('toJson() method have to add to ${p.type}');
+            }
           } else {
             if (contentType != null) {
               final uploadFileInfo = refer('$MultipartFile.fromString').call([
@@ -2100,7 +2122,7 @@ ${bodyName.displayName} == null
 
   Map<String, Expression> _generateHeaders(MethodElement m) {
     final headers = _getMethodAnnotations(m, retrofit.Headers)
-        .map((e) => e.peek(_valueVar))
+        .map((e) => e.peek('value'))
         .map(
           (value) => value?.mapValue.map(
             (k, v) {
@@ -2129,7 +2151,7 @@ ${bodyName.displayName} == null
 
     final annotationsInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annotationsInParam.map((k, v) {
-      final value = v.peek(_valueVar)?.stringValue ?? k.displayName;
+      final value = v.peek('value')?.stringValue ?? k.displayName;
       return MapEntry(value, refer(k.displayName));
     });
     headers.addAll(headersInParams);
