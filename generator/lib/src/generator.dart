@@ -625,27 +625,30 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   .statement,
             );
           } else {
+            final castType =
+                _isEnum(innerReturnType) ? 'String' : 'Map<String, dynamic>';
+
             final Reference mapperCode;
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
                 mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)',
+                  '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as $castType)',
                 );
                 break;
               case retrofit.Parser.JsonSerializable:
                 if (innerReturnType?.isNullable ?? false) {
                   mapperCode = refer(
-                    '(dynamic i) => i == null ? null : ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)',
+                    '(dynamic i) => i == null ? null : ${_displayString(innerReturnType)}.fromJson(i as $castType)',
                   );
                 } else {
                   mapperCode = refer(
-                    '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)',
+                    '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as $castType)',
                   );
                 }
                 break;
               case retrofit.Parser.DartJsonMapper:
                 mapperCode = refer(
-                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!',
+                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as $castType)!',
                 );
                 break;
               case retrofit.Parser.FlutterCompute:
@@ -1630,7 +1633,7 @@ if (T != dynamic &&
                 refer(
                   '${bodyName.displayName}.openRead()',
                 ),
-          )
+              )
               .statement,
         );
       } else if (bodyName.type.element is ClassElement) {
