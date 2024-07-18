@@ -1999,7 +1999,7 @@ ${bodyName.displayName} == null
           } else {
             throw Exception('Unknown error!');
           }
-        } else if (_isBasicType(p.type)) {
+        } else if (_isBasicType(p.type) || _isEnum(p.type)) {
           if (p.type.nullabilitySuffix == NullabilitySuffix.question) {
             blocks.add(Code('if (${p.displayName} != null) {'));
           }
@@ -2009,6 +2009,8 @@ ${bodyName.displayName} == null
                 literal(fieldName),
                 if (_typeChecker(String).isExactlyType(p.type))
                   refer(p.displayName)
+                else if (_isEnum(p.type))
+                  refer(p.displayName).property('name')
                 else
                   refer(p.displayName).property('toString').call([])
               ])
