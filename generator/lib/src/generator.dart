@@ -645,7 +645,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 break;
               case retrofit.Parser.DartJsonMapper:
                 mapperCode = refer(
-                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i)!',
+                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i)',
                 );
                 break;
               case retrofit.Parser.FlutterCompute:
@@ -716,7 +716,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             (k, dynamic v) =>
                 MapEntry(
                   k, (v as List)
-                    .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i)!)
+                    .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i))
                     .toList()
                 )
             ''');
@@ -779,7 +779,7 @@ You should create a new class to encapsulate the response.
                 break;
               case retrofit.Parser.DartJsonMapper:
                 mapperCode = refer(
-                  '(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v)!)',
+                  '(k, dynamic v) => MapEntry(k, JsonMapper.fromMap<${_displayString(secondType)}>(v))',
                 );
                 break;
               case retrofit.Parser.FlutterCompute:
@@ -939,7 +939,7 @@ You should create a new class to encapsulate the response.
               break;
             case retrofit.Parser.DartJsonMapper:
               mapperCode = refer(
-                'JsonMapper.fromMap<${_displayString(returnType)}>($_resultVar.data!)!',
+                'JsonMapper.fromMap<${_displayString(returnType)}>($_resultVar.data!)',
               );
               break;
             case retrofit.Parser.FlutterCompute:
