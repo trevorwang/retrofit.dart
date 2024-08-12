@@ -51,7 +51,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const String _baseUrlVar = 'baseUrl';
   static const String _errorLoggerVar = 'errorLogger';
   static const _queryParamsVar = 'queryParameters';
-  static const _optionsVar = 'options';
+  static const _optionsVar = '_options';
   static const _localHeadersVar = '_headers';
   static const _headersVar = 'headers';
   static const _dataVar = 'data';
@@ -2397,7 +2397,7 @@ ${bodyName.displayName} == null
         Code('try {'),
         child,
         Code('} on Object catch (e, s) {'),
-        Code('$_errorLoggerVar?.logError(e, s, options);'),
+        Code('$_errorLoggerVar?.logError(e, s, $_optionsVar);'),
         Code('rethrow;'),
         Code('}'),
       ],

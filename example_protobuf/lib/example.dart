@@ -9,7 +9,7 @@ part 'example.g.dart';
 
 @RestApi(baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/")
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String baseUrl, ParseErrorLogger errorLogger}) = _RestClient;
 
   @POST("/tags")
   Future<Result> getProtoBufInt(@Body() Params message);
