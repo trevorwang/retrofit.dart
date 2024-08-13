@@ -49,7 +49,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   final RetrofitOptions globalOptions;
 
   static const String _baseUrlVar = 'baseUrl';
+  static const String _errorLoggerVar = 'errorLogger';
   static const _queryParamsVar = 'queryParameters';
+  static const _optionsVar = '_options';
   static const _localHeadersVar = '_headers';
   static const _headersVar = 'headers';
   static const _dataVar = 'data';
@@ -103,7 +105,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       c
         ..name = className
         ..types.addAll(element.typeParameters.map((e) => refer(e.name)))
-        ..fields.addAll([_buildDioFiled(), _buildBaseUrlFiled(baseUrl)])
+        ..fields.addAll([
+          _buildDioFiled(),
+          _buildBaseUrlFiled(baseUrl),
+          _buildErrorLoggerFiled(),
+        ])
         ..constructors.addAll(
           annotateClassConsts.map(
             (e) => _generateConstructor(baseUrl, superClassConst: e),
@@ -144,6 +150,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ..modifier = FieldModifier.var$;
       });
 
+  Field _buildErrorLoggerFiled() => Field((m) {
+        m
+          ..name = _errorLoggerVar
+          ..type = refer('ParseErrorLogger?')
+          ..modifier = FieldModifier.final$;
+      });
+
   Constructor _generateConstructor(
     String? url, {
     ConstructorElement? superClassConst,
@@ -156,14 +169,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               ..toThis = true,
           ),
         );
-        c.optionalParameters.add(
+        c.optionalParameters.addAll([
           Parameter(
             (p) => p
               ..named = true
               ..name = _baseUrlVar
               ..toThis = true,
           ),
-        );
+          Parameter(
+            (p) => p
+              ..named = true
+              ..name = _errorLoggerVar
+              ..toThis = true,
+          ),
+        ]);
         if (superClassConst != null) {
           var superConstName = 'super';
           if (superClassConst.name.isNotEmpty) {
@@ -534,7 +553,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final wrappedReturnType = _getResponseType(m.returnType);
 
-    final options = _parseOptions(m, namedArguments, blocks, extraOptions);
+    blocks.add(declareFinal(_optionsVar)
+        .assign(_parseOptions(m, namedArguments, blocks, extraOptions))
+        .statement);
+
+    final options = refer(_optionsVar).expression;
 
     if (wrappedReturnType == null || 'void' == wrappedReturnType.toString()) {
       blocks.add(
@@ -572,34 +595,36 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       if (_typeChecker(List).isExactlyType(returnType) ||
           _typeChecker(BuiltList).isExactlyType(returnType)) {
         if (_isBasicType(innerReturnType)) {
-          blocks
-            ..add(
-              declareFinal(_resultVar)
-                  .assign(
-                    refer('await $_dioVar.fetch<List<dynamic>>')
-                        .call([options]),
+          blocks.add(
+            declareFinal(_resultVar)
+                .assign(
+                  refer('await $_dioVar.fetch<List<dynamic>>').call([options]),
+                )
+                .statement,
+          );
+
+          _wrapInTryCatch(
+            blocks,
+            options,
+            returnType,
+            refer(_valueVar)
+                .assign(
+                  refer('$_resultVar.data')
+                      .propertyIf(
+                    thisNullable: returnType.isNullable,
+                    name: 'cast',
                   )
-                  .statement,
-            )
-            ..add(
-              declareFinal(_valueVar)
-                  .assign(
-                    refer('$_resultVar.data')
-                        .propertyIf(
-                      thisNullable: returnType.isNullable,
-                      name: 'cast',
+                      .call([], {}, [
+                    refer(
+                      _displayString(
+                        innerReturnType,
+                        withNullability: innerReturnType?.isNullable ?? false,
+                      ),
                     )
-                        .call([], {}, [
-                      refer(
-                        _displayString(
-                          innerReturnType,
-                          withNullability: innerReturnType?.isNullable ?? false,
-                        ),
-                      )
-                    ]),
-                  )
-                  .statement,
-            );
+                  ]),
+                )
+                .statement,
+          );
         } else {
           blocks.add(
             declareFinal(_resultVar)
@@ -609,8 +634,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .statement,
           );
           if (clientAnnotation.parser == retrofit.Parser.FlutterCompute) {
-            blocks.add(
-              declareVar(_valueVar)
+            _wrapInTryCatch(
+              blocks,
+              options,
+              returnType,
+              refer(_valueVar)
                   .assign(
                     refer('$_resultVar.data').conditionalIsNullIf(
                       thisNullable: returnType.isNullable,
@@ -651,8 +679,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               case retrofit.Parser.FlutterCompute:
                 throw Exception('Unreachable code');
             }
-            blocks.add(
-              declareVar(_valueVar)
+
+            _wrapInTryCatch(
+              blocks,
+              options,
+              returnType,
+              refer(_valueVar)
                   .assign(
                     refer('$_resultVar.data')
                         .propertyIf(
@@ -734,8 +766,11 @@ You should create a new class to encapsulate the response.
                 break;
             }
             if (future) {
-              blocks.add(
-                declareVar(_valueVar)
+              _wrapInTryCatch(
+                blocks,
+                options,
+                returnType,
+                refer(_valueVar)
                     .assign(
                       refer('Map.fromEntries').call([
                         refer('await Future.wait').call([
@@ -747,8 +782,11 @@ You should create a new class to encapsulate the response.
                     .statement,
               );
             } else {
-              blocks.add(
-                declareVar(_valueVar)
+              _wrapInTryCatch(
+                blocks,
+                options,
+                returnType,
+                refer(_valueVar)
                     .assign(
                       refer('$_resultVar.data')
                           .propertyIf(
@@ -793,8 +831,11 @@ You should create a new class to encapsulate the response.
                 break;
             }
             if (future) {
-              blocks.add(
-                declareVar(_valueVar)
+              _wrapInTryCatch(
+                blocks,
+                options,
+                returnType,
+                refer(_valueVar)
                     .assign(
                       refer('$_resultVar.data').conditionalIsNullIf(
                         thisNullable: returnType.isNullable,
@@ -809,8 +850,11 @@ You should create a new class to encapsulate the response.
                     .statement,
               );
             } else {
-              blocks.add(
-                declareVar(_valueVar)
+              _wrapInTryCatch(
+                blocks,
+                options,
+                returnType,
+                refer(_valueVar)
                     .assign(
                       refer('$_resultVar.data')
                           .propertyIf(
@@ -823,8 +867,11 @@ You should create a new class to encapsulate the response.
               );
             }
           } else {
-            blocks.add(
-              declareFinal(_valueVar)
+            _wrapInTryCatch(
+              blocks,
+              options,
+              returnType,
+              refer(_valueVar)
                   .assign(
                     refer('$_resultVar.data')
                         .propertyIf(
@@ -844,23 +891,26 @@ You should create a new class to encapsulate the response.
         }
       } else {
         if (_isBasicType(returnType)) {
-          blocks
-            ..add(
-              declareFinal(_resultVar)
-                  .assign(
-                    refer('await $_dioVar.fetch<${_displayString(returnType)}>')
-                        .call([options]),
-                  )
-                  .statement,
-            )
-            ..add(
-              declareFinal(_valueVar)
-                  .assign(
-                    refer('$_resultVar.data')
-                        .asNoNullIf(returnNullable: returnType.isNullable),
-                  )
-                  .statement,
-            );
+          blocks.add(
+            declareFinal(_resultVar)
+                .assign(
+                  refer('await $_dioVar.fetch<${_displayString(returnType)}>')
+                      .call([options]),
+                )
+                .statement,
+          );
+
+          _wrapInTryCatch(
+            blocks,
+            options,
+            returnType,
+            refer(_valueVar)
+                .assign(
+                  refer('$_resultVar.data')
+                      .asNoNullIf(returnNullable: returnType.isNullable),
+                )
+                .statement,
+          );
         } else if (returnType is DynamicType || returnType.isDartCoreObject) {
           blocks
             ..add(
@@ -946,8 +996,11 @@ You should create a new class to encapsulate the response.
               );
               break;
           }
-          blocks.add(
-            declareFinal(_valueVar)
+          _wrapInTryCatch(
+            blocks,
+            options,
+            returnType,
+            refer(_valueVar)
                 .assign(
                   refer('$_resultVar.data').conditionalIsNullIf(
                     thisNullable: returnType.isNullable,
@@ -2330,6 +2383,25 @@ ${bodyName.displayName} == null
                   _displayString(type),
         );
     }
+  }
+
+  void _wrapInTryCatch(
+      List<Code> blocks, Expression options, DartType? returnType, Code child) {
+    blocks.addAll(
+      [
+        declareVar(
+          _valueVar,
+          type: refer(_displayString(returnType, withNullability: true)),
+          late: true,
+        ).statement,
+        Code('try {'),
+        child,
+        Code('} on Object catch (e, s) {'),
+        Code('$_errorLoggerVar?.logError(e, s, $_optionsVar);'),
+        Code('rethrow;'),
+        Code('}'),
+      ],
+    );
   }
 }
 

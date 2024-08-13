@@ -11,7 +11,7 @@ part 'example.g.dart';
 
 @RestApi(baseUrl: 'tasks')
 abstract class TasksRestClient {
-  factory TasksRestClient(Dio dio, {String baseUrl}) = _TasksRestClient;
+  factory TasksRestClient(Dio dio, {String baseUrl, ParseErrorLogger errorLogger}) = _TasksRestClient;
 
   @GET('/tasks/{id}')
   Future<List<Task?>> getTaskById();

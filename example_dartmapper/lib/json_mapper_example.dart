@@ -10,7 +10,7 @@ part 'json_mapper_example.g.dart';
   parser: Parser.DartJsonMapper,
 )
 abstract class ApiService {
-  factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
+  factory ApiService(Dio dio, {String baseUrl, ParseErrorLogger errorLogger}) = _ApiService;
 
   @GET("/tasks")
   Future<List<Task>> getTasks(@Query("dateTime") DateTime dateTime);
