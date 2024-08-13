@@ -653,27 +653,30 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   .statement,
             );
           } else {
+            final castType =
+                _isEnum(innerReturnType) ? 'String' : 'Map<String, dynamic>';
+
             final Reference mapperCode;
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
                 mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as Map<String,dynamic>)',
+                  '(dynamic i) => ${_displayString(innerReturnType)}.fromMap(i as $castType)',
                 );
                 break;
               case retrofit.Parser.JsonSerializable:
                 if (innerReturnType?.isNullable ?? false) {
                   mapperCode = refer(
-                    '(dynamic i) => i == null ? null : ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)',
+                    '(dynamic i) => i == null ? null : ${_displayString(innerReturnType)}.fromJson(i as $castType)',
                   );
                 } else {
                   mapperCode = refer(
-                    '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as Map<String,dynamic>)',
+                    '(dynamic i) => ${_displayString(innerReturnType)}.fromJson(i as $castType)',
                   );
                 }
                 break;
               case retrofit.Parser.DartJsonMapper:
                 mapperCode = refer(
-                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as Map<String,dynamic>)!',
+                  '(dynamic i) => JsonMapper.fromMap<${_displayString(innerReturnType)}>(i as $castType)!',
                 );
                 break;
               case retrofit.Parser.FlutterCompute:
@@ -1683,7 +1686,7 @@ if (T != dynamic &&
                 refer(
                   '${bodyName.displayName}.openRead()',
                 ),
-          )
+              )
               .statement,
         );
       } else if (bodyName.type.element is ClassElement) {
@@ -2052,7 +2055,7 @@ ${bodyName.displayName} == null
           } else {
             throw Exception('Unknown error!');
           }
-        } else if (_isBasicType(p.type)) {
+        } else if (_isBasicType(p.type) || _isEnum(p.type)) {
           if (p.type.nullabilitySuffix == NullabilitySuffix.question) {
             blocks.add(Code('if (${p.displayName} != null) {'));
           }
@@ -2062,6 +2065,8 @@ ${bodyName.displayName} == null
                 literal(fieldName),
                 if (_typeChecker(String).isExactlyType(p.type))
                   refer(p.displayName)
+                else if (_isEnum(p.type))
+                  refer(p.displayName).property('name')
                 else
                   refer(p.displayName).property('toString').call([])
               ])
