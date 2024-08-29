@@ -1433,7 +1433,9 @@ if (T != dynamic &&
         _typeChecker(double).isExactlyType(returnType) ||
         _typeChecker(num).isExactlyType(returnType) ||
         _typeChecker(Double).isExactlyType(returnType) ||
-        _typeChecker(Float).isExactlyType(returnType);
+        _typeChecker(Float).isExactlyType(returnType) ||
+        _typeChecker(BigInt).isExactlyType(returnType) ||
+        _typeChecker(Long).isExactlyType(returnType);
   }
 
   bool _isEnum(DartType? dartType) {
