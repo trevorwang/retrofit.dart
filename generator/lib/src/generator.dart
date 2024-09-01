@@ -194,7 +194,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               c.requiredParameters.add(
                 Parameter(
                   (p) => p
-                    ..type = refer(element.type.toStringNonNullable())
+                    ..type = refer(_displayString(element.type))
                     ..name = element.name,
                 ),
               );
@@ -2562,8 +2562,6 @@ String _displayString(DartType? e, {bool withNullability = false}) {
     } else {
       return e!.getDisplayString();
     }
-  } on Object {
-    rethrow;
   }
 }
 
