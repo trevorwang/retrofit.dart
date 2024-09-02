@@ -5,8 +5,6 @@
 ![Pub Likes](https://img.shields.io/pub/likes/retrofit)
 [![Testing](https://github.com/trevorwang/retrofit.dart/actions/workflows/test.yml/badge.svg)](https://github.com/trevorwang/retrofit.dart/actions/workflows/test.yml)
 
-
-
 retrofit.dart is a type conversion [dio](https://github.com/flutterchina/dio/) client generator using [source_gen](https://github.com/dart-lang/source_gen) and inspired by [Chopper](https://github.com/lejard-h/chopper) and [Retrofit](https://github.com/square/retrofit).
 
 ## Usage
@@ -17,14 +15,14 @@ Add the generator to your dev dependencies
 
 ```yaml
 dependencies:
-  retrofit: '>=4.0.0 <5.0.0'
-  logger: any  #for logging purpose
-  json_annotation: ^4.8.1
+  retrofit: ^4.3.0
+  logger: ^1.2.0  # for logging purpose
+  json_annotation: ^4.9.0
 
 dev_dependencies:
-  retrofit_generator: '>=7.0.0 <8.0.0'   // required dart >=2.19
-  build_runner: '>=2.3.0 <4.0.0'
-  json_serializable: ^6.6.2
+  retrofit_generator: '>=8.0.0 <10.0.0' # for Dart 3.3 use ^9.0.0
+  build_runner: ^2.3.3
+  json_serializable: ^6.8.0
 ```
 
 ### Define and Generate your API

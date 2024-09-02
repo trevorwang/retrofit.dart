@@ -1,6 +1,6 @@
 # Changelog
 
-## 8.2.0
+## 9.0.0
 
 - Require Dart 3.3
 - Fix issue with deprecated `getDisplayString(withNullability: true)`
