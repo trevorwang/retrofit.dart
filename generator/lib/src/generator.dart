@@ -1316,9 +1316,10 @@ You should create a new class to encapsulate the response.
             Map.from(extraOptions)
               ..[_queryParamsVar] = namedArguments[_queryParamsVar]!
               ..[_path] = namedArguments[_path]!
-              ..[_baseUrlVar] = extraOptions.remove(_baseUrlVar)!.ifNullThen(
-                    refer(_dioVar).property('options').property('baseUrl'),
-                  ),
+              ..[_baseUrlVar] = refer('_combineBaseUrls').call([
+                refer(_dioVar).property('options').property('baseUrl'),
+                extraOptions.remove(_baseUrlVar)!,
+              ]),
           )
           .cascade('data')
           .assign(namedArguments[_dataVar]!);
