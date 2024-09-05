@@ -13,7 +13,7 @@ import 'package:meta/meta.dart';
 ///   fileType: '.json',
 /// )
 /// @GET("/get")
-/// Future<String> foo(@Extras() Map<String, dynamic> extras);
+/// Future<String> foo();
 /// ```
 ///
 @immutable
