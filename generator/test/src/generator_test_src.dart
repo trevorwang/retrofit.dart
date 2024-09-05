@@ -10,12 +10,14 @@ class DummyTypedExtras extends TypedExtras {
   final List<String> fileTypes;
   final Set<String> sources;
   final bool shouldProceed;
+  final bool? canFly;
   const DummyTypedExtras({
     required this.id,
     required this.config,
     required this.fileTypes,
     required this.sources,
     required this.shouldProceed,
+    this.canFly,
   });
 }
 

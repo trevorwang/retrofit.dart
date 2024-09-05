@@ -2306,7 +2306,10 @@ ${bodyName.displayName} == null
     Map<String, Object> mapFromTypedExtras = {};
     for (var field in fields ?? <FieldElement>[]) {
       final value = annotation?.peek(field.name);
-      mapFromTypedExtras[field.name] = _getFieldValue(value);
+      final fieldValue = _getFieldValue(value);
+      if (fieldValue != null) {
+        mapFromTypedExtras[field.name] = fieldValue;
+      }
     }
     return mapFromTypedExtras;
   }
