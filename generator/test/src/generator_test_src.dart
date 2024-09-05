@@ -4,7 +4,7 @@ import 'package:source_gen_test/annotations.dart';
 import 'package:retrofit/retrofit.dart';
 import 'query.pb.dart';
 
-class DummyTypedExtras extends TypedExtra {
+class DummyTypedExtras extends TypedExtras {
   final String id;
   final Map<String, dynamic> config;
   final List<String> fileTypes;
@@ -44,7 +44,7 @@ class DummyTypedExtras extends TypedExtra {
   contains: true,
 )
 @RestApi()
-abstract class TypedExtraTest {
+abstract class TypedExtrasTest {
   @DummyTypedExtras(
     id: '1234',
     config: {

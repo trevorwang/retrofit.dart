@@ -8,7 +8,8 @@ topics:
   - api
 version: 8.1.0
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
+publish_to: none
 
 dependencies:
   analyzer: '>=5.13.0 <7.0.0'
@@ -17,7 +18,11 @@ dependencies:
   code_builder: ^4.4.0
   dart_style: ^2.3.0
   dio: ^5.0.0
-  retrofit: ^4.2.0
+  retrofit:
+    git: 
+      url: https://github.com/farmery/retrofit.git
+      path: retrofit
+      ref: feat/typed-extras
   source_gen: ^1.3.0
   tuple: ^2.0.1
   protobuf: ^3.1.0
