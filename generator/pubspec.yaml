@@ -9,7 +9,6 @@ topics:
 version: 8.1.0
 environment:
   sdk: '>=3.0.0 <4.0.0'
-publish_to: none
 
 dependencies:
   analyzer: '>=5.13.0 <7.0.0'
