@@ -2299,16 +2299,16 @@ ${bodyName.displayName} == null
     return null;
   }
 
-  Map<String, Object> _getExtrasFromClass(MethodElement m) {
+  Map<String, Object> _getMapFromTypedExtras(MethodElement m) {
     final annotation = _getMethodAnnotations(m, retrofit.TypedExtras).firstOrNull;
     final fields = annotation?.objectValue.type?.element?.children
         .whereType<FieldElement>();
-    Map<String, Object> extraFromClass = {};
+    Map<String, Object> mapFromTypedExtras = {};
     for (var field in fields ?? <FieldElement>[]) {
       final value = annotation?.peek(field.name);
-      extraFromClass[field.name] = _getFieldValue(value);
+      mapFromTypedExtras[field.name] = _getFieldValue(value);
     }
-    return extraFromClass;
+    return mapFromTypedExtras;
   }
 
   void _generateExtra(
@@ -2348,7 +2348,7 @@ ${bodyName.displayName} == null
                   )
                   .fold<Map<String, Object>>({}, (p, e) {
                     return p..addAll(e ?? {});
-                  })..addAll(_getExtrasFromClass(m)),
+                  })..addAll(_getMapFromTypedExtras(m)),
               refer('String'),
               refer('dynamic'),
             ),
