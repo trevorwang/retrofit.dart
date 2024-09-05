@@ -2300,7 +2300,7 @@ ${bodyName.displayName} == null
   }
 
   Map<String, Object> _getExtrasFromClass(MethodElement m) {
-    final annotation = _getMethodAnnotations(m, retrofit.TypedExtra).firstOrNull;
+    final annotation = _getMethodAnnotations(m, retrofit.TypedExtras).firstOrNull;
     final fields = annotation?.objectValue.type?.element?.children
         .whereType<FieldElement>();
     Map<String, Object> extraFromClass = {};
