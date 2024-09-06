@@ -8,13 +8,11 @@ part 'example.g.dart';
 
 User deserializeUser(Map<String, dynamic> json) => User.fromJson(json);
 
-List<User> deserializeUserList(List<Map<String, dynamic>> json) =>
-    json.map(User.fromJson).toList();
+List<User> deserializeUserList(List<Map<String, dynamic>> json) => json.map(User.fromJson).toList();
 
 Map<String, dynamic> serializeUser(User object) => object.toJson();
 
-List<Map<String, dynamic>> serializeUserList(List<User> objects) =>
-    objects.map((e) => e.toJson()).toList();
+List<Map<String, dynamic>> serializeUserList(List<User> objects) => objects.map((e) => e.toJson()).toList();
 
 @JsonSerializable()
 class User {
@@ -110,10 +108,10 @@ abstract class RestClient {
   });
 }
 
-void test() {
-  final dio = Dio();
-  // remove this line when you want to test with real server
-  dio.httpClientAdapter = MockAdapter();
+Future<void> test() async {
+  final dio = Dio()
+    // remove this line when you want to test with real server
+    ..httpClientAdapter = MockAdapter();
 
   dio.interceptors.add(
     InterceptorsWrapper(
@@ -127,7 +125,5 @@ void test() {
     ),
   );
   final api = RestClient(dio, baseUrl: MockAdapter.mockBase);
-  api.getUsers().then((it) {
-    print(it.length);
-  });
+  await api.getUsers().then((it) => print(it.length));
 }

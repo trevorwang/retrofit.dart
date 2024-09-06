@@ -11,7 +11,9 @@ class ApiResult<T> {
   });
 
   factory ApiResult.fromJson(
-          Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
+    Map<String, dynamic> json,
+    T Function(Object?) fromJsonT,
+  ) =>
       _$ApiResultFromJson(json, fromJsonT);
 
   ///接口调用成功的code码

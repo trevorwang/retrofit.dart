@@ -1,5 +1,4 @@
 include: package:lints/recommended.yaml
 analyzer:
   exclude:
-    - lib/**/*.reflectable.dart
-    - lib/**/*.g.dart
+    - '**/*.g.dart'

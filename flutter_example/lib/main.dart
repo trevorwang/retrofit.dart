@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_example/example.dart';
 
@@ -32,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    test();
+    unawaited(test());
     setState(() {
       _counter++;
     });

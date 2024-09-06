@@ -18,12 +18,13 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element
 
 class _RestClient implements RestClient {
   _RestClient(
     this._dio, {
     this.baseUrl,
+    this.errorLogger,
   }) {
     baseUrl ??= 'http://baidu.com';
   }
@@ -32,88 +33,130 @@ class _RestClient implements RestClient {
 
   String? baseUrl;
 
+  final ParseErrorLogger? errorLogger;
+
   @override
   Future<List<String>> getTags({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/tags',
-    )..data = _data);
-    final value = _result.data!.cast<String>();
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<String> _value;
+    try {
+      _value = _result.data!.cast<String>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<List<String>?> getTagsNullable({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/tagsNullable',
-    )..data = _data);
-    final value = _result.data?.cast<String>();
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<String>? _value;
+    try {
+      _value = _result.data?.cast<String>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<Map<String, String>> getTagByKey({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/tagByKey',
-    )..data = _data);
-    final value = _result.data!.cast<String, String>();
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late Map<String, String> _value;
+    try {
+      _value = _result.data!.cast<String, String>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<Map<String, String>?> getTagByKeyNullable({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/tagByKeyNullable',
-    )..data = _data);
-    final value = _result.data?.cast<String, String>();
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late Map<String, String>? _value;
+    try {
+      _value = _result.data?.cast<String, String>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
@@ -121,215 +164,307 @@ class _RestClient implements RestClient {
     required String contentType,
     Options? options,
   }) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{r'Content-Type': contentType};
     _headers.removeWhere((k, v) => v == null);
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<String>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
       contentType: contentType,
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/tag',
-    )..data = _data);
-    final value = _result.data!;
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<String>(_options);
+    late String _value;
+    try {
+      _value = _result.data!;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<String?> getTagNullable({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<String>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/tagNullable',
-    )..data = _data);
-    final value = _result.data;
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<String>(_options);
+    late String? _value;
+    try {
+      _value = _result.data;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<List<User>> getUsers({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/users',
-    )..data = _data);
-    var value = await compute(
-      deserializeUserList,
-      _result.data!.cast<Map<String, dynamic>>(),
-    );
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<User> _value;
+    try {
+      _value = await compute(
+        deserializeUserList,
+        _result.data!.cast<Map<String, dynamic>>(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<List<User>?> getUsersNullable({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<List<dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/usersNullable',
-    )..data = _data);
-    var value = _result.data == null
-        ? null
-        : await compute(
-            deserializeUserList,
-            _result.data!.cast<Map<String, dynamic>>(),
-          );
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<User>? _value;
+    try {
+      _value = _result.data == null
+          ? null
+          : await compute(
+              deserializeUserList,
+              _result.data!.cast<Map<String, dynamic>>(),
+            );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<Map<String, User>> getUserByKey({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/userByKey',
-    )..data = _data);
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
-        (e) async => MapEntry(e.key,
-            await compute(deserializeUser, e.value as Map<String, dynamic>)))));
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late Map<String, User> _value;
+    try {
+      _value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+          (e) async => MapEntry(
+              e.key,
+              await compute(
+                  deserializeUser, e.value as Map<String, dynamic>)))));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<Map<String, User>?> getUserByKeyNullable({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/userByKeyNullable',
-    )..data = _data);
-    var value = _result.data == null
-        ? null
-        : Map.fromEntries(await Future.wait(_result.data!.entries.map(
-            (e) async => MapEntry(
-                e.key,
-                await compute(
-                    deserializeUser, e.value as Map<String, dynamic>)))));
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late Map<String, User>? _value;
+    try {
+      _value = _result.data == null
+          ? null
+          : Map.fromEntries(await Future.wait(_result.data!.entries.map(
+              (e) async => MapEntry(
+                  e.key,
+                  await compute(
+                      deserializeUser, e.value as Map<String, dynamic>)))));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<Map<String, List<User>>> getUsersByKey({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/usersByKey',
-    )..data = _data);
-    var value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
-        (e) async => MapEntry(
-            e.key,
-            await compute(deserializeUserList,
-                (e.value as List).cast<Map<String, dynamic>>())))));
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late Map<String, List<User>> _value;
+    try {
+      _value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
+          (e) async => MapEntry(
+              e.key,
+              await compute(deserializeUserList,
+                  (e.value as List).cast<Map<String, dynamic>>())))));
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<User> getUser({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<Map<String, dynamic>>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/user',
-    )..data = _data);
-    final value = await compute(deserializeUser, _result.data!);
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late User _value;
+    try {
+      _value = await compute(deserializeUser, _result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
   Future<User?> getUserNullable({Options? options}) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    final _result = await _dio.fetch<Map<String, dynamic>?>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/userNullable',
-    )..data = _data);
-    final value = _result.data == null
-        ? null
-        : await compute(deserializeUser, _result.data!);
-    return value;
+    )..data = _data;
+    final _result = await _dio.fetch<Map<String, dynamic>?>(_options);
+    late User? _value;
+    try {
+      _value = _result.data == null
+          ? null
+          : await compute(deserializeUser, _result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
@@ -337,23 +472,27 @@ class _RestClient implements RestClient {
     required User user,
     Options? options,
   }) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'u': await compute(serializeUser, user)
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    await _dio.fetch<void>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'PATCH',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/user/{user}',
-    )..data = _data);
+    )..data = _data;
+    await _dio.fetch<void>(_options);
   }
 
   @override
@@ -361,22 +500,26 @@ class _RestClient implements RestClient {
     required User user,
     Options? options,
   }) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(await compute(serializeUser, user));
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final newOptions = newRequestOptions(options);
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    await _dio.fetch<void>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'PATCH',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/userMap/{user}',
-    )..data = _data);
+    )..data = _data;
+    await _dio.fetch<void>(_options);
   }
 
   @override
@@ -384,7 +527,7 @@ class _RestClient implements RestClient {
     required List<User> users,
     Options? options,
   }) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -393,12 +536,16 @@ class _RestClient implements RestClient {
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    await _dio.fetch<void>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'POST',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/users',
-    )..data = _data);
+    )..data = _data;
+    await _dio.fetch<void>(_options);
   }
 
   @override
@@ -406,7 +553,7 @@ class _RestClient implements RestClient {
     required User user,
     Options? options,
   }) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -416,12 +563,16 @@ class _RestClient implements RestClient {
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    await _dio.fetch<void>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'POST',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/user',
-    )..data = _data);
+    )..data = _data;
+    await _dio.fetch<void>(_options);
   }
 
   @override
@@ -429,7 +580,7 @@ class _RestClient implements RestClient {
     User? user,
     Options? options,
   }) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -441,12 +592,16 @@ class _RestClient implements RestClient {
     newOptions.extra.addAll(_extra);
     newOptions.headers.addAll(_dio.options.headers);
     newOptions.headers.addAll(_headers);
-    await _dio.fetch<void>(newOptions.copyWith(
+    final _options = newOptions.copyWith(
       method: 'POST',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '/userNullable',
-    )..data = _data);
+    )..data = _data;
+    await _dio.fetch<void>(_options);
   }
 
   RequestOptions newRequestOptions(Object? options) {

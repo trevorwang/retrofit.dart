@@ -14,7 +14,7 @@ class MockAdapter extends IOHttpClientAdapter {
   Future<ResponseBody> fetch(
     RequestOptions options,
     Stream<Uint8List>? requestStream,
-    Future? cancelFuture,
+    Future<dynamic>? cancelFuture,
   ) async {
     final uri = options.uri;
     if (uri.host == mockHost) {

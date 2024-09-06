@@ -1,28 +1,27 @@
 name: retrofit_example
-description: Retrofit generator
-version: 1.0.0
-
+description: retrofit_example
+version: 1.0.0+1
 environment:
-  sdk: '>=2.18.0 <3.0.0'
+  sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
+  dio: ^5.7.0
+  flutter:
+    sdk: flutter
+  json_annotation: ^4.9.0
+  logger: ^2.4.0
   retrofit:
-  json_annotation:
-  logger: ^1.2.2
-  dio: ^5.0.1
-  http_parser:
 
 dev_dependencies:
-  test: ^1.23.1
-  retrofit_generator:
-  build_runner: ^2.3.3
-  json_serializable: ^6.6.1
+  build_runner: ^2.4.0
+  json_serializable: ^6.8.0
+  lints: ^4.0.0
   mock_web_server: ^5.0.0-nullsafety.1
-  lints: ^2.0.1
+  retrofit_generator:
+  test: ^1.25.0
 
 dependency_overrides:
   retrofit:
     path: ../retrofit
   retrofit_generator:
     path: ../generator
-  source_gen: ">=1.3.0 <1.4.0"
