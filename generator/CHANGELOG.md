@@ -1,5 +1,13 @@
 # Changelog
 
+## 9.0.0
+
+- Require Dart 3.3
+- Fix issue with deprecated `getDisplayString(withNullability: true)`
+- Update `analyzer: ^6.5.0`
+- Update `lints: ^4.0.0` and fix issues
+- Remove `tuple` dependency
+
 ## 8.1.0
 
 - Added `@Extras` to pass extra options to dio requests, response, transformer and interceptors.
