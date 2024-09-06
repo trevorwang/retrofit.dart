@@ -1,10 +1,74 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart' hide Headers;
-import 'package:retrofit/retrofit.dart';
 import 'package:source_gen_test/annotations.dart';
-
+import 'package:retrofit/retrofit.dart';
 import 'query.pb.dart';
+
+class DummyTypedExtras extends TypedExtras {
+  final String id;
+  final Map<String, dynamic> config;
+  final List<String> fileTypes;
+  final Set<String> sources;
+  final bool shouldProceed;
+  final bool? canFly;
+  const DummyTypedExtras({
+    required this.id,
+    required this.config,
+    required this.fileTypes,
+    required this.sources,
+    required this.shouldProceed,
+    this.canFly,
+  });
+}
+
+@ShouldGenerate(
+  '''
+    final _extra = <String, dynamic>{
+      'id': '1234',
+      'config': {
+        'date': '24-10-2024',
+        'type': 'analytics',
+        'shouldReplace': true,
+        'subConfig': {'date': '24-11-2025'},
+      },
+      'fileTypes': [
+        'mp4',
+        'mp3',
+        'mkv',
+      ],
+      'sources': {
+        'internet',
+        'local',
+      },
+      'shouldProceed': true,
+    };
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class TypedExtrasTest {
+  @DummyTypedExtras(
+    id: '1234',
+    config: {
+      'date': '24-10-2024',
+      'type': 'analytics',
+      'shouldReplace': true,
+      'subConfig': {'date': '24-11-2025'},
+    },
+    fileTypes: [
+      'mp4',
+      'mp3',
+      'mkv',
+    ],
+    sources: {
+      'internet',
+      'local',
+    },
+    shouldProceed: true,
+  )
+  @GET('path')
+  Future<void> list();
+}
 
 @ShouldGenerate(
   '''
