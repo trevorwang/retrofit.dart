@@ -1,5 +1,21 @@
 # Changelog
 
+## 9.1.0
+
+- Added `@TypedExtras` to pass extra options to dio requests using custom annotations.
+
+  Example :
+
+  ```dart
+  @TypedExtrasSubClass(
+    id: 'abcd',
+    count: 5,
+    shouldProceed: true,
+  )
+  @http.POST('/path/')
+  Future<String> myMethod(@Extras() Map<String, dynamic> extras);
+  ```
+
 ## 9.0.0
 
 - Require Dart 3.3
