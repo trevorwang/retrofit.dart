@@ -8,8 +8,8 @@ part 'example.g.dart';
 abstract class TasksRestClient {
   factory TasksRestClient(
     Dio dio, {
-    String baseUrl,
-    ParseErrorLogger errorLogger,
+    String? baseUrl,
+    ParseErrorLogger? errorLogger,
   }) = _TasksRestClient;
 
   @GET('/tasks/{id}')

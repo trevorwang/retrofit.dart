@@ -27,7 +27,7 @@ class User {
 
 @RestApi(baseUrl: 'http://baidu.com', parser: Parser.FlutterCompute)
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
   @GET('/tags')
   Future<List<String>> getTags({@DioOptions() Options? options});
