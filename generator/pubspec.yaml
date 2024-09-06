@@ -17,11 +17,7 @@ dependencies:
   code_builder: ^4.4.0
   dart_style: ^2.3.0
   dio: ^5.0.0
-  retrofit:
-    git: 
-      url: https://github.com/farmery/retrofit.git
-      path: retrofit
-      ref: feat/typed-extras
+  retrofit: ^4.2.0
   source_gen: ^1.3.0
   tuple: ^2.0.1
   protobuf: ^3.1.0
