@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:mock_web_server/mock_web_server.dart';
+import 'package:retrofit_example/example.dart';
 import 'package:retrofit_example/json_mapper_example.dart';
 import 'package:retrofit_example/json_mapper_example.reflectable.dart'
     show initializeReflectable;
 import 'package:test/test.dart';
-import '../lib/example.dart';
+
 import 'task_data.dart';
 
 late MockWebServer _server;
@@ -54,7 +55,7 @@ void main() {
     _server.enqueue(
         body: jsonEncode(["tag1", "tag2"]),
         headers: {"Content-Type": "application/json"});
-    final tasksStream = await _client.getTagsAsStream();
+    final tasksStream = _client.getTagsAsStream();
     final tasks = await tasksStream.first;
     expect(tasks, isNotNull);
     expect(tasks.length, 2);
@@ -132,7 +133,7 @@ void main() {
 
   test("test json mapper parse task", () async {
     _server.enqueue(body: demoTaskListJson, headers: _headers);
-    final tasks = await _apiService.getTasks(new DateTime.now());
+    final tasks = await _apiService.getTasks(DateTime.now());
     expect(tasks, isNotNull);
     expect(tasks.length, 1);
   });

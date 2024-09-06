@@ -15,7 +15,7 @@ Future<void> main(List<String> args) async {
   dio.options.headers['Content-Type'] = 'application/json';
   final client = RestClient(dio);
 
-  await client.getTasks().then((it) => logger.i(it));
+  client.getTasks().then((it) => logger.i(it));
 
   client.getTask('2').then((it) => logger.i(it)).catchError((Object obj) {
     // non-200 error goes here.

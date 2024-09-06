@@ -18,7 +18,6 @@ dev_dependencies:
   lints: ^4.0.0
   mock_web_server: ^5.0.0-nullsafety.1
   retrofit_generator:
-  test: ^1.25.0
 
 dependency_overrides:
   retrofit:

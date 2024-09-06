@@ -1,7 +1,9 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart' hide Headers;
-import 'package:source_gen_test/annotations.dart';
 import 'package:retrofit/retrofit.dart';
+import 'package:source_gen_test/annotations.dart';
+
 import 'query.pb.dart';
 
 class DummyTypedExtras extends TypedExtras {
@@ -11,6 +13,7 @@ class DummyTypedExtras extends TypedExtras {
   final Set<String> sources;
   final bool shouldProceed;
   final bool? canFly;
+
   const DummyTypedExtras({
     required this.id,
     required this.config,

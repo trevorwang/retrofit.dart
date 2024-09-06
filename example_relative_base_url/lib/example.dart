@@ -59,14 +59,13 @@ class Task {
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 }
 
-// ignore_for_file: constant_identifier_names
 enum Status {
   @JsonValue('new')
-  New,
+  newValue,
   @JsonValue('on_going')
-  OnGoing,
+  onGoingValue,
   @JsonValue('closed')
-  Closed,
+  closedValue,
 }
 
 @JsonSerializable()

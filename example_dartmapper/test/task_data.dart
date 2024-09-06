@@ -1,5 +1,6 @@
 import 'dart:convert';
-import '../lib/example.dart';
+
+import 'package:retrofit_example/example.dart';
 
 final demoTask = Task(
     id: "123455151",
@@ -9,7 +10,7 @@ final demoTask = Task(
     createdAt: "2017/09/08 21:35:19");
 
 final demoTaskJson = jsonEncode(demoTask);
-final List<Task> demoTaskList = []..add(demoTask);
+final List<Task> demoTaskList = [demoTask];
 final demoTaskListJson = jsonEncode(demoTaskList);
 final List<Task> demoEmptyList = [];
 final demoEmptyListJson = jsonEncode(demoEmptyList);
@@ -20,5 +21,5 @@ final groupTask = TaskGroup(
     completed: demoTaskList,
     inProgress: demoEmptyList);
 
-final groupTaskList = []..add(groupTask);
+final groupTaskList = [groupTask];
 final groupTaskListJson = jsonEncode(groupTaskList);

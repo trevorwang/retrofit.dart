@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart' hide Headers;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_example/mock_adapter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
