@@ -2271,6 +2271,46 @@ ${bodyName.displayName} == null
     return result;
   }
 
+  dynamic _getFieldValue(ConstantReader? value) {
+    if (value?.isBool ?? false) return value?.boolValue;
+    if (value?.isDouble ?? false) return value?.doubleValue;
+    if (value?.isInt ?? false) return value?.intValue;
+    if (value?.isString ?? false) return value?.stringValue;
+    if (value?.isList ?? false) {
+      return value?.listValue.map((item) => _getFieldValue(ConstantReader(item))).toList();
+    }
+    if (value?.isMap ?? false) {
+      final mapValue = value?.mapValue.map((key, val) {
+        return MapEntry(
+          _getFieldValue(ConstantReader(key)),
+          _getFieldValue(ConstantReader(val)),
+        );
+      });
+      return mapValue;
+    }
+    if (value?.isSet ?? false) {
+      return value?.setValue.map((item) {
+        return _getFieldValue(ConstantReader(item));
+      }).toSet();
+    }
+    return null;
+  }
+
+  Map<String, Object> _getMapFromTypedExtras(MethodElement m) {
+    final annotation = _getMethodAnnotations(m, retrofit.TypedExtras).firstOrNull;
+    final fields = annotation?.objectValue.type?.element?.children
+        .whereType<FieldElement>();
+    Map<String, Object> mapFromTypedExtras = {};
+    for (var field in fields ?? <FieldElement>[]) {
+      final value = annotation?.peek(field.name);
+      final fieldValue = _getFieldValue(value);
+      if (fieldValue != null) {
+        mapFromTypedExtras[field.name] = fieldValue;
+      }
+    }
+    return mapFromTypedExtras;
+  }
+
   void _generateExtra(
     MethodElement m,
     List<Code> blocks,
@@ -2306,7 +2346,9 @@ ${bodyName.displayName} == null
                       ),
                     ),
                   )
-                  .fold<Map<String, Object>>({}, (p, e) => p..addAll(e ?? {})),
+                  .fold<Map<String, Object>>({}, (p, e) {
+                    return p..addAll(e ?? {});
+                  })..addAll(_getMapFromTypedExtras(m)),
               refer('String'),
               refer('dynamic'),
             ),
