@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 import 'package:meta/meta.dart';
 
 /// A holder that includes all http methods which are supported by retrofit.

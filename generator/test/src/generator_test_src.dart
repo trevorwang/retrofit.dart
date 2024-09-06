@@ -1340,7 +1340,10 @@ abstract class TestModelList {
     newOptions.headers.addAll(_headers);
     final _options = newOptions.copyWith(
       method: 'GET',
-      baseUrl: baseUrl ?? _dio.options.baseUrl,
+      baseUrl: _combineBaseUrls(
+        _dio.options.baseUrl,
+        baseUrl,
+      ),
       queryParameters: queryParameters,
       path: '',
     )..data = _data;
