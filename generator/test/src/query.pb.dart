@@ -21,10 +21,13 @@ class Params extends $pb.GeneratedMessage {
     }
     return $result;
   }
+
   Params._() : super();
+
   factory Params.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
+
   factory Params.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
@@ -39,6 +42,7 @@ class Params extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
   Params clone() => Params()..mergeFromMessage(this);
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
@@ -49,8 +53,11 @@ class Params extends $pb.GeneratedMessage {
 
   @$core.pragma('dart2js:noInline')
   static Params create() => Params._();
+
   Params createEmptyInstance() => create();
+
   static $pb.PbList<Params> createRepeated() => $pb.PbList<Params>();
+
   @$core.pragma('dart2js:noInline')
   static Params getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Params>(create);
@@ -58,6 +65,7 @@ class Params extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.String get key => $_getSZ(0);
+
   @$pb.TagNumber(1)
   set key($core.String v) {
     $_setString(0, v);
@@ -65,6 +73,7 @@ class Params extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.bool hasKey() => $_has(0);
+
   @$pb.TagNumber(1)
   void clearKey() => clearField(1);
 }
@@ -79,10 +88,13 @@ class Result extends $pb.GeneratedMessage {
     }
     return $result;
   }
+
   Result._() : super();
+
   factory Result.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
+
   factory Result.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
@@ -97,6 +109,7 @@ class Result extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
   Result clone() => Result()..mergeFromMessage(this);
+
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
@@ -107,8 +120,11 @@ class Result extends $pb.GeneratedMessage {
 
   @$core.pragma('dart2js:noInline')
   static Result create() => Result._();
+
   Result createEmptyInstance() => create();
+
   static $pb.PbList<Result> createRepeated() => $pb.PbList<Result>();
+
   @$core.pragma('dart2js:noInline')
   static Result getDefault() =>
       _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Result>(create);
@@ -116,6 +132,7 @@ class Result extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.String get value => $_getSZ(0);
+
   @$pb.TagNumber(1)
   set value($core.String v) {
     $_setString(0, v);
@@ -123,6 +140,7 @@ class Result extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.bool hasValue() => $_has(0);
+
   @$pb.TagNumber(1)
   void clearValue() => clearField(1);
 }

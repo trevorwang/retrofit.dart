@@ -1,17 +1,16 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:dio/dio.dart' hide Headers;
-import 'package:http_parser/http_parser.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:retrofit_example/api_result.dart';
 
 part 'example.g.dart';
 
 @RestApi(baseUrl: 'tasks')
 abstract class TasksRestClient {
-  factory TasksRestClient(Dio dio, {String baseUrl, ParseErrorLogger errorLogger}) = _TasksRestClient;
+  factory TasksRestClient(
+    Dio dio, {
+    String? baseUrl,
+    ParseErrorLogger? errorLogger,
+  }) = _TasksRestClient;
 
   @GET('/tasks/{id}')
   Future<List<Task?>> getTaskById();
@@ -60,14 +59,13 @@ class Task {
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 }
 
-// ignore_for_file: constant_identifier_names
 enum Status {
   @JsonValue('new')
-  New,
+  newValue,
   @JsonValue('on_going')
-  OnGoing,
+  onGoingValue,
   @JsonValue('closed')
-  Closed,
+  closedValue,
 }
 
 @JsonSerializable()

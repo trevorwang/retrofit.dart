@@ -8,44 +8,50 @@ import 'package:retrofit/retrofit.dart';
 
 part 'example.g.dart';
 
-@RestApi(baseUrl: "https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/")
+@RestApi(baseUrl: 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/')
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl, ParseErrorLogger errorLogger}) = _RestClient;
+  factory RestClient(
+    Dio dio, {
+    String? baseUrl,
+    ParseErrorLogger? errorLogger,
+  }) = _RestClient;
 
-  @GET("/tags")
+  @GET('/tags')
   Future<List<String>> getTags();
 
-  @GET("/tags")
+  @GET('/tags')
   Stream<List<String>> getTagsAsStream();
 
-  @GET("/tasks")
+  @GET('/tasks')
   Future<List<Task>> getTasks();
 
-  @GET("/tasks/{id}")
-  Future<Task> getTask(@Path("id") String id);
+  @GET('/tasks/{id}')
+  Future<Task> getTask(@Path('id') String id);
 
-  @PATCH("/tasks/{id}")
+  @PATCH('/tasks/{id}')
   Future<Task> updateTaskPart(
-      @Path() String id, @Body() Map<String, dynamic> map);
+    @Path() String id,
+    @Body() Map<String, dynamic> map,
+  );
 
-  @PUT("/tasks/{id}")
+  @PUT('/tasks/{id}')
   Future<Task> updateTask(@Path() String id, @Body() Task task);
 
-  @DELETE("/tasks/{id}")
+  @DELETE('/tasks/{id}')
   Future<void> deleteTask(@Path() String id);
 
-  @POST("/tasks")
+  @POST('/tasks')
   Future<Task> createTask(@Body() Task task);
 
-  @POST("http://httpbin.org/post")
+  @POST('http://httpbin.org/post')
   Future<void> createNewTaskFromFile(@Part() File file);
 
-  @Headers(<String, String>{"accept": "image/jpeg"})
-  @GET("http://httpbin.org/image/jpeg")
+  @Headers(<String, String>{'accept': 'image/jpeg'})
+  @GET('http://httpbin.org/image/jpeg')
   @DioResponseType(ResponseType.bytes)
   Future<List<int>> getFile();
 
-  @POST("http://httpbin.org/post")
+  @POST('http://httpbin.org/post')
   @FormUrlEncoded()
   Future<String> postUrlEncodedFormData(
     @Field() String hello, {
@@ -56,45 +62,47 @@ abstract class RestClient {
   Future<String> headRequest();
 
   @HEAD('/')
-  Future headRquest2();
+  Future<void> headRquest2();
 
   @HEAD('/')
-  Future<HttpResponse> headRquest3();
+  Future<HttpResponse<dynamic>> headRquest3();
 
-  @GET("/task/group")
+  @GET('/task/group')
   Future<List<TaskGroup>> grouppedTaskByDate();
 
-  @GET("/task")
+  @GET('/task')
   Future<HttpResponse<List<Task>>> getTasksWithReponse();
 
-  @DELETE("/tasks/{id}")
+  @DELETE('/tasks/{id}')
   Future<HttpResponse<void>> deleteTaskWithResponse(@Path() String id);
 
-  @POST("/post")
+  @POST('/post')
   Future<String> postFormData(@Part() Task task, {@Part() required File file});
 
-  @POST("/post")
+  @POST('/post')
   Future<String> postFormData2(
-      @Part() List<Map<String, dynamic>> task,
-      @Part() List<String> tags,
-      @Part(contentType: 'application/json') File file);
+    @Part() List<Map<String, dynamic>> task,
+    @Part() List<String> tags,
+    @Part(contentType: 'application/json') File file,
+  );
 
-  @POST("/post")
-  Future<String> postFormData3(
-      {@Part(value: "customfiles", contentType: 'application/json')
-          required List<File> files,
-      @Part()
-          required File file});
+  @POST('/post')
+  Future<String> postFormData3({
+    @Part(name: 'customfiles', contentType: 'application/json')
+    required List<File> files,
+    @Part() required File file,
+  });
 
-  @POST("/post")
-  Future<String> postFormData6(
-      {@Part(value: "customfiles") required List<List<int>> files,
-      @Part() required List<int> file});
+  @POST('/post')
+  Future<String> postFormData6({
+    @Part(name: 'customfiles') required List<List<int>> files,
+    @Part() required List<int> file,
+  });
 
-  @POST("/post")
+  @POST('/post')
   Future<String> postFormData4(@Part() List<Task> tasks, @Part() File file);
 
-  @POST("/post")
+  @POST('/post')
   Future<String> postFormData5(
     @Part() List<Task> tasks,
     @Part() Map<String, dynamic> map,
@@ -110,30 +118,28 @@ abstract class RestClient {
   @GET('/enums')
   Future<String> queryByEnum(@Query('tasks') TaskQuery query);
 
-  @GET("/get")
-  Future<String> namedExample(@Query("\$apikey") String apiKey,
-      @Query("scope") String scope, @Query("type") String type,
-      {@Query("from") int? from});
+  @GET('/get')
+  Future<String> namedExample(
+    @Query(r'$apikey') String apiKey,
+    @Query('scope') String scope,
+    @Query('type') String type, {
+    @Query('from') int? from,
+  });
 
-  @POST("/postfile")
+  @POST('/postfile')
   @Headers(<String, dynamic>{
-    "\$Content-Type": "application/octet-stream",
-    "Ocp-Apim-Subscription-Key": "abc"
+    r'$Content-Type': 'application/octet-stream',
+    'Ocp-Apim-Subscription-Key': 'abc',
   })
   Future<String> postFile({@Body() required File file});
 
-  @GET("")
+  @GET('')
   Future<String> testCustomOptions(@DioOptions() Options options);
 }
 
 @JsonSerializable()
 class Task {
-  String? id;
-  String? name;
-  String? avatar;
-  String? createdAt;
-
-  Task({
+  const Task({
     this.id,
     this.name,
     this.avatar,
@@ -142,38 +148,38 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
+  final String? id;
+  final String? name;
+  final String? avatar;
+  final String? createdAt;
+
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 }
 
 enum Status {
-  @JsonValue("new")
-  New,
-  @JsonValue("on_going")
-  OnGoing,
-  @JsonValue("closed")
-  Closed,
+  @JsonValue('new')
+  newValue,
+  @JsonValue('on_going')
+  onGoingValue,
+  @JsonValue('closed')
+  closedValue,
 }
 
 @JsonSerializable()
 class TaskQuery {
-  List<Status> statuses;
-
-  TaskQuery(this.statuses);
+  const TaskQuery(this.statuses);
 
   factory TaskQuery.fromJson(Map<String, dynamic> json) =>
       _$TaskQueryFromJson(json);
+
+  final List<Status> statuses;
 
   Map<String, dynamic> toJson() => _$TaskQueryToJson(this);
 }
 
 @JsonSerializable()
 class TaskGroup {
-  DateTime? date;
-  List<Task>? todos;
-  List<Task>? completed;
-  List<Task>? inProgress;
-
-  TaskGroup({
+  const TaskGroup({
     this.date,
     this.todos,
     this.completed,
@@ -182,6 +188,11 @@ class TaskGroup {
 
   factory TaskGroup.fromJson(Map<String, dynamic> json) =>
       _$TaskGroupFromJson(json);
+
+  final DateTime? date;
+  final List<Task>? todos;
+  final List<Task>? completed;
+  final List<Task>? inProgress;
 
   Map<String, dynamic> toJson() => _$TaskGroupToJson(this);
 }

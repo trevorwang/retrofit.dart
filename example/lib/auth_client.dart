@@ -5,7 +5,11 @@ part 'auth_client.g.dart';
 
 @RestApi()
 abstract class AuthClient {
-  factory AuthClient(Dio dio, {String? baseUrl, ParseErrorLogger errorLogger}) = RestClientYmlp;
+  factory AuthClient(
+    Dio dio, {
+    String? baseUrl,
+    ParseErrorLogger? errorLogger,
+  }) = RestClientYmlp;
 
   @POST('/api/auth/mqttClient/authentication')
   Future<Object?> authenticationUsingPost({

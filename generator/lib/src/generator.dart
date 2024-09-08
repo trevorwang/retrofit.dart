@@ -2271,13 +2271,15 @@ ${bodyName.displayName} == null
     return result;
   }
 
-  dynamic _getFieldValue(ConstantReader? value) {
+  Object? _getFieldValue(ConstantReader? value) {
     if (value?.isBool ?? false) return value?.boolValue;
     if (value?.isDouble ?? false) return value?.doubleValue;
     if (value?.isInt ?? false) return value?.intValue;
     if (value?.isString ?? false) return value?.stringValue;
     if (value?.isList ?? false) {
-      return value?.listValue.map((item) => _getFieldValue(ConstantReader(item))).toList();
+      return value?.listValue
+          .map((item) => _getFieldValue(ConstantReader(item)))
+          .toList();
     }
     if (value?.isMap ?? false) {
       final mapValue = value?.mapValue.map((key, val) {
@@ -2297,11 +2299,12 @@ ${bodyName.displayName} == null
   }
 
   Map<String, Object> _getMapFromTypedExtras(MethodElement m) {
-    final annotation = _getMethodAnnotations(m, retrofit.TypedExtras).firstOrNull;
+    final annotation =
+        _getMethodAnnotations(m, retrofit.TypedExtras).firstOrNull;
     final fields = annotation?.objectValue.type?.element?.children
         .whereType<FieldElement>();
-    Map<String, Object> mapFromTypedExtras = {};
-    for (var field in fields ?? <FieldElement>[]) {
+    final mapFromTypedExtras = <String, Object>{};
+    for (final field in fields ?? <FieldElement>[]) {
       final value = annotation?.peek(field.name);
       final fieldValue = _getFieldValue(value);
       if (fieldValue != null) {
@@ -2347,8 +2350,9 @@ ${bodyName.displayName} == null
                     ),
                   )
                   .fold<Map<String, Object>>({}, (p, e) {
-                    return p..addAll(e ?? {});
-                  })..addAll(_getMapFromTypedExtras(m)),
+                return p..addAll(e ?? {});
+              })
+                ..addAll(_getMapFromTypedExtras(m)),
               refer('String'),
               refer('dynamic'),
             ),

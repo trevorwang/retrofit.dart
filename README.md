@@ -15,8 +15,8 @@ Add the generator to your dev dependencies
 
 ```yaml
 dependencies:
-  retrofit: ^4.3.0
-  logger: ^1.2.0  # for logging purpose
+  retrofit: ^4.4.0
+  logger: ^2.4.0  # for logging purpose
   json_annotation: ^4.9.0
 
 dev_dependencies:
@@ -36,7 +36,7 @@ part 'example.g.dart';
 
 @RestApi(baseUrl: 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/')
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
   @GET('/tasks')
   Future<List<Task>> getTasks();
@@ -62,9 +62,6 @@ then run the generator
 ```sh
 # dart
 dart pub run build_runner build
-
-# flutter	
-flutter pub run build_runner build
 ```
 
 ### Use it
@@ -84,8 +81,6 @@ void main(List<String> args) {
   client.getTasks().then((it) => logger.i(it));
 }
 ```
-
-
 
 ## More
 
@@ -123,11 +118,14 @@ The HTTP methods in the below sample are supported.
       @Query('apikey') String apiKey,
       @Query('scope') String scope,
       @Query('type') String type,
-      @Query('from') int from);
+      @Query('from') int from,
+  );
   
   @PATCH('/tasks/{id}')
   Future<Task> updateTaskPart(
-      @Path() String id, @Body() Map<String, dynamic> map);
+    @Path() String id, 
+    @Body() Map<String, dynamic> map,
+  );
   
   @PUT('/tasks/{id}')
   Future<Task> updateTask(@Path() String id, @Body() Task task);
@@ -191,9 +189,9 @@ client.getTask('2').then((it) {
 }).catchError((obj) {
   // non-200 error goes here.
   switch (obj.runtimeType) {
-    case DioError:
+    case DioException:
       // Here's the sample to get the failed response error code and message
-      final res = (obj as DioError).response;
+      final res = (obj as DioException).response;
       logger.e('Got error : ${res.statusCode} -> ${res.statusMessage}');
       break;
   default:
@@ -209,7 +207,7 @@ If you want to use a relative `baseUrl` value in the `RestApi` annotation of the
 ```dart
 @RestApi(baseUrl: '/tasks')
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
   @GET('{id}')
   Future<HttpResponse<Task>> getTask(@Path('id') String id);
@@ -229,7 +227,7 @@ If you want to use multiple endpoints to your `RestClient`, you should pass your
 ```dart
 @RestApi(baseUrl: 'this url will be ignored if baseUrl is passed')
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 }
 
 final client = RestClient(dio, baseUrl: 'your base url');
@@ -267,7 +265,7 @@ E.g.
   parser: Parser.FlutterCompute,
 )
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
   @GET('/task')
   Future<Task> getTask();
@@ -298,7 +296,7 @@ Avoid using Map values, otherwise multiple background isolates will be spawned t
 
 ```dart
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
   // BAD
   @GET('/tasks')

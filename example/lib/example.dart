@@ -11,7 +11,11 @@ part 'example.g.dart';
 
 @RestApi(baseUrl: 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/')
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl, ParseErrorLogger errorLogger}) = RestClientYmlp;
+  factory RestClient(
+    Dio dio, {
+    String? baseUrl,
+    ParseErrorLogger? errorLogger,
+  }) = RestClientYmlp;
 
   @GET('/tasks/{id}')
   Future<ApiResult<Task?>> getNestApiResultGenericsInnerTypeNullable();
@@ -66,7 +70,9 @@ abstract class RestClient {
   @PreventNullToAbsent()
   @PATCH('/tasks/{id}')
   Future<Task> updateTaskAvatar(
-      @Path() String id, @Field('avatar') String? avatar);
+    @Path() String id,
+    @Field('avatar') String? avatar,
+  );
 
   @DELETE('/tasks/{id}')
   Future<void> deleteTask(@Path() String id);
@@ -105,7 +111,7 @@ abstract class RestClient {
   Future<dynamic> headRequest2();
 
   @HEAD('/')
-  Future<HttpResponse> headRequest3();
+  Future<HttpResponse<dynamic>> headRequest3();
 
   @GET('/task/group')
   Future<List<TaskGroup>> groupedTaskByDate();
@@ -131,14 +137,14 @@ abstract class RestClient {
 
   @POST('/post')
   Future<String> postFormData3({
-    @Part(value: 'customfiles', contentType: 'application/json')
+    @Part(name: 'customfiles', contentType: 'application/json')
     required List<File> files,
     @Part(fileName: 'abc.txt') required File file,
   });
 
   @POST('/post')
   Future<String> postFormData6({
-    @Part(value: 'customfiles') required List<List<int>> files,
+    @Part(name: 'customfiles') required List<List<int>> files,
     @Part(fileName: 'abc.txt') required List<int> file,
   });
 
@@ -161,7 +167,7 @@ abstract class RestClient {
   @GET('/enums')
   Future<String> queryByEnum(
     @Query('tasks') TaskQuery query,
-    @Query("date") DateTime time,
+    @Query('date') DateTime time,
   );
 
   @GET('/get')
@@ -175,7 +181,7 @@ abstract class RestClient {
   @POST('/postfile')
   @Headers(<String, dynamic>{
     r'$Content-Type': 'application/octet-stream',
-    'Ocp-Apim-Subscription-Key': 'abc'
+    'Ocp-Apim-Subscription-Key': 'abc',
   })
   Future<String> postFile({@Body() required File file});
 
@@ -253,8 +259,8 @@ abstract class RestClient {
   @MultiPart()
   @POST('post/{id}/comments/{commentId}')
   Future<String> multipartBodyWithMultiplePathParameter(
-    @Path("id") String id,
-    @Path("commentId") String commentId,
+    @Path('id') String id,
+    @Path('commentId') String commentId,
     @Part() Map<String, dynamic> body,
   );
 }

@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 /// Extra data that will be passed to Dio's request, response, transformer, and interceptors.
 /// Extend [TypedExtras] and define fields that correspond to the keys passed into `extras`.
 /// The values of these fields will be derived from the data passed into your subclass.
-/// 
+///
 /// Example:
 ///
 /// ```dart
