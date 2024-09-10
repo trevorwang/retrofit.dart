@@ -6,14 +6,14 @@ import 'package:source_gen_test/annotations.dart';
 
 import 'query.pb.dart';
 
+enum FileType {mp4, mp3}
 class DummyTypedExtras extends TypedExtras {
   final String id;
   final Map<String, dynamic> config;
-  final List<String> fileTypes;
+  final List<FileType> fileTypes;
   final Set<String> sources;
   final bool shouldProceed;
   final bool? canFly;
-
   const DummyTypedExtras({
     required this.id,
     required this.config,
@@ -35,9 +35,8 @@ class DummyTypedExtras extends TypedExtras {
         'subConfig': {'date': '24-11-2025'},
       },
       'fileTypes': [
-        'mp4',
         'mp3',
-        'mkv',
+        'mp4',
       ],
       'sources': {
         'internet',
@@ -59,9 +58,8 @@ abstract class TypedExtrasTest {
       'subConfig': {'date': '24-11-2025'},
     },
     fileTypes: [
-      'mp4',
-      'mp3',
-      'mkv',
+      FileType.mp3,
+      FileType.mp4,
     ],
     sources: {
       'internet',

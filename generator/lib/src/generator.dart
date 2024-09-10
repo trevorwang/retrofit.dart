@@ -2276,6 +2276,9 @@ ${bodyName.displayName} == null
     if (value?.isDouble ?? false) return value?.doubleValue;
     if (value?.isInt ?? false) return value?.intValue;
     if (value?.isString ?? false) return value?.stringValue;
+    if (value?.objectValue.isEnum ?? false) {
+      return value?.objectValue.variable?.displayName;
+    }
     if (value?.isList ?? false) {
       return value?.listValue
           .map((item) => _getFieldValue(ConstantReader(item)))
@@ -2621,6 +2624,12 @@ extension DartTypeExt on DartType {
       return val.substring(0, val.length - 1);
     }
     return val;
+  }
+}
+
+extension DartObjectX on DartObject? {
+  bool get isEnum {
+    return this?.type?.element?.kind.name == 'ENUM';
   }
 }
 
