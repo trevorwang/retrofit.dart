@@ -1,5 +1,21 @@
 # Changelog
 
+## 9.1.2
+
+- Support passing Enums into `TypedExtras`.
+
+  Example :
+
+  ```dart
+  @TypedExtrasSubClass(
+    id: 'abcd',
+    fileType: FileType.json,
+    destinations: [Destination.remote]
+  )
+  @http.POST('/path/')
+  Future<String> myMethod();
+  ```
+
 ## 9.1.0
 
 - Added `@TypedExtras` to pass extra options to dio requests using custom annotations.
