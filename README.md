@@ -339,6 +339,16 @@ Add "ignore files and folders"
 
 `*.g.dart`
 
+## Videos
+- [Flutter Rest API - Simplifying Make API Call Using Retrofit](https://www.youtube.com/watch?v=zjNhlmue5Os)
+- [Flutter retrofit implementation | Flutter Network Calls | Source Code In Desc | flutter coding](https://www.youtube.com/watch?v=OZF9mqKbi3k)
+- [Flutter retrofit api call | GET | amplifyabhi ](https://www.youtube.com/watch?v=ARIy5OSIspQ)
+- [Flutter - Retrofit Setup & Explanation | Clean Architecture | In Hindi](https://www.youtube.com/watch?v=e6JV-t9Yo3U)
+- [How to call API using retrofit in flutter application and JSON parsing ?](https://www.youtube.com/watch?v=UDhRvP1Iafc)
+- [API Integration in Flutter using Retrofit | Flutter Package Tutorial](https://www.youtube.com/watch?v=upX9T_ciWz4&t=39s)
+- [Build A News App - Make Request To API Using Retrofit | PART 4 - Flutter Clean Architecture](https://www.youtube.com/watch?v=kjMoW4cs2kU)
+
+
 ## Credits
 
 - [JetBrains](https://www.jetbrains.com/). Thanks for providing the great IDE tools.
