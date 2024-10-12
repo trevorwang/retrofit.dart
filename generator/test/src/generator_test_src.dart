@@ -75,15 +75,17 @@ class AnotherDummyTypedExtras extends TypedExtras {
   const AnotherDummyTypedExtras({
     required this.peanutButter,
     required this.mac,
+    required this.id,
   });
 
   final String peanutButter;
   final String mac;
+  final String id;
 }
 @ShouldGenerate(
   '''
     final _extra = <String, dynamic>{
-      'id': '1234',
+      'id': '12345',
       'config': {
         'date': '24-10-2024',
         'type': 'analytics',
@@ -128,6 +130,7 @@ abstract class MultipleTypedExtrasTest {
   @AnotherDummyTypedExtras(
     peanutButter: 'Jelly',
     mac: 'Cheese',
+    id: '12345',
   )
   @GET('path')
   Future<void> list();
