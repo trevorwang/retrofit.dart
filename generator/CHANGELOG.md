@@ -1,5 +1,24 @@
 # Changelog
 
+## 9.1.3
+
+- Add support for multiple `TypedExtras`.
+
+  Example :
+
+  ```dart
+  @TypedExtrasSubClass(
+    id: 'abcd',
+    fileType: FileType.json,
+    destinations: [Destination.remote]
+  )
+  @AnotherTypedExtrasSubClass(
+    state: 'Ohio',
+    destinations: [Destination.remote]
+  )
+  @http.POST('/path/')
+  Future<String> myMethod();
+
 ## 9.1.2
 
 - Support passing Enums into `TypedExtras`.
