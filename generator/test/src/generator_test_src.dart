@@ -6,7 +6,8 @@ import 'package:source_gen_test/annotations.dart';
 
 import 'query.pb.dart';
 
-enum FileType {mp4, mp3}
+enum FileType { mp4, mp3 }
+
 class DummyTypedExtras extends TypedExtras {
   final String id;
   final Map<String, dynamic> config;
@@ -82,9 +83,11 @@ class AnotherDummyTypedExtras extends TypedExtras {
   final String mac;
   final String id;
 }
+
 @ShouldGenerate(
   '''
     final _extra = <String, dynamic>{
+      'bacon': 'sausage',
       'id': '12345',
       'config': {
         'date': '24-10-2024',
@@ -132,6 +135,7 @@ abstract class MultipleTypedExtrasTest {
     mac: 'Cheese',
     id: '12345',
   )
+  @Extra({'bacon': 'sausage'})
   @GET('path')
   Future<void> list();
 }
