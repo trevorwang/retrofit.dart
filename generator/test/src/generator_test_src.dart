@@ -73,12 +73,12 @@ abstract class TypedExtrasTest {
 
 class AnotherDummyTypedExtras extends TypedExtras {
   const AnotherDummyTypedExtras({
-    required this.simple,
-    required this.stuff,
+    required this.peanutButter,
+    required this.mac,
   });
 
-  final String simple;
-  final String stuff;
+  final String peanutButter;
+  final String mac;
 }
 @ShouldGenerate(
   '''
@@ -99,8 +99,8 @@ class AnotherDummyTypedExtras extends TypedExtras {
         'local',
       },
       'shouldProceed': true,
-      'simple': 'hello',
-      'stuff': 'world',
+      'peanutButter': 'Jelly',
+      'mac': 'Cheese',
     };
   ''',
   contains: true,
@@ -126,8 +126,8 @@ abstract class MultipleTypedExtrasTest {
     shouldProceed: true,
   )
   @AnotherDummyTypedExtras(
-    simple: 'hello',
-    stuff: 'world',
+    peanutButter: 'Jelly',
+    mac: 'Cheese',
   )
   @GET('path')
   Future<void> list();
