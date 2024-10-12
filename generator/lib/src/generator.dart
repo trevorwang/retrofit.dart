@@ -2302,19 +2302,22 @@ ${bodyName.displayName} == null
   }
 
   Map<String, Object> _getMapFromTypedExtras(MethodElement m) {
-    final annotation =
-        _getMethodAnnotations(m, retrofit.TypedExtras).firstOrNull;
-    final fields = annotation?.objectValue.type?.element?.children
-        .whereType<FieldElement>();
-    final mapFromTypedExtras = <String, Object>{};
-    for (final field in fields ?? <FieldElement>[]) {
-      final value = annotation?.peek(field.name);
-      final fieldValue = _getFieldValue(value);
-      if (fieldValue != null) {
-        mapFromTypedExtras[field.name] = fieldValue;
+    final annotations = _getMethodAnnotations(m, retrofit.TypedExtras);
+    final allTypedExtras = <String, Object>{};
+
+    for (final annotation in annotations) {
+      final fields = annotation.objectValue.type?.element?.children
+          .whereType<FieldElement>();
+      for (final field in fields ?? <FieldElement>[]) {
+        final value = annotation.peek(field.name);
+        final fieldValue = _getFieldValue(value);
+        if (fieldValue != null) {
+          allTypedExtras[field.name] = fieldValue;
+        }
       }
     }
-    return mapFromTypedExtras;
+
+    return allTypedExtras;
   }
 
   void _generateExtra(

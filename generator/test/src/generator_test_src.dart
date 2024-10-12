@@ -71,6 +71,68 @@ abstract class TypedExtrasTest {
   Future<void> list();
 }
 
+class AnotherDummyTypedExtras extends TypedExtras {
+  const AnotherDummyTypedExtras({
+    required this.simple,
+    required this.stuff,
+  });
+
+  final String simple;
+  final String stuff;
+}
+@ShouldGenerate(
+  '''
+    final _extra = <String, dynamic>{
+      'id': '1234',
+      'config': {
+        'date': '24-10-2024',
+        'type': 'analytics',
+        'shouldReplace': true,
+        'subConfig': {'date': '24-11-2025'},
+      },
+      'fileTypes': [
+        'mp3',
+        'mp4',
+      ],
+      'sources': {
+        'internet',
+        'local',
+      },
+      'shouldProceed': true,
+      'simple': 'hello',
+      'stuff': 'world',
+    };
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class MultipleTypedExtrasTest {
+  @DummyTypedExtras(
+    id: '1234',
+    config: {
+      'date': '24-10-2024',
+      'type': 'analytics',
+      'shouldReplace': true,
+      'subConfig': {'date': '24-11-2025'},
+    },
+    fileTypes: [
+      FileType.mp3,
+      FileType.mp4,
+    ],
+    sources: {
+      'internet',
+      'local',
+    },
+    shouldProceed: true,
+  )
+  @AnotherDummyTypedExtras(
+    simple: 'hello',
+    stuff: 'world',
+  )
+  @GET('path')
+  Future<void> list();
+}
+
 @ShouldGenerate(
   '''
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element
