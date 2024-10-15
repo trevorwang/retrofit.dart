@@ -6,7 +6,8 @@ import 'package:source_gen_test/annotations.dart';
 
 import 'query.pb.dart';
 
-enum FileType {mp4, mp3}
+enum FileType { mp4, mp3 }
+
 class DummyTypedExtras extends TypedExtras {
   final String id;
   final Map<String, dynamic> config;
@@ -67,6 +68,74 @@ abstract class TypedExtrasTest {
     },
     shouldProceed: true,
   )
+  @GET('path')
+  Future<void> list();
+}
+
+class AnotherDummyTypedExtras extends TypedExtras {
+  const AnotherDummyTypedExtras({
+    required this.peanutButter,
+    required this.mac,
+    required this.id,
+  });
+
+  final String peanutButter;
+  final String mac;
+  final String id;
+}
+
+@ShouldGenerate(
+  '''
+    final _extra = <String, dynamic>{
+      'bacon': 'sausage',
+      'id': '12345',
+      'config': {
+        'date': '24-10-2024',
+        'type': 'analytics',
+        'shouldReplace': true,
+        'subConfig': {'date': '24-11-2025'},
+      },
+      'fileTypes': [
+        'mp3',
+        'mp4',
+      ],
+      'sources': {
+        'internet',
+        'local',
+      },
+      'shouldProceed': true,
+      'peanutButter': 'Jelly',
+      'mac': 'Cheese',
+    };
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class MultipleTypedExtrasTest {
+  @DummyTypedExtras(
+    id: '1234',
+    config: {
+      'date': '24-10-2024',
+      'type': 'analytics',
+      'shouldReplace': true,
+      'subConfig': {'date': '24-11-2025'},
+    },
+    fileTypes: [
+      FileType.mp3,
+      FileType.mp4,
+    ],
+    sources: {
+      'internet',
+      'local',
+    },
+    shouldProceed: true,
+  )
+  @AnotherDummyTypedExtras(
+    peanutButter: 'Jelly',
+    mac: 'Cheese',
+    id: '12345',
+  )
+  @Extra({'bacon': 'sausage'})
   @GET('path')
   Future<void> list();
 }
