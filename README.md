@@ -108,24 +108,19 @@ class Task {
 If you want to add static extra to all requests.
 
 ```dart
-class MetaData extends TypedExtras {
+  class MetaData extends TypedExtras {
   final String id;
   final String region;
 
   const MetaData({required this.id, required region});
 }
 
-@RestApi()
-abstract class RestClient {
-  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
-
-  @MetaData(
-    id: '1234',
-    region: 'ng',
-  )
-  
-  ...
-}
+@MetaData(
+  id: '1234',
+  region: 'ng',
+)
+@GET("/get")
+Future<String> fetchData();
 
 ```
 
