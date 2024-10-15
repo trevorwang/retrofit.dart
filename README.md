@@ -84,7 +84,9 @@ void main(List<String> args) {
 
 ## More
 
-### Type Conversion
+### Types
+
+## Types conversion
 
 > Before you use the type conversion, please make sure that a ` factory Task.fromJson(Map<String, dynamic> json)` must be provided for each model class. `json_serializable` is recommended to be used as the serialization tool.
 
@@ -100,6 +102,31 @@ class Task {
 
   final String name;
 }
+```
+
+## Typed extras
+If you want to add static extra to all requests.
+
+```dart
+class MetaData extends TypedExtras {
+  final String id;
+  final String region;
+
+  const MetaData({required this.id, required region});
+}
+
+@MetaData(
+  id: '1234',
+  region: 'ng',
+)
+@GET("/get")
+Future<String> fetchData(@Extras() Map<String, dynamic> extras);
+
+// Which will generate 
+final _extras = <String, dynamic>{
+  'id': '1234',
+  'region': 'ng',
+};
 ```
 
 ### HTTP Methods
