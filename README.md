@@ -115,18 +115,18 @@ class MetaData extends TypedExtras {
   const MetaData({required this.id, required region});
 }
 
-@MetaData(
-  id: '1234',
-  region: 'ng',
-)
-@GET("/get")
-Future<String> fetchData(@Extras() Map<String, dynamic> extras);
+@RestApi()
+abstract class RestClient {
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
-// Which will generate 
-final _extras = <String, dynamic>{
-  'id': '1234',
-  'region': 'ng',
-};
+  @MetaData(
+    id: '1234',
+    region: 'ng',
+  )
+  
+  ...
+}
+
 ```
 
 ### HTTP Methods
