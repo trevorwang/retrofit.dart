@@ -285,6 +285,7 @@ abstract class RestClient {
   Future<void> deleteTask();
 }
 ```
+With this, when you call these request methods your transformed response is returned. or if there's an error, your transformed error is thrown.
 
 If you want to use the base url from `dio.option.baseUrl`, which has lowest priority, please don't pass any parameter to `RestApi` annotation and `RestClient`'s structure method.
 
