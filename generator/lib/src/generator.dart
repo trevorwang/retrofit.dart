@@ -582,7 +582,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     if (wrappedReturnType == null || 'void' == wrappedReturnType.toString()) {
       blocks.add(
         refer('await $_dioVar.fetch')
-            .call([options], {}, [refer('void')]).statement,
+            .call([options], {}, [refer('void')]).applyExceptionAdapter(callAdapter).statement,
       );
       return Block.of(blocks);
     }
@@ -596,7 +596,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         blocks
           ..add(
             refer('final $_resultVar = await $_dioVar.fetch')
-                .call([options], {}, [refer('void')]).statement,
+                .call([options], {}, [refer('void')]).applyExceptionAdapter(callAdapter).statement,
           )
           ..add(
             Code('''
@@ -607,7 +607,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       } else {
         blocks.add(
           refer('await $_dioVar.fetch')
-              .call([options], {}, [refer('void')]).statement,
+              .call([options], {}, [refer('void')])
+              .applyExceptionAdapter(callAdapter)
+              .statement,
         );
       }
     } else {
@@ -621,6 +623,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                 .assign(
                   refer('await $_dioVar.fetch<List<dynamic>>').call([options]),
                 )
+                .applyExceptionAdapter(callAdapter)
                 .statement,
           );
 
@@ -652,7 +655,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
             declareFinal(_resultVar)
                 .assign(
                   refer('await $_dioVar.fetch<List<dynamic>>').call([options]),
-                )
+                ).applyExceptionAdapter(callAdapter)
                 .statement,
           );
           if (clientAnnotation.parser == retrofit.Parser.FlutterCompute) {
@@ -732,7 +735,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               .assign(
                 refer('await $_dioVar.fetch<Map<String,dynamic>>')
                     .call([options]),
-              )
+              ).applyExceptionAdapter(callAdapter)
               .statement,
         );
 
@@ -920,6 +923,7 @@ You should create a new class to encapsulate the response.
                   refer('await $_dioVar.fetch<${_displayString(returnType)}>')
                       .call([options]),
                 )
+                .applyExceptionAdapter(callAdapter)
                 .statement,
           );
 
@@ -940,6 +944,7 @@ You should create a new class to encapsulate the response.
             ..add(
               declareFinal(_resultVar)
                   .assign(refer('await $_dioVar.fetch').call([options]))
+                  .applyExceptionAdapter(callAdapter)
                   .statement,
             )
             ..add(const Code('final $_valueVar = $_resultVar.data;'));
@@ -949,7 +954,7 @@ You should create a new class to encapsulate the response.
               declareFinal(_resultVar)
                   .assign(
                     refer('await $_dioVar.fetch<List<int>>').call([options]),
-                  )
+                  ).applyExceptionAdapter(callAdapter)
                   .statement,
             )
             ..add(
@@ -968,7 +973,7 @@ You should create a new class to encapsulate the response.
                   refer('await $_dioVar'
                           '.fetch<$fetchType>')
                       .call([options]),
-                )
+                ).applyExceptionAdapter(callAdapter)
                 .statement,
           );
           Expression mapperCode;
@@ -2484,7 +2489,7 @@ ${bodyName.displayName} == null
     responseAdapter = generateResponseAdapter(
       callAdapter?.typeValue as InterfaceType?,
     );
-    exceptionAdapter = generateExceptionAdapter(
+    exceptionAdapter = generateParseExceptionAdapter(
       callAdapter?.typeValue as InterfaceType?,
     );
 
@@ -2520,19 +2525,19 @@ ${bodyName.displayName} == null
     if (onResponseCallback == null) return null;
 
     return refer(_valueVar)
-        .assign(refer('$_callAdapterVar.onResponse($_resultVar.data!)'))
+        .assign(refer('await $_callAdapterVar.onResponse($_resultVar.data!)'))
         .statement;
   }
 
   /// Generate exception adapter from callAdapterInterface
-  Code? generateExceptionAdapter(InterfaceType? callAdapter) {
+  Code? generateParseExceptionAdapter(InterfaceType? callAdapter) {
     // if onResponse the Calladapters generic is dynamic or void
     final onErrorCallback = callAdapter?.methods.where((e) {
       return e.name == 'onError';
     }).firstOrNull;
     if (onErrorCallback == null) return null;
     
-    return refer('$_callAdapterVar.onError(e)')
+    return refer('throw await $_callAdapterVar.onError(e)')
         .statement;
   }
 
@@ -2746,5 +2751,19 @@ extension IterableExtension<T> on Iterable<T> {
       }
     }
     return null;
+  }
+}
+
+extension FutureCatchErrorExtension on Expression {
+  Expression applyExceptionAdapter(ConstantReader? callAdapter) {
+    if (callAdapter == null) return this;
+    final value = callAdapter.typeValue as InterfaceType?;
+    final onErrorCallback = value?.methods.where((e) {
+      return e.name == 'onError';
+    }).firstOrNull;
+    if (onErrorCallback == null) return this;
+    return property('catchError').call([
+      CodeExpression(Code('(e) async { throw await _callAdapter.onError(e); }')),
+    ]);
   }
 }

@@ -7,12 +7,12 @@
   Example :
 
 ```dart
-  class MyCallAdapter extends CallAdapterInterface<User> {
+  class MyCallAdapter extends CallAdapterInterface<User, CustomException> {
     @override
-    void onError(error) => throw Exception();
+    Future<CustomException> onError(error) async => CustomException(error.toString());
 
     @override
-    User onResponse(dynamic data) => User.customParsing(data);
+    Future<User> onResponse(dynamic data) async => User.customParsing(data);
   }
   
   @RestApi()

@@ -1,9 +1,12 @@
-/// Note that T must be the same as the type of `Future` for the method this is applied to
-abstract class CallAdapterInterface<T> {
-  void onError(dynamic error) {}
+/// Where T is supposed to be the return type of your request,
+/// While E is the type you want to convert your `error` to
+abstract class CallAdapterInterface<T, E> {
+  Future<E> onError(dynamic error) {
+    return error;
+  }
 
-  T? onResponse(dynamic data) {
-    return null;
+  Future<T> onResponse(dynamic data) {
+    return data;
   }
 }
 
@@ -18,24 +21,25 @@ abstract class CallAdapterInterface<T> {
 ///
 /// 1. Create a custom adapter by extending [CallAdapterInterface]:
 /// ```dart
-/// class MyCallAdapter extends CallAdapterInterface<MyResponseType> {
+/// class MyCallAdapter extends CallAdapterInterface<MyResponseType, CustomException> {
 ///   @override
-///   MyResponseType? onResponse(dynamic data) {
+///   Future<MyResponseType> onResponse(dynamic data) async {
 ///     // Transform or adapt `data`
 ///     return MyResponseType.fromJson(data);
 ///   }
 ///
 ///   @override
-///   void onError(dynamic error) {
-///     // Custom error handling
+///   Future<CustomException> onError(dynamic error) async {
+///     // Custom error handling / error transformation
 ///     logger.log("Error occurred: $error");
+///     return CustomException(message: error.toString);
 ///   }
 /// }
 /// ```
 ///
 /// 2. Set the adapter on an API method or the entire API interface:
 ///
-/// - To apply the adapter to an individual method, use `@CallAdapter`:
+/// - To apply the adapter to an individual method, use `@CallAdapter` on the method:
 /// ```dart
 /// @CallAdapter(MyCallAdapter)
 /// Future<MyResponseType> fetchData();

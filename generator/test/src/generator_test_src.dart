@@ -6,46 +6,56 @@ import 'package:source_gen_test/annotations.dart';
 
 import 'query.pb.dart';
 
-class DummyCallAdapter extends CallAdapterInterface<bool> {
+class DummyCallAdapter extends CallAdapterInterface {
   @override
-  void onError(error) => throw Exception();
+  onError(error) async {}
 
   @override
-  bool onResponse(dynamic data) => true;
+  Future<bool> onResponse(dynamic data) async {
+    return true;
+  }
 }
-class ResponseAdapter extends CallAdapterInterface<User> {
+class ResponseAdapter extends CallAdapterInterface {
   @override
-  User onResponse(dynamic data) {
+  Future<User> onResponse(dynamic data) async {
     return User();
   }
 }
 class ExceptionAdapter extends CallAdapterInterface {
   @override
-  void onError(dynamic error) {}
+  onError(dynamic error) async {}
 }
 
 @ShouldGenerate(
   '''
+    final _result = await _dio.fetch<bool>(_options).catchError((e) async {
+      throw await _callAdapter.onError(e);
+    });
+    late bool _value;
     try {
-      _value = _callAdapter.onResponse(_result.data!);
+      _value = await _callAdapter.onResponse(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
-      _callAdapter.onError(e);
+      throw await _callAdapter.onError(e);
     }
+    return _value;
   ''',
   contains: true,
 )
 @RestApi(callAdapterInterface: DummyCallAdapter)
 abstract class CallAdapterFromRestApiAnnotation {
   @GET('path')
-  Future<User> getUser();
+  Future<bool> getState();
 }
 
 @ShouldGenerate(
   '''
     try {
-      _value = _callAdapter.onResponse(_result.data!);
+      _value = await _callAdapter.onResponse(_result.data!);
     } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
   ''',
   contains: true,
 )
@@ -58,10 +68,18 @@ abstract class ResponseAdapterTest {
 
 @ShouldGenerate(
   '''
+    final _result =
+        await _dio.fetch<Map<String, dynamic>>(_options).catchError((e) async {
+      throw await _callAdapter.onError(e);
+    });
+    late User _value;
+    try {
+      _value = User.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
-      _callAdapter.onError(e);
+      throw await _callAdapter.onError(e);
     }
+    return _value;
   ''',
   contains: true,
 )

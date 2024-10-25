@@ -245,15 +245,15 @@ final client = RestClient(dio);
 ### Call Adapter
 
 This feature enables custom handling of responses and errors, allowing you to intercept and adapt calls based on your needs. 
-This can be done by creating a custom adapter that extends CallAdapterInterface, then overriding onError or onResponse depending on your useCase, then passing it to the @CallAdapter annotation or @RestApi.
+This can be done by creating a custom adapter that extends CallAdapterInterface, then overriding either onError or onResponse depending on your useCase, then passing it to the @CallAdapter annotation or @RestApi.
 
 ```dart
-class MyCallAdapter extends CallAdapterInterface<User> {
+class MyCallAdapter extends CallAdapterInterface<User, CustomException> {
   @override
-  void onError(error) => throw Exception();
+  Future<CustomException> onError(error) async => CustomException(message: error.toString());
 
   @override
-  User onResponse(dynamic data) => User.customParsing(data);
+  Future<User> onResponse(dynamic data) async => User.customParsing(data);
 }
 
 // Usage 1
