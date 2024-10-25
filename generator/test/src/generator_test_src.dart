@@ -8,7 +8,9 @@ import 'query.pb.dart';
 
 class DummyCallAdapter extends CallAdapterInterface {
   @override
-  onError(error) async {}
+  Future<Exception> onError(error) async {
+    return Exception();
+  }
 
   @override
   Future<bool> onResponse(dynamic data) async {
@@ -23,7 +25,9 @@ class ResponseAdapter extends CallAdapterInterface {
 }
 class ExceptionAdapter extends CallAdapterInterface {
   @override
-  onError(dynamic error) async {}
+  Future<Exception> onError(error) async {
+    return Exception();
+  }
 }
 
 @ShouldGenerate(
