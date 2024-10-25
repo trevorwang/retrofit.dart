@@ -6,8 +6,73 @@ import 'package:source_gen_test/annotations.dart';
 
 import 'query.pb.dart';
 
-enum FileType { mp4, mp3 }
+class DummyCallAdapter extends CallAdapterInterface<bool> {
+  @override
+  void onError(error) => throw Exception();
 
+  @override
+  bool onResponse(dynamic data) => true;
+}
+class ResponseAdapter extends CallAdapterInterface<User> {
+  @override
+  User onResponse(dynamic data) {
+    return User();
+  }
+}
+class ExceptionAdapter extends CallAdapterInterface {
+  @override
+  void onError(dynamic error) {}
+}
+
+@ShouldGenerate(
+  '''
+    try {
+      _value = _callAdapter.onResponse(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      _callAdapter.onError(e);
+    }
+  ''',
+  contains: true,
+)
+@RestApi(callAdapterInterface: DummyCallAdapter)
+abstract class CallAdapterFromRestApiAnnotation {
+  @GET('path')
+  Future<User> getUser();
+}
+
+@ShouldGenerate(
+  '''
+    try {
+      _value = _callAdapter.onResponse(_result.data!);
+    } on Object catch (e, s) {
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class ResponseAdapterTest {
+  @CallAdapter(ResponseAdapter)
+  @GET('path')
+  Future<User> getUser();
+}
+
+@ShouldGenerate(
+  '''
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      _callAdapter.onError(e);
+    }
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class ExceptionAdapterTest {
+  @CallAdapter(ExceptionAdapter)
+  @GET('path')
+  Future<User> getUser();
+}
+
+enum FileType { mp4, mp3 }
 class DummyTypedExtras extends TypedExtras {
   final String id;
   final Map<String, dynamic> config;

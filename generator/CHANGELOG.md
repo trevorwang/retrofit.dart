@@ -1,5 +1,30 @@
 # Changelog
 
+## 9.1.4
+
+- Introduced CallAdapters, This feature enables custom handling of responses and errors, allowing you to intercept and adapt calls based on your needs.
+
+  Example :
+
+```dart
+  class MyCallAdapter extends CallAdapterInterface<User> {
+    @override
+    void onError(error) => throw Exception();
+
+    @override
+    User onResponse(dynamic data) => User.customParsing(data);
+  }
+  
+  @RestApi()
+  abstract class RestClient {
+    factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+    @CallAdapter(MyCallAdapter)
+    @GET('/')
+    Future<User> getTasks();
+  }
+```
+
 ## 9.1.3
 
 - Add support for multiple `TypedExtras`.

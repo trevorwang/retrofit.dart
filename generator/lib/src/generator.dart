@@ -1,6 +1,5 @@
 import 'dart:ffi';
 import 'dart:io';
-
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
@@ -51,6 +50,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   static const String _errorLoggerVar = 'errorLogger';
   static const _queryParamsVar = 'queryParameters';
   static const _optionsVar = '_options';
+  static const _callAdapterVar = '_callAdapter';
   static const _localHeadersVar = '_headers';
   static const _headersVar = 'headers';
   static const _dataVar = 'data';
@@ -71,6 +71,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Annotation details for [retrofit.RestApi]
   late retrofit.RestApi clientAnnotation;
+
+  ConstantReader? clientAnnotationConstantReader;
 
   @override
   String generateForAnnotatedElement(
@@ -97,6 +99,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       baseUrl: annotation?.peek(_baseUrlVar)?.stringValue ?? '',
       parser: parser ?? retrofit.Parser.JsonSerializable,
     );
+    clientAnnotationConstantReader = annotation;
     final baseUrl = clientAnnotation.baseUrl;
     final annotateClassConsts = element.constructors
         .where((c) => !c.isFactory && !c.isDefaultConstructor);
@@ -557,6 +560,23 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .statement,
     );
 
+    // generate callAdapter instantiation
+    final requestCallAdapterAnnotation = _typeChecker(retrofit.CallAdapter)
+        .firstAnnotationOf(m)
+        .toConstantReader();
+    final rootCallAdapter = clientAnnotationConstantReader;
+
+    final callAdapter = (requestCallAdapterAnnotation ?? rootCallAdapter)
+        ?.peek('callAdapterInterface');
+    final callAdapterName = callAdapter?.typeValue.getDisplayString();
+    if (callAdapter != null) {
+      blocks.add(
+        declareFinal(_callAdapterVar)
+            .assign(refer('$callAdapterName()'))
+            .statement,
+      );
+    }
+
     final options = refer(_optionsVar).expression;
 
     if (wrappedReturnType == null || 'void' == wrappedReturnType.toString()) {
@@ -592,6 +612,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       }
     } else {
       final innerReturnType = _getResponseInnerType(returnType);
+      // if the type is a list
       if (_typeChecker(List).isExactlyType(returnType) ||
           _typeChecker(BuiltList).isExactlyType(returnType)) {
         if (_isBasicType(innerReturnType)) {
@@ -624,6 +645,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                   ]),
                 )
                 .statement,
+            callAdapter,
           );
         } else {
           blocks.add(
@@ -651,6 +673,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                     ),
                   )
                   .statement,
+              callAdapter,
             );
           } else {
             final castType =
@@ -696,9 +719,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
                         .call([]),
                   )
                   .statement,
+              callAdapter,
             );
           }
         }
+        // if the type is a Map
       } else if (_typeChecker(Map).isExactlyType(returnType) ||
           _typeChecker(BuiltMap).isExactlyType(returnType)) {
         final types = _getResponseInnerTypes(returnType)!;
@@ -776,6 +801,7 @@ You should create a new class to encapsulate the response.
                       ]),
                     )
                     .statement,
+                callAdapter,
               );
             } else {
               _wrapInTryCatch(
@@ -792,6 +818,7 @@ You should create a new class to encapsulate the response.
                           .call([mapperCode]),
                     )
                     .statement,
+                callAdapter,
               );
             }
           } else if (!_isBasicType(secondType)) {
@@ -840,6 +867,7 @@ You should create a new class to encapsulate the response.
                       ),
                     )
                     .statement,
+                callAdapter,
               );
             } else {
               _wrapInTryCatch(
@@ -856,6 +884,7 @@ You should create a new class to encapsulate the response.
                           .call([mapperCode]),
                     )
                     .statement,
+                callAdapter,
               );
             }
           } else {
@@ -876,12 +905,14 @@ You should create a new class to encapsulate the response.
                     ]),
                   )
                   .statement,
+              callAdapter,
             );
           }
         } else {
           blocks.add(const Code('final $_valueVar = $_resultVar.data!;'));
         }
       } else {
+        // if the type is neither a map
         if (_isBasicType(returnType)) {
           blocks.add(
             declareFinal(_resultVar)
@@ -902,6 +933,7 @@ You should create a new class to encapsulate the response.
                       .asNoNullIf(returnNullable: returnType.isNullable),
                 )
                 .statement,
+            callAdapter,
           );
         } else if (returnType is DynamicType || returnType.isDartCoreObject) {
           blocks
@@ -926,6 +958,7 @@ You should create a new class to encapsulate the response.
               ),
             );
         } else {
+          // if the return type is a custom type
           final fetchType = returnType.isNullable
               ? 'Map<String,dynamic>?'
               : 'Map<String,dynamic>';
@@ -1001,6 +1034,7 @@ You should create a new class to encapsulate the response.
                   ),
                 )
                 .statement,
+            callAdapter,
           );
         }
       }
@@ -2443,7 +2477,17 @@ ${bodyName.displayName} == null
     Expression options,
     DartType? returnType,
     Code child,
+    ConstantReader? callAdapter,
   ) {
+    Code? exceptionAdapter;
+    Code? responseAdapter;
+    responseAdapter = generateResponseAdapter(
+      callAdapter?.typeValue as InterfaceType?,
+    );
+    exceptionAdapter = generateExceptionAdapter(
+      callAdapter?.typeValue as InterfaceType?,
+    );
+
     blocks.addAll(
       [
         declareVar(
@@ -2452,14 +2496,46 @@ ${bodyName.displayName} == null
           late: true,
         ).statement,
         const Code('try {'),
-        child,
+        if (responseAdapter != null)
+          responseAdapter
+        else
+          child,
         const Code('} on Object catch (e, s) {'),
         const Code('$_errorLoggerVar?.logError(e, s, $_optionsVar);'),
-        const Code('rethrow;'),
+        if (exceptionAdapter != null)
+          exceptionAdapter
+        else
+          const Code('rethrow;'),
         const Code('}'),
       ],
     );
   }
+
+  /// Generate return value assignment from callAdapterInterface
+  Code? generateResponseAdapter(InterfaceType? callAdapter) {
+    // if onResponse the Calladapters generic is dynamic or void
+    final onResponseCallback = callAdapter?.methods.where((e) {
+      return e.name == 'onResponse';
+    }).firstOrNull;
+    if (onResponseCallback == null) return null;
+
+    return refer(_valueVar)
+        .assign(refer('$_callAdapterVar.onResponse($_resultVar.data!)'))
+        .statement;
+  }
+
+  /// Generate exception adapter from callAdapterInterface
+  Code? generateExceptionAdapter(InterfaceType? callAdapter) {
+    // if onResponse the Calladapters generic is dynamic or void
+    final onErrorCallback = callAdapter?.methods.where((e) {
+      return e.name == 'onError';
+    }).firstOrNull;
+    if (onErrorCallback == null) return null;
+    
+    return refer('$_callAdapterVar.onError(e)')
+        .statement;
+  }
+
 }
 
 Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
@@ -2633,6 +2709,11 @@ extension DartTypeExt on DartType {
 extension DartObjectX on DartObject? {
   bool get isEnum {
     return this?.type?.element?.kind.name == 'ENUM';
+  }
+
+  ConstantReader? toConstantReader() {
+    if (this == null) return null;
+    return ConstantReader(this);
   }
 }
 

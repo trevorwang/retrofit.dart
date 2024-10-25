@@ -242,6 +242,52 @@ dio.options.baseUrl = 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1';
 final client = RestClient(dio);
 ```
 
+### Call Adapter
+
+This feature enables custom handling of responses and errors, allowing you to intercept and adapt calls based on your needs. 
+This can be done by creating a custom adapter that extends CallAdapterInterface, and passing it to the @CallAdapter annotation or @RestApi.
+
+```dart
+class MyCallAdapter extends CallAdapterInterface<User> {
+  @override
+  void onError(error) => throw Exception();
+
+  @override
+  User onResponse(dynamic data) => User.customParsing(data);
+}
+
+// Usage 1
+// This approach applies the adapter to only the request method annotated with `@CallAdapter`
+@RestApi()
+abstract class RestClient {
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+  @CallAdapter(MyCallAdapter)
+  @GET('/')
+  Future<User> getTasks();
+}
+
+// Usage 2
+// This approach applies the adapter to all request methods in the api interface
+// Note that you can then override particular methods in the api interface by annotating it with `@CallAdapter`
+@RestApi(callAdapterInterface: MyCallAdapter)
+abstract class RestClient {
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+  @GET('/')
+  Future<User> getTasks();
+
+  @POST('/')
+  Future<User> submitTask();
+
+  @CallAdapter(MyCallAdapter)
+  @DELETE('/')
+  Future<void> deleteTask();
+}
+```
+
+If you want to use the base url from `dio.option.baseUrl`, which has lowest priority, please don't pass any parameter to `RestApi` annotation and `RestClient`'s structure method.
+
 ### Multiple endpoints support
 
 If you want to use multiple endpoints to your `RestClient`, you should pass your base url when you initiate `RestClient`. Any value defined in `RestApi` will be ignored.
