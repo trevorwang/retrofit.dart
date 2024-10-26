@@ -1867,6 +1867,9 @@ ${bodyName.displayName} == null
         final contentType = r.peek('contentType')?.stringValue;
 
         if (isFileField) {
+          if (p.type.isNullable) {
+            blocks.add(Code('if (${p.displayName} != null){'));
+          }
           final fileNameValue = r.peek('fileName')?.stringValue;
           final fileName = fileNameValue != null
               ? literalString(fileNameValue)
@@ -1906,6 +1909,9 @@ ${bodyName.displayName} == null
             );
           } else {
             blocks.add(returnCode);
+          }
+          if (p.type.isNullable) {
+            blocks.add(Code('}'));
           }
         } else if (_displayString(p.type) == 'List<int>') {
           final optionalFile = m.parameters
