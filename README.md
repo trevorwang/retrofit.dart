@@ -86,7 +86,7 @@ void main(List<String> args) {
 
 ### Types
 
-### Types conversion
+#### Types conversion
 
 > Before you use the type conversion, please make sure that a ` factory Task.fromJson(Map<String, dynamic> json)` must be provided for each model class. `json_serializable` is recommended to be used as the serialization tool.
 
@@ -104,7 +104,7 @@ class Task {
 }
 ```
 
-### Typed extras
+#### Typed extras
 If you want to add static extra to all requests.
 
 ```dart
