@@ -15,7 +15,7 @@ import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 
 const _analyzerIgnores =
-    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element';
+    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations';
 
 class RetrofitOptions {
   RetrofitOptions({
@@ -1867,6 +1867,9 @@ ${bodyName.displayName} == null
         final contentType = r.peek('contentType')?.stringValue;
 
         if (isFileField) {
+          if (p.type.isNullable) {
+            blocks.add(Code('if (${p.displayName} != null){'));
+          }
           final fileNameValue = r.peek('fileName')?.stringValue;
           final fileName = fileNameValue != null
               ? literalString(fileNameValue)
@@ -1906,6 +1909,9 @@ ${bodyName.displayName} == null
             );
           } else {
             blocks.add(returnCode);
+          }
+          if (p.type.isNullable) {
+            blocks.add(Code('}'));
           }
         } else if (_displayString(p.type) == 'List<int>') {
           final optionalFile = m.parameters
