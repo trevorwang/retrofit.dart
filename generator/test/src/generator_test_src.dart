@@ -8,9 +8,23 @@ import 'query.pb.dart';
 
 enum FileType { mp4, mp3 }
 
+class Config {
+  final String date;
+  final String type;
+  final bool shouldReplace;
+  final Map<String, dynamic> subConfig;
+
+  const Config({
+    required this.date,
+    required this.type,
+    required this.shouldReplace,
+    required this.subConfig,
+  });
+}
+
 class DummyTypedExtras extends TypedExtras {
   final String id;
-  final Map<String, dynamic> config;
+  final Config config;
   final List<FileType> fileTypes;
   final Set<String> sources;
   final bool shouldProceed;
@@ -52,12 +66,12 @@ class DummyTypedExtras extends TypedExtras {
 abstract class TypedExtrasTest {
   @DummyTypedExtras(
     id: '1234',
-    config: {
-      'date': '24-10-2024',
-      'type': 'analytics',
-      'shouldReplace': true,
-      'subConfig': {'date': '24-11-2025'},
-    },
+    config: Config(
+      date: '24-10-2024',
+      type: 'analytics',
+      shouldReplace: true,
+      subConfig: {'date': '24-11-2025'},
+    ),
     fileTypes: [
       FileType.mp3,
       FileType.mp4,
@@ -114,12 +128,12 @@ class AnotherDummyTypedExtras extends TypedExtras {
 abstract class MultipleTypedExtrasTest {
   @DummyTypedExtras(
     id: '1234',
-    config: {
-      'date': '24-10-2024',
-      'type': 'analytics',
-      'shouldReplace': true,
-      'subConfig': {'date': '24-11-2025'},
-    },
+    config: Config(
+      date: '24-10-2024',
+      type: 'analytics',
+      shouldReplace: true,
+      subConfig: {'date': '24-11-2025'},
+    ),
     fileTypes: [
       FileType.mp3,
       FileType.mp4,

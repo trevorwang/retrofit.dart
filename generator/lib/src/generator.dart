@@ -2304,6 +2304,19 @@ ${bodyName.displayName} == null
         return _getFieldValue(ConstantReader(item));
       }).toSet();
     }
+    if (value?.objectValue.type != null) {
+      final fields = <String, Object?>{};
+      final type = value!.objectValue.type;
+      if (type is InterfaceType) {
+        for (var field in type.element.fields) {
+          if (!field.isStatic) {
+            final fieldValue = value.peek(field.name);
+            fields[field.name] = _getFieldValue(fieldValue);
+          }
+        }
+      }
+      return fields;
+    }
     return null;
   }
 
