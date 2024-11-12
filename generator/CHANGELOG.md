@@ -1,5 +1,28 @@
 # Changelog
 
+## 9.1.5
+
+- Add support for nested object of non-primitive types in `TypedExtras`.
+
+  Example :
+
+  ```dart
+  @RestApi()
+  abstract class TypedExtrasTest {
+    @DummyTypedExtras(
+      id: '1234',
+      config: Config(
+        date: '24-10-2024',
+        type: 'analytics',
+        shouldReplace: true,
+        subConfig: {'date': '24-11-2025'},
+      ),
+    )
+    @GET('path')
+    Future<void> list();
+  }
+  ```
+
 ## 9.1.3
 
 - Add support for multiple `TypedExtras`.
@@ -18,7 +41,8 @@
   )
   @http.POST('/path/')
   Future<String> myMethod();
-
+  ```
+  
 ## 9.1.2
 
 - Support passing Enums into `TypedExtras`.
