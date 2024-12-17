@@ -1,4 +1,6 @@
-# Changelog
+## 9.1.6
+
+- Update `analyzer` and `dart_style` dependencies to allow upper versions
 
 ## 9.1.5
 
