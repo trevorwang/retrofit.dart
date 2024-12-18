@@ -1,6 +1,6 @@
 ## 9.1.6
 
-- Update `analyzer` and `dart_style` dependencies to allow upper versions
+- Update `analyzer`, `dart_style` and `source_gen` dependencies to allow upper versions
 
 ## 9.1.5
 
