@@ -9,26 +9,20 @@ import 'query.pb.dart';
 enum FileType { mp4, mp3 }
 
 class Config {
-  final String date;
-  final String type;
-  final bool shouldReplace;
-  final Map<String, dynamic> subConfig;
-
   const Config({
     required this.date,
     required this.type,
     required this.shouldReplace,
     required this.subConfig,
   });
+
+  final String date;
+  final String type;
+  final bool shouldReplace;
+  final Map<String, dynamic> subConfig;
 }
 
 class DummyTypedExtras extends TypedExtras {
-  final String id;
-  final Config config;
-  final List<FileType> fileTypes;
-  final Set<String> sources;
-  final bool shouldProceed;
-  final bool? canFly;
   const DummyTypedExtras({
     required this.id,
     required this.config,
@@ -37,6 +31,13 @@ class DummyTypedExtras extends TypedExtras {
     required this.shouldProceed,
     this.canFly,
   });
+
+  final String id;
+  final Config config;
+  final List<FileType> fileTypes;
+  final Set<String> sources;
+  final bool shouldProceed;
+  final bool? canFly;
 }
 
 @ShouldGenerate(
@@ -49,17 +50,11 @@ class DummyTypedExtras extends TypedExtras {
         'shouldReplace': true,
         'subConfig': {'date': '24-11-2025'},
       },
-      'fileTypes': [
-        'mp3',
-        'mp4',
-      ],
-      'sources': {
-        'internet',
-        'local',
-      },
+      'fileTypes': ['mp3', 'mp4'],
+      'sources': {'internet', 'local'},
       'shouldProceed': true,
     };
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -109,19 +104,13 @@ class AnotherDummyTypedExtras extends TypedExtras {
         'shouldReplace': true,
         'subConfig': {'date': '24-11-2025'},
       },
-      'fileTypes': [
-        'mp3',
-        'mp4',
-      ],
-      'sources': {
-        'internet',
-        'local',
-      },
+      'fileTypes': ['mp3', 'mp4'],
+      'sources': {'internet', 'local'},
       'shouldProceed': true,
       'peanutButter': 'Jelly',
       'mac': 'Cheese',
     };
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -159,11 +148,7 @@ abstract class MultipleTypedExtrasTest {
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
 
 class _RestClient implements RestClient {
-  _RestClient(
-    this._dio, {
-    this.baseUrl,
-    this.errorLogger,
-  });
+  _RestClient(this._dio, {this.baseUrl, this.errorLogger});
 
   final Dio _dio;
 
@@ -179,11 +164,7 @@ abstract class RestClient {}
 @ShouldGenerate(
   '''
 class _BaseUrl implements BaseUrl {
-  _BaseUrl(
-    this._dio, {
-    this.baseUrl,
-    this.errorLogger,
-  }) {
+  _BaseUrl(this._dio, {this.baseUrl, this.errorLogger}) {
     baseUrl ??= 'http://httpbin.org/';
   }
 
@@ -214,7 +195,7 @@ abstract class EmptyExtras {
 @ShouldGenerate(
   '''
     final _extra = <String, dynamic>{'key': 'value'};
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -226,11 +207,8 @@ abstract class ExtrasWithPrimitiveValues {
 
 @ShouldGenerate(
   '''
-    final _extra = <String, dynamic>{
-      'key': 'value',
-      'key2': 'value2',
-    };
-  ''',
+    final _extra = <String, dynamic>{'key': 'value', 'key2': 'value2'};
+''',
   contains: true,
 )
 @RestApi()
@@ -271,7 +249,7 @@ abstract class TestExtrasWithNullable {
   '''
     final _extra = <String, dynamic>{'key': 'value'};
     _extra.addAll(extras);
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -287,7 +265,7 @@ abstract class TestExtrasWithMap {
   '''
     final _extra = <String, dynamic>{};
     _extra.addAll(u.toJson());
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -330,11 +308,8 @@ abstract class HeadersWithPrimitiveValues {
 
 @ShouldGenerate(
   '''
-    final _headers = <String, dynamic>{
-      r'key': 'value',
-      r'key2': 'value2',
-    };
-  ''',
+    final _headers = <String, dynamic>{r'key': 'value', r'key2': 'value2'};
+''',
   contains: true,
 )
 @RestApi()
@@ -347,9 +322,8 @@ abstract class MultipleHeadersWithPrimitiveValues {
 
 @ShouldGenerate(
   '''
-Options(
-      method: 'GET',
-  ''',
+      Options(method: 'GET', headers: _headers, extra: _extra)
+''',
   contains: true,
 )
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -360,9 +334,8 @@ abstract class HttpGetTest {
 
 @ShouldGenerate(
   '''
-Options(
-      method: 'POST',
-  ''',
+      Options(method: 'POST', headers: _headers, extra: _extra)
+''',
   contains: true,
 )
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -373,9 +346,8 @@ abstract class HttpPostTest {
 
 @ShouldGenerate(
   '''
-Options(
-      method: 'PUT',
-  ''',
+      Options(method: 'PUT', headers: _headers, extra: _extra)
+''',
   contains: true,
 )
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -386,8 +358,8 @@ abstract class HttpPutTest {
 
 @ShouldGenerate(
   '''
-Options(
-      method: 'DELETE',''',
+      Options(method: 'DELETE', headers: _headers, extra: _extra)
+''',
   contains: true,
 )
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -398,8 +370,7 @@ abstract class HttpDeleteTest {
 
 @ShouldGenerate(
   '''
-Options(
-      method: 'PATCH',
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
 ''',
   contains: true,
 )
@@ -458,13 +429,15 @@ enum ImageType { icon, large }
 @ShouldGenerate(
   '''
     final _data = FormData();
-    _data.files.add(MapEntry(
-      'image',
-      MultipartFile.fromFileSync(
-        image.path,
-        filename: image.path.split(Platform.pathSeparator).last,
+    _data.files.add(
+      MapEntry(
+        'image',
+        MultipartFile.fromFileSync(
+          image.path,
+          filename: image.path.split(Platform.pathSeparator).last,
+        ),
       ),
-    ));
+    );
 ''',
   contains: true,
 )
@@ -477,13 +450,15 @@ abstract class FilePartTest {
 @ShouldGenerate(
   '''
     final _data = FormData();
-    _data.files.add(MapEntry(
-      'image',
-      MultipartFile.fromFileSync(
-        image.path,
-        filename: 'my_profile_image.jpg',
+    _data.files.add(
+      MapEntry(
+        'image',
+        MultipartFile.fromFileSync(
+          image.path,
+          filename: 'my_profile_image.jpg',
+        ),
       ),
-    ));
+    );
 ''',
   contains: true,
 )
@@ -526,13 +501,15 @@ abstract class FilePartWithNullableMultipartListTest {
 @ShouldGenerate(
   '''
     final _data = FormData();
-    _data.files.add(MapEntry(
-      'image',
-      MultipartFile.fromFileSync(
-        image.path,
-        filename: image.path.split(Platform.pathSeparator).last,
+    _data.files.add(
+      MapEntry(
+        'image',
+        MultipartFile.fromFileSync(
+          image.path,
+          filename: image.path.split(Platform.pathSeparator).last,
+        ),
       ),
-    ));
+    );
   ''',
   contains: true,
 )
@@ -602,20 +579,21 @@ abstract class StreamReturnType {
 enum TestEnum { A, B }
 
 @ShouldGenerate(
-  '''
+  r'''
     late TestEnum _value;
     try {
       _value = TestEnum.values.firstWhere(
         (e) => e.name == _result.data,
-        orElse: () => throw ArgumentError(
-          'TestEnum does not contain value \${_result.data}',
-        ),
+        orElse:
+            () =>
+                throw ArgumentError(
+                  'TestEnum does not contain value ${_result.data}',
+                ),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -643,11 +621,16 @@ abstract class TestQueryParamEnum {
 }
 
 enum FromJsonEnum {
-  a,
-  b,
-  ;
+  a('a'),
+  b('b');
 
-  factory FromJsonEnum.fromJson(Map<String, dynamic> json) => FromJsonEnum.a;
+  const FromJsonEnum(this.json);
+
+  factory FromJsonEnum.fromJson(String json) => values.firstWhere(
+        (e) => e.json == json,
+      );
+
+  final String json;
 }
 
 @ShouldGenerate(
@@ -706,9 +689,10 @@ abstract class StreamReturnModifier {
 }
 
 class User implements AbstractUser {
-  User();
+  const User();
 
-  factory User.fromJson(Map<String, dynamic> json) => User();
+  // ignore: avoid_unused_constructor_parameters
+  factory User.fromJson(Map<String, dynamic> json) => const User();
 
   @override
   Map<String, dynamic> toJson() => <String, dynamic>{};
@@ -745,9 +729,7 @@ mixin AbstractUserMixin {
   Map<String, dynamic> toJson();
 }
 
-abstract class AbstractUser with AbstractUserMixin {
-  factory AbstractUser() = User;
-
+abstract interface class AbstractUser with AbstractUserMixin {
   factory AbstractUser.fromJson(Map<String, dynamic> json) =>
       User.fromJson(json);
 }
@@ -914,16 +896,20 @@ abstract class TestCustomObjectBody {
   '''
     late Map<String, List<User>> _value;
     try {
-      _value = _result.data!.map((k, dynamic v) => MapEntry(
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
           k,
           (v as List)
               .map((i) => User.fromJson(i as Map<String, dynamic>))
-              .toList()));
+              .toList(),
+        ),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;
+  }
 ''',
   contains: true,
 )
@@ -937,16 +923,20 @@ abstract class TestMapBody {
   '''
     late Map<String, List<User>>? _value;
     try {
-      _value = _result.data?.map((k, dynamic v) => MapEntry(
+      _value = _result.data?.map(
+        (k, dynamic v) => MapEntry(
           k,
           (v as List)
               .map((i) => User.fromJson(i as Map<String, dynamic>))
-              .toList()));
+              .toList(),
+        ),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;
+  }
 ''',
   contains: true,
 )
@@ -960,13 +950,15 @@ abstract class NullableTestMapBody {
   '''
     late Map<String, User> _value;
     try {
-      _value = _result.data!.map((k, dynamic v) =>
-          MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(k, User.fromJson(v as Map<String, dynamic>)),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;
+  }
 ''',
   contains: true,
 )
@@ -980,13 +972,15 @@ abstract class TestMapBody2 {
   '''
     late Map<String, User>? _value;
     try {
-      _value = _result.data?.map((k, dynamic v) =>
-          MapEntry(k, User.fromJson(v as Map<String, dynamic>)));
+      _value = _result.data?.map(
+        (k, dynamic v) => MapEntry(k, User.fromJson(v as Map<String, dynamic>)),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;
+  }
 ''',
   contains: true,
 )
@@ -1189,8 +1183,8 @@ abstract class TestReceiveProgress {
 
 @ShouldGenerate(
   '''
-Options(
-      method: 'HEAD',''',
+      Options(method: 'HEAD', headers: _headers, extra: _extra)
+''',
   contains: true,
 )
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -1201,8 +1195,8 @@ abstract class TestHeadMethod {
 
 @ShouldGenerate(
   '''
-Options(
-      method: 'OPTIONS',''',
+      Options(method: 'OPTIONS', headers: _headers, extra: _extra)
+''',
   contains: true,
 )
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -1258,12 +1252,17 @@ abstract class TestHttpResponseArray {
 @ShouldGenerate(
   '''
     final _data = FormData();
-    _data.files.addAll(files.map((i) => MapEntry(
-        'files',
-        MultipartFile.fromFileSync(
-          i.path,
-          filename: i.path.split(Platform.pathSeparator).last,
-        ))));
+    _data.files.addAll(
+      files.map(
+        (i) => MapEntry(
+          'files',
+          MultipartFile.fromFileSync(
+            i.path,
+            filename: i.path.split(Platform.pathSeparator).last,
+          ),
+        ),
+      ),
+    );
 ''',
   contains: true,
 )
@@ -1271,26 +1270,34 @@ abstract class TestHttpResponseArray {
   '''
     final _data = FormData();
     if (files != null) {
-      _data.files.addAll(files.map((i) => MapEntry(
-          'files',
-          MultipartFile.fromFileSync(
-            i.path,
-            filename: i.path.split(Platform.pathSeparator).last,
-          ))));
+      _data.files.addAll(
+        files.map(
+          (i) => MapEntry(
+            'files',
+            MultipartFile.fromFileSync(
+              i.path,
+              filename: i.path.split(Platform.pathSeparator).last,
+            ),
+          ),
+        ),
+      );
     }
 ''',
   contains: true,
 )
 @ShouldGenerate(
   '''
+    final _data = FormData();
     if (file != null) {
-      _data.files.add(MapEntry(
-        'file',
-        MultipartFile.fromFileSync(
-          file.path,
-          filename: file.path.split(Platform.pathSeparator).last,
+      _data.files.add(
+        MapEntry(
+          'file',
+          MultipartFile.fromFileSync(
+            file.path,
+            filename: file.path.split(Platform.pathSeparator).last,
+          ),
         ),
-      ));
+      );
     }
 ''',
   contains: true,
@@ -1309,59 +1316,41 @@ abstract class TestFileList {
 
 @ShouldGenerate(
   '''
-    final _data = FormData();
-    _data.fields.add(MapEntry(
-      'users',
-      jsonEncode(users),
-    ));
-    ''',
+    _data.fields.add(MapEntry('users', jsonEncode(users)));
+''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+    _data.fields.add(MapEntry('item', jsonEncode(user)));
+''',
   contains: true,
 )
 @ShouldGenerate(
   '''
     final _data = FormData();
-    _data.fields.add(MapEntry(
-      'item',
-      jsonEncode(user),
-    ));
-    ''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
     mapList.forEach((i) {
       _data.fields.add(MapEntry('mapList', jsonEncode(i)));
     });
-    ''',
+''',
   contains: true,
 )
 @ShouldGenerate(
   '''
     final _data = FormData.fromMap(map);
-    ''',
+''',
   contains: true,
 )
 @ShouldGenerate(
   '''
-    _data.fields.add(MapEntry(
-      'a',
-      a.toString(),
-    ));
-    _data.fields.add(MapEntry(
-      'b',
-      b.toString(),
-    ));
-    _data.fields.add(MapEntry(
-      'c',
-      c.toString(),
-    ));
-    if (d != null) {
-      _data.fields.add(MapEntry(
-        'd',
-        d,
-      ));
+    final _data = FormData();
+    _data.fields.add(MapEntry('a', a.toString()));
+    _data.fields.add(MapEntry('b', b.toString()));
+    if (c != null) {
+      _data.fields.add(MapEntry('c', c));
     }
-    ''',
+    _data.fields.add(MapEntry('d', d.toString()));
+''',
   contains: true,
 )
 @RestApi()
@@ -1381,12 +1370,27 @@ abstract class TestModelList {
   @POST('/')
   Future<void> testBasicType(
     @Part() int a,
-    @Part() bool b,
-    @Part() double c, {
-    @Part() String? d,
+    @Part() double b, {
+    @Part() String? c,
+    @Part() bool d,
   });
 }
 
+@ShouldGenerate(
+  '''
+    final newOptions = newRequestOptions(options);
+    newOptions.extra.addAll(_extra);
+    newOptions.headers.addAll(_dio.options.headers);
+    newOptions.headers.addAll(_headers);
+    final _options = newOptions.copyWith(
+      method: 'GET',
+      baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+      queryParameters: queryParameters,
+      path: '',
+    )..data = _data;
+''',
+  contains: true,
+)
 @ShouldGenerate(
   '''
   RequestOptions newRequestOptions(Object? options) {
@@ -1416,25 +1420,6 @@ abstract class TestModelList {
 ''',
   contains: true,
 )
-@ShouldGenerate(
-  '''
-    final newOptions = newRequestOptions(options);
-    newOptions.extra.addAll(_extra);
-    newOptions.headers.addAll(_dio.options.headers);
-    newOptions.headers.addAll(_headers);
-    final _options = newOptions.copyWith(
-      method: 'GET',
-      baseUrl: _combineBaseUrls(
-        _dio.options.baseUrl,
-        baseUrl,
-      ),
-      queryParameters: queryParameters,
-      path: '',
-    )..data = _data;
-    await _dio.fetch<void>(_options);
-  ''',
-  contains: true,
-)
 @RestApi()
 abstract class CustomOptions {
   @GET('')
@@ -1450,7 +1435,6 @@ abstract class CustomOptions {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1467,14 +1451,14 @@ abstract class JsonMapperGenericCast {
   '''
     late User? _value;
     try {
-      _value = _result.data == null
-          ? null
-          : JsonMapper.fromMap<User>(_result.data!)!;
+      _value =
+          _result.data == null
+              ? null
+              : JsonMapper.fromMap<User>(_result.data!)!;
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1491,15 +1475,17 @@ abstract class NullableJsonMapperGenericCast {
   '''
     late List<User> _value;
     try {
-      _value = _result.data!
-          .map((dynamic i) =>
-              JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
-          .toList();
+      _value =
+          _result.data!
+              .map(
+                (dynamic i) =>
+                    JsonMapper.fromMap<User>(i as Map<String, dynamic>)!,
+              )
+              .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1516,16 +1502,18 @@ abstract class JsonMapperTestListBody {
   '''
     late Map<String, List<User>> _value;
     try {
-      _value = _result.data!.map((k, dynamic v) => MapEntry(
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
           k,
           (v as List)
               .map((i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!)
-              .toList()));
+              .toList(),
+        ),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1542,13 +1530,14 @@ abstract class JsonMapperTestMapBody {
   '''
     late Map<String, User> _value;
     try {
-      _value = _result.data!.map((k, dynamic v) =>
-          MapEntry(k, JsonMapper.fromMap<User>(v as Map<String, dynamic>)!));
+      _value = _result.data!.map(
+        (k, dynamic v) =>
+            MapEntry(k, JsonMapper.fromMap<User>(v as Map<String, dynamic>)!),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1570,7 +1559,6 @@ abstract class JsonMapperTestMapBody2 {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1592,7 +1580,6 @@ abstract class MapSerializableGenericCast {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1609,14 +1596,14 @@ abstract class NullableMapSerializableGenericCast {
   '''
     late List<User> _value;
     try {
-      _value = _result.data!
-          .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
-          .toList();
+      _value =
+          _result.data!
+              .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
+              .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1633,14 +1620,14 @@ abstract class MapSerializableTestListBody {
   '''
     late List<User>? _value;
     try {
-      _value = _result.data
-          ?.map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
-          .toList();
+      _value =
+          _result.data
+              ?.map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
+              .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1657,16 +1644,18 @@ abstract class NullableMapSerializableTestListBody {
   '''
     late Map<String, List<User>> _value;
     try {
-      _value = _result.data!.map((k, dynamic v) => MapEntry(
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
           k,
           (v as List)
               .map((i) => User.fromMap(i as Map<String, dynamic>))
-              .toList()));
+              .toList(),
+        ),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1683,16 +1672,18 @@ abstract class MapSerializableTestMapBody {
   '''
     late Map<String, List<User>>? _value;
     try {
-      _value = _result.data?.map((k, dynamic v) => MapEntry(
+      _value = _result.data?.map(
+        (k, dynamic v) => MapEntry(
           k,
           (v as List)
               .map((i) => User.fromMap(i as Map<String, dynamic>))
-              .toList()));
+              .toList(),
+        ),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1709,13 +1700,13 @@ abstract class NullableMapSerializableTestMapBody {
   '''
     late Map<String, User> _value;
     try {
-      _value = _result.data!.map((k, dynamic v) =>
-          MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1732,13 +1723,13 @@ abstract class MapSerializableTestMapBody2 {
   '''
     late Map<String, User>? _value;
     try {
-      _value = _result.data?.map((k, dynamic v) =>
-          MapEntry(k, User.fromMap(v as Map<String, dynamic>)));
+      _value = _result.data?.map(
+        (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1759,7 +1750,6 @@ abstract class NullableMapSerializableTestMapBody2 {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1776,14 +1766,14 @@ abstract class ComputeGenericCast {
   '''
     late User? _value;
     try {
-      _value = _result.data == null
-          ? null
-          : await compute(deserializeUser, _result.data!);
+      _value =
+          _result.data == null
+              ? null
+              : await compute(deserializeUser, _result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1807,7 +1797,6 @@ abstract class NullableComputeGenericCast {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
 )
@@ -1824,17 +1813,17 @@ abstract class ComputeTestListBody {
   '''
     late List<User>? _value;
     try {
-      _value = _result.data == null
-          ? null
-          : await compute(
-              deserializeUserList,
-              _result.data!.cast<Map<String, dynamic>>(),
-            );
+      _value =
+          _result.data == null
+              ? null
+              : await compute(
+                deserializeUserList,
+                _result.data!.cast<Map<String, dynamic>>(),
+              );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
   ''',
   contains: true,
 )
@@ -1849,17 +1838,25 @@ abstract class NullableComputeTestListBody {
 
 @ShouldGenerate(
   '''
+    late Map<String, List<User>> _value;
     try {
-      _value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
-          (e) async => MapEntry(
+      _value = Map.fromEntries(
+        await Future.wait(
+          _result.data!.entries.map(
+            (e) async => MapEntry(
               e.key,
-              await compute(deserializeUserList,
-                  (e.value as List).cast<Map<String, dynamic>>())))));
+              await compute(
+                deserializeUserList,
+                (e.value as List).cast<Map<String, dynamic>>(),
+              ),
+            ),
+          ),
+        ),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
   expectedLogItems: [
@@ -1882,16 +1879,23 @@ abstract class ComputeTestMapBody {
   '''
     late Map<String, List<User>>? _value;
     try {
-      _value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
-          (e) async => MapEntry(
+      _value = Map.fromEntries(
+        await Future.wait(
+          _result.data!.entries.map(
+            (e) async => MapEntry(
               e.key,
-              await compute(deserializeUserList,
-                  (e.value as List).cast<Map<String, dynamic>>())))));
+              await compute(
+                deserializeUserList,
+                (e.value as List).cast<Map<String, dynamic>>(),
+              ),
+            ),
+          ),
+        ),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
   expectedLogItems: [
@@ -1914,16 +1918,20 @@ abstract class NullableComputeTestMapBody {
   '''
     late Map<String, User> _value;
     try {
-      _value = Map.fromEntries(await Future.wait(_result.data!.entries.map(
-          (e) async => MapEntry(
+      _value = Map.fromEntries(
+        await Future.wait(
+          _result.data!.entries.map(
+            (e) async => MapEntry(
               e.key,
-              await compute(
-                  deserializeUser, e.value as Map<String, dynamic>)))));
+              await compute(deserializeUser, e.value as Map<String, dynamic>),
+            ),
+          ),
+        ),
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
   expectedLogItems: [
@@ -1946,18 +1954,26 @@ abstract class ComputeTestMapBody2 {
   '''
     late Map<String, User>? _value;
     try {
-      _value = _result.data == null
-          ? null
-          : Map.fromEntries(await Future.wait(_result.data!.entries.map(
-              (e) async => MapEntry(
-                  e.key,
-                  await compute(
-                      deserializeUser, e.value as Map<String, dynamic>)))));
+      _value =
+          _result.data == null
+              ? null
+              : Map.fromEntries(
+                await Future.wait(
+                  _result.data!.entries.map(
+                    (e) async => MapEntry(
+                      e.key,
+                      await compute(
+                        deserializeUser,
+                        e.value as Map<String, dynamic>,
+                      ),
+                    ),
+                  ),
+                ),
+              );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
 ''',
   contains: true,
   expectedLogItems: [
@@ -1979,7 +1995,7 @@ abstract class NullableComputeTestMapBody2 {
 @ShouldGenerate(
   '''
     final queryParameters = <String, dynamic>{
-      r'u': await compute(serializeUser, user)
+      r'u': await compute(serializeUser, user),
     };
 ''',
   contains: true,
@@ -2043,9 +2059,9 @@ abstract class TestComputeObjectListBody {
 @ShouldGenerate(
   '''
     final _data = <String, dynamic>{};
-    _data.addAll(user == null
-        ? <String, dynamic>{}
-        : await compute(serializeUser, user));
+    _data.addAll(
+      user == null ? <String, dynamic>{} : await compute(serializeUser, user),
+    );
 ''',
   contains: true,
 )
@@ -2081,10 +2097,11 @@ abstract class JsonSerializableBodyShouldBeCleanTest {
 @ShouldGenerate(
   '''
     final _data = str;
-    final _options = _setStreamType<void>(Options(''',
+    final _options = _setStreamType<void>(
+''',
   contains: true,
   expectedLogItems: [
-    "String must provide a `toJson()` method which return a Map.\nIt is programmer's responsibility to make sure the String is properly serialized"
+    "String must provide a `toJson()` method which return a Map.\nIt is programmer's responsibility to make sure the String is properly serialized",
   ],
 )
 @RestApi()
@@ -2096,24 +2113,18 @@ abstract class NonJsonSerializableBodyShouldNotBeCleanTest {
 @ShouldGenerate(
   '''
     final _data = users.map((e) => e.toJson()).toList();
-    final _options = _setStreamType<void>(Options(
-      method: 'PUT',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          '/',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
+    final _options = _setStreamType<void>(
+      Options(method: 'PUT', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
     await _dio.fetch<void>(_options);
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2134,8 +2145,7 @@ abstract class ListBodyShouldNotBeCleanTest {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2150,18 +2160,18 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
     try {
       _value = GenericUser<List<User>>.fromJson(
         _result.data!,
-        (json) => json is List<dynamic>
-            ? json
-                .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
-                .toList()
-            : List.empty(),
+        (json) =>
+            json is List<dynamic>
+                ? json
+                    .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
+                    .toList()
+                : List.empty(),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2174,23 +2184,25 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
   '''
     late GenericUser<List<User>>? _value;
     try {
-      _value = _result.data == null
-          ? null
-          : GenericUser<List<User>>.fromJson(
-              _result.data!,
-              (json) => json is List<dynamic>
-                  ? json
-                      .map<User>(
-                          (i) => User.fromJson(i as Map<String, dynamic>))
-                      .toList()
-                  : List.empty(),
-            );
+      _value =
+          _result.data == null
+              ? null
+              : GenericUser<List<User>>.fromJson(
+                _result.data!,
+                (json) =>
+                    json is List<dynamic>
+                        ? json
+                            .map<User>(
+                              (i) => User.fromJson(i as Map<String, dynamic>),
+                            )
+                            .toList()
+                        : List.empty(),
+              );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2201,7 +2213,7 @@ abstract class NullableDynamicInnerListGenericTypeShouldBeCastedRecursively {
 
 @ShouldGenerate(
   '''
-late GenericUser<User> _value;
+    late GenericUser<User> _value;
     try {
       _value = GenericUser<User>.fromJson(
         _result.data!,
@@ -2211,8 +2223,7 @@ late GenericUser<User> _value;
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2236,8 +2247,7 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsMap {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2250,18 +2260,18 @@ abstract class NestGenericTypeShouldBeCastedRecursively {
   '''
     late GenericUser<User>? _value;
     try {
-      _value = _result.data == null
-          ? null
-          : GenericUser<User>.fromJson(
-              _result.data!,
-              (json) => User.fromJson(json as Map<String, dynamic>),
-            );
+      _value =
+          _result.data == null
+              ? null
+              : GenericUser<User>.fromJson(
+                _result.data!,
+                (json) => User.fromJson(json as Map<String, dynamic>),
+              );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2272,7 +2282,7 @@ abstract class NullableDynamicInnerGenericTypeShouldBeCastedAsMap {
 
 @ShouldGenerate(
   '''
-late GenericUser<User?> _value;
+    late GenericUser<User?> _value;
     try {
       _value = GenericUser<User?>.fromJson(
         _result.data!,
@@ -2283,8 +2293,7 @@ late GenericUser<User?> _value;
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2297,20 +2306,21 @@ abstract class DynamicNullableInnerGenericTypeShouldBeCastedAsMap {
   '''
     late GenericUser<User?>? _value;
     try {
-      _value = _result.data == null
-          ? null
-          : GenericUser<User?>.fromJson(
-              _result.data!,
-              (json) => json == null
-                  ? null
-                  : User.fromJson(json as Map<String, dynamic>),
-            );
+      _value =
+          _result.data == null
+              ? null
+              : GenericUser<User?>.fromJson(
+                _result.data!,
+                (json) =>
+                    json == null
+                        ? null
+                        : User.fromJson(json as Map<String, dynamic>),
+              );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2325,16 +2335,16 @@ abstract class NullableDynamicNullableInnerGenericTypeShouldBeCastedAsMap {
     try {
       _value = GenericUser<List<double>>.fromJson(
         _result.data!,
-        (json) => json is List<dynamic>
-            ? json.map<double>((i) => i as double).toList()
-            : List.empty(),
+        (json) =>
+            json is List<dynamic>
+                ? json.map<double>((i) => i as double).toList()
+                : List.empty(),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2347,20 +2357,21 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
   '''
     late GenericUser<List<double>>? _value;
     try {
-      _value = _result.data == null
-          ? null
-          : GenericUser<List<double>>.fromJson(
-              _result.data!,
-              (json) => json is List<dynamic>
-                  ? json.map<double>((i) => i as double).toList()
-                  : List.empty(),
-            );
+      _value =
+          _result.data == null
+              ? null
+              : GenericUser<List<double>>.fromJson(
+                _result.data!,
+                (json) =>
+                    json is List<dynamic>
+                        ? json.map<double>((i) => i as double).toList()
+                        : List.empty(),
+              );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2374,13 +2385,13 @@ abstract class NullableDynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursi
     late GenericUserWithoutGenericArgumentFactories<dynamic> _value;
     try {
       _value = GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
-          _result.data!);
+        _result.data!,
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2393,16 +2404,17 @@ abstract class DynamicInnerGenericTypeShouldBeWithoutGenericArgumentType {
   '''
     late GenericUserWithoutGenericArgumentFactories<dynamic>? _value;
     try {
-      _value = _result.data == null
-          ? null
-          : GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
-              _result.data!);
+      _value =
+          _result.data == null
+              ? null
+              : GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
+                _result.data!,
+              );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
-  ''',
+''',
   contains: true,
 )
 @RestApi()
@@ -2433,14 +2445,14 @@ mixin MethodInMixin {
   '''
   @override
   Future<void> someGet() async {
-  ''',
+''',
   contains: true,
 )
 @RestApi()
 abstract class NoMethods with MethodInMixin {}
 
 @ShouldGenerate(
-  '''await _dio.fetch<Map<String, dynamic>?>''',
+  'await _dio.fetch<Map<String, dynamic>?>',
   contains: true,
 )
 @RestApi()
@@ -2450,7 +2462,7 @@ abstract class NullableGenericCastFetch {
 }
 
 @ShouldGenerate(
-  '''await _dio.fetch<Map<String, dynamic>>''',
+  'await _dio.fetch<Map<String, dynamic>>',
   contains: true,
 )
 @RestApi()
@@ -2460,13 +2472,7 @@ abstract class GenericCastFetch {
 }
 
 @ShouldGenerate(
-  '''
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-  ''',
+  '''.copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),''',
   contains: true,
 )
 @RestApi()
@@ -2476,24 +2482,32 @@ abstract class CombineBaseUrls {
 }
 
 @ShouldGenerate(
-  '''final _data = params.writeToBuffer();''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
+  r'''
+    final _headers = <String, dynamic>{
       r'accept':
-          'application/x-protobuf; \${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=\${Result.getDefault().info_.qualifiedMessageName}"}'
-  ''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
-      contentType:
-          'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''await compute(Result.fromBuffer, _result.data!);''',
+          'application/x-protobuf; ${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=${Result.getDefault().info_.qualifiedMessageName}"}',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = params.writeToBuffer();
+    final _options = _setStreamType<Result>(
+      Options(
+            method: 'GET',
+            headers: _headers,
+            extra: _extra,
+            contentType:
+                'application/x-protobuf; ${params.info_.qualifiedMessageName == "" ? "" : "messageType=${params.info_.qualifiedMessageName}"}',
+          )
+          .compose(
+            _dio.options,
+            '/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<List<int>>(_options);
+    final _value = await compute(Result.fromBuffer, _result.data!);
+''',
   contains: true,
 )
 @RestApi()
@@ -2503,24 +2517,32 @@ abstract class ProtoSupportParserJsonSerializable {
 }
 
 @ShouldGenerate(
-  '''final _data = params.writeToBuffer();''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
+  r'''
+    final _headers = <String, dynamic>{
       r'accept':
-          'application/x-protobuf; \${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=\${Result.getDefault().info_.qualifiedMessageName}"}'
-  ''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
-      contentType:
-          'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''await compute(Result.fromBuffer, _result.data!);''',
+          'application/x-protobuf; ${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=${Result.getDefault().info_.qualifiedMessageName}"}',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = params.writeToBuffer();
+    final _options = _setStreamType<Result>(
+      Options(
+            method: 'GET',
+            headers: _headers,
+            extra: _extra,
+            contentType:
+                'application/x-protobuf; ${params.info_.qualifiedMessageName == "" ? "" : "messageType=${params.info_.qualifiedMessageName}"}',
+          )
+          .compose(
+            _dio.options,
+            '/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<List<int>>(_options);
+    final _value = await compute(Result.fromBuffer, _result.data!);
+''',
   contains: true,
 )
 @RestApi(parser: Parser.DartJsonMapper)
@@ -2530,24 +2552,32 @@ abstract class ProtoSupportParserDartJsonMapper {
 }
 
 @ShouldGenerate(
-  '''final _data = params.writeToBuffer();''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
+  r'''
+    final _headers = <String, dynamic>{
       r'accept':
-          'application/x-protobuf; \${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=\${Result.getDefault().info_.qualifiedMessageName}"}'
-  ''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
-      contentType:
-          'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''await compute(Result.fromBuffer, _result.data!);''',
+          'application/x-protobuf; ${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=${Result.getDefault().info_.qualifiedMessageName}"}',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = params.writeToBuffer();
+    final _options = _setStreamType<Result>(
+      Options(
+            method: 'GET',
+            headers: _headers,
+            extra: _extra,
+            contentType:
+                'application/x-protobuf; ${params.info_.qualifiedMessageName == "" ? "" : "messageType=${params.info_.qualifiedMessageName}"}',
+          )
+          .compose(
+            _dio.options,
+            '/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<List<int>>(_options);
+    final _value = await compute(Result.fromBuffer, _result.data!);
+''',
   contains: true,
 )
 @RestApi(parser: Parser.MapSerializable)
@@ -2557,24 +2587,32 @@ abstract class ProtoSupportParserMapSerializable {
 }
 
 @ShouldGenerate(
-  '''final _data = params.writeToBuffer();''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
+  r'''
+    final _headers = <String, dynamic>{
       r'accept':
-          'application/x-protobuf; \${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=\${Result.getDefault().info_.qualifiedMessageName}"}'
-  ''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
-      contentType:
-          'application/x-protobuf; \${params.info_.qualifiedMessageName == "" ? "" : "messageType=\${params.info_.qualifiedMessageName}"}\'''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''await compute(Result.fromBuffer, _result.data!);''',
+          'application/x-protobuf; ${Result.getDefault().info_.qualifiedMessageName == "" ? "" : "messageType=${Result.getDefault().info_.qualifiedMessageName}"}',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = params.writeToBuffer();
+    final _options = _setStreamType<Result>(
+      Options(
+            method: 'GET',
+            headers: _headers,
+            extra: _extra,
+            contentType:
+                'application/x-protobuf; ${params.info_.qualifiedMessageName == "" ? "" : "messageType=${params.info_.qualifiedMessageName}"}',
+          )
+          .compose(
+            _dio.options,
+            '/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<List<int>>(_options);
+    final _value = await compute(Result.fromBuffer, _result.data!);
+''',
   contains: true,
 )
 @RestApi(parser: Parser.FlutterCompute)
@@ -2594,8 +2632,8 @@ abstract class MultipartWithMultplePathParams {
   @MultiPart()
   @POST('post/{id}/comments/{commentId}')
   Future<String> multipartBodyWithMultiplePathParameter(
-    @Path("id") String id,
-    @Path("commentId") String commentId,
+    @Path('id') String id,
+    @Path('commentId') String commentId,
     @Part() Map<String, dynamic> body,
   );
 }
@@ -2611,7 +2649,7 @@ abstract class MultipartWithSinglePathParams {
   @MultiPart()
   @POST('post/{id}/comments')
   Future<String> multipartBodyWithSinglePathParameter(
-    @Path("id") String id,
+    @Path('id') String id,
     @Part() Map<String, dynamic> body,
   );
 }
@@ -2627,8 +2665,8 @@ abstract class MultipartWithMultiplePathParamsPUT {
   @MultiPart()
   @PUT('post/{id}/comments/{commentId}')
   Future<String> multipartBodyWithMultiplePathParameter(
-    @Path("id") String id,
-    @Path("commentId") String commentId,
+    @Path('id') String id,
+    @Path('commentId') String commentId,
     @Part() Map<String, dynamic> body,
   );
 }

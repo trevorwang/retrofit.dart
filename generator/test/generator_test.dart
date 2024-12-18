@@ -17,7 +17,7 @@ Future<void> main() async {
     RetrofitGenerator(RetrofitOptions()),
     defaultConfiguration: ['default'],
     additionalGenerators: {
-      'use_result': RetrofitGenerator(RetrofitOptions(useResult: true))
+      'use_result': RetrofitGenerator(RetrofitOptions(useResult: true)),
     },
   );
 }
