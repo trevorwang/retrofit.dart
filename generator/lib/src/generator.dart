@@ -243,7 +243,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
-  // retrieve CallAdapterInterface from method annotation or class annotation
+  // retrieve CallAdapter from method annotation or class annotation
   ConstantReader? getCallAdapterInterface(MethodElement m) {
     final requestCallAdapterAnnotation = _typeChecker(retrofit.UseCallAdapter)
         .firstAnnotationOf(m)
@@ -251,15 +251,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final rootCallAdapter = clientAnnotationConstantReader;
 
     final callAdapter = (requestCallAdapterAnnotation ?? rootCallAdapter)
-        ?.peek('callAdapterInterface');
+        ?.peek('callAdapter');
 
     final callAdapterTypeValue = callAdapter?.typeValue as InterfaceType?;
     if (callAdapterTypeValue != null) {
       final typeArg = callAdapterTypeValue.typeArguments.firstOrNull;
       if (typeArg == null) {
         throw InvalidGenerationSource(
-          'your CallAdapterInterface subclass must accept a generic type parameter \n'
-          'e.g. "class ResultAdapter<T> extends CallAdapterInterface..."',
+          'your CallAdapter subclass must accept a generic type parameter \n'
+          'e.g. "class ResultAdapter<T> extends CallAdapter..."',
         );
       }
     }
@@ -268,17 +268,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// get result type being adapted to e.g. Future<Result<T>>
   /// where T is supposed to be the wrapped result type
-  InterfaceType? getAdaptedReturnType(ConstantReader? callAdapterInterface) {
-    final callAdapter = callAdapterInterface?.typeValue as InterfaceType?;
+  InterfaceType? getAdaptedReturnType(ConstantReader? callAdapter) {
+    final callAdapterTypeVal = callAdapter?.typeValue as InterfaceType?;
     final adaptedType =
-        callAdapter?.superclass?.typeArguments.lastOrNull as InterfaceType?;
+        callAdapterTypeVal?.superclass?.typeArguments.lastOrNull as InterfaceType?;
     return adaptedType;
   }
 
   /// extract the wrapped result type of an adapted call...
   /// Usage scenario:
   /// given the return type of the api method is `Future<Result<UserResponse>>`,
-  /// and the second type parameter(T) on CallAdapterInterface<R, T> is `Future<Result<T>>`,
+  /// and the second type parameter(T) on CallAdapter<R, T> is `Future<Result<T>>`,
   /// this method basically figures out the value of 'T' which will be "UserResponse"
   /// in this case
   String extractWrappedResultType(String template, String actual) {
@@ -588,8 +588,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   Method? _generatePrivateApiCallMethod(
-      MethodElement m, InterfaceType? callAdapterInterface) {
-    final callAdapterOriginalReturnType = callAdapterInterface?.superclass
+      MethodElement m, InterfaceType? callAdapter) {
+    final callAdapterOriginalReturnType = callAdapter?.superclass
         ?.typeArguments.firstOrNull as InterfaceType?;
     
     final httpMethod = _getMethodAnnotation(m);
@@ -599,7 +599,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       _configureMethodMetadata(methodBuilder, m, _displayString(callAdapterOriginalReturnType), true);
       _addParameters(methodBuilder, m);
       _addAnnotations(methodBuilder, m.returnType, true);
-      methodBuilder.body = _generateRequest(m, httpMethod, callAdapterInterface);
+      methodBuilder.body = _generateRequest(m, httpMethod, callAdapter);
     });
   }
 
@@ -621,7 +621,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   Code _generateRequest(
     MethodElement m,
     ConstantReader httpMethod,
-    InterfaceType? callAdapterInterface,
+    InterfaceType? callAdapter,
   ) {
     final returnAsyncWrapper =
         m.returnType.isDartAsyncFuture ? 'return' : 'yield';
@@ -740,8 +740,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final options = refer(_optionsVar).expression;
 
     final wrappedReturnType = _getResponseType(
-      callAdapterInterface != null
-          ? callAdapterInterface.superclass!.typeArguments.first
+      callAdapter != null
+          ? callAdapter.superclass!.typeArguments.first
           : m.returnType,
     );
     final isWrappedWithHttpResponseWrapper = wrappedReturnType != null

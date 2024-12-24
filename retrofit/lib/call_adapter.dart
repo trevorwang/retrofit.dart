@@ -1,6 +1,6 @@
 /// Adapts a Call with return type R into the type of T.
 /// e.g. Future<User> to Future<Result<User>>
-abstract class CallAdapterInterface<R, T> {
+abstract class CallAdapter<R, T> {
   T adapt(R Function() call);
 }
 
@@ -10,14 +10,14 @@ abstract class CallAdapterInterface<R, T> {
 ///
 /// ### Usage
 ///
-/// 1. Create the call adapter by extending [CallAdapterInterface]:
+/// 1. Create the call adapter by extending [CallAdapter]:
 /// pass in type parameters for the original call return type and adapted call return type.
 /// Note: your adapter subclass must accept a single type parameter(T), where T is
 /// the type of the unwrapped response from the original call. e.g. 
 /// "UserResponse" in "Future<UserResponse>"
 /// 
 /// ```dart
-/// class ResultCallAdapter<T> extends CallAdapterInterface<Future<T>, Future<Result<T>>> {
+/// class ResultCallAdapter<T> extends CallAdapter<Future<T>, Future<Result<T>>> {
 ///   @override
 ///   Future<Result<T>> adapt(Future<T> Function() call) async {
 ///     try {
@@ -41,13 +41,13 @@ abstract class CallAdapterInterface<R, T> {
 ///
 /// - To apply it to all methods in an Api interface, pass the adapter to `@RestApi`:
 /// ```dart
-/// @RestApi(callAdapterInterface: ResultCallAdapter)
+/// @RestApi(callAdapter: ResultCallAdapter)
 /// abstract class MyApiService {
 ///   @GET('/data')
 ///   Future<Result<UserResponse>> fetchData();
 /// }
 /// ```
 class UseCallAdapter {
-  const UseCallAdapter(this.callAdapterInterface);
-  final Type callAdapterInterface;
+  const UseCallAdapter(this.callAdapter);
+  final Type callAdapter;
 }

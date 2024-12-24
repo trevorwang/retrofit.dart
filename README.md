@@ -251,11 +251,11 @@ Future<User> → Future<Result<User>>
 
 This feature provides flexibility in handling API responses, enabling better integration with custom response wrappers or error handling libraries.
 
-The CallAdapterInterface takes the original return type R and transforms it into a new type T. This is particularly useful when working with response wrappers like Either, Result, or ApiResponse.
+The CallAdapter takes the original return type R and transforms it into a new type T. This is particularly useful when working with response wrappers like Either, Result, or ApiResponse.
 
 Below is an example using a custom CallAdapter with a Result wrapper:
 ```dart
-  class MyCallAdapter<T> extends CallAdapterInterface<Future<T>, Future<Result<T>>> {
+  class MyCallAdapter<T> extends CallAdapter<Future<T>, Future<Result<T>>> {
     @override
     Future<Result<T>> adapt(Future<T> Function() call) async {
       try {
@@ -267,7 +267,7 @@ Below is an example using a custom CallAdapter with a Result wrapper:
     }
   }
 
-  @RestApi(callAdapterInterface: MyCallAdapter)
+  @RestApi(callAdapter: MyCallAdapter)
   abstract class RestClient {
     factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 

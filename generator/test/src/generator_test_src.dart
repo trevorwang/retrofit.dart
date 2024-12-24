@@ -5,7 +5,7 @@ import 'package:source_gen_test/annotations.dart';
 import 'query.pb.dart';
 
 class Resource<T> {}
-class MockCallAdapter1<T> extends CallAdapterInterface<Future<T>, Future<Resource<T>>> {
+class MockCallAdapter1<T> extends CallAdapter<Future<T>, Future<Resource<T>>> {
   @override
   Future<Resource<T>> adapt(Future<T> Function() call) async {
     return Resource();
@@ -30,7 +30,7 @@ abstract class TestCallAdapter1 {
 }
 
 class Either<L, R> {}
-class MockCallAdapter2<T> extends CallAdapterInterface<Future<T>, Future<Either<T, String>>> {
+class MockCallAdapter2<T> extends CallAdapter<Future<T>, Future<Either<T, String>>> {
   @override
   Future<Either<T, String>> adapt(Future<T> Function() call) async {
     return Either();
@@ -55,7 +55,7 @@ abstract class TestCallAdapter2 {
 }
 
 class Flow<T> {}
-class MockCallAdapter3<T> extends CallAdapterInterface<Future<T>, Flow<T>> {
+class MockCallAdapter3<T> extends CallAdapter<Future<T>, Flow<T>> {
   @override
   Flow<T> adapt(Future<T> Function() call) {
     return Flow();

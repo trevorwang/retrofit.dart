@@ -67,7 +67,7 @@ class RestApi {
   const RestApi({
     this.baseUrl,
     this.parser = Parser.JsonSerializable,
-    this.callAdapterInterface,
+    this.callAdapter,
   });
 
   /// Set the API base URL.
@@ -94,7 +94,7 @@ class RestApi {
 
   /// if you don't specify the [parser]. It will be [Parser.JsonSerializable]
   final Parser parser;
-  final Type? callAdapterInterface;
+  final Type? callAdapter;
 }
 
 @immutable

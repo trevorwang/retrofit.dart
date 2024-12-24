@@ -7,7 +7,7 @@
 
   Code Example:
 ```dart
-  class MyCallAdapter<T> extends CallAdapterInterface<Future<T>, Future<Either<ApiError, T>>> {
+  class MyCallAdapter<T> extends CallAdapter<Future<T>, Future<Either<ApiError, T>>> {
     @override
     Future<Either<ApiError, T>> adapt(Future<T> Function() call) async {
       try {
