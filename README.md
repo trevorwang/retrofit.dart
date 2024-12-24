@@ -242,6 +242,40 @@ dio.options.baseUrl = 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1';
 final client = RestClient(dio);
 ```
 
+### Call Adapter
+
+This feature allows you to adapt the return type of a network call from one type to another.
+
+For example:
+Future<User> → Future<Result<User>>
+
+This feature provides flexibility in handling API responses, enabling better integration with custom response wrappers or error handling libraries.
+
+The CallAdapter takes the original return type R and transforms it into a new type T. This is particularly useful when working with response wrappers like Either, Result, or ApiResponse.
+
+Below is an example using a custom CallAdapter with a Result wrapper:
+```dart
+  class MyCallAdapter<T> extends CallAdapter<Future<T>, Future<Result<T>>> {
+    @override
+    Future<Result<T>> adapt(Future<T> Function() call) async {
+      try {
+        final response = await call();
+        return Result<T>.ok(response);
+      } catch (e) {
+        return Result.err(e.toString());
+      }
+    }
+  }
+
+  @RestApi(callAdapter: MyCallAdapter)
+  abstract class RestClient {
+    factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+    @GET('/')
+    Future<Result<User>> getUser();
+  }
+```
+
 ### Multiple endpoints support
 
 If you want to use multiple endpoints to your `RestClient`, you should pass your base url when you initiate `RestClient`. Any value defined in `RestApi` will be ignored.
