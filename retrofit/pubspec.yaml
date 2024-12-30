@@ -8,7 +8,7 @@ topics:
   - rest
   - dio
   - retrofit
-version: 4.4.0
+version: 4.4.2
 environment:
   sdk: '>=2.19.0 <4.0.0'
 

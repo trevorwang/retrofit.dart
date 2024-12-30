@@ -1,12 +1,83 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 import 'package:source_gen_test/annotations.dart';
-
 import 'query.pb.dart';
 
-enum FileType { mp4, mp3 }
+class Resource<T> {}
+class MockCallAdapter1<T> extends CallAdapter<Future<T>, Future<Resource<T>>> {
+  @override
+  Future<Resource<T>> adapt(Future<T> Function() call) async {
+    return Resource();
+  }
+}
+@ShouldGenerate(
+'''
+  @override
+  Future<Resource<GenericUser<User>>> getUser() {
+    return MockCallAdapter1<GenericUser<User>>().adapt(
+      () => _getUser(),
+    );
+  }
+''',
+  contains: true,
+)
+@RestApi()
+abstract class TestCallAdapter1 {
+  @UseCallAdapter(MockCallAdapter1)
+  @GET('path')
+  Future<Resource<GenericUser<User>>> getUser();
+}
+
+class Either<L, R> {}
+class MockCallAdapter2<T> extends CallAdapter<Future<T>, Future<Either<T, String>>> {
+  @override
+  Future<Either<T, String>> adapt(Future<T> Function() call) async {
+    return Either();
+  }
+}
+@ShouldGenerate(
+'''
+  @override
+  Future<Either<User, String>> getUser() {
+    return MockCallAdapter2<User>().adapt(
+      () => _getUser(),
+    );
+  }
+''',
+  contains: true,
+)
+@RestApi()
+abstract class TestCallAdapter2 {
+  @UseCallAdapter(MockCallAdapter2)
+  @GET('path')
+  Future<Either<User, String>> getUser();
+}
+
+class Flow<T> {}
+class MockCallAdapter3<T> extends CallAdapter<Future<T>, Flow<T>> {
+  @override
+  Flow<T> adapt(Future<T> Function() call) {
+    return Flow();
+  }
+}
+@ShouldGenerate(
+'''
+  @override
+  Flow<User> getUser() {
+    return MockCallAdapter3<User>().adapt(
+      () => _getUser(),
+    );
+  }
+''',
+  contains: true,
+)
+@RestApi()
+abstract class TestCallAdapter3 {
+  @UseCallAdapter(MockCallAdapter3)
+  @GET('path')
+  Flow<User> getUser();
+}
 
 class Config {
   final String date;
@@ -21,7 +92,7 @@ class Config {
     required this.subConfig,
   });
 }
-
+enum FileType { mp4, mp3 }
 class DummyTypedExtras extends TypedExtras {
   final String id;
   final Config config;
