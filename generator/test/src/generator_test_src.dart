@@ -5,19 +5,19 @@ import 'package:source_gen_test/annotations.dart';
 import 'query.pb.dart';
 
 class Resource<T> {}
+
 class MockCallAdapter1<T> extends CallAdapter<Future<T>, Future<Resource<T>>> {
   @override
   Future<Resource<T>> adapt(Future<T> Function() call) async {
     return Resource();
   }
 }
+
 @ShouldGenerate(
-'''
+  '''
   @override
   Future<Resource<GenericUser<User>>> getUser() {
-    return MockCallAdapter1<GenericUser<User>>().adapt(
-      () => _getUser(),
-    );
+    return MockCallAdapter1<GenericUser<User>>().adapt(() => _getUser());
   }
 ''',
   contains: true,
@@ -30,19 +30,20 @@ abstract class TestCallAdapter1 {
 }
 
 class Either<L, R> {}
-class MockCallAdapter2<T> extends CallAdapter<Future<T>, Future<Either<T, String>>> {
+
+class MockCallAdapter2<T>
+    extends CallAdapter<Future<T>, Future<Either<T, String>>> {
   @override
   Future<Either<T, String>> adapt(Future<T> Function() call) async {
     return Either();
   }
 }
+
 @ShouldGenerate(
-'''
+  '''
   @override
   Future<Either<User, String>> getUser() {
-    return MockCallAdapter2<User>().adapt(
-      () => _getUser(),
-    );
+    return MockCallAdapter2<User>().adapt(() => _getUser());
   }
 ''',
   contains: true,
@@ -55,19 +56,19 @@ abstract class TestCallAdapter2 {
 }
 
 class Flow<T> {}
+
 class MockCallAdapter3<T> extends CallAdapter<Future<T>, Flow<T>> {
   @override
   Flow<T> adapt(Future<T> Function() call) {
     return Flow();
   }
 }
+
 @ShouldGenerate(
-'''
+  '''
   @override
   Flow<User> getUser() {
-    return MockCallAdapter3<User>().adapt(
-      () => _getUser(),
-    );
+    return MockCallAdapter3<User>().adapt(() => _getUser());
   }
 ''',
   contains: true,
@@ -92,7 +93,9 @@ class Config {
   final bool shouldReplace;
   final Map<String, dynamic> subConfig;
 }
+
 enum FileType { mp4, mp3 }
+
 class DummyTypedExtras extends TypedExtras {
   const DummyTypedExtras({
     required this.id,
