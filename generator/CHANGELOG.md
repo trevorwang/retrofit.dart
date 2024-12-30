@@ -1,8 +1,5 @@
-## 9.1.6
 
-- Update `analyzer`, `dart_style` and `source_gen` dependencies to allow upper versions
-
-## 9.1.6
+## 9.1.7
 
 - Introduced CallAdapters, This feature allows adaptation of a Call with return type R into the type of T. 
   e.g. Future<User> to Future<Result<User>>
@@ -32,6 +29,10 @@
     Future<User> getTasks();
   }
 ```
+
+## 9.1.6
+
+- Update `analyzer`, `dart_style` and `source_gen` dependencies to allow upper versions
 
 ## 9.1.5
 
