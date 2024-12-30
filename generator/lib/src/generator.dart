@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
@@ -71,8 +72,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// Annotation details for [retrofit.RestApi]
   late retrofit.RestApi clientAnnotation;
 
-  ConstantReader? clientAnnotationConstantReader;
-
   @override
   String generateForAnnotatedElement(
     Element element,
@@ -98,7 +97,6 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       baseUrl: annotation?.peek(_baseUrlVar)?.stringValue ?? '',
       parser: parser ?? retrofit.Parser.JsonSerializable,
     );
-    clientAnnotationConstantReader = annotation;
     final baseUrl = clientAnnotation.baseUrl;
     final annotateClassConsts = element.constructors
         .where((c) => !c.isFactory && !c.isDefaultConstructor);
@@ -224,169 +222,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           c.body = Block.of(block);
         }
       });
-  
-  // Traverses a type to find a matching type argument
-  // e.g. given a type `List<List<User>>` and a key `User`, it will return the `DartType` "User"
-  DartType? findMatchingTypeArgument(DartType? type, String key) {
-    if (type?.getDisplayString() == key) {
-      return type;
-    }
 
-    if (type is InterfaceType) {
-      for (final arg in type.typeArguments) {
-        final match = findMatchingTypeArgument(arg, key);
-        if (match != null) {
-          return match;
-        }
-      }
-    }
-    return null;
-  }
-
-  // retrieve CallAdapter from method annotation or class annotation
-  ConstantReader? getCallAdapterInterface(MethodElement m) {
-    final requestCallAdapterAnnotation = _typeChecker(retrofit.UseCallAdapter)
-        .firstAnnotationOf(m)
-        .toConstantReader();
-    final rootCallAdapter = clientAnnotationConstantReader;
-
-    final callAdapter = (requestCallAdapterAnnotation ?? rootCallAdapter)
-        ?.peek('callAdapter');
-
-    final callAdapterTypeValue = callAdapter?.typeValue as InterfaceType?;
-    if (callAdapterTypeValue != null) {
-      final typeArg = callAdapterTypeValue.typeArguments.firstOrNull;
-      if (typeArg == null) {
-        throw InvalidGenerationSource(
-          'your CallAdapter subclass must accept a generic type parameter \n'
-          'e.g. "class ResultAdapter<T> extends CallAdapter..."',
-        );
-      }
-    }
-    return callAdapter;
-  }
-
-  /// get result type being adapted to e.g. Future<Result<T>>
-  /// where T is supposed to be the wrapped result type
-  InterfaceType? getAdaptedReturnType(ConstantReader? callAdapter) {
-    final callAdapterTypeVal = callAdapter?.typeValue as InterfaceType?;
-    final adaptedType =
-        callAdapterTypeVal?.superclass?.typeArguments.lastOrNull as InterfaceType?;
-    return adaptedType;
-  }
-
-  /// extract the wrapped result type of an adapted call...
-  /// Usage scenario:
-  /// given the return type of the api method is `Future<Result<UserResponse>>`,
-  /// and the second type parameter(T) on CallAdapter<R, T> is `Future<Result<T>>`,
-  /// this method basically figures out the value of 'T' which will be "UserResponse"
-  /// in this case
-  String extractWrappedResultType(String template, String actual) {
-    final regexPattern = RegExp(
-      RegExp.escape(template).replaceAll('dynamic', r'([\w<>]+)'),
-    );
-    final match = regexPattern.firstMatch(actual);
-
-    if (match != null && match.groupCount > 0) {
-      return match.group(1) ?? '';
-    }
-    return '';
-  }
-
-  // parse methods in the Api class
-  Iterable<Method> _parseMethods(ClassElement element) {
-    List<Method> methods = [];
-    final methodMembers = <MethodElement>[
-      ...element.methods,
-      ...element.mixins.expand((i) => i.methods),
-    ];
-    for (final method in methodMembers) {
-      final callAdapter = getCallAdapterInterface(method);
-      final adaptedReturnType = getAdaptedReturnType(callAdapter);
-      final resultTypeInString = extractWrappedResultType(
-        adaptedReturnType != null ? _displayString(adaptedReturnType) : '',
-        _displayString(method.returnType),
-      );
-      final typeArg = findMatchingTypeArgument(method.returnType, resultTypeInString);
-      final instantiatedCallAdapter = typeArg != null ?
-          (callAdapter?.typeValue as InterfaceType?)?.element.instantiate(
-        typeArguments: [typeArg],
-        nullabilitySuffix: NullabilitySuffix.none,
-      ) : null;
-      if (method.isAbstract) {
-        methods.add(_generateApiCallMethod(method, instantiatedCallAdapter)!);
-      }
-      if (callAdapter != null) {
-        methods.add(_generateAdapterMethod(method, instantiatedCallAdapter, resultTypeInString));
-      }
-    }
-    return methods;
-  }
-
-  Method _generateAdapterMethod(
-    MethodElement m,
-    InterfaceType? callAdapter,
-    String resultType,
-  ) {
-    return Method((methodBuilder) {
-      methodBuilder.returns =
-          refer(_displayString(m.returnType, withNullability: true));
-      methodBuilder.requiredParameters.addAll(
-        _generateParameters(
-          m,
-          (it) => it.isRequiredPositional,
-        ),
-      );
-      methodBuilder.optionalParameters.addAll(
-        _generateParameters(
-          m,
-          (it) => it.isOptional || it.isRequiredNamed,
-          optional: true,
-        ),
-      );
-      methodBuilder.name = m.displayName;
-      methodBuilder.annotations.add(const CodeExpression(Code('override')));
-      final positionalArgs = <String>[];
-      final namedArgs = <String>[];
-      for (final parameter in m.parameters) {
-        if (parameter.isRequiredPositional || parameter.isOptionalPositional) {
-          positionalArgs.add(parameter.displayName);
-        }
-        if (parameter.isNamed) {
-          namedArgs.add('${parameter.displayName}: ${parameter.displayName}');
-        }
-      }
-      final args =
-          '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
-      methodBuilder.body = Code('''
-        return ${callAdapter?.element.name}<$resultType>().adapt(
-          () => _${m.displayName}($args),
-        );
-      ''');
-    });
-  }
-
-  Iterable<Parameter> _generateParameters(
-    MethodElement m,
-    bool Function(ParameterElement) filter, {
-    bool optional = false,
-  }) {
-    return m.parameters.where(filter).map(
-          (it) => Parameter(
-            (p) => p
-              ..name = it.name
-              ..named = it.isNamed
-              ..type = refer(it.type.getDisplayString())
-              ..required = optional &&
-                  it.isNamed &&
-                  it.type.nullabilitySuffix == NullabilitySuffix.none &&
-                  !it.hasDefaultValue
-              ..defaultTo = optional && it.defaultValueCode != null
-                  ? Code(it.defaultValueCode!)
-                  : null,
-          ),
-        );
-  }
+  Iterable<Method> _parseMethods(ClassElement element) => <MethodElement>[
+        ...element.methods,
+        ...element.mixins.expand((i) => i.methods),
+      ].where((m) {
+        final methodAnnotation = _getMethodAnnotation(m);
+        return methodAnnotation != null &&
+            m.isAbstract &&
+            (m.returnType.isDartAsyncFuture || m.returnType.isDartAsyncStream);
+      }).map((m) => _generateMethod(m)!);
 
   String _generateTypeParameterizedName(TypeParameterizedElement element) =>
       element.displayName +
@@ -524,82 +369,61 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return _getResponseInnerType(generic);
   }
 
-  void _configureMethodMetadata(
-    MethodBuilder mm,
-    MethodElement m,
-    String returnType,
-    bool hasCallAdapter,
-  ) {
-    mm
-      ..returns = refer(returnType)
-      ..name = hasCallAdapter ? '_${m.displayName}' : m.displayName
-      ..types.addAll(m.typeParameters.map((e) => refer(e.name)))
-      ..modifier = _isReturnTypeFuture(returnType)
-          ? MethodModifier.async
-          : MethodModifier.asyncStar;
-  }
-
-  void _addParameters(MethodBuilder mm, MethodElement m) {
-    mm.requiredParameters.addAll(
-      _generateParameters(m, (it) => it.isRequiredPositional),
-    );
-    mm.optionalParameters.addAll(
-      _generateParameters(m, (it) => it.isOptional || it.isRequiredNamed,
-          optional: true),
-    );
-  }
-
-  void _addAnnotations(
-    MethodBuilder mm,
-    DartType? returnType,
-    bool hasCallAdapter,
-  ) {
-    if (!hasCallAdapter) {
-      mm.annotations.add(const CodeExpression(Code('override')));
+  Method? _generateMethod(MethodElement m) {
+    final httpMethod = _getMethodAnnotation(m);
+    if (httpMethod == null) {
+      return null;
     }
-    if (globalOptions.useResult ?? false) {
-      if (returnType is ParameterizedType &&
-          returnType.typeArguments.first is! VoidType) {
-        mm.annotations.add(const CodeExpression(Code('useResult')));
+
+    return Method((mm) {
+      mm
+        ..returns =
+            refer(_displayString(m.type.returnType, withNullability: true))
+        ..name = m.displayName
+        ..types.addAll(m.typeParameters.map((e) => refer(e.name)))
+        ..modifier = m.returnType.isDartAsyncFuture
+            ? MethodModifier.async
+            : MethodModifier.asyncStar
+        ..annotations.add(const CodeExpression(Code('override')));
+
+      if (globalOptions.useResult ?? false) {
+        final returnType = m.returnType;
+        if (returnType is ParameterizedType &&
+            returnType.typeArguments.first is! VoidType) {
+          mm.annotations.add(const CodeExpression(Code('useResult')));
+        }
       }
-    }
-  }
 
-  // generate the method that makes the http request
-  Method? _generateApiCallMethod(MethodElement m, InterfaceType? callAdapter) {
-    final hasCallAdapter = callAdapter != null;
+      /// required parameters
+      mm.requiredParameters.addAll(
+        m.parameters.where((it) => it.isRequiredPositional).map(
+              (it) => Parameter(
+                (p) => p
+                  ..name = it.name
+                  ..named = it.isNamed
+                  ..type = refer(it.type.getDisplayString()),
+              ),
+            ),
+      );
 
-    if (hasCallAdapter) {
-      return _generatePrivateApiCallMethod(m, callAdapter);
-    }
-
-    final httpMethod = _getMethodAnnotation(m);
-    if (httpMethod == null) return null;
-
-    final returnType = m.returnType;
-    return Method((methodBuilder) {
-      _configureMethodMetadata(methodBuilder, m,
-          _displayString(returnType, withNullability: true), false);
-      _addParameters(methodBuilder, m);
-      _addAnnotations(methodBuilder, returnType, false);
-      methodBuilder.body =
-          _generateRequest(m, httpMethod, null);
-    });
-  }
-
-  Method? _generatePrivateApiCallMethod(
-      MethodElement m, InterfaceType? callAdapter) {
-    final callAdapterOriginalReturnType = callAdapter?.superclass
-        ?.typeArguments.firstOrNull as InterfaceType?;
-    
-    final httpMethod = _getMethodAnnotation(m);
-    if (httpMethod == null) return null;
-
-    return Method((methodBuilder) {
-      _configureMethodMetadata(methodBuilder, m, _displayString(callAdapterOriginalReturnType), true);
-      _addParameters(methodBuilder, m);
-      _addAnnotations(methodBuilder, m.returnType, true);
-      methodBuilder.body = _generateRequest(m, httpMethod, callAdapter);
+      /// optional positional or named parameters
+      mm.optionalParameters.addAll(
+        m.parameters.where((i) => i.isOptional || i.isRequiredNamed).map(
+              (it) => Parameter(
+                (p) => p
+                  ..required = (it.isNamed &&
+                      it.type.nullabilitySuffix == NullabilitySuffix.none &&
+                      !it.hasDefaultValue)
+                  ..name = it.name
+                  ..named = it.isNamed
+                  ..type = refer(it.type.getDisplayString())
+                  ..defaultTo = it.defaultValueCode == null
+                      ? null
+                      : Code(it.defaultValueCode!),
+              ),
+            ),
+      );
+      mm.body = _generateRequest(m, httpMethod);
     });
   }
 
@@ -616,13 +440,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return literal(definePath);
   }
 
-  bool _isReturnTypeFuture(String type) => type.startsWith('Future<');
-
-  Code _generateRequest(
-    MethodElement m,
-    ConstantReader httpMethod,
-    InterfaceType? callAdapter,
-  ) {
+  Code _generateRequest(MethodElement m, ConstantReader httpMethod) {
     final returnAsyncWrapper =
         m.returnType.isDartAsyncFuture ? 'return' : 'yield';
     final path = _generatePath(m, httpMethod);
@@ -731,6 +549,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           refer(receiveProgress.element.displayName);
     }
 
+    final wrappedReturnType = _getResponseType(m.returnType);
+
     blocks.add(
       declareFinal(_optionsVar)
           .assign(_parseOptions(m, namedArguments, blocks, extraOptions))
@@ -739,20 +559,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     final options = refer(_optionsVar).expression;
 
-    final wrappedReturnType = _getResponseType(
-      callAdapter != null
-          ? callAdapter.superclass!.typeArguments.first
-          : m.returnType,
-    );
-    final isWrappedWithHttpResponseWrapper = wrappedReturnType != null
-        ? _typeChecker(retrofit.HttpResponse).isExactlyType(wrappedReturnType)
-        : false;
+    if (wrappedReturnType == null || 'void' == wrappedReturnType.toString()) {
+      blocks.add(
+        refer('await $_dioVar.fetch')
+            .call([options], {}, [refer('void')]).statement,
+      );
+      return Block.of(blocks);
+    }
 
-    final returnType = isWrappedWithHttpResponseWrapper
-        ? _getResponseType(wrappedReturnType)
-        : wrappedReturnType;
+    final isWrapped =
+        _typeChecker(retrofit.HttpResponse).isExactlyType(wrappedReturnType);
+    final returnType =
+        isWrapped ? _getResponseType(wrappedReturnType) : wrappedReturnType;
     if (returnType == null || 'void' == returnType.toString()) {
-      if (isWrappedWithHttpResponseWrapper) {
+      if (isWrapped) {
         blocks
           ..add(
             refer('final $_resultVar = await $_dioVar.fetch')
@@ -1184,7 +1004,7 @@ You should create a new class to encapsulate the response.
           );
         }
       }
-      if (isWrappedWithHttpResponseWrapper) {
+      if (isWrapped) {
         blocks.add(
           Code('''
       final httpResponse = HttpResponse($_valueVar, $_resultVar);
@@ -2832,11 +2652,6 @@ extension DartTypeExt on DartType {
 extension DartObjectX on DartObject? {
   bool get isEnum {
     return this?.type?.element?.kind.name == 'ENUM';
-  }
-
-  ConstantReader? toConstantReader() {
-    if (this == null) return null;
-    return ConstantReader(this);
   }
 }
 
