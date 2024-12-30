@@ -131,7 +131,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     });
 
     final emitter = DartEmitter(useNullSafetySyntax: true);
-    return DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
+    return DartFormatter()
         .format([_analyzerIgnores, classBuilder.accept(emitter)].join('\n\n'));
   }
 
@@ -1727,7 +1727,7 @@ if (T != dynamic &&
                   .assign(refer(bodyName.displayName))
                   .statement,
             );
-          } else if (_missingSerialize(ele.enclosingElement3, bodyName.type)) {
+          } else if (_missingSerialize(ele.enclosingElement, bodyName.type)) {
             log.warning(
                 '${_displayString(bodyName.type)} must provide a `serialize${_displayString(bodyName.type)}()` method which returns a Map.\n'
                 "It is programmer's responsibility to make sure the ${_displayString(bodyName.type)} is properly serialized");
@@ -1911,7 +1911,7 @@ ${bodyName.displayName} == null
             blocks.add(returnCode);
           }
           if (p.type.isNullable) {
-            blocks.add(const Code('}'));
+            blocks.add(Code('}'));
           }
         } else if (_displayString(p.type) == 'List<int>') {
           final optionalFile = m.parameters
@@ -2278,18 +2278,10 @@ ${bodyName.displayName} == null
   }
 
   Object? _getFieldValue(ConstantReader? value) {
-    if (value?.isBool ?? false) {
-      return value?.boolValue;
-    }
-    if (value?.isDouble ?? false) {
-      return value?.doubleValue;
-    }
-    if (value?.isInt ?? false) {
-      return value?.intValue;
-    }
-    if (value?.isString ?? false) {
-      return value?.stringValue;
-    }
+    if (value?.isBool ?? false) return value?.boolValue;
+    if (value?.isDouble ?? false) return value?.doubleValue;
+    if (value?.isInt ?? false) return value?.intValue;
+    if (value?.isString ?? false) return value?.stringValue;
     if (value?.objectValue.isEnum ?? false) {
       return value?.objectValue.variable?.displayName;
     }
@@ -2316,7 +2308,7 @@ ${bodyName.displayName} == null
       final fields = <String, Object?>{};
       final type = value!.objectValue.type;
       if (type is InterfaceType) {
-        for (final field in type.element.fields) {
+        for (var field in type.element.fields) {
           if (!field.isStatic) {
             final fieldValue = value.peek(field.name);
             fields[field.name] = _getFieldValue(fieldValue);
