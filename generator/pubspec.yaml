@@ -27,7 +27,6 @@ dev_dependencies:
   lints: any
   source_gen_test: ^1.0.6
   test: ^1.25.0
-
-dependency_overrides:
-  retrofit:
-    path: ../retrofit
+# dependency_overrides:
+#   retrofit:
+#     path: ../retrofit
