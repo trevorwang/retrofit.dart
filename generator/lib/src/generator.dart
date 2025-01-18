@@ -1343,10 +1343,14 @@ You should create a new class to encapsulate the response.
       if (_displayString(dartType) == 'dynamic' || _isBasicType(dartType)) {
         return '(json)=>json as ${_displayString(dartType, withNullability: dartType.isNullable)},';
       } else {
-        if (dartType.isNullable) {
-          return '(json)=> json == null ? null : ${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
+        if (_displayString(dartType) == 'void') {
+          return '(json)=> (){}(),';
         } else {
-          return '(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
+          if (dartType.isNullable) {
+            return '(json)=> json == null ? null : ${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
+          } else {
+            return '(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
+          }
         }
       }
     }
