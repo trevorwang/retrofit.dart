@@ -224,7 +224,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           c.body = Block.of(block);
         }
       });
-  
+
   // Traverses a type to find a matching type argument
   // e.g. given a type `List<List<User>>` and a key `User`, it will return the `DartType` "User"
   DartType? findMatchingTypeArgument(DartType? type, String key) {
@@ -250,8 +250,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         .toConstantReader();
     final rootCallAdapter = clientAnnotationConstantReader;
 
-    final callAdapter = (requestCallAdapterAnnotation ?? rootCallAdapter)
-        ?.peek('callAdapter');
+    final callAdapter =
+        (requestCallAdapterAnnotation ?? rootCallAdapter)?.peek('callAdapter');
 
     final callAdapterTypeValue = callAdapter?.typeValue as InterfaceType?;
     if (callAdapterTypeValue != null) {
@@ -270,8 +270,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// where T is supposed to be the wrapped result type
   InterfaceType? getAdaptedReturnType(ConstantReader? callAdapter) {
     final callAdapterTypeVal = callAdapter?.typeValue as InterfaceType?;
-    final adaptedType =
-        callAdapterTypeVal?.superclass?.typeArguments.lastOrNull as InterfaceType?;
+    final adaptedType = callAdapterTypeVal?.superclass?.typeArguments.lastOrNull
+        as InterfaceType?;
     return adaptedType;
   }
 
@@ -307,17 +307,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         adaptedReturnType != null ? _displayString(adaptedReturnType) : '',
         _displayString(method.returnType),
       );
-      final typeArg = findMatchingTypeArgument(method.returnType, resultTypeInString);
-      final instantiatedCallAdapter = typeArg != null ?
-          (callAdapter?.typeValue as InterfaceType?)?.element.instantiate(
-        typeArguments: [typeArg],
-        nullabilitySuffix: NullabilitySuffix.none,
-      ) : null;
+      final typeArg =
+          findMatchingTypeArgument(method.returnType, resultTypeInString);
+      final instantiatedCallAdapter = typeArg != null
+          ? (callAdapter?.typeValue as InterfaceType?)?.element.instantiate(
+              typeArguments: [typeArg],
+              nullabilitySuffix: NullabilitySuffix.none,
+            )
+          : null;
       if (method.isAbstract) {
         methods.add(_generateApiCallMethod(method, instantiatedCallAdapter)!);
       }
       if (callAdapter != null) {
-        methods.add(_generateAdapterMethod(method, instantiatedCallAdapter, resultTypeInString));
+        methods.add(_generateAdapterMethod(
+            method, instantiatedCallAdapter, resultTypeInString));
       }
     }
     return methods;
@@ -582,21 +585,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           _displayString(returnType, withNullability: true), false);
       _addParameters(methodBuilder, m);
       _addAnnotations(methodBuilder, returnType, false);
-      methodBuilder.body =
-          _generateRequest(m, httpMethod, null);
+      methodBuilder.body = _generateRequest(m, httpMethod, null);
     });
   }
 
   Method? _generatePrivateApiCallMethod(
       MethodElement m, InterfaceType? callAdapter) {
-    final callAdapterOriginalReturnType = callAdapter?.superclass
-        ?.typeArguments.firstOrNull as InterfaceType?;
-    
+    final callAdapterOriginalReturnType =
+        callAdapter?.superclass?.typeArguments.firstOrNull as InterfaceType?;
+
     final httpMethod = _getMethodAnnotation(m);
     if (httpMethod == null) return null;
 
     return Method((methodBuilder) {
-      _configureMethodMetadata(methodBuilder, m, _displayString(callAdapterOriginalReturnType), true);
+      _configureMethodMetadata(methodBuilder, m,
+          _displayString(callAdapterOriginalReturnType), true);
       _addParameters(methodBuilder, m);
       _addAnnotations(methodBuilder, m.returnType, true);
       methodBuilder.body = _generateRequest(m, httpMethod, callAdapter);
@@ -2155,7 +2158,16 @@ ${bodyName.displayName} == null
                       _typeChecker(BuiltMap).isExactlyType(innerType) ||
                       _typeChecker(List).isExactlyType(innerType) ||
                       _typeChecker(BuiltList).isExactlyType(innerType)))) {
-            final value = _isBasicType(innerType) ? 'i' : 'jsonEncode(i)';
+            String value = _isBasicType(innerType) ? 'i' : 'jsonEncode(i)';
+            if (value == 'i' &&
+                innerType != null &&
+                !_typeChecker(String).isExactlyType(innerType)) {
+              if (_isEnum(innerType)) {
+                value += '.name';
+              } else {
+                value += '.toString()';
+              }
+            }
             final nullableInfix =
                 (p.type.nullabilitySuffix == NullabilitySuffix.question)
                     ? '?'
