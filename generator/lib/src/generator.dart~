@@ -2165,8 +2165,8 @@ ${bodyName.displayName} == null
             } else if (_isBasicType(innerType)) {
               value = 'i';
               if (innerType != null &&
-                  !_typeChecker(String).isExactlyType(innerType)) {
-                value += '.toString()';
+                  _typeChecker(String).isExactlyType(innerType)) {
+                value += '.toString';
               }
             } else {
               value = 'jsonEncode(i)';
