@@ -623,8 +623,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ConstantReader httpMethod,
     InterfaceType? callAdapter,
   ) {
-    final returnAsyncWrapper =
+    String returnAsyncWrapper =
         m.returnType.isDartAsyncFuture ? 'return' : 'yield';
+    if (callAdapter != null) {
+      final callAdapterOriginalReturnType = callAdapter.superclass
+        ?.typeArguments.firstOrNull as InterfaceType?;
+      returnAsyncWrapper = _isReturnTypeFuture(
+              callAdapterOriginalReturnType?.getDisplayString() ?? '')
+          ? 'return'
+          : 'yield';
+    }
     final path = _generatePath(m, httpMethod);
     final blocks = <Code>[];
 

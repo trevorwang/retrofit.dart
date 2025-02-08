@@ -1,4 +1,8 @@
 
+## 9.1.8
+
+- Fixed bug of callAdapter using yield/return incorrectly
+
 ## 9.1.7
 
 - Introduced CallAdapters, This feature allows adaptation of a Call with return type R into the type of T. 
@@ -26,7 +30,7 @@
 
     @UseCallAdapter(MyCallAdapter)
     @GET('/')
-    Future<User> getTasks();
+    Future<Either<ApiError, User>> getTasks();
   }
 ```
 
