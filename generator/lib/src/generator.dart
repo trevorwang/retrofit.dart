@@ -2062,7 +2062,7 @@ ${bodyName.displayName} == null
             'filename': fileName,
             if (contentType != null)
               'contentType':
-                  refer('MediaType', 'package:http_parser/http_parser.dart')
+                  refer('DioMediaType', 'package:dio/dio.dart')
                       .property('parse')
                       .call([literal(contentType)]),
           });
@@ -2101,7 +2101,7 @@ ${bodyName.displayName} == null
           final fileName = r.peek('fileName')?.stringValue;
           final conType = contentType == null
               ? ''
-              : 'contentType: MediaType.parse(${literal(contentType)}),';
+              : 'contentType: DioMediaType.parse(${literal(contentType)}),';
           final returnCode =
               refer(dataVar).property('files').property('add').call([
             refer('''
@@ -2136,7 +2136,7 @@ ${bodyName.displayName} == null
             final fileName = r.peek('fileName')?.stringValue;
             final conType = contentType == null
                 ? ''
-                : 'contentType: MediaType.parse(${literal(contentType)}),';
+                : 'contentType: DioMediaType.parse(${literal(contentType)}),';
             blocks.add(
               refer(dataVar).property('files').property('addAll').call([
                 refer('''
@@ -2171,7 +2171,7 @@ ${bodyName.displayName} == null
               _typeChecker(File).isExactlyType(innerType)) {
             final conType = contentType == null
                 ? ''
-                : 'contentType: MediaType.parse(${literal(contentType)}),';
+                : 'contentType: DioMediaType.parse(${literal(contentType)}),';
             if (p.type.isNullable) {
               blocks.add(Code('if (${p.displayName} != null) {'));
             }
@@ -2289,7 +2289,7 @@ ${bodyName.displayName} == null
                 ),
               ], {
                 'contentType':
-                    refer('MediaType', 'package:http_parser/http_parser.dart')
+                    refer('DioMediaType', 'package:dio/dio.dart')
                         .property('parse')
                         .call([literal(contentType)]),
               });
