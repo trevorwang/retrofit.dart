@@ -1,5 +1,56 @@
 # Changelog
 
+## 4.4.2
+
+- Introduced CallAdapters, This feature allows adaptation of a Call with return type R into the type of T. 
+  e.g. Future<User> to Future<Result<User>>
+
+  Code Example:
+```dart
+  class MyCallAdapter<T> extends CallAdapter<Future<T>, Future<Either<ApiError, T>>> {
+    @override
+    Future<Either<ApiError, T>> adapt(Future<T> Function() call) async {
+      try {
+        final response = await call();
+        return Either.right(response);
+      }
+      catch (e) {
+        return Either.left(ApiError(e))
+      }
+    }
+  }
+  
+  @RestApi()
+  abstract class RestClient {
+    factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+    @UseCallAdapter(MyCallAdapter)
+    @GET('/')
+    Future<User> getTasks();
+  }
+```
+
+## 4.4.0
+
+- Added `@TypedExtras` to pass extra options to dio requests using custom annotations.
+
+  Example :
+
+  ```dart
+  @TypedExtrasSubClass(
+    id: 'abcd',
+    count: 5,
+    shouldProceed: true,
+  )
+  @http.POST('/path/')
+  Future<String> myMethod(@Extras() Map<String, dynamic> extras);
+  ```
+
+## 4.3.0
+
+- Required Dart 2.19
+- Update README
+
 ## 4.1.0
 
 - Added `@Extras` to pass extra options to dio requests, response, transformer and interceptors.

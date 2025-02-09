@@ -10,7 +10,6 @@ import 'task_data.dart';
 late MockWebServer _server;
 late RestClient _client;
 final _headers = {'Content-Type': 'application/json'};
-final dispatcherMap = <String, MockResponse>{};
 
 void main() {
   setUp(() async {
@@ -36,8 +35,9 @@ void main() {
   test('test tag list', () async {
     print(jsonEncode(['tag1', 'tag2']));
     _server.enqueue(
-        body: jsonEncode(['tag1', 'tag2']),
-        headers: {'Content-Type': 'application/json'});
+      body: jsonEncode(['tag1', 'tag2']),
+      headers: {'Content-Type': 'application/json'},
+    );
     final tasks = await _client.getTags();
     expect(tasks, isNotNull);
     expect(tasks.length, 2);
@@ -46,8 +46,9 @@ void main() {
   test('test stream tag list', () async {
     print(jsonEncode(['tag1', 'tag2']));
     _server.enqueue(
-        body: jsonEncode(['tag1', 'tag2']),
-        headers: {'Content-Type': 'application/json'});
+      body: jsonEncode(['tag1', 'tag2']),
+      headers: {'Content-Type': 'application/json'},
+    );
     final tasksStream = _client.getTagsAsStream();
     final tasks = await tasksStream.first;
     expect(tasks, isNotNull);
@@ -56,7 +57,9 @@ void main() {
 
   test('test empty task list', () async {
     _server.enqueue(
-        body: demoEmptyListJson, headers: {'Content-Type': 'application/json'});
+      body: demoEmptyListJson,
+      headers: {'Content-Type': 'application/json'},
+    );
     final tasks = await _client.getTasks();
     expect(tasks, isNotNull);
     expect(tasks.length, 0);

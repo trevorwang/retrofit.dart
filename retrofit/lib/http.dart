@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 import 'package:meta/meta.dart';
 
 /// A holder that includes all http methods which are supported by retrofit.
@@ -66,6 +67,7 @@ class RestApi {
   const RestApi({
     this.baseUrl,
     this.parser = Parser.JsonSerializable,
+    this.callAdapter,
   });
 
   /// Set the API base URL.
@@ -92,6 +94,7 @@ class RestApi {
 
   /// if you don't specify the [parser]. It will be [Parser.JsonSerializable]
   final Parser parser;
+  final Type? callAdapter;
 }
 
 @immutable

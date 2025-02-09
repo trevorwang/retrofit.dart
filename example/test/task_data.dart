@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:retrofit_example/example.dart';
 
-final demoTask = Task(
+const demoTask = Task(
   id: '123455151',
   name: 'demo task',
   avatar:

@@ -1,7 +1,5 @@
+include: package:lints/recommended.yaml
 analyzer:
-  # strong-mode:
-  # implicit-casts: false
-  # implicit-dynamic: false
   exclude:
-    - lib/**/*.reflectable.dart
-    - lib/**/*.g.dart
+    - '**/*.g.dart'
+    - '**/*.reflectable.dart'

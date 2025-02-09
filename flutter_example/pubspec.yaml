@@ -1,27 +1,23 @@
 name: flutter_example
-description: A new Flutter project.
+description: retrofit_example_flutter
 version: 1.0.0+1
-
 environment:
-  sdk: '>=2.18.0 <3.0.0'
+  sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
+  dio: ^5.7.0
   flutter:
     sdk: flutter
-
-  dio: ^5.0.0
-  retrofit: any
-  json_annotation: ^4.8.0
-  logger: any
+  json_annotation: ^4.9.0
+  logger: ^2.4.0
+  retrofit:
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  test:
+  build_runner: ^2.4.0
+  json_serializable: ^6.8.0
+  lints: ^4.0.0
+  mock_web_server: ^5.0.0-nullsafety.1
   retrofit_generator:
-  build_runner: any
-  json_serializable: any
-  mock_web_server:
 
 dependency_overrides:
   retrofit:

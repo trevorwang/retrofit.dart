@@ -5,8 +5,6 @@
 ![Pub Likes](https://img.shields.io/pub/likes/retrofit)
 [![Testing](https://github.com/trevorwang/retrofit.dart/actions/workflows/test.yml/badge.svg)](https://github.com/trevorwang/retrofit.dart/actions/workflows/test.yml)
 
-
-
 retrofit.dart is a type conversion [dio](https://github.com/flutterchina/dio/) client generator using [source_gen](https://github.com/dart-lang/source_gen) and inspired by [Chopper](https://github.com/lejard-h/chopper) and [Retrofit](https://github.com/square/retrofit).
 
 ## Usage
@@ -17,14 +15,14 @@ Add the generator to your dev dependencies
 
 ```yaml
 dependencies:
-  retrofit: '>=4.0.0 <5.0.0'
-  logger: any  #for logging purpose
-  json_annotation: ^4.8.1
+  retrofit: ^4.4.0
+  logger: ^2.4.0  # for logging purpose
+  json_annotation: ^4.9.0
 
 dev_dependencies:
-  retrofit_generator: '>=7.0.0 <8.0.0'   // required dart >=2.19
-  build_runner: '>=2.3.0 <4.0.0'
-  json_serializable: ^6.6.2
+  retrofit_generator: '>=8.0.0 <10.0.0' # for Dart 3.3 use ^9.0.0
+  build_runner: ^2.3.3
+  json_serializable: ^6.8.0
 ```
 
 ### Define and Generate your API
@@ -38,7 +36,7 @@ part 'example.g.dart';
 
 @RestApi(baseUrl: 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/')
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
   @GET('/tasks')
   Future<List<Task>> getTasks();
@@ -64,9 +62,6 @@ then run the generator
 ```sh
 # dart
 dart pub run build_runner build
-
-# flutter	
-flutter pub run build_runner build
 ```
 
 ### Use it
@@ -87,11 +82,11 @@ void main(List<String> args) {
 }
 ```
 
-
-
 ## More
 
-### Type Conversion
+### Types
+
+#### Types conversion
 
 > Before you use the type conversion, please make sure that a ` factory Task.fromJson(Map<String, dynamic> json)` must be provided for each model class. `json_serializable` is recommended to be used as the serialization tool.
 
@@ -107,6 +102,26 @@ class Task {
 
   final String name;
 }
+```
+
+#### Typed extras
+If you want to add static extra to all requests.
+
+```dart
+class MetaData extends TypedExtras {
+  final String id;
+  final String region;
+
+  const MetaData({required this.id, required region});
+}
+
+@MetaData(
+  id: '1234',
+  region: 'ng',
+)
+@GET("/get")
+Future<String> fetchData();
+
 ```
 
 ### HTTP Methods
@@ -125,11 +140,14 @@ The HTTP methods in the below sample are supported.
       @Query('apikey') String apiKey,
       @Query('scope') String scope,
       @Query('type') String type,
-      @Query('from') int from);
+      @Query('from') int from,
+  );
   
   @PATCH('/tasks/{id}')
   Future<Task> updateTaskPart(
-      @Path() String id, @Body() Map<String, dynamic> map);
+    @Path() String id, 
+    @Body() Map<String, dynamic> map,
+  );
   
   @PUT('/tasks/{id}')
   Future<Task> updateTask(@Path() String id, @Body() Task task);
@@ -193,9 +211,9 @@ client.getTask('2').then((it) {
 }).catchError((obj) {
   // non-200 error goes here.
   switch (obj.runtimeType) {
-    case DioError:
+    case DioException:
       // Here's the sample to get the failed response error code and message
-      final res = (obj as DioError).response;
+      final res = (obj as DioException).response;
       logger.e('Got error : ${res.statusCode} -> ${res.statusMessage}');
       break;
   default:
@@ -211,7 +229,7 @@ If you want to use a relative `baseUrl` value in the `RestApi` annotation of the
 ```dart
 @RestApi(baseUrl: '/tasks')
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
   @GET('{id}')
   Future<HttpResponse<Task>> getTask(@Path('id') String id);
@@ -224,6 +242,40 @@ dio.options.baseUrl = 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1';
 final client = RestClient(dio);
 ```
 
+### Call Adapter
+
+This feature allows you to adapt the return type of a network call from one type to another.
+
+For example:
+Future<User> → Future<Result<User>>
+
+This feature provides flexibility in handling API responses, enabling better integration with custom response wrappers or error handling libraries.
+
+The CallAdapter takes the original return type R and transforms it into a new type T. This is particularly useful when working with response wrappers like Either, Result, or ApiResponse.
+
+Below is an example using a custom CallAdapter with a Result wrapper:
+```dart
+  class MyCallAdapter<T> extends CallAdapter<Future<T>, Future<Result<T>>> {
+    @override
+    Future<Result<T>> adapt(Future<T> Function() call) async {
+      try {
+        final response = await call();
+        return Result<T>.ok(response);
+      } catch (e) {
+        return Result.err(e.toString());
+      }
+    }
+  }
+
+  @RestApi(callAdapter: MyCallAdapter)
+  abstract class RestClient {
+    factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+    @GET('/')
+    Future<Result<User>> getUser();
+  }
+```
+
 ### Multiple endpoints support
 
 If you want to use multiple endpoints to your `RestClient`, you should pass your base url when you initiate `RestClient`. Any value defined in `RestApi` will be ignored.
@@ -231,7 +283,7 @@ If you want to use multiple endpoints to your `RestClient`, you should pass your
 ```dart
 @RestApi(baseUrl: 'this url will be ignored if baseUrl is passed')
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 }
 
 final client = RestClient(dio, baseUrl: 'your base url');
@@ -269,7 +321,7 @@ E.g.
   parser: Parser.FlutterCompute,
 )
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
   @GET('/task')
   Future<Task> getTask();
@@ -300,7 +352,7 @@ Avoid using Map values, otherwise multiple background isolates will be spawned t
 
 ```dart
 abstract class RestClient {
-  factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
 
   // BAD
   @GET('/tasks')
@@ -342,6 +394,16 @@ For the project not to be confused with the files generated by the retrofit you 
 Add "ignore files and folders"
 
 `*.g.dart`
+
+## Videos
+- [Flutter Rest API - Simplifying Make API Call Using Retrofit](https://www.youtube.com/watch?v=zjNhlmue5Os)
+- [Flutter retrofit implementation | Flutter Network Calls | Source Code In Desc | flutter coding](https://www.youtube.com/watch?v=OZF9mqKbi3k)
+- [Flutter retrofit api call | GET | amplifyabhi ](https://www.youtube.com/watch?v=ARIy5OSIspQ)
+- [Flutter - Retrofit Setup & Explanation | Clean Architecture | In Hindi](https://www.youtube.com/watch?v=e6JV-t9Yo3U)
+- [How to call API using retrofit in flutter application and JSON parsing ?](https://www.youtube.com/watch?v=UDhRvP1Iafc)
+- [API Integration in Flutter using Retrofit | Flutter Package Tutorial](https://www.youtube.com/watch?v=upX9T_ciWz4&t=39s)
+- [Build A News App - Make Request To API Using Retrofit | PART 4 - Flutter Clean Architecture](https://www.youtube.com/watch?v=kjMoW4cs2kU)
+
 
 ## Credits
 
