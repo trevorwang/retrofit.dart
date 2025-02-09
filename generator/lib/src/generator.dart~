@@ -611,7 +611,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     var definePath = method.peek('path')?.stringValue;
     paths.forEach((k, v) {
       final value = v.peek('value')?.stringValue ?? k.displayName;
-      definePath = definePath?.replaceAll(
+      definePath = definePath?.replaceFirst(
         '{$value}',
         "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? _hasToJson(k.type) ? '.toJson()' : '.name' : ''}}",
       );
@@ -626,16 +626,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ConstantReader httpMethod,
     InterfaceType? callAdapter,
   ) {
-    String returnAsyncWrapper =
+    final returnAsyncWrapper =
         m.returnType.isDartAsyncFuture ? 'return' : 'yield';
-    if (callAdapter != null) {
-      final callAdapterOriginalReturnType = callAdapter.superclass
-        ?.typeArguments.firstOrNull as InterfaceType?;
-      returnAsyncWrapper = _isReturnTypeFuture(
-              callAdapterOriginalReturnType?.getDisplayString() ?? '')
-          ? 'return'
-          : 'yield';
-    }
     final path = _generatePath(m, httpMethod);
     final blocks = <Code>[];
 
@@ -1354,14 +1346,10 @@ You should create a new class to encapsulate the response.
       if (_displayString(dartType) == 'dynamic' || _isBasicType(dartType)) {
         return '(json)=>json as ${_displayString(dartType, withNullability: dartType.isNullable)},';
       } else {
-        if (_displayString(dartType) == 'void') {
-          return '(json)=> (){}(),';
+        if (dartType.isNullable) {
+          return '(json)=> json == null ? null : ${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
         } else {
-          if (dartType.isNullable) {
-            return '(json)=> json == null ? null : ${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
-          } else {
-            return '(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
-          }
+          return '(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
         }
       }
     }
@@ -2177,8 +2165,8 @@ ${bodyName.displayName} == null
             } else if (_isBasicType(innerType)) {
               value = 'i';
               if (innerType != null &&
-                  !_typeChecker(String).isExactlyType(innerType)) {
-                value += '.toString()';
+                  _typeChecker(String).isExactlyType(innerType)) {
+                value += '.toString';
               }
             } else {
               value = 'jsonEncode(i)';

@@ -519,6 +519,19 @@ abstract class PathTest {
   );
 }
 
+@ShouldGenerate(
+  r'/image/${imageType.name}/${id}/${id}_XL.png',
+  contains: true,
+)
+@RestApi()
+abstract class MultiplePathTest {
+  @GET('/image/{imageType}/{id}/{id}_XL.png')
+  Future<HttpResponse<dynamic>> getImage(
+    @Path('imageType') ImageType imageType,
+    @Path('id') String id,
+  );
+}
+
 enum ImageType { icon, large }
 
 @ShouldGenerate(
