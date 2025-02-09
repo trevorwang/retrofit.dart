@@ -266,7 +266,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return callAdapter;
   }
 
-  /// get result type being adapted to e.g. Future<Result<T>>
+  /// get result type being adapted to e.g. `Future<Result<T>>`
   /// where T is supposed to be the wrapped result type
   InterfaceType? getAdaptedReturnType(ConstantReader? callAdapter) {
     final callAdapterTypeVal = callAdapter?.typeValue as InterfaceType?;
@@ -278,7 +278,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// extract the wrapped result type of an adapted call...
   /// Usage scenario:
   /// given the return type of the api method is `Future<Result<UserResponse>>`,
-  /// and the second type parameter(T) on CallAdapter<R, T> is `Future<Result<T>>`,
+  /// and the second type parameter(T) on `CallAdapter<R, T>` is `Future<Result<T>>`,
   /// this method basically figures out the value of 'T' which will be "UserResponse"
   /// in this case
   String extractWrappedResultType(String template, String actual) {
