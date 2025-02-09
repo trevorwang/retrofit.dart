@@ -608,7 +608,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     var definePath = method.peek('path')?.stringValue;
     paths.forEach((k, v) {
       final value = v.peek('value')?.stringValue ?? k.displayName;
-      definePath = definePath?.replaceFirst(
+      definePath = definePath?.replaceAll(
         '{$value}',
         "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? _hasToJson(k.type) ? '.toJson()' : '.name' : ''}}",
       );
