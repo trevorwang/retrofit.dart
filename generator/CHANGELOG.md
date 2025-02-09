@@ -1,6 +1,7 @@
 
 ## 9.1.8
 
+- Fixed bug of callAdapter using yield/return incorrectly
 - Fixed issue which generated invalid code for the same path parameter appears multiple times.
 
   Example:
@@ -40,7 +41,7 @@
 
     @UseCallAdapter(MyCallAdapter)
     @GET('/')
-    Future<User> getTasks();
+    Future<Either<ApiError, User>> getTasks();
   }
 ```
 
