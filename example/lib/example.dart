@@ -2,7 +2,6 @@ import 'dart:convert' show jsonEncode;
 import 'dart:io';
 
 import 'package:dio/dio.dart' hide Headers;
-import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:retrofit_example/api_result.dart';
