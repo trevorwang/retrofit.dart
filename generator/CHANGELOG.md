@@ -1,4 +1,112 @@
-# Changelog
+
+## 9.1.8
+
+- Fixed bug of callAdapter using yield/return incorrectly
+- Fixed issue which generated invalid code for the same path parameter appears multiple times.
+
+  Example:
+
+  ```dart
+  @GET('/image/{imageType}/{id}/{id}_XL.png')
+  Future<HttpResponse<dynamic>> getImage(
+    @Path('imageType') ImageType imageType,
+    @Path('id') String id,
+  );
+  ```
+
+## 9.1.7
+
+- Introduced CallAdapters, This feature allows adaptation of a Call with return type R into the type of T.
+  e.g. Future<User> to Future<Result<User>>
+
+  Code Example:
+
+```dart
+  class MyCallAdapter<T> extends CallAdapter<Future<T>, Future<Either<ApiError, T>>> {
+    @override
+    Future<Either<ApiError, T>> adapt(Future<T> Function() call) async {
+      try {
+        final response = await call();
+        return Either.right(response);
+      }
+      catch (e) {
+        return Either.left(ApiError(e))
+      }
+    }
+  }
+
+  @RestApi()
+  abstract class RestClient {
+    factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+    @UseCallAdapter(MyCallAdapter)
+    @GET('/')
+    Future<Either<ApiError, User>> getTasks();
+  }
+```
+
+## 9.1.6
+
+- Update `analyzer`, `dart_style` and `source_gen` dependencies to allow upper versions
+
+## 9.1.5
+
+- Add support for nested object of non-primitive types in `TypedExtras`.
+
+  Example :
+
+  ```dart
+  @RestApi()
+  abstract class TypedExtrasTest {
+    @DummyTypedExtras(
+      id: '1234',
+      config: Config(
+        date: '24-10-2024',
+        type: 'analytics',
+        shouldReplace: true,
+        subConfig: {'date': '24-11-2025'},
+      ),
+    )
+    @GET('path')
+    Future<void> list();
+  }
+  ```
+
+## 9.1.3
+
+- Add support for multiple `TypedExtras`.
+
+  Example :
+
+  ```dart
+  @TypedExtrasSubClass(
+    id: 'abcd',
+    fileType: FileType.json,
+    destinations: [Destination.remote]
+  )
+  @AnotherTypedExtrasSubClass(
+    state: 'Ohio',
+    destinations: [Destination.remote]
+  )
+  @http.POST('/path/')
+  Future<String> myMethod();
+  ```
+
+## 9.1.2
+
+- Support passing Enums into `TypedExtras`.
+
+  Example :
+
+  ```dart
+  @TypedExtrasSubClass(
+    id: 'abcd',
+    fileType: FileType.json,
+    destinations: [Destination.remote]
+  )
+  @http.POST('/path/')
+  Future<String> myMethod();
+  ```
 
 ## 9.1.0
 
@@ -29,6 +137,7 @@
 - Added `@Extras` to pass extra options to dio requests, response, transformer and interceptors.
 
   Example :
+
   ```dart
   @http.POST('/path/')
   Future<String> myMethod(@Extras() Map<String, dynamic> extras);

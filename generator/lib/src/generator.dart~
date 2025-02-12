@@ -266,7 +266,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return callAdapter;
   }
 
-  /// get result type being adapted to e.g. `Future<Result<T>>`
+  /// get result type being adapted to e.g. Future<Result<T>>
   /// where T is supposed to be the wrapped result type
   InterfaceType? getAdaptedReturnType(ConstantReader? callAdapter) {
     final callAdapterTypeVal = callAdapter?.typeValue as InterfaceType?;
@@ -278,7 +278,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// extract the wrapped result type of an adapted call...
   /// Usage scenario:
   /// given the return type of the api method is `Future<Result<UserResponse>>`,
-  /// and the second type parameter(T) on `CallAdapter<R, T>` is `Future<Result<T>>`,
+  /// and the second type parameter(T) on CallAdapter<R, T> is `Future<Result<T>>`,
   /// this method basically figures out the value of 'T' which will be "UserResponse"
   /// in this case
   String extractWrappedResultType(String template, String actual) {
@@ -611,7 +611,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     var definePath = method.peek('path')?.stringValue;
     paths.forEach((k, v) {
       final value = v.peek('value')?.stringValue ?? k.displayName;
-      definePath = definePath?.replaceAll(
+      definePath = definePath?.replaceFirst(
         '{$value}',
         "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? _hasToJson(k.type) ? '.toJson()' : '.name' : ''}}",
       );
@@ -626,16 +626,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ConstantReader httpMethod,
     InterfaceType? callAdapter,
   ) {
-    String returnAsyncWrapper =
+    final returnAsyncWrapper =
         m.returnType.isDartAsyncFuture ? 'return' : 'yield';
-    if (callAdapter != null) {
-      final callAdapterOriginalReturnType = callAdapter.superclass
-        ?.typeArguments.firstOrNull as InterfaceType?;
-      returnAsyncWrapper = _isReturnTypeFuture(
-              callAdapterOriginalReturnType?.getDisplayString() ?? '')
-          ? 'return'
-          : 'yield';
-    }
     final path = _generatePath(m, httpMethod);
     final blocks = <Code>[];
 
@@ -1354,14 +1346,10 @@ You should create a new class to encapsulate the response.
       if (_displayString(dartType) == 'dynamic' || _isBasicType(dartType)) {
         return '(json)=>json as ${_displayString(dartType, withNullability: dartType.isNullable)},';
       } else {
-        if (_displayString(dartType) == 'void') {
-          return '(json)=> (){}(),';
+        if (dartType.isNullable) {
+          return '(json)=> json == null ? null : ${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
         } else {
-          if (dartType.isNullable) {
-            return '(json)=> json == null ? null : ${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
-          } else {
-            return '(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
-          }
+          return '(json)=>${_displayString(dartType)}.fromJson(json as Map<String, dynamic>),';
         }
       }
     }
@@ -2077,7 +2065,7 @@ ${bodyName.displayName} == null
             'filename': fileName,
             if (contentType != null)
               'contentType':
-                  refer('DioMediaType', 'package:dio/dio.dart')
+                  refer('MediaType', 'package:http_parser/http_parser.dart')
                       .property('parse')
                       .call([literal(contentType)]),
           });
@@ -2116,7 +2104,7 @@ ${bodyName.displayName} == null
           final fileName = r.peek('fileName')?.stringValue;
           final conType = contentType == null
               ? ''
-              : 'contentType: DioMediaType.parse(${literal(contentType)}),';
+              : 'contentType: MediaType.parse(${literal(contentType)}),';
           final returnCode =
               refer(dataVar).property('files').property('add').call([
             refer('''
@@ -2151,7 +2139,7 @@ ${bodyName.displayName} == null
             final fileName = r.peek('fileName')?.stringValue;
             final conType = contentType == null
                 ? ''
-                : 'contentType: DioMediaType.parse(${literal(contentType)}),';
+                : 'contentType: MediaType.parse(${literal(contentType)}),';
             blocks.add(
               refer(dataVar).property('files').property('addAll').call([
                 refer('''
@@ -2177,8 +2165,8 @@ ${bodyName.displayName} == null
             } else if (_isBasicType(innerType)) {
               value = 'i';
               if (innerType != null &&
-                  !_typeChecker(String).isExactlyType(innerType)) {
-                value += '.toString()';
+                  _typeChecker(String).isExactlyType(innerType)) {
+                value += '.toString';
               }
             } else {
               value = 'jsonEncode(i)';
@@ -2198,7 +2186,7 @@ ${bodyName.displayName} == null
               _typeChecker(File).isExactlyType(innerType)) {
             final conType = contentType == null
                 ? ''
-                : 'contentType: DioMediaType.parse(${literal(contentType)}),';
+                : 'contentType: MediaType.parse(${literal(contentType)}),';
             if (p.type.isNullable) {
               blocks.add(Code('if (${p.displayName} != null) {'));
             }
@@ -2274,10 +2262,7 @@ ${bodyName.displayName} == null
                 if (_typeChecker(String).isExactlyType(p.type))
                   refer(p.displayName)
                 else if (_isEnum(p.type))
-                  _hasToJson(p.type)
-                      ? refer(p.displayName).property('toJson').call(
-                          []).ifNullThen(refer(p.displayName).property('name'))
-                      : refer(p.displayName).property('name')
+                  refer(p.displayName).property('name')
                 else
                   refer(p.displayName).property('toString').call([]),
               ]),
@@ -2319,7 +2304,7 @@ ${bodyName.displayName} == null
                 ),
               ], {
                 'contentType':
-                    refer('DioMediaType', 'package:dio/dio.dart')
+                    refer('MediaType', 'package:http_parser/http_parser.dart')
                         .property('parse')
                         .call([literal(contentType)]),
               });
