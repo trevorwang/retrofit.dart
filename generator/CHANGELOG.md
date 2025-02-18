@@ -1,3 +1,32 @@
+## 9.1.9
+
+- Fixed issue with `@Part` annotation with toJson() enum values.
+
+  Example:
+
+  ```dart
+  import 'package:json_annotation/json_annotation.dart';
+
+  @JsonEnum()
+  enum TestEnumWithToJson { 
+    @JsonValue('A')
+    A('A'), 
+    @JsonValue('B')
+    B('B'); 
+
+    const TestEnumWithToJson(this.json);
+    
+    final String? json;
+
+    String? toJson() => json;
+  }
+
+  @RestApi()
+  abstract class TestModelList {
+    @POST('/')
+    Future<void> testEnumWithToJsonType(@Part() TestEnumWithToJson enumValue);
+  }
+  ```
 
 ## 9.1.8
 
