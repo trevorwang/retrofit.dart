@@ -1422,15 +1422,35 @@ abstract class TestFileList {
   Future<void> testOptionalFile({@Part() File file});
 }
 
+// @JsonEnum()
+enum TestEnumWithToJson { 
+  // @JsonValue('A')
+  A('A'), 
+  // @JsonValue('B')
+  B('B'),
+; 
+
+const TestEnumWithToJson(this.json);
+  
+final String? json;
+String? toJson() => json;
+}
+
 @ShouldGenerate(
   '''
-    _data.fields.add(MapEntry('users', jsonEncode(users)));
+    _data.fields.add(MapEntry(
+      'users',
+      jsonEncode(users),
+    ));
 ''',
   contains: true,
 )
 @ShouldGenerate(
   '''
-    _data.fields.add(MapEntry('item', jsonEncode(user)));
+    _data.fields.add(MapEntry(
+      'item',
+      jsonEncode(user),
+    ));
 ''',
   contains: true,
 )
@@ -1452,12 +1472,44 @@ abstract class TestFileList {
 @ShouldGenerate(
   '''
     final _data = FormData();
-    _data.fields.add(MapEntry('a', a.toString()));
-    _data.fields.add(MapEntry('b', b.toString()));
+    _data.fields.add(MapEntry(
+      'enumValue',
+      enumValue.name,
+    ));
+''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+    final _data = FormData();
+    _data.fields.add(MapEntry(
+      'enumValue',
+      enumValue.toJson() ?? enumValue.name,
+    ));
+''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+    final _data = FormData();
+    _data.fields.add(MapEntry(
+      'a',
+      a.toString(),
+    ));
+    _data.fields.add(MapEntry(
+      'b',
+      b.toString(),
+    ));
     if (c != null) {
-      _data.fields.add(MapEntry('c', c));
+      _data.fields.add(MapEntry(
+        'c',
+        c,
+      ));
     }
-    _data.fields.add(MapEntry('d', d.toString()));
+    _data.fields.add(MapEntry(
+      'd',
+      d.toString(),
+    ));
 ''',
   contains: true,
 )
@@ -1475,6 +1527,12 @@ abstract class TestModelList {
   @POST('/')
   Future<void> testMap(@Part() Map<String, dynamic> map);
 
+  @POST('/')
+  Future<void> testEnum(@Part() TestEnum enumValue);
+
+  @POST('/')
+  Future<void> testEnumWithToJsonType(@Part() TestEnumWithToJson enumValue);
+  
   @POST('/')
   Future<void> testBasicType(
     @Part() int a,
