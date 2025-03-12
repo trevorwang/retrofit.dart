@@ -2274,10 +2274,7 @@ ${bodyName.displayName} == null
                 if (_typeChecker(String).isExactlyType(p.type))
                   refer(p.displayName)
                 else if (_isEnum(p.type))
-                  _hasToJson(p.type)
-                      ? refer(p.displayName).property('toJson').call(
-                          []).ifNullThen(refer(p.displayName).property('name'))
-                      : refer(p.displayName).property('name')
+                  refer(p.displayName).property('name')
                 else
                   refer(p.displayName).property('toString').call([]),
               ]),
