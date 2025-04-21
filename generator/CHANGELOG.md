@@ -1,3 +1,7 @@
+## 9.2.0
+
+- Update protobuf version to 4.0.0
+
 ## 9.1.9
 
 - Fixed issue with `@Part` annotation with toJson() enum values.

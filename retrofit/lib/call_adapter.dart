@@ -1,5 +1,5 @@
 /// Adapts a Call with return type R into the type of T.
-/// e.g. Future<User> to Future<Result<User>>
+/// e.g. `Future<User>` to `Future<Result<User>>`
 abstract class CallAdapter<R, T> {
   T adapt(R Function() call);
 }
@@ -14,7 +14,7 @@ abstract class CallAdapter<R, T> {
 /// pass in type parameters for the original call return type and adapted call return type.
 /// Note: your adapter subclass must accept a single type parameter(T), where T is
 /// the type of the unwrapped response from the original call. e.g. 
-/// "UserResponse" in "Future<UserResponse>"
+/// `UserResponse` in `Future<UserResponse>`
 /// 
 /// ```dart
 /// class ResultCallAdapter<T> extends CallAdapter<Future<T>, Future<Result<T>>> {
