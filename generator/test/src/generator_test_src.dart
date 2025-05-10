@@ -1,7 +1,9 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 import 'package:source_gen_test/annotations.dart';
+
 import 'query.pb.dart';
 
 class Resource<T> {}
@@ -65,7 +67,7 @@ class MockCallAdapter3<T> extends CallAdapter<Future<T>, Flow<T>> {
 }
 
 @ShouldGenerate(
-'''
+  '''
   Future<User> _getUser() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -1423,35 +1425,26 @@ abstract class TestFileList {
 }
 
 // @JsonEnum()
-enum TestEnumWithToJson { 
+enum TestEnumWithToJson {
   // @JsonValue('A')
-  A('A'), 
+  A('A'),
   // @JsonValue('B')
   B('B'),
-; 
+  ;
 
-const TestEnumWithToJson(this.json);
-  
-final String? json;
-String? toJson() => json;
+  const TestEnumWithToJson(this.json);
+
+  final String? json;
+
+  String? toJson() => json;
 }
 
 @ShouldGenerate(
-  '''
-    _data.fields.add(MapEntry(
-      'users',
-      jsonEncode(users),
-    ));
-''',
+  r"_data.fields.add(MapEntry('users', jsonEncode(users)));",
   contains: true,
 )
 @ShouldGenerate(
-  '''
-    _data.fields.add(MapEntry(
-      'item',
-      jsonEncode(user),
-    ));
-''',
+  r"_data.fields.add(MapEntry('item', jsonEncode(user)));",
   contains: true,
 )
 @ShouldGenerate(
@@ -1471,45 +1464,27 @@ String? toJson() => json;
 )
 @ShouldGenerate(
   '''
-    final _data = FormData();
-    _data.fields.add(MapEntry(
-      'enumValue',
-      enumValue.name,
-    ));
+_data.fields.add(MapEntry('enumValue', enumValue.name));
+''',
+  contains: true,
+)
+@ShouldGenerate(
+  '''
+    _data.fields.add(
+      MapEntry('enumValue', enumValue.toJson() ?? enumValue.name),
+    );
 ''',
   contains: true,
 )
 @ShouldGenerate(
   '''
     final _data = FormData();
-    _data.fields.add(MapEntry(
-      'enumValue',
-      enumValue.toJson() ?? enumValue.name,
-    ));
-''',
-  contains: true,
-)
-@ShouldGenerate(
-  '''
-    final _data = FormData();
-    _data.fields.add(MapEntry(
-      'a',
-      a.toString(),
-    ));
-    _data.fields.add(MapEntry(
-      'b',
-      b.toString(),
-    ));
+    _data.fields.add(MapEntry('a', a.toString()));
+    _data.fields.add(MapEntry('b', b.toString()));
     if (c != null) {
-      _data.fields.add(MapEntry(
-        'c',
-        c,
-      ));
+      _data.fields.add(MapEntry('c', c));
     }
-    _data.fields.add(MapEntry(
-      'd',
-      d.toString(),
-    ));
+    _data.fields.add(MapEntry('d', d.toString()));
 ''',
   contains: true,
 )
@@ -1532,7 +1507,7 @@ abstract class TestModelList {
 
   @POST('/')
   Future<void> testEnumWithToJsonType(@Part() TestEnumWithToJson enumValue);
-  
+
   @POST('/')
   Future<void> testBasicType(
     @Part() int a,

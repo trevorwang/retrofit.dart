@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
@@ -629,8 +630,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     String returnAsyncWrapper =
         m.returnType.isDartAsyncFuture ? 'return' : 'yield';
     if (callAdapter != null) {
-      final callAdapterOriginalReturnType = callAdapter.superclass
-        ?.typeArguments.firstOrNull as InterfaceType?;
+      final callAdapterOriginalReturnType =
+          callAdapter.superclass?.typeArguments.firstOrNull as InterfaceType?;
       returnAsyncWrapper = _isReturnTypeFuture(
               callAdapterOriginalReturnType?.getDisplayString() ?? '')
           ? 'return'
@@ -2076,10 +2077,9 @@ ${bodyName.displayName} == null
           ], {
             'filename': fileName,
             if (contentType != null)
-              'contentType':
-                  refer('DioMediaType', 'package:dio/dio.dart')
-                      .property('parse')
-                      .call([literal(contentType)]),
+              'contentType': refer('DioMediaType', 'package:dio/dio.dart')
+                  .property('parse')
+                  .call([literal(contentType)]),
           });
 
           final optionalFile = m.parameters
@@ -2318,10 +2318,9 @@ ${bodyName.displayName} == null
                   "jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' : ''})",
                 ),
               ], {
-                'contentType':
-                    refer('DioMediaType', 'package:dio/dio.dart')
-                        .property('parse')
-                        .call([literal(contentType)]),
+                'contentType': refer('DioMediaType', 'package:dio/dio.dart')
+                    .property('parse')
+                    .call([literal(contentType)]),
               });
 
               final optionalFile = m.parameters
