@@ -15,7 +15,7 @@ class HttpMethod {
 /// Define how to parse response json
 /// If you want to support more, PR is welcome
 enum Parser {
-  /// Each model class must provide 'factory T.fromJson(Map<String, dynamic> json)'
+  /// Each model class must provide `factory T.fromJson(Map<String, dynamic> json)`
   /// For more detail, please visit 'https://github.com/trevorwang/retrofit.dart#type-conversion'
   JsonSerializable,
 
@@ -204,7 +204,7 @@ class NoBody {
 /// @POST("/post")
 /// Future<String> example(
 ///   @Field() int foo,
-///   @Field("bar") String barbar},
+///   @Field("bar") String barbar,
 /// )
 /// ```
 /// Calling with `foo.example("Bob Smith", "President")` yields a request body of
