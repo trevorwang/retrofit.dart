@@ -1827,6 +1827,10 @@ if (T != dynamic &&
           ((_typeChecker(List).isExactly(bodyTypeElement) ||
                   _typeChecker(BuiltList).isExactly(bodyTypeElement)) &&
               !_isBasicInnerType(bodyName.type))) {
+        final nullabilitySuffix =
+            bodyName.type.nullabilitySuffix == NullabilitySuffix.question
+                ? '?'
+                : '';
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
           case retrofit.Parser.DartJsonMapper:
@@ -1834,7 +1838,7 @@ if (T != dynamic &&
               declareFinal(dataVar)
                   .assign(
                     refer('''
-            ${bodyName.displayName}.map((e) => e.toJson()).toList()
+            ${bodyName.displayName}$nullabilitySuffix.map((e) => e.toJson()).toList()
             '''),
                   )
                   .statement,
@@ -1844,18 +1848,21 @@ if (T != dynamic &&
               declareFinal(dataVar)
                   .assign(
                     refer('''
-            ${bodyName.displayName}.map((e) => e.toMap()).toList()
+            ${bodyName.displayName}$nullabilitySuffix.map((e) => e.toMap()).toList()
             '''),
                   )
                   .statement,
             );
           case retrofit.Parser.FlutterCompute:
+            final compute =
+                'await compute(serialize${_displayString(_genericOf(bodyName.type))}List, ${bodyName.displayName})';
             blocks.add(
               declareFinal(dataVar)
                   .assign(
-                    refer('''
-            await compute(serialize${_displayString(_genericOf(bodyName.type))}List, ${bodyName.displayName})
-            '''),
+                    refer(bodyName.type.nullabilitySuffix ==
+                            NullabilitySuffix.question
+                        ? '${bodyName.displayName} == null ? null: $compute'
+                        : compute),
                   )
                   .statement,
             );
