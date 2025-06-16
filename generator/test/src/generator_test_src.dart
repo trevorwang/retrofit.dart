@@ -2206,6 +2206,32 @@ abstract class TestComputeNullableObjectBody {
 }
 
 @ShouldGenerate(
+  '    final _data = user?.map((e) => e.toJson()).toList();',
+  contains: true,
+)
+@RestApi(
+  baseUrl: 'https://httpbin.org/',
+  parser: Parser.JsonSerializable,
+)
+abstract class TestComputeNullableObjectListBodyJsonSerializable {
+  @GET('/xx')
+  Future<void> getResult(@Body() List<User>? user);
+}
+
+@ShouldGenerate(
+  '    final _data = user == null ? null : await compute(serializeUserList, user);',
+  contains: true,
+)
+@RestApi(
+  baseUrl: 'https://httpbin.org/',
+  parser: Parser.FlutterCompute,
+)
+abstract class TestComputeNullableObjectListBodyFlutterCompute {
+  @GET('/xx')
+  Future<void> getResult(@Body() List<User>? user);
+}
+
+@ShouldGenerate(
   '_data.removeWhere((k, v) => v == null);',
   contains: true,
 )
