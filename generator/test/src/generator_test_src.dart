@@ -694,11 +694,9 @@ enum TestEnum { A, B }
     try {
       _value = TestEnum.values.firstWhere(
         (e) => e.name == _result.data,
-        orElse:
-            () =>
-                throw ArgumentError(
-                  'TestEnum does not contain value ${_result.data}',
-                ),
+        orElse: () => throw ArgumentError(
+          'TestEnum does not contain value ${_result.data}',
+        ),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
@@ -1592,10 +1590,9 @@ abstract class JsonMapperGenericCast {
   '''
     late User? _value;
     try {
-      _value =
-          _result.data == null
-              ? null
-              : JsonMapper.fromMap<User>(_result.data!)!;
+      _value = _result.data == null
+          ? null
+          : JsonMapper.fromMap<User>(_result.data!)!;
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -1616,13 +1613,11 @@ abstract class NullableJsonMapperGenericCast {
   '''
     late List<User> _value;
     try {
-      _value =
-          _result.data!
-              .map(
-                (dynamic i) =>
-                    JsonMapper.fromMap<User>(i as Map<String, dynamic>)!,
-              )
-              .toList();
+      _value = _result.data!
+          .map(
+            (dynamic i) => JsonMapper.fromMap<User>(i as Map<String, dynamic>)!,
+          )
+          .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -1737,10 +1732,9 @@ abstract class NullableMapSerializableGenericCast {
   '''
     late List<User> _value;
     try {
-      _value =
-          _result.data!
-              .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
-              .toList();
+      _value = _result.data!
+          .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
+          .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -1761,10 +1755,9 @@ abstract class MapSerializableTestListBody {
   '''
     late List<User>? _value;
     try {
-      _value =
-          _result.data
-              ?.map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
-              .toList();
+      _value = _result.data
+          ?.map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
+          .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -1907,10 +1900,9 @@ abstract class ComputeGenericCast {
   '''
     late User? _value;
     try {
-      _value =
-          _result.data == null
-              ? null
-              : await compute(deserializeUser, _result.data!);
+      _value = _result.data == null
+          ? null
+          : await compute(deserializeUser, _result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -1954,13 +1946,12 @@ abstract class ComputeTestListBody {
   '''
     late List<User>? _value;
     try {
-      _value =
-          _result.data == null
-              ? null
-              : await compute(
-                deserializeUserList,
-                _result.data!.cast<Map<String, dynamic>>(),
-              );
+      _value = _result.data == null
+          ? null
+          : await compute(
+              deserializeUserList,
+              _result.data!.cast<Map<String, dynamic>>(),
+            );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -2095,22 +2086,21 @@ abstract class ComputeTestMapBody2 {
   '''
     late Map<String, User>? _value;
     try {
-      _value =
-          _result.data == null
-              ? null
-              : Map.fromEntries(
-                await Future.wait(
-                  _result.data!.entries.map(
-                    (e) async => MapEntry(
-                      e.key,
-                      await compute(
-                        deserializeUser,
-                        e.value as Map<String, dynamic>,
-                      ),
+      _value = _result.data == null
+          ? null
+          : Map.fromEntries(
+              await Future.wait(
+                _result.data!.entries.map(
+                  (e) async => MapEntry(
+                    e.key,
+                    await compute(
+                      deserializeUser,
+                      e.value as Map<String, dynamic>,
                     ),
                   ),
                 ),
-              );
+              ),
+            );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -2301,12 +2291,11 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
     try {
       _value = GenericUser<List<User>>.fromJson(
         _result.data!,
-        (json) =>
-            json is List<dynamic>
-                ? json
-                    .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
-                    .toList()
-                : List.empty(),
+        (json) => json is List<dynamic>
+            ? json
+                  .map<User>((i) => User.fromJson(i as Map<String, dynamic>))
+                  .toList()
+            : List.empty(),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
@@ -2325,20 +2314,18 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
   '''
     late GenericUser<List<User>>? _value;
     try {
-      _value =
-          _result.data == null
-              ? null
-              : GenericUser<List<User>>.fromJson(
-                _result.data!,
-                (json) =>
-                    json is List<dynamic>
-                        ? json
-                            .map<User>(
-                              (i) => User.fromJson(i as Map<String, dynamic>),
-                            )
-                            .toList()
-                        : List.empty(),
-              );
+      _value = _result.data == null
+          ? null
+          : GenericUser<List<User>>.fromJson(
+              _result.data!,
+              (json) => json is List<dynamic>
+                  ? json
+                        .map<User>(
+                          (i) => User.fromJson(i as Map<String, dynamic>),
+                        )
+                        .toList()
+                  : List.empty(),
+            );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -2401,13 +2388,12 @@ abstract class NestGenericTypeShouldBeCastedRecursively {
   '''
     late GenericUser<User>? _value;
     try {
-      _value =
-          _result.data == null
-              ? null
-              : GenericUser<User>.fromJson(
-                _result.data!,
-                (json) => User.fromJson(json as Map<String, dynamic>),
-              );
+      _value = _result.data == null
+          ? null
+          : GenericUser<User>.fromJson(
+              _result.data!,
+              (json) => User.fromJson(json as Map<String, dynamic>),
+            );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -2447,16 +2433,14 @@ abstract class DynamicNullableInnerGenericTypeShouldBeCastedAsMap {
   '''
     late GenericUser<User?>? _value;
     try {
-      _value =
-          _result.data == null
-              ? null
-              : GenericUser<User?>.fromJson(
-                _result.data!,
-                (json) =>
-                    json == null
-                        ? null
-                        : User.fromJson(json as Map<String, dynamic>),
-              );
+      _value = _result.data == null
+          ? null
+          : GenericUser<User?>.fromJson(
+              _result.data!,
+              (json) => json == null
+                  ? null
+                  : User.fromJson(json as Map<String, dynamic>),
+            );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -2476,10 +2460,9 @@ abstract class NullableDynamicNullableInnerGenericTypeShouldBeCastedAsMap {
     try {
       _value = GenericUser<List<double>>.fromJson(
         _result.data!,
-        (json) =>
-            json is List<dynamic>
-                ? json.map<double>((i) => i as double).toList()
-                : List.empty(),
+        (json) => json is List<dynamic>
+            ? json.map<double>((i) => i as double).toList()
+            : List.empty(),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
@@ -2498,16 +2481,14 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
   '''
     late GenericUser<List<double>>? _value;
     try {
-      _value =
-          _result.data == null
-              ? null
-              : GenericUser<List<double>>.fromJson(
-                _result.data!,
-                (json) =>
-                    json is List<dynamic>
-                        ? json.map<double>((i) => i as double).toList()
-                        : List.empty(),
-              );
+      _value = _result.data == null
+          ? null
+          : GenericUser<List<double>>.fromJson(
+              _result.data!,
+              (json) => json is List<dynamic>
+                  ? json.map<double>((i) => i as double).toList()
+                  : List.empty(),
+            );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -2545,12 +2526,11 @@ abstract class DynamicInnerGenericTypeShouldBeWithoutGenericArgumentType {
   '''
     late GenericUserWithoutGenericArgumentFactories<dynamic>? _value;
     try {
-      _value =
-          _result.data == null
-              ? null
-              : GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
-                _result.data!,
-              );
+      _value = _result.data == null
+          ? null
+          : GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
+              _result.data!,
+            );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
