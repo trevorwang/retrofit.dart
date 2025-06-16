@@ -25,5 +25,5 @@ dependencies:
 
 dev_dependencies:
   lints: any
-  source_gen_test: ^1.1.1
+  source_gen_test: ^1.0.6
   test: ^1.25.0
