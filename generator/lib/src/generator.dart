@@ -381,10 +381,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               ..name = it.name
               ..named = it.isNamed
               ..type = refer(it.type.getDisplayString())
-              ..required = optional &&
-                  it.isNamed &&
-                  it.type.nullabilitySuffix == NullabilitySuffix.none &&
-                  !it.hasDefaultValue
+              ..required = optional && it.isRequiredNamed
               ..defaultTo = optional && it.defaultValueCode != null
                   ? Code(it.defaultValueCode!)
                   : null,
@@ -1991,11 +1988,9 @@ if (T != dynamic &&
                 } else {
                   blocks.add(
                     refer('$dataVar.addAll').call([
-                      refer('''
-${bodyName.displayName} == null
-                      ? <String, dynamic>{}
-                      : await compute(serialize${_displayString(bodyName.type)}, ${bodyName.displayName})
-                  '''),
+                      refer(
+                        '${bodyName.displayName} == null ? <String, dynamic>{} : await compute(serialize${_displayString(bodyName.type)}, ${bodyName.displayName})',
+                      ),
                     ]).statement,
                   );
                 }
