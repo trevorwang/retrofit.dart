@@ -897,6 +897,34 @@ abstract class TestObjectBody {
 
 @ShouldGenerate(
   '''
+  Future<String> createUser({required dynamic user}) async {
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestDynamicRequiredBody {
+  @POST('/users')
+  Future<String> createUser({
+    @Body() required dynamic user,
+  });
+}
+
+@ShouldGenerate(
+  '''
+  Future<String> createUser({dynamic user}) async {
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestDynamicBody {
+  @POST('/users')
+  Future<String> createUser({
+    @Body() dynamic user,
+  });
+}
+
+@ShouldGenerate(
+  '''
     final _data = <String, dynamic>{};
     _data.addAll(user?.toJson() ?? <String, dynamic>{});
 ''',
