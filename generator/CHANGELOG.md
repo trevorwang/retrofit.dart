@@ -1,3 +1,49 @@
+## 9.3.0
+
+- Added `@BodyExtra` annotation: Add individual fields to request body without defining complete DTO classes
+  - Support for adding dynamic fields to existing request bodies
+  - `expand` parameter (default: false) to control object field flattening behavior
+
+  Example(Combine fields):
+
+  ```dart
+  @http.POST('/path/')
+  Future<String> updateValue(@BodyExtra('id') int id, @BodyExtra('value') String value);
+  ```
+
+  Request body result:
+  
+  ```json
+  {"id": 123, "value": "some value"}
+  ```
+
+  Example(Combine objects):
+
+  ```dart
+  // pseudocode
+  class User {
+    int userId;
+    String userName;
+  }
+
+  class Settings {
+    int a;
+    int b;
+  }
+
+  @http.POST('/path/')
+  Future<String> updateValue(
+    @BodyExtra('user', expand: true) User user, 
+    @BodyExtra('settings', expand: true) Settings settings,
+  );
+  ```
+
+  Request body result:
+  
+  ```json
+  {"userId": 123, "userName": "hhh", "a": 1, "b": 2}
+  ```
+
 ## 9.2.0
 
 - Update protobuf version to 4.0.0

@@ -1795,12 +1795,37 @@ if (T != dynamic &&
       );
       return;
     }
+    var anyNullable = false;
 
     final preventNullToAbsent =
         _getMethodAnnotationByType(m, retrofit.PreventNullToAbsent);
 
     final annotation = _getAnnotation(m, retrofit.Body);
     final bodyName = annotation?.element;
+
+    final bodyExtraAnnotations = _getAnnotations(m, retrofit.BodyExtra);
+    final bodyExtras = <Expression, Reference>{};
+    final expandBodyExtras = <ParameterElement, ConstantReader>{};
+    for (final item in bodyExtraAnnotations.entries) {
+      final expand = item.value.peek('expand')?.boolValue ?? false;
+      anyNullable |=
+          item.key.type.nullabilitySuffix == NullabilitySuffix.question;
+      final fieldName =
+          item.value.peek('value')?.stringValue ?? item.key.displayName;
+      if (expand) {
+        expandBodyExtras[item.key] = item.value;
+      } else {
+        bodyExtras[literal(fieldName)] = refer(item.key.displayName);
+      }
+    }
+
+    if (expandBodyExtras.length !=
+        expandBodyExtras.keys.map((e) => e.displayName).toSet().length) {
+      log.warning(
+        'Multiple BodyExtra parameters with expand=true have the same type, which may cause field conflicts.',
+      );
+    }
+
     if (bodyName != null) {
       final nullToAbsent =
           annotation!.reader.peek('nullToAbsent')?.boolValue ?? false;
@@ -1810,7 +1835,8 @@ if (T != dynamic &&
         blocks
           ..add(
             declareFinal(dataVar)
-                .assign(literalMap({}, refer('String'), refer('dynamic')))
+                .assign(
+                    literalMap(bodyExtras, refer('String'), refer('dynamic')))
                 .statement,
           )
           ..add(
@@ -1904,21 +1930,24 @@ if (T != dynamic &&
                   .statement,
             );
           } else {
-            blocks
-              ..add(
-                declareFinal(dataVar)
-                    .assign(literalMap({}, refer('String'), refer('dynamic')))
-                    .statement,
-              )
-              ..add(
-                refer('$dataVar.addAll').call(
-                  [
-                    refer(
-                      '${bodyName.displayName}?.toMap() ?? <String,dynamic>{}',
-                    ),
-                  ],
-                ).statement,
-              );
+            blocks.add(
+              declareFinal(dataVar)
+                  .assign(
+                      literalMap(bodyExtras, refer('String'), refer('dynamic')))
+                  .statement,
+            );
+            for (final item in expandBodyExtras.entries) {
+              _generateParameterElement(item.key, blocks, dataVar);
+            }
+            blocks.add(
+              refer('$dataVar.addAll').call(
+                [
+                  refer(
+                    '${bodyName.displayName}?.toMap() ?? <String,dynamic>{}',
+                  ),
+                ],
+              ).statement,
+            );
           }
         } else {
           if (_missingToJson(ele)) {
@@ -1942,9 +1971,14 @@ if (T != dynamic &&
           } else {
             blocks.add(
               declareFinal(dataVar)
-                  .assign(literalMap({}, refer('String'), refer('dynamic')))
+                  .assign(
+                      literalMap(bodyExtras, refer('String'), refer('dynamic')))
                   .statement,
             );
+
+            for (final item in expandBodyExtras.entries) {
+              _generateParameterElement(item.key, blocks, dataVar);
+            }
 
             final bodyType = bodyName.type;
             final genericArgumentFactories =
@@ -2019,7 +2053,21 @@ ${bodyName.displayName} == null
       return;
     }
 
-    var anyNullable = false;
+    if (bodyExtras.isNotEmpty || expandBodyExtras.isNotEmpty) {
+      blocks.add(declareFinal(dataVar)
+          .assign(literalMap(bodyExtras, refer('String'), refer('dynamic')))
+          .statement);
+      for (final item in expandBodyExtras.entries) {
+        _generateParameterElement(item.key, blocks, dataVar);
+      }
+      if (preventNullToAbsent == null && anyNullable) {
+        blocks.add(Code('$dataVar.removeWhere((k, v) => v == null);'));
+      }
+      return;
+    }
+
+    anyNullable = false;
+
     final fields = _getAnnotations(m, retrofit.Field).map((p, r) {
       anyNullable |= p.type.nullabilitySuffix == NullabilitySuffix.question;
       final fieldName = r.peek('value')?.stringValue ?? p.displayName;
@@ -2561,6 +2609,35 @@ ${bodyName.displayName} == null
     }
 
     return allTypedExtras;
+  }
+
+  void _generateParameterElement(
+      ParameterElement paramElement, List<Code> blocks, String dataVar) {
+    final bodyType = paramElement.type;
+    final genericArgumentFactories = isGenericArgumentFactories(bodyType);
+
+    final typeArgs =
+        bodyType is ParameterizedType ? bodyType.typeArguments : <DartType>[];
+
+    var toJsonCode = '';
+    if (typeArgs.isNotEmpty && genericArgumentFactories) {
+      toJsonCode = _getInnerJsonDeSerializableMapperFn(bodyType);
+    }
+    if (paramElement.type.nullabilitySuffix != NullabilitySuffix.question) {
+      blocks.add(
+        refer('$dataVar.addAll').call([
+          refer('${paramElement.displayName}.toJson($toJsonCode)')
+        ]).statement,
+      );
+    } else {
+      blocks.add(
+        refer('$dataVar.addAll').call([
+          refer(
+            '${paramElement.displayName}?.toJson($toJsonCode) ?? <String,dynamic>{}',
+          )
+        ]).statement,
+      );
+    }
   }
 
   void _generateExtra(
