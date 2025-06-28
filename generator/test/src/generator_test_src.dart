@@ -242,7 +242,7 @@ abstract class MultipleTypedExtrasTest {
 
 @ShouldGenerate(
   '''
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
 
 class _RestClient implements RestClient {
   _RestClient(this._dio, {this.baseUrl, this.errorLogger});
@@ -902,6 +902,34 @@ abstract class NullableGenericCastBasicType {
 abstract class TestObjectBody {
   @POST('/users')
   Future<String> createUser(@Body() User user);
+}
+
+@ShouldGenerate(
+  '''
+  Future<String> createUser({required dynamic user}) async {
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestDynamicRequiredBody {
+  @POST('/users')
+  Future<String> createUser({
+    @Body() required dynamic user,
+  });
+}
+
+@ShouldGenerate(
+  '''
+  Future<String> createUser({dynamic user}) async {
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestDynamicBody {
+  @POST('/users')
+  Future<String> createUser({
+    @Body() dynamic user,
+  });
 }
 
 @ShouldGenerate(

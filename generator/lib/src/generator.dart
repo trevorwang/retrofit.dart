@@ -15,7 +15,7 @@ import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 
 const _analyzerIgnores =
-    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations';
+    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter';
 
 class RetrofitOptions {
   RetrofitOptions({
@@ -381,10 +381,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               ..name = it.name
               ..named = it.isNamed
               ..type = refer(it.type.getDisplayString())
-              ..required = optional &&
-                  it.isNamed &&
-                  it.type.nullabilitySuffix == NullabilitySuffix.none &&
-                  !it.hasDefaultValue
+              ..required = optional && it.isRequiredNamed
               ..defaultTo = optional && it.defaultValueCode != null
                   ? Code(it.defaultValueCode!)
                   : null,
@@ -2025,11 +2022,9 @@ if (T != dynamic &&
                 } else {
                   blocks.add(
                     refer('$dataVar.addAll').call([
-                      refer('''
-${bodyName.displayName} == null
-                      ? <String, dynamic>{}
-                      : await compute(serialize${_displayString(bodyName.type)}, ${bodyName.displayName})
-                  '''),
+                      refer(
+                        '${bodyName.displayName} == null ? <String, dynamic>{} : await compute(serialize${_displayString(bodyName.type)}, ${bodyName.displayName})',
+                      ),
                     ]).statement,
                   );
                 }
