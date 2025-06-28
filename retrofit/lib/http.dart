@@ -191,6 +191,37 @@ class Body {
   final bool nullToAbsent;
 }
 
+
+/// Use this annotation on a service method param when you want to add individual fields 
+/// to the request body without defining a complete DTO class. This is useful when you 
+/// need to include additional fields in the request body alongside existing data, or when 
+/// you only need to send a few specific fields without creating a full data transfer object.
+/// 
+/// Unlike @Body which requires a complete DTO class to represent the entire request body,
+/// @BodyExtra allows you to define individual fields that will be merged into the final 
+/// request body JSON. This provides more flexibility for scenarios where:
+/// - You need to add dynamic or conditional fields to an existing request
+/// - You want to avoid creating DTOs for simple field additions
+/// - You need to compose request bodies from multiple sources
+/// 
+/// Example:
+/// ```
+/// @POST("/post")
+/// Future<String> example(@Body UserDTO user, @BodyExtra("timestamp") int timestamp);
+/// ```
+/// Results in: {"name": "John", "email": "john@example.com", "timestamp": 1234567890}
+@immutable
+class BodyExtra {
+  const BodyExtra(this.value, {this.expand = false});
+
+  final String value;
+
+  /// Default is false. Controls how Object/Map values are handled:
+  /// - `true`: Object/Map fields are flattened to the request body root level
+  /// - `false`: The entire Object/Map is added as a nested field
+  final bool expand;
+}
+
 /// Use this annotation on a service method param when you want to indicate that no body should be
 /// generated for POST/PUT/DELETE requests.
 @immutable
