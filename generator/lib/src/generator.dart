@@ -611,7 +611,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final value = v.peek('value')?.stringValue ?? k.displayName;
       definePath = definePath?.replaceAll(
         '{$value}',
-        "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? _hasToJson(k.type) ? '.toJson()' : '.name' : ''}}",
+        "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM ? _hasToJson(k.type) ? '.toJson()' : '' : ''}}",
       );
     });
     return literal(definePath);
@@ -1695,8 +1695,8 @@ if (T != dynamic &&
                   : refer(p.displayName).property('toIso8601String').call([]);
             } else if (_isEnum(p.type) && !_hasToJson(p.type)) {
               value = p.type.nullabilitySuffix == NullabilitySuffix.question
-                  ? refer(p.displayName).nullSafeProperty('name')
-                  : refer(p.displayName).property('name');
+                  ? refer(p.displayName)
+                  : refer(p.displayName);
             } else {
               value = p.type.nullabilitySuffix == NullabilitySuffix.question
                   ? refer(p.displayName).nullSafeProperty('toJson').call([])
@@ -2223,7 +2223,7 @@ if (T != dynamic &&
                       _typeChecker(BuiltList).isExactlyType(innerType)))) {
             String value = '';
             if (innerType != null && _isEnum(innerType)) {
-              value = 'i.name';
+              value = 'i';
             } else if (_isBasicType(innerType)) {
               value = 'i';
               if (innerType != null &&
@@ -2325,9 +2325,10 @@ if (T != dynamic &&
                   refer(p.displayName)
                 else if (_isEnum(p.type))
                   _hasToJson(p.type)
-                      ? refer(p.displayName).property('toJson').call(
-                          []).ifNullThen(refer(p.displayName).property('name'))
-                      : refer(p.displayName).property('name')
+                      ? refer(p.displayName)
+                          .property('toJson')
+                          .call([]).ifNullThen(refer(p.displayName))
+                      : refer(p.displayName)
                 else
                   refer(p.displayName).property('toString').call([]),
               ]),
