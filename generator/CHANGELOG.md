@@ -1,3 +1,7 @@
+## 9.4.0
+
+ - Updates minimum supported SDK version to Dart 3.6.
+
 ## 9.3.0
 
 - Added `@BodyExtra` annotation: Add individual fields to request body without defining complete DTO classes

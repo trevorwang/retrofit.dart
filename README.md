@@ -15,14 +15,14 @@ Add the generator to your dev dependencies
 
 ```yaml
 dependencies:
-  retrofit: ^4.4.0
-  logger: ^2.4.0  # for logging purpose
+  retrofit: ^4.6.0
+  logger: ^2.6.0  # for logging purpose
   json_annotation: ^4.9.0
 
 dev_dependencies:
-  retrofit_generator: '>=8.0.0 <10.0.0' # for Dart 3.3 use ^9.0.0
-  build_runner: ^2.3.3
-  json_serializable: ^6.8.0
+  retrofit_generator: ^9.4.0
+  build_runner: ^2.5.4
+  json_serializable: ^6.9.5
 ```
 
 ### Define and Generate your API
