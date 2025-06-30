@@ -796,6 +796,15 @@ abstract class StreamReturnModifier {
   Stream<User> getUser();
 }
 
+class UserExtraInfo {
+  const UserExtraInfo();
+
+  factory UserExtraInfo.fromJson(Map<String, dynamic> json) =>
+      const UserExtraInfo();
+
+  Map<String, dynamic> toJson() => <String, dynamic>{};
+}
+
 class User implements AbstractUser {
   const User();
 
@@ -920,6 +929,101 @@ abstract class TestDynamicBody {
   @POST('/users')
   Future<String> createUser({
     @Body() dynamic user,
+  });
+}
+
+@ShouldGenerate(
+  '''
+    final _data = <String, dynamic>{'user_id': userId};
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestObjectSingleBodyExtra {
+  @POST('/users')
+  Future<String> createUser(
+    @BodyExtra('user_id') String userId,
+  );
+}
+
+@ShouldGenerate(
+  '''
+    final _data = <String, dynamic>{'user_id': userId};
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestObjectSingleBodyExtra1 {
+  @POST('/users')
+  Future<String> createUser({
+    @BodyExtra('user_id') required String userId,
+  });
+}
+
+@ShouldGenerate(
+  '''
+    final _data = <String, dynamic>{'update_timestamp': timestamp};
+    _data.addAll(user.toJson());
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestObjectBodyExtra {
+  @POST('/users')
+  Future<String> createUser(
+    @Body() User user, {
+    @BodyExtra('update_timestamp') required int timestamp,
+  });
+}
+
+@ShouldGenerate(
+  '''
+    final _data = <String, dynamic>{
+      'user_name': userName,
+      'update_timestamp': timestamp,
+    };
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestObjectBodyExtraWithoutBody {
+  @POST('/users')
+  Future<String> createUser({
+    @BodyExtra('user_name') required String userName,
+    @BodyExtra('update_timestamp') required int timestamp,
+  });
+}
+
+@ShouldGenerate(
+  '''
+    final _data = <String, dynamic>{'update_timestamp': timestamp};
+    _data.addAll(user?.toJson() ?? <String, dynamic>{});
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestObjectBodyExtraOptional {
+  @POST('/users')
+  Future<String> createUser({
+    @BodyExtra('user', expand: true) User? user,
+    @BodyExtra('update_timestamp') int? timestamp,
+  });
+}
+
+@ShouldGenerate(
+  '''
+    final _data = <String, dynamic>{};
+    _data.addAll(user.toJson());
+    _data.addAll(extraInfo.toJson());
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestObjectBodyExtraMultiExpandObject {
+  @POST('/users')
+  Future<String> createUser({
+    @BodyExtra('user', expand: true) required User user,
+    @BodyExtra('extra_info', expand: true) required UserExtraInfo extraInfo,
   });
 }
 
