@@ -1570,11 +1570,11 @@ enum TestEnumWithToJson {
 }
 
 @ShouldGenerate(
-  r"_data.fields.add(MapEntry('users', jsonEncode(users)));",
+  "_data.fields.add(MapEntry('users', jsonEncode(users)));",
   contains: true,
 )
 @ShouldGenerate(
-  r"_data.fields.add(MapEntry('item', jsonEncode(user)));",
+  "_data.fields.add(MapEntry('item', jsonEncode(user)));",
   contains: true,
 )
 @ShouldGenerate(
