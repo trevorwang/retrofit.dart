@@ -21,7 +21,7 @@ dependencies:
   dio: ^5.2.0
   protobuf: ^4.1.0
   source_gen: ^2.0.0
-  retrofit: ^4.5.0
+  retrofit: ^4.6.0
 
 dev_dependencies:
   lints: any
