@@ -509,7 +509,7 @@ abstract class TwoContentTypeAnnotationOnSameMethodTest {
 }
 
 @ShouldGenerate(
-  r'/image/${imageType.name}/${id}_XL.png',
+  r'/image/${imageType}/${id}_XL.png',
   contains: true,
 )
 @RestApi()
@@ -522,7 +522,7 @@ abstract class PathTest {
 }
 
 @ShouldGenerate(
-  r'/image/${imageType.name}/${id}/${id}_XL.png',
+  r'/image/${imageType}/${id}/${id}_XL.png',
   contains: true,
 )
 @RestApi()
@@ -718,7 +718,7 @@ enum EnumParam {
 
 @ShouldGenerate(
   '''
-    final queryParameters = <String, dynamic>{r'test': status?.name};
+    final queryParameters = <String, dynamic>{r'test': status};
 ''',
   contains: true,
 )
@@ -1594,15 +1594,13 @@ enum TestEnumWithToJson {
 )
 @ShouldGenerate(
   '''
-_data.fields.add(MapEntry('enumValue', enumValue.name));
+_data.fields.add(MapEntry('enumValue', enumValue));
 ''',
   contains: true,
 )
 @ShouldGenerate(
   '''
-    _data.fields.add(
-      MapEntry('enumValue', enumValue.toJson() ?? enumValue.name),
-    );
+    _data.fields.add(MapEntry('enumValue', enumValue.toJson() ?? enumValue));
 ''',
   contains: true,
 )
