@@ -1,3 +1,7 @@
+## 9.6.0
+
+ - Updates minimum supported SDK version to Dart 3.6.
+
 ## 9.5.0
 
 - Migrate enum value name resolve from `.name` to `.toString()`

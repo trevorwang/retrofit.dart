@@ -24,19 +24,19 @@ class TypedExtras {
 /// Extra data that will be passed to dio's request, response, transformer and interceptors.
 @immutable
 class Extra {
-  final Map<String, Object> data;
-
   /// Extra data that will be passed to dio's request, response, transformer and interceptors.
   const Extra(this.data);
+
+  final Map<String, Object> data;
 }
 
 /// Extra data that will be passed to dio's request, response, transformer and interceptors.
 /// Simple Example:
 ///
-///```
+/// ```dart
 /// @GET("/get")
 /// Future<String> foo(@Extras() Map<String, dynamic> extras)
-///```
+/// ```
 @immutable
 class Extras {
   const Extras();
@@ -59,16 +59,16 @@ class SendProgress {
 
 @immutable
 class DioResponseType {
-  final ResponseType responseType;
-
   const DioResponseType(this.responseType);
+
+  final ResponseType responseType;
 }
 
 class HttpResponse<T> {
-  final T data;
-  final Response response;
-
   HttpResponse(this.data, this.response);
+
+  final T data;
+  final Response<dynamic> response;
 }
 
 @immutable

@@ -4,7 +4,6 @@ abstract class CallAdapter<R, T> {
   T adapt(R Function() call);
 }
 
-
 /// By annotating a method with `@UseCallAdapter`, you can specify a custom adapter
 /// class where you can adapt a call to another response wrapper
 ///
@@ -13,9 +12,9 @@ abstract class CallAdapter<R, T> {
 /// 1. Create the call adapter by extending [CallAdapter]:
 /// pass in type parameters for the original call return type and adapted call return type.
 /// Note: your adapter subclass must accept a single type parameter(T), where T is
-/// the type of the unwrapped response from the original call. e.g. 
+/// the type of the unwrapped response from the original call. e.g.
 /// `UserResponse` in `Future<UserResponse>`
-/// 
+///
 /// ```dart
 /// class ResultCallAdapter<T> extends CallAdapter<Future<T>, Future<Result<T>>> {
 ///   @override
@@ -26,7 +25,7 @@ abstract class CallAdapter<R, T> {
 ///     } catch (e) {
 ///       return Error(e);
 ///     }
-///   } 
+///   }
 /// }
 
 /// ```
@@ -49,5 +48,6 @@ abstract class CallAdapter<R, T> {
 /// ```
 class UseCallAdapter {
   const UseCallAdapter(this.callAdapter);
+
   final Type callAdapter;
 }

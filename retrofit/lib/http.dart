@@ -29,14 +29,14 @@ enum Parser {
   /// Parse on a separate isolate using `compute` (Flutter only).
   ///
   /// Each model class must define a top-level function, taking the form
-  /// ```
+  /// ```dart
   /// FutureOr<T> deserializeT(Map<String, dynamic> json);
   /// FutureOr<dynamic> serializeTask(T object);
   /// ```
   ///
   /// If you want to handle lists of objects, either as return types or parameters, you should provide List counterparts.
   ///
-  /// ```
+  /// ```dart
   /// FutureOr<List<T>> deserializeTList(Map<String, dynamic> json);
   /// FutureOr<dynamic> serializeTList(List<T> objects);
   /// ```
@@ -44,7 +44,7 @@ enum Parser {
   /// E.g.
   /// ----
   /// _In file user.dart_
-  /// ```
+  /// ```dart
   /// User deserializeUser(Map<String, dynamic> json) => User.fromJson(json);
   /// List<User> deserializeUserList(List<Map<String, dynamic>> json) =>
   ///     json.map((e) => User.fromJson(e)).toList();
@@ -86,8 +86,8 @@ class RestApi {
   /// * Endpoint: `foo/bar/`
   /// * Result: `http://example.com/foo/bar/`
   ///
-  /// When you specify a relative [baseUrl]. The [Dio] instance passed to the constructor should have it defined.
-  /// When you don't specify the [baseUrl]. The [Dio] instance passed to the constructor should have it defined.
+  /// When you specify a relative [baseUrl]. The `Dio` instance passed to the constructor should have it defined.
+  /// When you don't specify the [baseUrl]. The `Dio` instance passed to the constructor should have it defined.
   /// Otherwise the `path` field of any [HttpMethod] like [POST] should have the full URL.
 
   final String? baseUrl;
@@ -116,7 +116,7 @@ class Method {
 
 /// Make a `GET` request
 ///
-/// ```
+/// ```dart
 /// @GET("ip")
 /// Future<String> ip(@Query('query1') String query)
 /// ```
@@ -191,21 +191,20 @@ class Body {
   final bool nullToAbsent;
 }
 
-
-/// Use this annotation on a service method param when you want to add individual fields 
-/// to the request body without defining a complete DTO class. This is useful when you 
-/// need to include additional fields in the request body alongside existing data, or when 
+/// Use this annotation on a service method param when you want to add individual fields
+/// to the request body without defining a complete DTO class. This is useful when you
+/// need to include additional fields in the request body alongside existing data, or when
 /// you only need to send a few specific fields without creating a full data transfer object.
-/// 
+///
 /// Unlike @Body which requires a complete DTO class to represent the entire request body,
-/// @BodyExtra allows you to define individual fields that will be merged into the final 
+/// @BodyExtra allows you to define individual fields that will be merged into the final
 /// request body JSON. This provides more flexibility for scenarios where:
 /// - You need to add dynamic or conditional fields to an existing request
 /// - You want to avoid creating DTOs for simple field additions
 /// - You need to compose request bodies from multiple sources
-/// 
+///
 /// Example:
-/// ```
+/// ```dart
 /// @POST("/post")
 /// Future<String> example(@Body UserDTO user, @BodyExtra("timestamp") int timestamp);
 /// ```
@@ -231,7 +230,7 @@ class NoBody {
 
 /// Named pair for a form request.
 ///
-/// ```
+/// ```dart
 /// @POST("/post")
 /// Future<String> example(
 ///   @Field() int foo,
@@ -261,10 +260,10 @@ class Path {
 ///
 /// Simple Example:
 ///
-///```
+/// ```dart
 /// @GET("/get")
 /// Future<String> foo(@Query('bar') String query)
-///```
+/// ```
 /// Calling with `foo.friends(1)` yields `/get?bar=1`.
 @immutable
 class Query {
@@ -318,7 +317,7 @@ class MultiPart extends _MimeType {
 
 /// Denotes a single part of a multi-part request.
 /// Part parameters may not be null.
-/// ```
+/// ```dart
 /// @POST("/post")
 /// @MultiPart()
 /// Future<String> example(
@@ -373,7 +372,7 @@ class CacheControl {
 }
 
 /// Prevents `null` values from being converted to `absent` values in generated code for body.
-/// ```
+/// ```dart
 /// @PreventNullToAbsent()
 /// @POST("/post")
 /// Future<String> example(@Field('foo') String? foo);
