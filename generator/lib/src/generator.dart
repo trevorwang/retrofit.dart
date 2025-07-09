@@ -296,7 +296,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   // parse methods in the Api class
   Iterable<Method> _parseMethods(ClassElement element) {
-    List<Method> methods = [];
+    final methods = <Method>[];
     final methodMembers = <MethodElement>[
       ...element.methods,
       ...element.mixins.expand((i) => i.methods),
@@ -575,7 +575,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     final httpMethod = _getMethodAnnotation(m);
-    if (httpMethod == null) return null;
+    if (httpMethod == null) {
+      return null;
+    }
 
     final returnType = m.returnType;
     return Method((methodBuilder) {
@@ -593,7 +595,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         callAdapter?.superclass?.typeArguments.firstOrNull as InterfaceType?;
 
     final httpMethod = _getMethodAnnotation(m);
-    if (httpMethod == null) return null;
+    if (httpMethod == null) {
+      return null;
+    }
 
     return Method((methodBuilder) {
       _configureMethodMetadata(methodBuilder, m,
@@ -624,7 +628,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ConstantReader httpMethod,
     InterfaceType? callAdapter,
   ) {
-    String returnAsyncWrapper =
+    var returnAsyncWrapper =
         m.returnType.isDartAsyncFuture ? 'return' : 'yield';
     if (callAdapter != null) {
       final callAdapterOriginalReturnType =
@@ -753,9 +757,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ? callAdapter.superclass!.typeArguments.first
           : m.returnType,
     );
-    final isWrappedWithHttpResponseWrapper = wrappedReturnType != null
-        ? _typeChecker(retrofit.HttpResponse).isExactlyType(wrappedReturnType)
-        : false;
+    final isWrappedWithHttpResponseWrapper = wrappedReturnType != null &&
+        _typeChecker(retrofit.HttpResponse).isExactlyType(wrappedReturnType);
 
     final returnType = isWrappedWithHttpResponseWrapper
         ? _getResponseType(wrappedReturnType)
@@ -1222,7 +1225,6 @@ You should create a new class to encapsulate the response.
       try {
         final annotation = ConstantReader(constDartObj);
         final obj = annotation.peek('genericArgumentFactories');
-        // ignore: invalid_null_aware_operator
         genericArgumentFactories = obj?.boolValue ?? false;
       } on Object {
         // nothing
@@ -2221,7 +2223,7 @@ if (T != dynamic &&
                       _typeChecker(BuiltMap).isExactlyType(innerType) ||
                       _typeChecker(List).isExactlyType(innerType) ||
                       _typeChecker(BuiltList).isExactlyType(innerType)))) {
-            String value = '';
+            var value = '';
             if (innerType != null && _isEnum(innerType)) {
               value = 'i';
             } else if (_isBasicType(innerType)) {
@@ -2952,7 +2954,9 @@ extension DartObjectX on DartObject? {
   }
 
   ConstantReader? toConstantReader() {
-    if (this == null) return null;
+    if (this == null) {
+      return null;
+    }
     return ConstantReader(this);
   }
 }

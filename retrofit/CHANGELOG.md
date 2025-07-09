@@ -1,4 +1,6 @@
-# Changelog
+## 4.6.0
+
+- Updates minimum supported SDK version to Dart 3.6.
 
 ## 4.5.0
 
