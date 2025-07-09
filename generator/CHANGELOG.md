@@ -1,3 +1,7 @@
+## 9.7.0
+
+- Upgrade build_runner to 2.5.4
+
 ## 9.6.0
 
  - Updates minimum supported SDK version to Dart 3.6.
