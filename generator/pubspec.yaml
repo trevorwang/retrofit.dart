@@ -22,7 +22,7 @@ dependencies:
   protobuf: ^4.1.0
   retrofit: ^4.6.0
   source_gen: ^3.0.0-dev
-#  source_gen: '>=2.0.0 <4.0.0'
+  # source_gen: '>=2.0.0 <4.0.0'
 
 dev_dependencies:
   lints: any

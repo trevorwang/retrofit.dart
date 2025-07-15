@@ -3014,14 +3014,6 @@ extension _DartTypeX on DartType {
     }
     return val;
   }
-
-  bool get isDartAsyncStream {
-    final e = element3 != null ? null : element3! as ClassElement2;
-    if (e == null) {
-      return false;
-    }
-    return e.name3 == 'Stream' && e.library2.isDartAsync;
-  }
 }
 
 extension _DartObjectX on DartObject? {
