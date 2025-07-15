@@ -8,7 +8,6 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:collection/collection.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dio/dio.dart';
 import 'package:protobuf/protobuf.dart';
@@ -17,6 +16,10 @@ import 'package:source_gen/source_gen.dart';
 
 const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter';
+
+Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder([
+  RetrofitGenerator(RetrofitOptions.fromOptions(options)),
+], 'retrofit');
 
 class RetrofitOptions {
   RetrofitOptions({
@@ -1293,7 +1296,6 @@ $returnAsyncWrapper httpResponse;
   }
 
   /// Checks for a compatible fromJson signature for generic argument factories
-  // TODO: But does the code work with multiple generic types?
   bool hasGenericArgumentFactoriesCompatibleSignature(DartType? dartType) {
     if (dartType == null) {
       return false;
@@ -2864,10 +2866,6 @@ MultipartFile.fromFileSync(i.path,
   }
 }
 
-Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder([
-  RetrofitGenerator(RetrofitOptions.fromOptions(options)),
-], 'retrofit');
-
 /// Returns `$revived($args $kwargs)`, this won't have ending semi-colon (`;`).
 /// [object] must not be null.
 /// [object] is assumed to be a constant.
@@ -2990,16 +2988,6 @@ String revivedLiteral(Object object, {DartEmitter? dartEmitter}) {
   return '$instantiation($args $kwargs)';
 }
 
-extension DartTypeStreamAnnotation on DartType {
-  bool get isDartAsyncStream {
-    final e = element3 != null ? null : element3! as ClassElement2;
-    if (e == null) {
-      return false;
-    }
-    return e.name3 == 'Stream' && e.library2.isDartAsync;
-  }
-}
-
 String _displayString(DartType? e, {bool withNullability = false}) {
   try {
     if (!withNullability) {
@@ -3016,7 +3004,7 @@ String _displayString(DartType? e, {bool withNullability = false}) {
   }
 }
 
-extension DartTypeExt on DartType {
+extension _DartTypeX on DartType {
   bool get isNullable => nullabilitySuffix == NullabilitySuffix.question;
 
   String toStringNonNullable() {
@@ -3026,9 +3014,17 @@ extension DartTypeExt on DartType {
     }
     return val;
   }
+
+  bool get isDartAsyncStream {
+    final e = element3 != null ? null : element3! as ClassElement2;
+    if (e == null) {
+      return false;
+    }
+    return e.name3 == 'Stream' && e.library2.isDartAsync;
+  }
 }
 
-extension DartObjectX on DartObject? {
+extension _DartObjectX on DartObject? {
   bool get isEnum => this?.type?.element3?.kind.name == 'ENUM';
 
   ConstantReader? toConstantReader() {
@@ -3039,7 +3035,7 @@ extension DartObjectX on DartObject? {
   }
 }
 
-extension ReferenceExt on Reference {
+extension _ReferenceX on Reference {
   Reference asNoNull() => refer('$symbol!');
 
   Reference asNoNullIf({required bool returnNullable}) =>
@@ -3054,4 +3050,15 @@ extension ReferenceExt on Reference {
   }) => thisNullable
       ? equalTo(literalNull).conditional(literalNull, whenFalse)
       : whenFalse;
+}
+
+extension _IterableX<T> on Iterable<T> {
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (final element in this) {
+      if (test(element)) {
+        return element;
+      }
+    }
+    return null;
+  }
 }

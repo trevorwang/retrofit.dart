@@ -17,7 +17,6 @@ dependencies:
   build: '>=2.5.4 <4.0.0'
   built_collection: ^5.1.1
   code_builder: ^4.10.1
-  collection: ^1.19.1
   dart_style: ^3.1.0
   dio: ^5.8.0
   protobuf: ^4.1.0
