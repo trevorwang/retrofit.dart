@@ -20,7 +20,7 @@ dependencies:
   json_annotation: ^4.9.0
 
 dev_dependencies:
-  retrofit_generator: ^9.6.0
+  retrofit_generator: ^10.0.1
   build_runner: ^2.5.4
   json_serializable: ^6.9.5
 ```

@@ -8,7 +8,7 @@ topics:
   - rest
   - retrofit
   - codegen
-version: 10.0.0
+version: 10.0.1
 environment:
   sdk: '>=3.8.0 <4.0.0'
 
@@ -21,8 +21,7 @@ dependencies:
   dio: ^5.8.0
   protobuf: ^4.1.0
   retrofit: ^4.6.0
-  source_gen: ^3.0.0-dev
-  # source_gen: '>=2.0.0 <4.0.0'
+  source_gen: '>=2.0.0 <4.0.0'
 
 dev_dependencies:
   lints: any
