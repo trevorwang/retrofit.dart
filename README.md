@@ -21,7 +21,7 @@ dependencies:
 
 dev_dependencies:
   retrofit_generator: ^10.0.1
-  build_runner: ^3.0.0
+  build_runner: ^2.6.0
   json_serializable: ^6.10.0
 ```
 
