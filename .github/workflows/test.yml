@@ -13,8 +13,8 @@ jobs:
         os: [ubuntu-latest]
         sdk: [stable]
     steps:
-      - uses: actions/checkout@v3.5.2
-      - uses: dart-lang/setup-dart@v1.5.0
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ matrix.sdk }}
       - name: Generate code

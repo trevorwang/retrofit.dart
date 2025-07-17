@@ -8,13 +8,13 @@ topics:
   - rest
   - dio
   - retrofit
-version: 4.6.0
+version: 4.7.0
 environment:
-  sdk: '>=3.6.0 <4.0.0'
+  sdk: '>=3.8.0 <4.0.0'
 
 dependencies:
-  dio: ^5.2.0
-  meta: ^1.15.0
+  dio: ^5.8.0
+  meta: ^1.16.0
 
 dev_dependencies:
   lints: any

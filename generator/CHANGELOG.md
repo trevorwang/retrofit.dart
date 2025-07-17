@@ -1,3 +1,7 @@
+## 10.0.1
+
+- Fix dependencies versions
+
 ## 10.0.0
 
 - Migrate to `Element2`
