@@ -1643,6 +1643,13 @@ if (T != dynamic &&
     return dartType.element is EnumElement;
   }
 
+  bool _isMultipartFile(DartType? dartType) {
+    if (dartType == null) {
+      return false;
+    }
+    return _typeChecker(MultipartFile).isAssignableFromType(dartType);
+  }
+
   bool _isDateTime(DartType? dartType) {
     if (dartType == null) {
       return false;
@@ -2160,6 +2167,19 @@ if (T != dynamic &&
           if (p.type.isNullable) {
             blocks.add(const Code('}'));
           }
+        } else if (_isMultipartFile(p.type)) {
+          if (p.type.isNullable) {
+            blocks.add(Code('if (${p.displayName} != null){'));
+          }
+          blocks.add(refer(dataVar).property('files').property('add').call([
+            refer('MapEntry').newInstance([
+              literal(fieldName),
+              refer(fieldName),
+            ]),
+          ]).statement);
+          if (p.type.isNullable) {
+            blocks.add(Code('}'));
+          }
         } else if (_displayString(p.type) == 'List<int>') {
           final optionalFile = m.parameters
                   .firstWhereOrNull((pp) => pp.displayName == p.displayName)
@@ -2269,8 +2289,7 @@ if (T != dynamic &&
             if (p.type.isNullable) {
               blocks.add(const Code('}'));
             }
-          } else if (innerType != null &&
-              _typeChecker(MultipartFile).isExactlyType(innerType)) {
+          } else if (innerType != null && _isMultipartFile(innerType)) {
             if (p.type.isNullable) {
               blocks.add(Code('if (${p.displayName} != null) {'));
             }

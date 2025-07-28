@@ -611,6 +611,34 @@ abstract class FilePartWithNullableMultipartListTest {
 @ShouldGenerate(
   '''
     final _data = FormData();
+    _data.files.add(MapEntry('image', image));
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class SingleMultipartFilePartTest {
+  @POST('/profile')
+  Future<String> setProfile(@Part() MultipartFile image);
+}
+
+@ShouldGenerate(
+  '''
+    final _data = FormData();
+    if (image != null) {
+      _data.files.add(MapEntry('image', image));
+    }
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class SingleNullableMultipartFilePartTest {
+  @POST('/profile')
+  Future<String> setProfile(@Part() MultipartFile? image);
+}
+
+@ShouldGenerate(
+  '''
+    final _data = FormData();
     _data.files.add(
       MapEntry(
         'image',
