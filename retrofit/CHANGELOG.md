@@ -1,3 +1,6 @@
+## 4.7.1
+- update to new tag format with prefix letter v
+
 ## 4.7.0
 
 - Updates minimum supported SDK version to Dart 3.8.
