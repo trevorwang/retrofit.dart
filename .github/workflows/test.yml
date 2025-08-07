@@ -19,17 +19,37 @@ jobs:
           sdk: ${{ matrix.sdk }}
       - name: Generate code
         run: cd example && dart pub get && dart pub run build_runner build --delete-conflicting-outputs
-
-      - name: Install coverage package
-        run: dart pub global activate coverage
-
-      - name: coverage
-        run: dart pub global run coverage:test_with_coverage
       - name: Analyze packages
         run: PKGS="example retrofit generator" ./tool/travis.sh dartanalyzer
-      
       - name: Install dependencies
-        run: cd generator && dart pub get
-      - name: Run tests
         run: |
-          cd generator && dart pub run test
+          cd generator && dart pub get
+          cd ../example && dart pub get
+          cd ../example_dartmapper && dart pub get
+          cd ../example_relative_base_url && dart pub get
+      - name: Run generator tests with coverage
+        run: |
+          cd generator && dart pub run test --coverage=coverage
+      - name: Run example tests with coverage
+        run: |
+          cd example && dart pub run test --coverage=coverage
+      - name: Run example_dartmapper tests with coverage
+        run: |
+          cd example_dartmapper && dart pub run test --coverage=coverage
+      - name: Run example_relative_base_url tests with coverage
+        run: |
+          cd example_relative_base_url && dart pub run test --coverage=coverage
+      - name: Generate combined coverage report
+        run: |
+          cd generator && dart pub run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
+          cd ../example && dart pub run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
+          cd ../example_dartmapper && dart pub run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
+          cd ../example_relative_base_url && dart pub run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
+          # Combine coverage reports
+          cat generator/coverage/lcov.info example/coverage/lcov.info example_dartmapper/coverage/lcov.info example_relative_base_url/coverage/lcov.info > combined_coverage.lcov
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          file: combined_coverage.lcov
+          format: lcov
+          debug: true
