@@ -4,7 +4,7 @@ name: Publish retrofit_generator to pub.dev
 on:
   push:
     tags:
-    - '[0-9]+.[0-9]+.[0-9]+*' # tag pattern on pub.dev: 'v'
+    - 'v[0-9]+.[0-9]+.[0-9]+*' # tag pattern on pub.dev: 'v'
 
 # Publish using custom workflow
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - name: Release new version
         run: |
           cd generator
-          RELEASE=${GITHUB_REF##*/}
+          RELEASE=${GITHUB_REF##*/v}
           sed -i -e "s/version:.*/version: $RELEASE/g" pubspec.yaml
       - name: Publish
         run:  cd generator && dart pub publish --force
