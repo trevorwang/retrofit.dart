@@ -19,11 +19,14 @@ jobs:
           sdk: ${{ matrix.sdk }}
       - name: Generate code
         run: cd example && dart pub get && dart pub run build_runner build --delete-conflicting-outputs
-      - name: Analyze packages
-        run: PKGS="example retrofit generator" ./tool/travis.sh dartanalyzer
+
+      - name: Install coverage package
+        run: dart pub global activate coverage
 
       - name: coverage
         run: dart pub global run coverage:test_with_coverage
+      - name: Analyze packages
+        run: PKGS="example retrofit generator" ./tool/travis.sh dartanalyzer
       
       - name: Install dependencies
         run: cd generator && dart pub get
