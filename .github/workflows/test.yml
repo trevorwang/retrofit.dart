@@ -21,6 +21,10 @@ jobs:
         run: cd example && dart pub get && dart pub run build_runner build --delete-conflicting-outputs
       - name: Analyze packages
         run: PKGS="example retrofit generator" ./tool/travis.sh dartanalyzer
+
+      - name: coverage
+        run: dart pub global run coverage:test_with_coverage
+      
       - name: Install dependencies
         run: cd generator && dart pub get
       - name: Run tests
