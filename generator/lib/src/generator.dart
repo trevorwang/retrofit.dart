@@ -17,9 +17,12 @@ import 'package:source_gen/source_gen.dart';
 const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter';
 
-Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder([
-  RetrofitGenerator(RetrofitOptions.fromOptions(options)),
-], 'retrofit');
+Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
+  [RetrofitGenerator(RetrofitOptions.fromOptions(options))],
+  'retrofit',
+  formatOutput: (code, version) =>
+      '// dart format off\n\n${DartFormatter(languageVersion: version).format(code)}\n// dart format on\n',
+);
 
 class RetrofitOptions {
   RetrofitOptions({
@@ -2241,12 +2244,13 @@ if (T != dynamic &&
           if (p.type.isNullable) {
             blocks.add(Code('if (${p.displayName} != null){'));
           }
-          blocks.add(refer(dataVar).property('files').property('add').call([
-            refer('MapEntry').newInstance([
-              literal(fieldName),
-              refer(fieldName),
-            ]),
-          ]).statement);
+          blocks.add(
+            refer(dataVar).property('files').property('add').call([
+              refer(
+                'MapEntry',
+              ).newInstance([literal(fieldName), refer(fieldName)]),
+            ]).statement,
+          );
           if (p.type.isNullable) {
             blocks.add(Code('}'));
           }
