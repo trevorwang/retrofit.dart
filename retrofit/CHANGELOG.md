@@ -1,3 +1,7 @@
+## 4.7.2
+- Add comments for each public methods
+- Enable linter rules for public api docs
+
 ## 4.7.1
 - update to new tag format with prefix letter v
 
