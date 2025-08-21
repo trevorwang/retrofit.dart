@@ -1,3 +1,8 @@
+## 10.0.2
+
+- Format generated code with default DartFormatter
+- Add `dart format off` and `dart format on` comments to generated code
+
 ## 10.0.1
 
 - Fix dependencies versions
