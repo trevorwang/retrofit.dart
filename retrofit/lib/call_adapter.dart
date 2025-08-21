@@ -1,6 +1,15 @@
 /// Adapts a Call with return type R into the type of T.
 /// e.g. `Future<User>` to `Future<Result<User>>`
 abstract class CallAdapter<R, T> {
+  /// Adapts the given [call] function to return type [T].
+  ///
+  /// This method transforms the original call (which returns [R]) into 
+  /// a new format (returning [T]). Implementations typically wrap the 
+  /// result in error handling, logging, or other cross-cutting concerns.
+  ///
+  /// * [call] - A function that executes the original API call
+  /// 
+  /// Returns the adapted result of type [T].
   T adapt(R Function() call);
 }
 
@@ -47,6 +56,9 @@ abstract class CallAdapter<R, T> {
 /// }
 /// ```
 class UseCallAdapter {
+  /// Creates a new [UseCallAdapter] annotation with the specified [callAdapter].
+  ///
+  /// * [callAdapter] - The type of the call adapter class to use for this method
   const UseCallAdapter(this.callAdapter);
 
   final Type callAdapter;

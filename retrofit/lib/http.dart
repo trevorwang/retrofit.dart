@@ -99,6 +99,12 @@ class RestApi {
 
 @immutable
 class Method {
+  /// Creates a new HTTP method annotation with the specified [method] and [path].
+  ///
+  /// This is the base class for all HTTP method annotations like [GET], [POST], etc.
+  ///
+  /// * [method] - The HTTP method (e.g., 'GET', 'POST', 'PUT', etc.)
+  /// * [path] - The relative or absolute path for the endpoint
   const Method(
     this.method,
     this.path,
