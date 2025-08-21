@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="retrofit library API docs, for the Dart programming language.">
+  <title>retrofit library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">retrofit</a></li>
+    <li class="self-crumb">retrofit.dart</li>
+  </ol>
+  <div class="self-name">retrofit</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar=""
+    data-below-sidebar="file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_retrofit&#47;file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_retrofit-library-sidebar.html">
+  
+    <div>
+      
+
+      <h1>
+        <span class="kind-library">retrofit</span>
+        library 
+ 
+
+      </h1>
+    </div>
+
+    
+
+
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+      <dl>
+          <dt id="Body">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Body-class.html">Body</a></span> 
+
+</dt>
+<dd>
+  Use this annotation on a service method param when you want to directly control the request body
+of a POST/PUT request (instead of sending in as request parameters or form-style request
+body).
+</dd>
+
+          <dt id="BodyExtra">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/BodyExtra-class.html">BodyExtra</a></span> 
+
+</dt>
+<dd>
+  Use this annotation on a service method param when you want to add individual fields
+to the request body without defining a complete DTO class. This is useful when you
+need to include additional fields in the request body alongside existing data, or when
+you only need to send a few specific fields without creating a full data transfer object.
+</dd>
+
+          <dt id="CacheControl">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/CacheControl-class.html">CacheControl</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="CallAdapter">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_call_adapter/CallAdapter-class.html">CallAdapter</a><span class="signature">&lt;<wbr><span class="type-parameter">R</span>, <span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Adapts a Call with return type R into the type of T.
+e.g. <code>Future&lt;User&gt;</code> to <code>Future&lt;Result&lt;User&gt;&gt;</code>
+</dd>
+
+          <dt id="CancelRequest">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/CancelRequest-class.html">CancelRequest</a></span> 
+
+</dt>
+<dd>
+  Annotation for cancelling the request.
+When applied to a parameter, allows the method to accept a <code>CancelToken</code>
+that can be used to cancel the HTTP request.
+</dd>
+
+          <dt id="DELETE">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/DELETE-class.html">DELETE</a></span> 
+
+</dt>
+<dd>
+  Make a <code>DELETE</code> request
+</dd>
+
+          <dt id="DioOptions">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/DioOptions-class.html">DioOptions</a></span> 
+
+</dt>
+<dd>
+  Annotation for passing Dio options to individual requests.
+</dd>
+
+          <dt id="DioResponseType">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/DioResponseType-class.html">DioResponseType</a></span> 
+
+</dt>
+<dd>
+  Annotation to specify the response type for Dio requests.
+</dd>
+
+          <dt id="Extra">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/Extra-class.html">Extra</a></span> 
+
+</dt>
+<dd>
+  Extra data that will be passed to dio's request, response, transformer and interceptors.
+</dd>
+
+          <dt id="Extras">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/Extras-class.html">Extras</a></span> 
+
+</dt>
+<dd>
+  Extra data that will be passed to dio's request, response, transformer and interceptors.
+Simple Example:
+</dd>
+
+          <dt id="Field">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Field-class.html">Field</a></span> 
+
+</dt>
+<dd>
+  Named pair for a form request.
+</dd>
+
+          <dt id="FormUrlEncoded">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/FormUrlEncoded-class.html">FormUrlEncoded</a></span> 
+
+</dt>
+<dd>
+  Denotes that the request body will use form URL encoding. Fields should be declared as
+parameters and annotated with <a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Field-class.html">Field</a>.
+</dd>
+
+          <dt id="GET">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/GET-class.html">GET</a></span> 
+
+</dt>
+<dd>
+  Make a <code>GET</code> request
+</dd>
+
+          <dt id="HEAD">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/HEAD-class.html">HEAD</a></span> 
+
+</dt>
+<dd>
+  Make a <code>HEAD</code> request
+</dd>
+
+          <dt id="Header">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Header-class.html">Header</a></span> 
+
+</dt>
+<dd>
+  Replaces the header with the value of its target.
+</dd>
+
+          <dt id="Headers">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Headers-class.html">Headers</a></span> 
+
+</dt>
+<dd>
+  Adds headers specified in the <a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Headers/value.html">value</a> map.
+</dd>
+
+          <dt id="HttpMethod">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/HttpMethod-class.html">HttpMethod</a></span> 
+
+</dt>
+<dd>
+  A holder that includes all http methods which are supported by retrofit.
+</dd>
+
+          <dt id="HttpResponse">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/HttpResponse-class.html">HttpResponse</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Wrapper class that combines response data with the raw Dio response.
+</dd>
+
+          <dt id="Method">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Method-class.html">Method</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="MultiPart">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/MultiPart-class.html">MultiPart</a></span> 
+
+</dt>
+<dd>
+  Denotes that the request body is multi-part. Parts should be declared as parameters and
+annotated with <a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Part-class.html">Part</a>.
+</dd>
+
+          <dt id="NoBody">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/NoBody-class.html">NoBody</a></span> 
+
+</dt>
+<dd>
+  Use this annotation on a service method param when you want to indicate that no body should be
+generated for POST/PUT/DELETE requests.
+</dd>
+
+          <dt id="OPTIONS">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/OPTIONS-class.html">OPTIONS</a></span> 
+
+</dt>
+<dd>
+  Make a <code>OPTIONS</code> request
+</dd>
+
+          <dt id="ParseErrorLogger">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_error_logger/ParseErrorLogger-class.html">ParseErrorLogger</a></span> 
+
+</dt>
+<dd>
+  Base class for logging errors that occur during parsing of response data.
+</dd>
+
+          <dt id="Part">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Part-class.html">Part</a></span> 
+
+</dt>
+<dd>
+  Denotes a single part of a multi-part request.
+Part parameters may not be null.
+</dd>
+
+          <dt id="PATCH">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/PATCH-class.html">PATCH</a></span> 
+
+</dt>
+<dd>
+  Make a <code>PATCH</code> request
+</dd>
+
+          <dt id="Path">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Path-class.html">Path</a></span> 
+
+</dt>
+<dd>
+  Named replacement in a URL path segment.
+</dd>
+
+          <dt id="POST">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/POST-class.html">POST</a></span> 
+
+</dt>
+<dd>
+  Make a <code>POST</code> request
+</dd>
+
+          <dt id="PreventNullToAbsent">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/PreventNullToAbsent-class.html">PreventNullToAbsent</a></span> 
+
+</dt>
+<dd>
+  Prevents <code>null</code> values from being converted to <code>absent</code> values in generated code for body.
+</dd>
+
+          <dt id="PUT">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/PUT-class.html">PUT</a></span> 
+
+</dt>
+<dd>
+  Make a <code>PUT</code> request
+</dd>
+
+          <dt id="Queries">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Queries-class.html">Queries</a></span> 
+
+</dt>
+<dd>
+  Query parameter keys and values appended to the URL.
+</dd>
+
+          <dt id="Query">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Query-class.html">Query</a></span> 
+
+</dt>
+<dd>
+  Query parameter appended to the URL.
+</dd>
+
+          <dt id="ReceiveProgress">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/ReceiveProgress-class.html">ReceiveProgress</a></span> 
+
+</dt>
+<dd>
+  Annotation for tracking download progress.
+When applied to a parameter, allows the method to accept a callback
+function that will be invoked with progress updates during data reception.
+</dd>
+
+          <dt id="RestApi">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/RestApi-class.html">RestApi</a></span> 
+
+</dt>
+<dd>
+  Define an API.
+</dd>
+
+          <dt id="SendProgress">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/SendProgress-class.html">SendProgress</a></span> 
+
+</dt>
+<dd>
+  Annotation for tracking upload progress.
+When applied to a parameter, allows the method to accept a callback
+function that will be invoked with progress updates during data transmission.
+</dd>
+
+          <dt id="TypedExtras">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/TypedExtras-class.html">TypedExtras</a></span> 
+
+</dt>
+<dd>
+  Extra data that will be passed to Dio's request, response, transformer, and interceptors.
+Extend <a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/TypedExtras-class.html">TypedExtras</a> and define fields that correspond to the keys passed into <code>extras</code>.
+The values of these fields will be derived from the data passed into your subclass.
+</dd>
+
+          <dt id="UseCallAdapter">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_call_adapter/UseCallAdapter-class.html">UseCallAdapter</a></span> 
+
+</dt>
+<dd>
+  By annotating a method with <code>@UseCallAdapter</code>, you can specify a custom adapter
+class where you can adapt a call to another response wrapper
+</dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="enums">
+      <h2>Enums</h2>
+      <dl>
+          <dt id="Parser">
+  <span class="name "><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/Parser.html">Parser</a></span> 
+
+</dt>
+<dd>
+  Define how to parse response json
+If you want to support more, PR is welcome
+</dd>
+
+      </dl>
+    </section>
+
+
+
+
+
+
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">retrofit</a></li>
+    <li class="self-crumb">retrofit.dart</li>
+</ol>
+
+    <h5><span class="package-name">retrofit</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_call_adapter/">call_adapter</a></li>
+      <li><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_dio/">dio</a></li>
+      <li><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_error_logger/">error_logger</a></li>
+      <li><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_http/">http</a></li>
+      <li><a href="../file-_____w_retrofit.dart_retrofit.dart_retrofit_lib_retrofit/">retrofit</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <h5>retrofit library</h5>
+  </div><!--/sidebar-offcanvas-right-->
+</main>
+<footer>
+  <span class="no-break">
+    retrofit
+      4.7.2
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
