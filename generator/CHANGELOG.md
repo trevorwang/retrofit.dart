@@ -1,3 +1,7 @@
+## 10.0.3
+
+- Require source_gen: 3.1.0, stop using deprecated `TypeChecker.fromRuntime` and use the new `TypeChecker.typeNamed` instead.
+
 ## 10.0.2
 
 - Format generated code with default DartFormatter

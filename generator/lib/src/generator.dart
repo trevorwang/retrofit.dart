@@ -432,7 +432,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     retrofit.Method,
   ];
 
-  TypeChecker _typeChecker(Type type) => TypeChecker.fromRuntime(type);
+  TypeChecker _typeChecker(Type type) => TypeChecker.typeNamed(type);
 
   ConstantReader? _getMethodAnnotation(MethodElement2 method) {
     for (final type in _methodsAnnotations) {
@@ -742,7 +742,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final annotation = _getAnnotation(m, retrofit.Body);
     final bodyName = annotation?.element;
     if (bodyName != null) {
-      if (const TypeChecker.fromRuntime(
+      if (const TypeChecker.typeNamed(
         GeneratedMessage,
       ).isAssignableFromType(bodyName.type)) {
         extraOptions[_contentType] = literal(
@@ -1896,7 +1896,7 @@ if (T != dynamic &&
       final nullToAbsent =
           annotation!.reader.peek('nullToAbsent')?.boolValue ?? false;
       final bodyTypeElement = bodyName.type.element3;
-      if (const TypeChecker.fromRuntime(
+      if (const TypeChecker.typeNamed(
         Map,
       ).isAssignableFromType(bodyName.type)) {
         blocks
@@ -2252,7 +2252,7 @@ if (T != dynamic &&
             ]).statement,
           );
           if (p.type.isNullable) {
-            blocks.add(Code('}'));
+            blocks.add(const Code('}'));
           }
         } else if (_displayString(p.type) == 'List<int>') {
           final optionalFile =
