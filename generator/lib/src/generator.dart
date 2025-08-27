@@ -1,4 +1,4 @@
-import 'dart:ffi';
+import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import 'package:analyzer/dart/constant/value.dart';
@@ -10,7 +10,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dio/dio.dart';
-import 'package:protobuf/protobuf.dart';
+import 'package:protobuf/protobuf.dart' as protobuf;
 import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 
@@ -421,7 +421,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ? '<${element.typeParameters2.join(',')}>'
           : '');
 
-  final _methodsAnnotations = const [
+  final _methodsAnnotations = const {
     retrofit.GET,
     retrofit.POST,
     retrofit.DELETE,
@@ -430,9 +430,85 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     retrofit.HEAD,
     retrofit.OPTIONS,
     retrofit.Method,
-  ];
+  };
 
-  TypeChecker _typeChecker(Type type) => TypeChecker.typeNamed(type);
+  TypeChecker _typeChecker(Type type) {
+    if (type == dynamic) {
+      print(type.runtimeType);
+    }
+    const dartCoreTypes = {
+      Object,
+      num,
+      int,
+      double,
+      bool,
+      String,
+      DateTime,
+      Uri,
+      BigInt,
+      List,
+      Map,
+      Set,
+      Iterable,
+    };
+    if (dartCoreTypes.contains(type)) {
+      return TypeChecker.typeNamed(type, inPackage: 'core', inSdk: true);
+    }
+
+    final dartAsyncTypes = {Future, Stream};
+    if (dartAsyncTypes.contains(type)) {
+      return TypeChecker.typeNamed(type, inPackage: 'async', inSdk: true);
+    }
+
+    final dartFfiTypes = {ffi.Double, ffi.Long, ffi.Float};
+    if (dartFfiTypes.contains(type)) {
+      return TypeChecker.typeNamed(type, inPackage: 'ffi', inSdk: true);
+    }
+    const retrofitTypes = {
+      retrofit.GET,
+      retrofit.POST,
+      retrofit.DELETE,
+      retrofit.PUT,
+      retrofit.PATCH,
+      retrofit.HEAD,
+      retrofit.OPTIONS,
+      retrofit.Method,
+      retrofit.Body,
+      retrofit.BodyExtra,
+      retrofit.Query,
+      retrofit.Queries,
+      retrofit.Path,
+      retrofit.Part,
+      retrofit.Field,
+      retrofit.Header,
+      retrofit.Headers,
+      retrofit.MultiPart,
+      retrofit.FormUrlEncoded,
+      retrofit.CacheControl,
+      retrofit.PreventNullToAbsent,
+      retrofit.TypedExtras,
+      retrofit.Extra,
+      retrofit.Extras,
+      retrofit.CancelRequest,
+      retrofit.HttpResponse,
+      retrofit.DioOptions,
+    };
+    if (retrofitTypes.contains(type)) {
+      return TypeChecker.typeNamed(type, inPackage: 'retrofit');
+    }
+
+    const builtCollectionTypes = {BuiltList, BuiltMap, BuiltSet};
+    if (builtCollectionTypes.contains(type)) {
+      return TypeChecker.typeNamed(type, inPackage: 'built_collection');
+    }
+
+    const protobufTypes = {protobuf.GeneratedMessage, protobuf.ProtobufEnum};
+    if (protobufTypes.contains(type)) {
+      return TypeChecker.typeNamed(type, inPackage: 'protobuf');
+    }
+
+    return TypeChecker.typeNamed(type);
+  }
 
   ConstantReader? _getMethodAnnotation(MethodElement2 method) {
     for (final type in _methodsAnnotations) {
@@ -742,8 +818,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final annotation = _getAnnotation(m, retrofit.Body);
     final bodyName = annotation?.element;
     if (bodyName != null) {
-      if (const TypeChecker.typeNamed(
-        GeneratedMessage,
+      if (_typeChecker(
+        protobuf.GeneratedMessage,
       ).isAssignableFromType(bodyName.type)) {
         extraOptions[_contentType] = literal(
           'application/x-protobuf; \${${bodyName.displayName}.info_.qualifiedMessageName == "" ? "" :"messageType=\${${bodyName.displayName}.info_.qualifiedMessageName}"}',
@@ -893,7 +969,7 @@ $returnAsyncWrapper httpResponse;
                         refer(
                           'deserialize${_displayString(innerReturnType)}List',
                         ),
-                        refer('$_resultVar.data!.cast<Map<String,dynamic>>()'),
+                        refer('$_resultVar.data!.cast<Map<String, dynamic>>()'),
                       ]),
                     ),
                   )
@@ -954,7 +1030,7 @@ $returnAsyncWrapper httpResponse;
           declareFinal(_resultVar)
               .assign(
                 refer(
-                  'await $_dioVar.fetch<Map<String,dynamic>>',
+                  'await $_dioVar.fetch<Map<String, dynamic>>',
                 ).call([options]),
               )
               .statement,
@@ -975,7 +1051,7 @@ $returnAsyncWrapper httpResponse;
 (k, dynamic v) =>
     MapEntry(
       k, (v as List)
-        .map((i) => ${_displayString(type)}.fromMap(i as Map<String,dynamic>))
+        .map((i) => ${_displayString(type)}.fromMap(i as Map<String, dynamic>))
         .toList()
     )
 ''');
@@ -984,7 +1060,7 @@ $returnAsyncWrapper httpResponse;
 (k, dynamic v) =>
     MapEntry(
       k, (v as List)
-        .map((i) => ${_displayString(type)}.fromJson(i as Map<String,dynamic>))
+        .map((i) => ${_displayString(type)}.fromJson(i as Map<String, dynamic>))
         .toList()
     )
 ''');
@@ -993,7 +1069,7 @@ $returnAsyncWrapper httpResponse;
 (k, dynamic v) =>
     MapEntry(
       k, (v as List)
-        .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i as Map<String,dynamic>)!)
+        .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i as Map<String, dynamic>)!)
         .toList()
     )
 ''');
@@ -1160,7 +1236,9 @@ You should create a new class to encapsulate the response.
               ).assign(refer('await $_dioVar.fetch').call([options])).statement,
             )
             ..add(const Code('final $_valueVar = $_resultVar.data;'));
-        } else if (_typeChecker(GeneratedMessage).isSuperTypeOf(returnType)) {
+        } else if (_typeChecker(
+          protobuf.GeneratedMessage,
+        ).isSuperTypeOf(returnType)) {
           blocks
             ..add(
               declareFinal(_resultVar)
@@ -1176,8 +1254,8 @@ You should create a new class to encapsulate the response.
             );
         } else {
           final fetchType = returnType.isNullable
-              ? 'Map<String,dynamic>?'
-              : 'Map<String,dynamic>';
+              ? 'Map<String, dynamic>?'
+              : 'Map<String, dynamic>';
           blocks.add(
             declareFinal(_resultVar)
                 .assign(
@@ -1685,10 +1763,10 @@ if (T != dynamic &&
         _typeChecker(int).isExactlyType(returnType) ||
         _typeChecker(double).isExactlyType(returnType) ||
         _typeChecker(num).isExactlyType(returnType) ||
-        _typeChecker(Double).isExactlyType(returnType) ||
-        _typeChecker(Float).isExactlyType(returnType) ||
+        _typeChecker(ffi.Double).isExactlyType(returnType) ||
+        _typeChecker(ffi.Float).isExactlyType(returnType) ||
         _typeChecker(BigInt).isExactlyType(returnType) ||
-        _typeChecker(Long).isExactlyType(returnType) ||
+        _typeChecker(ffi.Long).isExactlyType(returnType) ||
         _typeChecker(Object).isExactlyType(returnType);
   }
 
@@ -1745,7 +1823,7 @@ if (T != dynamic &&
           p.type.isDartCoreList ||
           p.type.isDartCoreMap) {
         value = refer(p.displayName);
-      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(p.type)) {
+      } else if (_typeChecker(protobuf.ProtobufEnum).isSuperTypeOf(p.type)) {
         value = p.type.nullabilitySuffix == NullabilitySuffix.question
             ? refer(p.displayName).nullSafeProperty('value')
             : refer(p.displayName).property('value');
@@ -1796,7 +1874,7 @@ if (T != dynamic &&
       final Expression value;
       if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
         value = refer(displayName);
-      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(type)) {
+      } else if (_typeChecker(protobuf.ProtobufEnum).isSuperTypeOf(type)) {
         value = type.nullabilitySuffix == NullabilitySuffix.question
             ? refer(p.displayName).nullSafeProperty('value')
             : refer(p.displayName).property('value');
@@ -1823,7 +1901,7 @@ if (T != dynamic &&
       final buffer = StringBuffer();
       value.accept(emitter, buffer);
       if (type.nullabilitySuffix == NullabilitySuffix.question) {
-        refer('?? <String,dynamic>{}').accept(emitter, buffer);
+        refer('?? <String, dynamic>{}').accept(emitter, buffer);
       }
       final expression = refer(buffer.toString());
 
@@ -1896,9 +1974,7 @@ if (T != dynamic &&
       final nullToAbsent =
           annotation!.reader.peek('nullToAbsent')?.boolValue ?? false;
       final bodyTypeElement = bodyName.type.element3;
-      if (const TypeChecker.typeNamed(
-        Map,
-      ).isAssignableFromType(bodyName.type)) {
+      if (_typeChecker(Map).isAssignableFromType(bodyName.type)) {
         blocks
           ..add(
             declareFinal(dataVar)
@@ -1910,7 +1986,7 @@ if (T != dynamic &&
           ..add(
             refer('$dataVar.addAll').call([
               refer(
-                "${bodyName.displayName}${m.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' : ''}",
+                "${bodyName.displayName}${m.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String, dynamic>{}' : ''}",
               ),
             ]).statement,
           );
@@ -1963,7 +2039,9 @@ if (T != dynamic &&
                   .statement,
             );
         }
-      } else if (_typeChecker(GeneratedMessage).isSuperTypeOf(bodyName.type)) {
+      } else if (_typeChecker(
+        protobuf.GeneratedMessage,
+      ).isSuperTypeOf(bodyName.type)) {
         if (bodyName.type.nullabilitySuffix != NullabilitySuffix.none) {
           log.warning(
             'GeneratedMessage body ${_displayString(bodyName.type)} can not be nullable.',
@@ -2008,7 +2086,9 @@ if (T != dynamic &&
             }
             blocks.add(
               refer('$dataVar.addAll').call([
-                refer('${bodyName.displayName}?.toMap() ?? <String,dynamic>{}'),
+                refer(
+                  '${bodyName.displayName}?.toMap() ?? <String, dynamic>{}',
+                ),
               ]).statement,
             );
           }
@@ -2077,7 +2157,7 @@ if (T != dynamic &&
                   blocks.add(
                     refer('$dataVar.addAll').call([
                       refer(
-                        '${bodyName.displayName}?.toJson($toJsonCode) ?? <String,dynamic>{}',
+                        '${bodyName.displayName}?.toJson($toJsonCode) ?? <String, dynamic>{}',
                       ),
                     ]).statement,
                   );
@@ -2463,7 +2543,7 @@ MultipartFile.fromFileSync(i.path,
               final uploadFileInfo = refer('$MultipartFile.fromString').call(
                 [
                   refer(
-                    "jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' : ''})",
+                    "jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String, dynamic>{}' : ''})",
                   ),
                 ],
                 {
@@ -2509,7 +2589,7 @@ MultipartFile.fromFileSync(i.path,
                   refer('MapEntry').newInstance([
                     literal(fieldName),
                     refer(
-                      'jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String,dynamic>{}' : ''})',
+                      'jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String, dynamic>{}' : ''})',
                     ),
                   ]),
                 ]).statement,
@@ -2584,7 +2664,9 @@ MultipartFile.fromFileSync(i.path,
     final returnType = _getResponseType(m.returnType);
 
     if (returnType != null &&
-        _typeChecker(GeneratedMessage).isAssignableFromType(returnType)) {
+        _typeChecker(
+          protobuf.GeneratedMessage,
+        ).isAssignableFromType(returnType)) {
       headers
         ..removeWhere(
           (key, value) => 'accept'.toLowerCase() == key.toLowerCase(),
@@ -2743,7 +2825,7 @@ MultipartFile.fromFileSync(i.path,
       blocks.add(
         refer('$dataVar.addAll').call([
           refer(
-            '${paramElement.displayName}?.toJson($toJsonCode) ?? <String,dynamic>{}',
+            '${paramElement.displayName}?.toJson($toJsonCode) ?? <String, dynamic>{}',
           ),
         ]).statement,
       );
@@ -2803,7 +2885,7 @@ MultipartFile.fromFileSync(i.path,
       final Expression value;
       if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
         value = refer(displayName);
-      } else if (_typeChecker(ProtobufEnum).isSuperTypeOf(type)) {
+      } else if (_typeChecker(protobuf.ProtobufEnum).isSuperTypeOf(type)) {
         value = type.nullabilitySuffix == NullabilitySuffix.question
             ? refer(p.displayName).nullSafeProperty('value')
             : refer(p.displayName).property('value');
@@ -2830,7 +2912,7 @@ MultipartFile.fromFileSync(i.path,
       final buffer = StringBuffer();
       value.accept(emitter, buffer);
       if (type.nullabilitySuffix == NullabilitySuffix.question) {
-        refer('?? <String,dynamic>{}').accept(emitter, buffer);
+        refer('?? <String, dynamic>{}').accept(emitter, buffer);
       }
       final expression = refer(buffer.toString());
 
