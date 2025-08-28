@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./generator
+        working-directory: ./retrofit
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,4 +27,4 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./generator/coverage/lcov.info
+          path-to-lcov: ./retrofit/coverage/lcov.info
