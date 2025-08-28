@@ -40,5 +40,26 @@ void main() {
       expect(cancel, isA<CancelRequest>());
       expect(receive, isA<ReceiveProgress>());
     });
+    test('SendProgress is const and type', () {
+      const send = SendProgress();
+      expect(send, isA<SendProgress>());
+    });
+
+    test('DioResponseType stores responseType', () {
+      final dioType = DioResponseType(ResponseType.json);
+      expect(dioType.responseType, ResponseType.json);
+    });
+
+    test('HttpResponse stores data and response', () {
+      final fakeResponse = Response(requestOptions: RequestOptions(path: '/foo'));
+      final httpResponse = HttpResponse<String>('data', fakeResponse);
+      expect(httpResponse.data, 'data');
+      expect(httpResponse.response, fakeResponse);
+    });
+
+    test('DioOptions is const and type', () {
+      const options = DioOptions();
+      expect(options, isA<DioOptions>());
+    });
   });
 }
