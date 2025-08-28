@@ -104,6 +104,21 @@ class Task {
 }
 ```
 
+> For enums, we rely on the `toString()` method to convert it to a string. Override the `toString()` method to return the value you want.
+
+```dart
+enum Status {
+  pending,
+  completed;
+
+  @override
+  String toString() => name;
+}
+
+@GET('/tasks/{status}')
+Future<List<Task>> getTasksByStatus(@Path() Status status);
+```
+
 #### Typed extras
 If you want to add static extra to all requests.
 
