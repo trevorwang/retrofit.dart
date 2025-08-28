@@ -2422,8 +2422,12 @@ MultipartFile.fromFileSync(i.path,
                       ? refer(p.displayName)
                             .property('toJson')
                             .call([])
-                            .ifNullThen(refer(p.displayName))
-                      : refer(p.displayName)
+                            .ifNullThen(
+                              refer(
+                                p.displayName,
+                              ).property('toString').call([]),
+                            )
+                      : refer(p.displayName).property('toString').call([])
                 else
                   refer(p.displayName).property('toString').call([]),
               ]),

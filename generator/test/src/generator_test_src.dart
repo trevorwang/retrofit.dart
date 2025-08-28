@@ -1350,10 +1350,12 @@ enum TestEnumWithToJson {
     final _data = FormData.fromMap(map);
 ''', contains: true)
 @ShouldGenerate('''
-_data.fields.add(MapEntry('enumValue', enumValue));
+_data.fields.add(MapEntry('enumValue', enumValue.toString()));
 ''', contains: true)
 @ShouldGenerate('''
-    _data.fields.add(MapEntry('enumValue', enumValue.toJson() ?? enumValue));
+    _data.fields.add(
+      MapEntry('enumValue', enumValue.toJson() ?? enumValue.toString()),
+    );
 ''', contains: true)
 @ShouldGenerate('''
     final _data = FormData();
