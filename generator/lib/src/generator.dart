@@ -19,6 +19,7 @@ import 'package:source_gen/source_gen.dart';
 const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter';
 
+/// Factory for the Retrofit code generator used by build_runner.
 Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
   [RetrofitGenerator(RetrofitOptions.fromOptions(options))],
   'retrofit',
@@ -26,6 +27,7 @@ Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
       '// dart format off\n\n${DartFormatter(languageVersion: version).format(code)}\n// dart format on\n',
 );
 
+/// Global configuration options for the Retrofit generator.
 class RetrofitOptions {
   RetrofitOptions({
     this.autoCastResponse,
@@ -51,6 +53,7 @@ class RetrofitOptions {
   final bool? useResult;
 }
 
+/// Main generator that processes @RestApi annotation and generates implementation code.
 class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   RetrofitGenerator(this.globalOptions);
 
@@ -84,6 +87,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   ConstantReader? clientAnnotationConstantReader;
 
   @override
+  /// Processes classes annotated with @RestApi and generates implementation.
+  @override
   String generateForAnnotatedElement(
     Element2 element,
     ConstantReader annotation,
@@ -99,6 +104,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return _implementClass(element, annotation);
   }
 
+  /// Generates the implementation class code as a string.
   String _implementClass(ClassElement2 element, ConstantReader annotation) {
     final className = globalOptions.className ?? '_${element.name3}';
     final enumString = annotation.peek('parser')?.revive().accessor;
@@ -152,6 +158,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ).format([_analyzerIgnores, classBuilder.accept(emitter)].join('\n\n'));
   }
 
+  /// Builds the Dio field.
   Field _buildDioField() => Field(
     (m) => m
       ..name = _dioVar
@@ -159,6 +166,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       ..modifier = FieldModifier.final$,
   );
 
+  /// Builds the baseUrl field.
   Field _buildBaseUrlField(String? url) => Field((m) {
     m
       ..name = _baseUrlVar
@@ -166,6 +174,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       ..modifier = FieldModifier.var$;
   });
 
+  /// Builds the error logger field.
   Field _buildErrorLoggerFiled() => Field((m) {
     m
       ..name = _errorLoggerVar
@@ -173,6 +182,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       ..modifier = FieldModifier.final$;
   });
 
+  /// Generates the constructor.
   Constructor _generateConstructor(
     String? url, {
     ConstructorElement2? superClassConst,
@@ -245,6 +255,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Traverses a type to find a matching type argument
   /// e.g. given a type `List<List<User>>` and a key `User`, it will return the `DartType` "User"
+  /// Finds a matching type argument by key in type parameters.
   DartType? findMatchingTypeArgument(DartType? type, String key) {
     if (type?.getDisplayString() == key) {
       return type;
@@ -262,6 +273,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   /// retrieve CallAdapter from method annotation or class annotation
+  /// Gets the CallAdapter annotation from method or class.
   ConstantReader? getCallAdapterInterface(MethodElement2 m) {
     final requestCallAdapterAnnotation = _typeChecker(
       retrofit.UseCallAdapter,
@@ -287,6 +299,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// get result type being adapted to e.g. `Future<Result<T>>`
   /// where T is supposed to be the wrapped result type
+  /// Gets the return type adapted by CallAdapter.
   InterfaceType? getAdaptedReturnType(ConstantReader? callAdapter) {
     final callAdapterTypeVal = callAdapter?.typeValue as InterfaceType?;
     final adaptedType =
@@ -301,6 +314,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// and the second type parameter(T) on `CallAdapter<R, T>` is `Future<Result<T>>`,
   /// this method basically figures out the value of 'T' which will be "UserResponse"
   /// in this case
+  /// Extracts the actual type wrapped by CallAdapter.
   String extractWrappedResultType(String template, String actual) {
     final regexPattern = RegExp(
       RegExp.escape(template).replaceAll('dynamic', r'([\w<>]+)'),
@@ -314,6 +328,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   // parse methods in the Api class
+  /// Parses methods in the API class and generates implementations.
   Iterable<Method> _parseMethods(ClassElement2 element) {
     final methods = <Method>[];
     final methodMembers = [
@@ -353,6 +368,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return methods;
   }
 
+  /// Generates a method implementation wrapped by CallAdapter.
   Method _generateAdapterMethod(
     MethodElement2 m,
     InterfaceType? callAdapter,
@@ -394,6 +410,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     });
   }
 
+  /// Generates method parameters.
   Iterable<Parameter> _generateParameters(
     MethodElement2 m,
     bool Function(FormalParameterElement) filter, {
@@ -417,6 +434,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         );
   }
 
+  /// Generates a type name with generic parameters.
   String _generateTypeParameterizedName(TypeParameterizedElement2 element) =>
       element.displayName +
       (element.typeParameters2.isNotEmpty
@@ -434,6 +452,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     retrofit.Method,
   };
 
+  /// Checks if the type is an interface type.
   bool _isInterfaceType(DartType? t) => t is InterfaceType;
 
   ///  `_typeChecker(T).isExactlyType(x)`
@@ -448,6 +467,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   bool _isSuperOf(Type t, DartType? x) =>
       _isInterfaceType(x) && _typeChecker(t).isSuperTypeOf(x!);
 
+  /// Gets a type checker for the given type.
   TypeChecker _typeChecker(Type type) {
     const dartCoreTypes = {
       Object,
@@ -534,6 +554,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return TypeChecker.typeNamed(type);
   }
 
+  /// Gets the HTTP annotation on the method.
   ConstantReader? _getMethodAnnotation(MethodElement2 method) {
     for (final type in _methodsAnnotations) {
       final annotation = _getMethodAnnotationByType(method, type);
@@ -544,6 +565,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
+  /// Gets the annotation of the specified type on the method.
   ConstantReader? _getMethodAnnotationByType(MethodElement2 method, Type type) {
     final annotation = _typeChecker(
       type,
@@ -554,9 +576,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
+  /// Gets the cache annotation on the method.
   ConstantReader? _getCacheAnnotation(MethodElement2 method) =>
       _getMethodAnnotationByType(method, retrofit.CacheControl);
 
+  /// Gets the Content-Type annotation on the method.
   ConstantReader? _getContentTypeAnnotation(MethodElement2 method) {
     final multipart = _getMultipartAnnotation(method);
     final formUrlEncoded = _getFormUrlEncodedAnnotation(method);
@@ -570,15 +594,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return multipart ?? formUrlEncoded;
   }
 
+  /// Gets the MultiPart annotation on the method.
   ConstantReader? _getMultipartAnnotation(MethodElement2 method) =>
       _getMethodAnnotationByType(method, retrofit.MultiPart);
 
+  /// Gets the FormUrlEncoded annotation on the method.
   ConstantReader? _getFormUrlEncodedAnnotation(MethodElement2 method) =>
       _getMethodAnnotationByType(method, retrofit.FormUrlEncoded);
 
+  /// Gets the ResponseType annotation on the method.
   ConstantReader? _getResponseTypeAnnotation(MethodElement2 method) =>
       _getMethodAnnotationByType(method, retrofit.DioResponseType);
 
+  /// Gets all annotations of the specified type on the method.
   Iterable<ConstantReader> _getMethodAnnotations(
     MethodElement2 method,
     Type type,
@@ -586,6 +614,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     type,
   ).annotationsOf(method, throwOnUnresolved: false).map(ConstantReader.new);
 
+  /// Gets the specified type annotation on method parameters.
   Map<FormalParameterElement, ConstantReader> _getAnnotations(
     MethodElement2 m,
     Type type,
@@ -600,6 +629,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return annotation;
   }
 
+  /// Gets the specified type annotation on a single method parameter.
   ({FormalParameterElement element, ConstantReader reader})? _getAnnotation(
     MethodElement2 m,
     Type type,
@@ -613,24 +643,29 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return null;
   }
 
+  /// Gets the list of generic type arguments for a type.
   List<DartType>? _genericListOf(DartType type) =>
       type is ParameterizedType && type.typeArguments.isNotEmpty
       ? type.typeArguments
       : null;
 
+  /// Gets the first generic type argument for a type.
   DartType? _genericOf(DartType type) =>
       type is InterfaceType && type.typeArguments.isNotEmpty
       ? type.typeArguments.first
       : null;
 
+  /// Gets the generic type argument for a response type.
   DartType? _getResponseType(DartType type) => _genericOf(type);
 
   /// get types for `Map<String, List<User>>`, `A<B,C,D>`
+  /// Gets all generic type arguments for a response type.
   List<DartType>? _getResponseInnerTypes(DartType type) {
     final genericList = _genericListOf(type);
     return genericList;
   }
 
+  /// Gets the innermost generic type argument for a response type.
   DartType? _getResponseInnerType(DartType type) {
     final generic = _genericOf(type);
     if (generic == null ||
@@ -650,6 +685,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return _getResponseInnerType(generic);
   }
 
+  /// Configures method metadata.
   void _configureMethodMetadata(
     MethodBuilder mm,
     MethodElement2 m,
@@ -665,6 +701,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           : MethodModifier.asyncStar;
   }
 
+  /// Adds method parameters.
   void _addParameters(MethodBuilder mm, MethodElement2 m) {
     mm.requiredParameters.addAll(
       _generateParameters(m, (it) => it.isRequiredPositional),
@@ -678,6 +715,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     );
   }
 
+  /// Adds method annotations.
   void _addAnnotations(
     MethodBuilder mm,
     DartType? returnType,
@@ -695,6 +733,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   // generate the method that makes the http request
+  /// Generates the API call method implementation.
   Method? _generateApiCallMethod(MethodElement2 m, InterfaceType? callAdapter) {
     final hasCallAdapter = callAdapter != null;
 
@@ -721,6 +760,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     });
   }
 
+  /// Generates the private API call method implementation (with CallAdapter).
   Method? _generatePrivateApiCallMethod(
     MethodElement2 m,
     InterfaceType? callAdapter,
@@ -746,6 +786,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     });
   }
 
+  /// Generates the request path expression.
   Expression _generatePath(MethodElement2 m, ConstantReader method) {
     final paths = _getAnnotations(m, retrofit.Path);
     var definePath = method.peek('path')?.stringValue;
@@ -763,8 +804,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     return literal(definePath);
   }
 
+  /// Checks if the return type is Future.
   bool _isReturnTypeFuture(String type) => type.startsWith('Future<');
 
+  /// Generates the HTTP request code block.
   Code _generateRequest(
     MethodElement2 m,
     ConstantReader httpMethod,
@@ -1365,6 +1408,7 @@ $returnAsyncWrapper httpResponse;
     return Block.of(blocks);
   }
 
+  /// Checks if the type requires generic argument factories.
   bool isGenericArgumentFactories(DartType? dartType) {
     final metaData = dartType?.element3?.firstFragment is ClassFragment
         ? (dartType!.element3!.firstFragment as ClassFragment)
@@ -1394,6 +1438,7 @@ $returnAsyncWrapper httpResponse;
   }
 
   /// Checks for a compatible fromJson signature for generic argument factories
+  /// Checks if the type has a compatible fromJson generic argument factory signature.
   bool hasGenericArgumentFactoriesCompatibleSignature(DartType? dartType) {
     if (dartType == null) {
       return false;
@@ -1428,6 +1473,7 @@ $returnAsyncWrapper httpResponse;
     return true;
   }
 
+  /// Gets the mapping function for JsonSerializable generic arguments.
   String _getInnerJsonSerializableMapperFn(DartType dartType) {
     final typeArgs = dartType is ParameterizedType
         ? dartType.typeArguments
@@ -1512,6 +1558,7 @@ $returnAsyncWrapper httpResponse;
     }
   }
 
+  /// Gets the deserialization mapping function for JsonSerializable generic arguments.
   String _getInnerJsonDeSerializableMapperFn(DartType dartType) {
     final typeArgs = dartType is ParameterizedType
         ? dartType.typeArguments
@@ -1570,6 +1617,7 @@ $returnAsyncWrapper httpResponse;
     }
   }
 
+  /// Parses the request Options.
   Expression _parseOptions(
     MethodElement2 m,
     Map<String, Expression> namedArguments,
@@ -1669,6 +1717,7 @@ $returnAsyncWrapper httpResponse;
     }
   }
 
+  /// Generates the Options cast method.
   Method _generateOptionsCastMethod() => Method((m) {
     m
       ..name = 'newRequestOptions'
@@ -1708,6 +1757,7 @@ return RequestOptions(path: '');
 ''');
   });
 
+  /// Generates the BaseUrl combine method.
   Method _generateCombineBaseUrlsMethod() => Method((m) {
     final dioBaseUrlParam = Parameter((p) {
       p
@@ -1742,6 +1792,7 @@ return Uri.parse(dioBaseUrl).resolveUri(url).toString();
 ''');
   });
 
+  /// Generates the type setter method.
   Method _generateTypeSetterMethod() => Method((m) {
     final t = refer('T');
     final optionsParam = Parameter((p) {
@@ -1767,6 +1818,7 @@ if (T != dynamic &&
 ''');
   });
 
+  /// Checks if the type is a basic type.
   bool _isBasicType(DartType? t) {
     if (!_isInterfaceType(t)) {
       return false;
@@ -1783,6 +1835,7 @@ if (T != dynamic &&
         _isExactly(Object, t);
   }
 
+  /// Checks if the type is an enum.
   bool _isEnum(DartType? dartType) {
     if (dartType == null || dartType.element3 == null) {
       return false;
@@ -1790,15 +1843,19 @@ if (T != dynamic &&
     return dartType.element3 is EnumElement2;
   }
 
+  /// Checks if the type is MultipartFile.
   bool _isMultipartFile(DartType? t) => _isAssignable(MultipartFile, t);
 
+  /// Checks if the type is DateTime.
   bool _isDateTime(DartType? t) => _isExactly(DateTime, t);
 
+  /// Checks if the inner type of the return type is a basic type.
   bool _isBasicInnerType(DartType returnType) {
     final innerType = _genericOf(returnType);
     return _isBasicType(innerType);
   }
 
+  /// Checks if the type has a fromJson method.
   bool _hasFromJson(DartType? dartType) {
     if (dartType is! InterfaceType) {
       return false;
@@ -1806,6 +1863,7 @@ if (T != dynamic &&
     return dartType.element3.getNamedConstructor2('fromJson') != null;
   }
 
+  /// Checks if the type has a toJson method.
   bool _hasToJson(DartType? dartType) {
     if (dartType is! InterfaceType) {
       return false;
@@ -1813,6 +1871,7 @@ if (T != dynamic &&
     return dartType.element3.getMethod2('toJson') != null;
   }
 
+  /// Generates the query parameters code block.
   void _generateQueries(
     MethodElement2 m,
     List<Code> blocks,
@@ -1925,6 +1984,7 @@ if (T != dynamic &&
     }
   }
 
+  /// Generates the request body code block.
   void _generateRequestBody(
     List<Code> blocks,
     String dataVar,
@@ -2624,6 +2684,7 @@ MultipartFile.fromFileSync(i.path,
     }
   }
 
+  /// Generates the request headers.
   Map<String, Expression> _generateHeaders(MethodElement2 m) {
     final headers = _getMethodAnnotations(m, retrofit.Headers)
         .map((e) => e.peek('value'))
@@ -2677,6 +2738,7 @@ MultipartFile.fromFileSync(i.path,
     return headers;
   }
 
+  /// Generates cache-related request headers.
   Map<String, Expression> _generateCache(MethodElement2 m) {
     final cache = _getCacheAnnotation(m);
     final result = <String, Expression>{};
@@ -2720,6 +2782,7 @@ MultipartFile.fromFileSync(i.path,
     return result;
   }
 
+  /// Gets the value of an annotation field.
   Object? _getFieldValue(ConstantReader? value) {
     if (value?.isBool ?? false) {
       return value?.boolValue;
@@ -2775,6 +2838,7 @@ MultipartFile.fromFileSync(i.path,
     return null;
   }
 
+  /// Gets the TypedExtras annotation on the method.
   Map<String, Object> _getMapFromTypedExtras(MethodElement2 m) {
     final annotations = _getMethodAnnotations(m, retrofit.TypedExtras);
     final allTypedExtras = <String, Object>{};
@@ -2798,6 +2862,7 @@ MultipartFile.fromFileSync(i.path,
     return allTypedExtras;
   }
 
+  /// Generates serialization code for a parameter element.
   void _generateParameterElement(
     FormalParameterElement paramElement,
     List<Code> blocks,
@@ -2831,6 +2896,7 @@ MultipartFile.fromFileSync(i.path,
     }
   }
 
+  /// Generates code block for Extra annotation.
   void _generateExtra(
     MethodElement2 m,
     List<Code> blocks,
@@ -2919,6 +2985,7 @@ MultipartFile.fromFileSync(i.path,
     }
   }
 
+  /// Checks if the class is missing a toJson method.
   bool _missingToJson(ClassElement2 ele) {
     switch (clientAnnotation.parser) {
       case retrofit.Parser.JsonSerializable:
@@ -2931,6 +2998,7 @@ MultipartFile.fromFileSync(i.path,
     }
   }
 
+  /// Checks if the type is missing a serialize method.
   bool _missingSerialize(LibraryFragment ele, DartType type) {
     switch (clientAnnotation.parser) {
       case retrofit.Parser.JsonSerializable:
@@ -2948,6 +3016,7 @@ MultipartFile.fromFileSync(i.path,
     }
   }
 
+  /// Wraps a code block in try-catch.
   void _wrapInTryCatch(
     List<Code> blocks,
     Expression options,
