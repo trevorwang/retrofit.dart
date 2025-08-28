@@ -1,6 +1,7 @@
 
 import 'package:test/test.dart';
 import 'package:retrofit/dio.dart';
+import 'package:dio/dio.dart';
 
 class MyExtras extends TypedExtras {
   const MyExtras();
