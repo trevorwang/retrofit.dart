@@ -18,3 +18,5 @@ dependencies:
 
 dev_dependencies:
   lints: any
+  coverage: any
+  test: any

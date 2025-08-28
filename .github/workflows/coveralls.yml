@@ -1,0 +1,30 @@
+name: Coveralls Coverage
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./retrofit
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      - name: Install dependencies
+        run: dart pub get
+      - name: Run coverage
+        run: bash ../tool/coverage.sh
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./retrofit/coverage/lcov.info
