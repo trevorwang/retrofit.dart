@@ -2,6 +2,8 @@ import 'dart:ffi' as ffi;
 import 'dart:io' as io;
 
 import 'package:analyzer/dart/constant/value.dart';
+// TODO(Carapacik): remove this after analyzer 9.0.0 released
+// ignore_for_file: deprecated_member_use
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -436,16 +438,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   ///  `_typeChecker(T).isExactlyType(x)`
   bool _isExactly(Type t, DartType? x) =>
-      _isInterfaceType(x) && _typeChecker(t).isExactlyType(x as DartType);
+      _isInterfaceType(x) && _typeChecker(t).isExactlyType(x!);
 
   /// `_typeChecker(T).isAssignableFromType(x)`
   bool _isAssignable(Type t, DartType? x) =>
-      _isInterfaceType(x) &&
-      _typeChecker(t).isAssignableFromType(x as DartType);
+      _isInterfaceType(x) && _typeChecker(t).isAssignableFromType(x!);
 
   /// `_typeChecker(T).isSuperTypeOf(x)`
   bool _isSuperOf(Type t, DartType? x) =>
-      _isInterfaceType(x) && _typeChecker(t).isSuperTypeOf(x as DartType);
+      _isInterfaceType(x) && _typeChecker(t).isSuperTypeOf(x!);
 
   TypeChecker _typeChecker(Type type) {
     const dartCoreTypes = {
@@ -476,7 +477,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     if (dartFfiTypes.contains(type)) {
       return TypeChecker.typeNamed(type, inPackage: 'ffi', inSdk: true);
     }
-    
+
     final dartIoTypes = {io.File};
     if (dartIoTypes.contains(type)) {
       return TypeChecker.typeNamed(type, inPackage: 'io', inSdk: true);
@@ -1767,7 +1768,9 @@ if (T != dynamic &&
   });
 
   bool _isBasicType(DartType? t) {
-    if (!_isInterfaceType(t)) return false;
+    if (!_isInterfaceType(t)) {
+      return false;
+    }
     return _isExactly(String, t) ||
         _isExactly(bool, t) ||
         _isExactly(int, t) ||
@@ -1973,7 +1976,6 @@ if (T != dynamic &&
     if (bodyName != null) {
       final nullToAbsent =
           annotation!.reader.peek('nullToAbsent')?.boolValue ?? false;
-      final bodyTypeElement = bodyName.type.element3;
       if (_isAssignable(Map, bodyName.type)) {
         blocks
           ..add(
