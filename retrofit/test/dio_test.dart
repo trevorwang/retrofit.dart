@@ -1,5 +1,7 @@
+
 import 'package:test/test.dart';
 import 'package:retrofit/dio.dart';
+
 class MyExtras extends TypedExtras {
   const MyExtras();
 }
@@ -16,12 +18,10 @@ void main() {
       expect(extra1 == extra2, isFalse);
     });
     test('TypedExtras subclass', () {
-      class MyExtras extends TypedExtras {
-        const MyExtras();
-      }
       const myExtras = MyExtras();
       expect(myExtras, isA<TypedExtras>());
     });
+
     test('Extras is const and type', () {
       const extras = Extras();
       expect(extras, isA<Extras>());
@@ -29,10 +29,13 @@ void main() {
 
     test('TypedExtras and Extras are const', () {
       const typed = TypedExtras();
-    test('TypedExtras subclass', () {
-      const myExtras = MyExtras();
-      expect(myExtras, isA<TypedExtras>());
+      const extras = Extras();
+      expect(typed, isA<TypedExtras>());
+      expect(extras, isA<Extras>());
     });
+
+    test('CancelRequest and ReceiveProgress are const', () {
+      const cancel = CancelRequest();
       const receive = ReceiveProgress();
       expect(cancel, isA<CancelRequest>());
       expect(receive, isA<ReceiveProgress>());
