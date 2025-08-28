@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./retrofit
+        working-directory: ./generator
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,9 +22,9 @@ jobs:
       - name: Install dependencies
         run: dart pub get
       - name: Run coverage
-        run: bash tool/coverage.sh
+        run: bash ../tool/coverage.sh
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: coverage/lcov.info
+          path-to-lcov: ./generator/coverage/lcov.info
