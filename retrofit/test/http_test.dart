@@ -17,11 +17,10 @@ void main() {
 
   group('Parser', () {
     test('enum values', () {
-      expect(Parser.values, contains(Parser.JsonSerializable));
-      expect(Parser.values, contains(Parser.MapSerializable));
-      expect(Parser.values, contains(Parser.DartJsonMapper));
-      expect(Parser.values, contains(Parser.Compute));
-      expect(Parser.values, contains(Parser.FlutterCompute));
+  expect(Parser.values, contains(Parser.JsonSerializable));
+  expect(Parser.values, contains(Parser.MapSerializable));
+  expect(Parser.values, contains(Parser.DartJsonMapper));
+  expect(Parser.values, contains(Parser.FlutterCompute));
     });
   });
 
