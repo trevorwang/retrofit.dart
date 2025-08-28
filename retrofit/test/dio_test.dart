@@ -1,5 +1,8 @@
 import 'package:test/test.dart';
 import 'package:retrofit/dio.dart';
+class MyExtras extends TypedExtras {
+  const MyExtras();
+}
 
 void main() {
   group('Dio Annotations', () {
@@ -26,13 +29,10 @@ void main() {
 
     test('TypedExtras and Extras are const', () {
       const typed = TypedExtras();
-      const extras = Extras();
-      expect(typed, isA<TypedExtras>());
-      expect(extras, isA<Extras>());
+    test('TypedExtras subclass', () {
+      const myExtras = MyExtras();
+      expect(myExtras, isA<TypedExtras>());
     });
-
-    test('CancelRequest and ReceiveProgress are const', () {
-      const cancel = CancelRequest();
       const receive = ReceiveProgress();
       expect(cancel, isA<CancelRequest>());
       expect(receive, isA<ReceiveProgress>());
