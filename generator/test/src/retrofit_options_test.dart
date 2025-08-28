@@ -18,22 +18,16 @@ void main() {
       expect(opts.className, isNull);
       expect(opts.useResult, false);
 
-      final opts2 = RetrofitOptions.fromOptions(_FakeOptions({
+      final opts2 = RetrofitOptions.fromOptions({
         'auto_cast_response': 'false',
         'empty_request_body': 'true',
         'class-name': 'Foo',
         'use_result': 'true',
-      }));
+      });
       expect(opts2.autoCastResponse, false);
       expect(opts2.emptyRequestBody, true);
       expect(opts2.className, 'Foo');
       expect(opts2.useResult, true);
     });
   });
-}
-
-class _FakeOptions implements BuilderOptions {
-  @override
-  final Map<String, dynamic> config;
-  _FakeOptions(this.config);
 }
