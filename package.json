@@ -6,7 +6,7 @@
   "author": "Trevor Wang <trevor.wang@qq.com>",
   "license": "MIT",
   "devDependencies": {
-    "@commitlint/cli": "^8.0.0",
+    "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^8.0.0",
     "all-contributors-cli": "^6.20.0",
     "husky": "^4.2.3"
