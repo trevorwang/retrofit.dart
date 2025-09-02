@@ -1733,7 +1733,7 @@ $returnAsyncWrapper httpResponse;
       /// add method body
       ..body = const Code('''
 if (options is RequestOptions) {
-  return options as RequestOptions;
+  return options;
 }
 if (options is Options) {
   return RequestOptions(
