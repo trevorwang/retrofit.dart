@@ -1,3 +1,7 @@
+## 10.0.5
+
+- Allow build 4.0.0.
+
 ## 10.0.3
 
 - Require source_gen: 3.1.0, stop using deprecated `TypeChecker.fromRuntime` and use the new `TypeChecker.typeNamed` instead.
