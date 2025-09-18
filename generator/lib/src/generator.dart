@@ -317,7 +317,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// Extracts the actual type wrapped by CallAdapter.
   String extractWrappedResultType(String template, String actual) {
     final regexPattern = RegExp(
-      RegExp.escape(template).replaceAll('dynamic', r'([\w<>]+)'),
+      RegExp.escape(template).replaceAll('dynamic', r'([\w<>?]+)'),
     );
     final match = regexPattern.firstMatch(actual);
 
