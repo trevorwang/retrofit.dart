@@ -8,6 +8,19 @@ import 'package:retrofit_example/api_result.dart';
 
 part 'example.g.dart';
 
+/// Example REST API client
+///
+/// Usage with centralized error handling:
+/// ```dart
+/// void handleError(error) {
+///   if (error is DioException) {
+///     print('API Error: ${error.response?.statusCode}');
+///   }
+/// }
+///
+/// final client = RestClient(dio, onError: handleError);
+/// // All API calls will automatically handle errors through handleError
+/// ```
 @RestApi(baseUrl: 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/')
 abstract class RestClient {
   factory RestClient(
