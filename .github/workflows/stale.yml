@@ -1,0 +1,29 @@
+name: 'Close stale issues'
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run daily at midnight UTC
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          # Close issues that have been open for longer than 6 months (180 days)
+          days-before-issue-stale: 180
+          days-before-issue-close: 0
+          stale-issue-label: 'stale'
+          stale-issue-message: 'This issue has been automatically marked as stale because it has been open for 6 months with no activity. It will be closed immediately. If you believe this issue is still relevant, please reopen it or create a new issue. Thank you for your contributions.'
+          close-issue-message: 'This issue has been automatically closed because it has been open for 6 months with no activity. If you believe this issue is still relevant, please reopen it or create a new issue. Thank you for your contributions.'
+          # Issues with these labels will never be considered stale
+          exempt-issue-labels: 'pinned,security,working in progress,to be discussed,feature request'
+          # Don't process pull requests with this workflow
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          # Process up to 30 operations per run
+          operations-per-run: 30
