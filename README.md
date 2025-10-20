@@ -176,6 +176,7 @@ The HTTP methods in the below sample are supported.
   Future<Task> createTask(@Body() Task task);
   
   @POST('http://httpbin.org/post')
+  @MultiPart()
   Future<void> createNewTaskFromFile(@Part() File file);
   
   @POST('http://httpbin.org/post')
