@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:lean_builder/builder.dart';
-import 'package:lean_builder/element.dart' as lean;
+import 'package:lean_builder/element.dart';
 import 'package:retrofit/retrofit.dart' as retrofit;
 
 /// Lean Builder generator for Retrofit.
@@ -12,14 +12,19 @@ import 'package:retrofit/retrofit.dart' as retrofit;
 /// Note: This is an experimental feature. For production use, we recommend
 /// using the traditional build_runner approach until lean_builder support
 /// is fully stable.
+///
+/// This generator is automatically discovered by lean_builder through the
+/// @LeanGenerator.shared() annotation, which marks it as a shared part builder
+/// (similar to build_runner's shared part builders).
+@LeanGenerator.shared()
 class RetrofitLeanGenerator extends GeneratorForAnnotatedClass<retrofit.RestApi> {
   RetrofitLeanGenerator();
 
   @override
   FutureOr<String?> generateForClass(
     BuildStep buildStep,
-    lean.ClassElement classElement,
-    Annotation annotation,
+    ClassElement classElement,
+    ElementAnnotation annotation,
   ) async {
     // The retrofit generator is currently optimized for build_runner/source_gen.
     // Full lean_builder support requires adapting the codebase to use lean_builder's

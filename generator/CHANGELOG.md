@@ -1,3 +1,11 @@
+## 10.0.8 (Unreleased)
+
+- Add experimental lean_builder support infrastructure
+- Add `lean_builder` as a dependency for future integration
+- Add `lib/lean_builder.dart` entry point for lean_builder users
+- Add comprehensive documentation for lean_builder support
+- Note: Full lean_builder implementation is pending until lean_builder reaches stability
+
 ## 10.0.6
 
 - Update `protobuf` to 5.0.0
