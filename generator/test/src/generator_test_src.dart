@@ -1434,7 +1434,20 @@ abstract class CustomOptions {
 }
 
 // Test that a service without @DioOptions does not get newRequestOptions method
-@ShouldNotGenerate('RequestOptions newRequestOptions(Object? options)')
+// We check by verifying that the expected code pattern is generated without newRequestOptions
+@ShouldGenerate(r'''
+class _ServiceWithoutCustomOptions implements ServiceWithoutCustomOptions {
+  _ServiceWithoutCustomOptions(this._dio, {this.baseUrl, this.errorLogger});
+
+  final Dio _dio;
+
+  String? baseUrl;
+
+  final ParseErrorLogger? errorLogger;
+
+  @override
+  Future<String> getData() async {
+''', contains: true)
 @RestApi()
 abstract class ServiceWithoutCustomOptions {
   @GET('/data')
