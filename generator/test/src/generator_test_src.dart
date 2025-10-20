@@ -1433,6 +1433,14 @@ abstract class CustomOptions {
   Future<void> testOptions(@DioOptions() Options options);
 }
 
+// Test that a service without @DioOptions does not get newRequestOptions method
+@ShouldNotGenerate('RequestOptions newRequestOptions(Object? options)')
+@RestApi()
+abstract class ServiceWithoutCustomOptions {
+  @GET('/data')
+  Future<String> getData();
+}
+
 @ShouldGenerate('''
     late User _value;
     try {

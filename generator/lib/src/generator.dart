@@ -106,6 +106,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Generates the implementation class code as a string.
   String _implementClass(ClassElement2 element, ConstantReader annotation) {
+    // Reset hasCustomOptions for each class to avoid state leaking between classes
+    hasCustomOptions = false;
     final className = globalOptions.className ?? '_${element.name3}';
     final enumString = annotation.peek('parser')?.revive().accessor;
     final parser = retrofit.Parser.values.firstWhereOrNull(
