@@ -8,7 +8,7 @@ topics:
   - rest
   - retrofit
   - codegen
-version: 10.0.5
+version: 10.0.7
 environment:
   sdk: '>=3.8.0 <4.0.0'
 
@@ -19,8 +19,8 @@ dependencies:
   code_builder: ^4.10.1
   dart_style: ^3.1.1
   dio: ^5.8.0
-  protobuf: ^4.1.1
-  retrofit: ^4.7.2
+  protobuf: ^5.0.0
+  retrofit: ^4.7.3
   source_gen: '>=3.1.0 <5.0.0'
 
 dev_dependencies:

@@ -1,3 +1,7 @@
+## 10.0.6
+
+- Update `protobuf` to 5.0.0
+
 ## 10.0.5
 
 - Allow build 4.0.0.
