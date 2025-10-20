@@ -240,6 +240,37 @@ client.getTask('2').then((it) {
 });
 ```
 
+#### Centralized Error Handling
+
+Instead of adding `.catchError()` to every API call, you can provide a centralized error handler when creating the client:
+
+```dart
+void handleError(error) {
+  // Handle all API errors in one place
+  if (error is DioException) {
+    final res = error.response;
+    logger.e('API Error: ${res?.statusCode} -> ${res?.statusMessage}');
+  } else {
+    logger.e('Unexpected error: $error');
+  }
+}
+
+// Create client with error handler
+final client = RestClient(dio, onError: handleError);
+
+// All API calls will automatically use the error handler
+client.getTask('2').then((it) {
+  logger.i(it);
+});
+// No need to add .catchError() - errors are automatically handled!
+```
+
+This approach:
+- Reduces boilerplate code by eliminating repetitive `.catchError()` calls
+- Provides a single place to handle errors for all API methods
+- Works with all exceptions, including `DioException`, data conversion errors, and `SocketException`
+- Can be shared across multiple API clients
+
 ### Relative API baseUrl
 
 If you want to use a relative `baseUrl` value in the `RestApi` annotation of the `RestClient`, you need to specify a `baseUrl` in `dio.options.baseUrl`.
