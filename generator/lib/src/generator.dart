@@ -2455,7 +2455,7 @@ MultipartFile.fromBytes(i,
                       _isExactly(BuiltList, innerType)))) {
             var value = '';
             if (innerType != null && _isEnum(innerType)) {
-              value = 'i';
+              value = _hasToJson(innerType) ? 'i.toJson()' : 'i.name';
             } else if (_isBasicType(innerType)) {
               value = 'i';
               if (innerType != null && !_isExactly(String, innerType)) {
@@ -2554,15 +2554,8 @@ MultipartFile.fromFileSync(i.path,
                   refer(p.displayName)
                 else if (_isEnum(p.type))
                   _hasToJson(p.type)
-                      ? refer(p.displayName)
-                            .property('toJson')
-                            .call([])
-                            .ifNullThen(
-                              refer(
-                                p.displayName,
-                              ).property('toString').call([]),
-                            )
-                      : refer(p.displayName).property('toString').call([])
+                      ? refer(p.displayName).property('toJson').call([])
+                      : refer(p.displayName).property('name')
                 else
                   refer(p.displayName).property('toString').call([]),
               ]),
