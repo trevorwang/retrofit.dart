@@ -61,6 +61,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   static const _baseUrlVar = 'baseUrl';
   static const _errorLoggerVar = 'errorLogger';
+  static const _onErrorVar = 'onError';
   static const _queryParamsVar = 'queryParameters';
   static const _optionsVar = '_options';
   static const _localHeadersVar = '_headers';
@@ -130,6 +131,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           _buildDioField(),
           _buildBaseUrlField(baseUrl),
           _buildErrorLoggerFiled(),
+          _buildOnErrorField(),
         ])
         ..constructors.addAll(
           annotateClassConsts.map(
@@ -182,6 +184,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       ..modifier = FieldModifier.final$;
   });
 
+  /// Builds the onError field.
+  Field _buildOnErrorField() => Field((m) {
+    m
+      ..name = _onErrorVar
+      ..type = refer('Function?')
+      ..modifier = FieldModifier.final$;
+  });
+
   /// Generates the constructor.
   Constructor _generateConstructor(
     String? url, {
@@ -205,6 +215,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         (p) => p
           ..named = true
           ..name = _errorLoggerVar
+          ..toThis = true,
+      ),
+      Parameter(
+        (p) => p
+          ..named = true
+          ..name = _onErrorVar
           ..toThis = true,
       ),
     ]);
@@ -354,18 +370,60 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           : null;
       if (method.isAbstract) {
         methods.add(_generateApiCallMethod(method, instantiatedCallAdapter)!);
-      }
-      if (callAdapter != null) {
-        methods.add(
-          _generateAdapterMethod(
-            method,
-            instantiatedCallAdapter,
-            resultTypeInString,
-          ),
-        );
+        // Always generate public wrapper for error handling
+        if (callAdapter != null) {
+          methods.add(
+            _generateAdapterMethod(
+              method,
+              instantiatedCallAdapter,
+              resultTypeInString,
+            ),
+          );
+        } else {
+          methods.add(_generatePublicWrapperMethod(method));
+        }
       }
     }
     return methods;
+  }
+
+  /// Generates a public wrapper method that adds error handling.
+  Method _generatePublicWrapperMethod(MethodElement2 m) {
+    return Method((methodBuilder) {
+      methodBuilder.returns = refer(
+        _displayString(m.returnType, withNullability: true),
+      );
+      methodBuilder.requiredParameters.addAll(
+        _generateParameters(m, (it) => it.isRequiredPositional),
+      );
+      methodBuilder.optionalParameters.addAll(
+        _generateParameters(
+          m,
+          (it) => it.isOptional || it.isRequiredNamed,
+          optional: true,
+        ),
+      );
+      methodBuilder.name = m.displayName;
+      methodBuilder.annotations.add(const CodeExpression(Code('override')));
+      final positionalArgs = <String>[];
+      final namedArgs = <String>[];
+      for (final parameter in m.formalParameters) {
+        if (parameter.isRequiredPositional || parameter.isOptionalPositional) {
+          positionalArgs.add(parameter.displayName);
+        }
+        if (parameter.isNamed) {
+          namedArgs.add('${parameter.displayName}: ${parameter.displayName}');
+        }
+      }
+      final args =
+          '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
+      final privateCall = '_${m.displayName}($args)';
+      methodBuilder.body = Code('''
+        return ${_onErrorVar} != null 
+          ? $privateCall.catchError($_onErrorVar)
+          : $privateCall;
+      ''');
+    });
   }
 
   /// Generates a method implementation wrapped by CallAdapter.
@@ -402,10 +460,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       }
       final args =
           '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
+      final adaptedCall = '${callAdapter?.element3.name3}<$resultType>().adapt(() => _${m.displayName}($args))';
       methodBuilder.body = Code('''
-        return ${callAdapter?.element3.name3}<$resultType>().adapt(
-          () => _${m.displayName}($args),
-        );
+        return ${_onErrorVar} != null 
+          ? $adaptedCall.catchError($_onErrorVar)
+          : $adaptedCall;
       ''');
     });
   }
@@ -747,15 +806,16 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     final returnType = m.returnType;
+    // Generate private method with underscore prefix
     return Method((methodBuilder) {
       _configureMethodMetadata(
         methodBuilder,
         m,
         _displayString(returnType, withNullability: true),
-        false,
+        true, // Mark as having CallAdapter (to add underscore prefix)
       );
       _addParameters(methodBuilder, m);
-      _addAnnotations(methodBuilder, returnType, false);
+      _addAnnotations(methodBuilder, returnType, true);
       methodBuilder.body = _generateRequest(m, httpMethod, null);
     });
   }
