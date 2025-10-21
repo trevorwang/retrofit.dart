@@ -419,10 +419,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
       final privateCall = '_${m.displayName}($args)';
       methodBuilder.body = Code('''
-        return ${_onErrorVar} != null 
-          ? $privateCall.catchError($_onErrorVar)
-          : $privateCall;
-      ''');
+return ${_onErrorVar} != null ? $privateCall.catchError($_onErrorVar) : $privateCall;
+''');
     });
   }
 
@@ -462,10 +460,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
       final adaptedCall = '${callAdapter?.element3.name3}<$resultType>().adapt(() => _${m.displayName}($args))';
       methodBuilder.body = Code('''
-        return ${_onErrorVar} != null 
-          ? $adaptedCall.catchError($_onErrorVar)
-          : $adaptedCall;
-      ''');
+return ${_onErrorVar} != null ? $adaptedCall.catchError($_onErrorVar) : $adaptedCall;
+''');
     });
   }
 
