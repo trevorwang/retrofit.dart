@@ -2991,7 +2991,13 @@ MultipartFile.fromFileSync(i.path,
       case retrofit.Parser.JsonSerializable:
       case retrofit.Parser.DartJsonMapper:
         final toJson = ele.lookUpMethod2(name: 'toJson', library: ele.library2);
-        return toJson == null;
+        if (toJson != null) {
+          return false;
+        }
+        // Check if the method exists in the interface type (includes mixins)
+        // This is important for Freezed-generated classes where toJson is in a mixin
+        final method = ele.getMethod2('toJson');
+        return method == null;
       case retrofit.Parser.MapSerializable:
       case retrofit.Parser.FlutterCompute:
         return false;
