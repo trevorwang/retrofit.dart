@@ -6,6 +6,24 @@
 /// Lean Builder support is currently under development and not yet recommended
 /// for production use.
 ///
+/// ## Important: Optional Dependency
+///
+/// This library is **NOT** included in retrofit_generator's dependencies.
+/// To use lean_builder support, you must add it to your own project:
+///
+/// ```yaml
+/// dependencies:
+///   retrofit_generator: <version>
+///
+/// dev_dependencies:
+///   lean_builder: ^0.1.2
+/// ```
+///
+/// Then, in your codegen folder (or where you define generators), import:
+/// ```dart
+/// import 'package:retrofit_generator/lean_builder.dart';
+/// ```
+///
 /// ## Current Status
 ///
 /// While the infrastructure for lean_builder support has been added, the
@@ -15,13 +33,13 @@
 ///
 /// ## Usage (Experimental)
 ///
-/// For those who want to try the experimental support:
-///
-/// 1. Add lean_builder to your dev_dependencies:
+/// 1. Add both packages to your pubspec.yaml:
 /// ```yaml
+/// dependencies:
+///   retrofit_generator: <version>
+///
 /// dev_dependencies:
 ///   lean_builder: ^0.1.2
-///   retrofit_generator: <version>
 /// ```
 ///
 /// 2. For now, please continue using build_runner:

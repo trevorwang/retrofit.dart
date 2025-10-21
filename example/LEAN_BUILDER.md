@@ -48,6 +48,8 @@ dart run lean_builder watch --dev
 
 ### pubspec.yaml
 
+**Important**: lean_builder is an **optional** dependency. It is NOT included in retrofit_generator by default.
+
 When lean_builder support is ready, your `pubspec.yaml` will include:
 
 ```yaml
@@ -55,12 +57,14 @@ dependencies:
   retrofit: ^4.6.0
   dio: ^5.0.0
   json_annotation: ^4.9.0
+  retrofit_generator: ^10.0.0  # For use in codegen folder
 
 dev_dependencies:
-  retrofit_generator: ^10.0.0
-  lean_builder: ^0.1.2  # or latest version
+  lean_builder: ^0.1.2  # Optional - only if you want to use lean_builder
   json_serializable: ^6.10.0
 ```
+
+Note: retrofit_generator does not depend on lean_builder, so you won't be forced to install it unless you explicitly want to use lean_builder support.
 
 ### build.yaml (Optional)
 

@@ -19,7 +19,6 @@ dependencies:
   code_builder: ^4.10.1
   dart_style: ^3.1.1
   dio: ^5.8.0
-  lean_builder: ^0.1.2
   protobuf: ^5.0.0
   retrofit: ^4.7.3
   source_gen: '>=3.1.0 <5.0.0'

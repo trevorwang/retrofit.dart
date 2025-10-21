@@ -1,3 +1,9 @@
 include: package:lints/recommended.yaml
 formatter:
   page_width: 80
+analyzer:
+  exclude:
+    # Exclude lean_builder support files as lean_builder is an optional dependency
+    # These files are only used when users explicitly add lean_builder to their project
+    - lib/lean_builder.dart
+    - lib/src/lean_generator.dart
