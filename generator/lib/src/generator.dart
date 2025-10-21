@@ -418,10 +418,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       }
       final args =
           '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
+      final adaptedCall = '${callAdapter?.element3.name3}<$resultType>().adapt(() => _${m.displayName}($args))';
       methodBuilder.body = Code('''
-        return ${callAdapter?.element3.name3}<$resultType>().adapt(
-          () => _${m.displayName}($args),
-        );
+        return $_onErrorVar != null ? $adaptedCall.catchError($_onErrorVar) : $adaptedCall;
       ''');
     });
   }
@@ -973,18 +972,32 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         : wrappedReturnType;
     if (returnType == null || 'void' == returnType.toString()) {
       if (isWrappedWithHttpResponseWrapper) {
-        blocks
-          ..add(
+        if (returnAsyncWrapper == 'return') {
+          blocks.add(
             refer(
               'final $_resultVar = await $_dioVar.fetch',
             ).call([options], {}, [refer('void')]).statement,
-          )
-          ..add(
+          );
+          blocks.add(
             Code('''
+final httpResponse = HttpResponse(null, $_resultVar);
+return $_onErrorVar != null ? Future.value(httpResponse).catchError($_onErrorVar) : httpResponse;
+'''),
+          );
+        } else {
+          blocks
+            ..add(
+              refer(
+                'final $_resultVar = await $_dioVar.fetch',
+              ).call([options], {}, [refer('void')]).statement,
+            )
+            ..add(
+              Code('''
 final httpResponse = HttpResponse(null, $_resultVar);
 $returnAsyncWrapper httpResponse;
 '''),
-          );
+            );
+        }
       } else {
         blocks.add(
           refer(
@@ -1410,14 +1423,27 @@ You should create a new class to encapsulate the response.
         }
       }
       if (isWrappedWithHttpResponseWrapper) {
-        blocks.add(
-          Code('''
+        if (returnAsyncWrapper == 'return') {
+          blocks.add(
+            Code('''
+final httpResponse = HttpResponse($_valueVar, $_resultVar);
+return $_onErrorVar != null ? Future.value(httpResponse).catchError($_onErrorVar) : httpResponse;
+'''),
+          );
+        } else {
+          blocks.add(
+            Code('''
 final httpResponse = HttpResponse($_valueVar, $_resultVar);
 $returnAsyncWrapper httpResponse;
 '''),
-        );
+          );
+        }
       } else {
-        blocks.add(Code('$returnAsyncWrapper $_valueVar;'));
+        if (returnAsyncWrapper == 'return') {
+          blocks.add(Code('return $_onErrorVar != null ? Future.value($_valueVar).catchError($_onErrorVar) : $_valueVar;'));
+        } else {
+          blocks.add(Code('$returnAsyncWrapper $_valueVar;'));
+        }
       }
     }
 
