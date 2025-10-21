@@ -370,58 +370,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           : null;
       if (method.isAbstract) {
         methods.add(_generateApiCallMethod(method, instantiatedCallAdapter)!);
-        // Always generate public wrapper for error handling
-        if (callAdapter != null) {
-          methods.add(
-            _generateAdapterMethod(
-              method,
-              instantiatedCallAdapter,
-              resultTypeInString,
-            ),
-          );
-        } else {
-          methods.add(_generatePublicWrapperMethod(method));
-        }
+      }
+      if (callAdapter != null) {
+        methods.add(
+          _generateAdapterMethod(
+            method,
+            instantiatedCallAdapter,
+            resultTypeInString,
+          ),
+        );
       }
     }
     return methods;
-  }
-
-  /// Generates a public wrapper method that adds error handling.
-  Method _generatePublicWrapperMethod(MethodElement2 m) {
-    return Method((methodBuilder) {
-      methodBuilder.returns = refer(
-        _displayString(m.returnType, withNullability: true),
-      );
-      methodBuilder.requiredParameters.addAll(
-        _generateParameters(m, (it) => it.isRequiredPositional),
-      );
-      methodBuilder.optionalParameters.addAll(
-        _generateParameters(
-          m,
-          (it) => it.isOptional || it.isRequiredNamed,
-          optional: true,
-        ),
-      );
-      methodBuilder.name = m.displayName;
-      methodBuilder.annotations.add(const CodeExpression(Code('override')));
-      final positionalArgs = <String>[];
-      final namedArgs = <String>[];
-      for (final parameter in m.formalParameters) {
-        if (parameter.isRequiredPositional || parameter.isOptionalPositional) {
-          positionalArgs.add(parameter.displayName);
-        }
-        if (parameter.isNamed) {
-          namedArgs.add('${parameter.displayName}: ${parameter.displayName}');
-        }
-      }
-      final args =
-          '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
-      final privateCall = '_${m.displayName}($args)';
-      methodBuilder.body = Code('''
-return ${_onErrorVar} != null ? $privateCall.catchError($_onErrorVar) : $privateCall;
-''');
-    });
   }
 
   /// Generates a method implementation wrapped by CallAdapter.
@@ -458,10 +418,11 @@ return ${_onErrorVar} != null ? $privateCall.catchError($_onErrorVar) : $private
       }
       final args =
           '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
-      final adaptedCall = '${callAdapter?.element3.name3}<$resultType>().adapt(() => _${m.displayName}($args))';
       methodBuilder.body = Code('''
-return ${_onErrorVar} != null ? $adaptedCall.catchError($_onErrorVar) : $adaptedCall;
-''');
+        return ${callAdapter?.element3.name3}<$resultType>().adapt(
+          () => _${m.displayName}($args),
+        );
+      ''');
     });
   }
 
@@ -802,16 +763,15 @@ return ${_onErrorVar} != null ? $adaptedCall.catchError($_onErrorVar) : $adapted
     }
 
     final returnType = m.returnType;
-    // Generate private method with underscore prefix
     return Method((methodBuilder) {
       _configureMethodMetadata(
         methodBuilder,
         m,
         _displayString(returnType, withNullability: true),
-        true, // Mark as having CallAdapter (to add underscore prefix)
+        false,
       );
       _addParameters(methodBuilder, m);
-      _addAnnotations(methodBuilder, returnType, true);
+      _addAnnotations(methodBuilder, returnType, false);
       methodBuilder.body = _generateRequest(m, httpMethod, null);
     });
   }
