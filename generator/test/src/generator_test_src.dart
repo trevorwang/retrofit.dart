@@ -2486,3 +2486,40 @@ abstract class UseResultForVoid {
   @GET('https://httpbin.org/')
   Future<void> someGet();
 }
+
+// Test onError parameter
+@ShouldGenerate(
+  '''
+  final Function? onError;
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class OnErrorField {
+  @GET('/test')
+  Future<String> getData();
+}
+
+@ShouldGenerate(
+  '''
+  _TestOnErrorConstructor(this._dio, {this.baseUrl, this.errorLogger, this.onError});
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class TestOnErrorConstructor {
+  @GET('/test')
+  Future<String> getData();
+}
+
+@ShouldGenerate(
+  '''
+  return onError != null ? Future.value(_value).catchError(onError) : _value;
+  ''',
+  contains: true,
+)
+@RestApi()
+abstract class TestOnErrorWrapping {
+  @GET('/test')
+  Future<String> getData();
+}
