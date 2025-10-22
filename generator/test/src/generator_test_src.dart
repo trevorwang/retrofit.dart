@@ -18,7 +18,7 @@ class MockCallAdapter1<T> extends CallAdapter<Future<T>, Future<Resource<T>>> {
 @ShouldGenerate('''
   @override
   Future<Resource<GenericUser<User>>> getUser() {
-    return MockCallAdapter1<GenericUser<User>>().adapt(() => _getUser());
+    return onError != null ? MockCallAdapter1<GenericUser<User>>().adapt(() => _getUser()).catchError(onError) : MockCallAdapter1<GenericUser<User>>().adapt(() => _getUser());
   }
 ''', contains: true)
 @RestApi()
@@ -41,7 +41,7 @@ class MockCallAdapter2<T>
 @ShouldGenerate('''
   @override
   Future<Either<User, String>> getUser() {
-    return MockCallAdapter2<User>().adapt(() => _getUser());
+    return onError != null ? MockCallAdapter2<User>().adapt(() => _getUser()).catchError(onError) : MockCallAdapter2<User>().adapt(() => _getUser());
   }
 ''', contains: true)
 @RestApi()
@@ -84,7 +84,7 @@ class MockCallAdapter3<T> extends CallAdapter<Future<T>, Flow<T>> {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
   }
 ''', contains: true)
 @RestApi()
@@ -549,7 +549,7 @@ abstract class UploadFileInfoPartTest {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class GenericCast {
@@ -565,7 +565,7 @@ abstract class GenericCast {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class NullableGenericCast {
@@ -642,7 +642,7 @@ enum FromJsonEnum {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi()
 abstract class EnumFromJsonReturnType {
@@ -745,7 +745,7 @@ Map<String, dynamic> serializeUser(User object) => object.toJson();
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class GenericCastBasicType {
@@ -761,7 +761,7 @@ abstract class GenericCastBasicType {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class NullableGenericCastBasicType {
@@ -974,7 +974,7 @@ abstract class TestCustomObjectBody {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
   }
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -998,7 +998,7 @@ abstract class TestMapBody {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
   }
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -1017,7 +1017,7 @@ abstract class NullableTestMapBody {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
   }
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -1036,7 +1036,7 @@ abstract class TestMapBody2 {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
   }
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -1053,7 +1053,7 @@ abstract class NullableTestMapBody2 {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class TestBasicListString {
@@ -1069,7 +1069,7 @@ abstract class TestBasicListString {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class NullableTestBasicListString {
@@ -1085,7 +1085,7 @@ abstract class NullableTestBasicListString {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class TestBasicListBool {
@@ -1101,7 +1101,7 @@ abstract class TestBasicListBool {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class NullableTestBasicListBool {
@@ -1117,7 +1117,7 @@ abstract class NullableTestBasicListBool {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class TestBasicListInt {
@@ -1133,7 +1133,7 @@ abstract class TestBasicListInt {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class NullableTestBasicListInt {
@@ -1149,7 +1149,7 @@ abstract class NullableTestBasicListInt {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class TestBasicListDouble {
@@ -1165,7 +1165,7 @@ abstract class TestBasicListDouble {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    return onError != null ? Future.value(_value).catchError(onError) : _value;
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class NullableTestBasicListDouble {
@@ -1248,7 +1248,7 @@ abstract class TestHttpResponseObject {
       rethrow;
     }
     final httpResponse = HttpResponse(_value, _result);
-    return httpResponse;
+    return onError != null ? Future.value(httpResponse).catchError(onError) : httpResponse;
 ''', contains: true)
 @RestApi()
 abstract class TestHttpResponseArray {
