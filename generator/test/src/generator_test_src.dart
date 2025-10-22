@@ -800,6 +800,15 @@ abstract class TestDynamicBody {
 }
 
 @ShouldGenerate('''
+  Future<void> ossSignNewUsingPost({required Object model}) async {
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestObjectBodyRequired {
+  @POST('/api/upload/ossSignNew')
+  Future<void> ossSignNewUsingPost({@Body() required Object model});
+}
+
+@ShouldGenerate('''
     final _data = <String, dynamic>{'user_id': userId};
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
