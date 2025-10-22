@@ -1887,6 +1887,33 @@ if (T != dynamic &&
         : refer(variableName).property('name');
   }
 
+  /// Checks if the type is an extension type.
+  bool _isExtensionType(DartType? dartType) {
+    if (dartType == null || dartType.element3 == null) {
+      return false;
+    }
+    return dartType.element3 is ExtensionTypeElement2;
+  }
+
+  /// Gets the representation type of an extension type.
+  /// Returns null if the type is not an extension type.
+  DartType? _getExtensionTypeRepresentation(DartType? dartType) {
+    if (!_isExtensionType(dartType)) {
+      return null;
+    }
+    final element = dartType!.element3 as ExtensionTypeElement2;
+    return element.representationType2;
+  }
+
+  /// Checks if an extension type has a toJson method.
+  bool _extensionTypeHasToJson(DartType? dartType) {
+    if (!_isExtensionType(dartType)) {
+      return false;
+    }
+    final element = dartType!.element3 as ExtensionTypeElement2;
+    return element.getMethod2('toJson') != null;
+  }
+
   /// Generates the query parameters code block.
   void _generateQueries(
     MethodElement2 m,
@@ -1897,7 +1924,18 @@ if (T != dynamic &&
     final queryParameters = queries.map((p, r) {
       final key = r.peek('value')?.stringValue ?? p.displayName;
       final Expression value;
-      if (_isBasicType(p.type) ||
+      if (_isExtensionType(p.type)) {
+        // Handle extension types
+        if (_extensionTypeHasToJson(p.type)) {
+          // If extension type has toJson(), use it
+          value = p.type.nullabilitySuffix == NullabilitySuffix.question
+              ? refer(p.displayName).nullSafeProperty('toJson').call([])
+              : refer(p.displayName).property('toJson').call([]);
+        } else {
+          // Otherwise, use the value directly (it will use the representation type)
+          value = refer(p.displayName);
+        }
+      } else if (_isBasicType(p.type) ||
           p.type.isDartCoreList ||
           p.type.isDartCoreMap) {
         value = refer(p.displayName);
@@ -1950,7 +1988,18 @@ if (T != dynamic &&
       final type = p.type;
       final displayName = p.displayName;
       final Expression value;
-      if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
+      if (_isExtensionType(type)) {
+        // Handle extension types
+        if (_extensionTypeHasToJson(type)) {
+          // If extension type has toJson(), use it
+          value = type.nullabilitySuffix == NullabilitySuffix.question
+              ? refer(displayName).nullSafeProperty('toJson').call([])
+              : refer(displayName).property('toJson').call([]);
+        } else {
+          // Otherwise, use the value directly (it will use the representation type)
+          value = refer(displayName);
+        }
+      } else if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
         value = refer(displayName);
       } else if (_isSuperOf(protobuf.ProtobufEnum, type)) {
         value = type.nullabilitySuffix == NullabilitySuffix.question
@@ -2719,7 +2768,15 @@ MultipartFile.fromFileSync(i.path,
     final annotationsInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annotationsInParam.map((k, v) {
       final value = v.peek('value')?.stringValue ?? k.displayName;
-      return MapEntry(value, refer(k.displayName));
+      final Expression headerValue;
+      if (_isExtensionType(k.type)) {
+        // For extension types, use the value directly (it will use the representation type)
+        // Headers should generally be strings anyway
+        headerValue = refer(k.displayName);
+      } else {
+        headerValue = refer(k.displayName);
+      }
+      return MapEntry(value, headerValue);
     });
     headers.addAll(headersInParams);
 
@@ -2955,7 +3012,18 @@ MultipartFile.fromFileSync(i.path,
       final type = p.type;
       final displayName = p.displayName;
       final Expression value;
-      if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
+      if (_isExtensionType(type)) {
+        // Handle extension types
+        if (_extensionTypeHasToJson(type)) {
+          // If extension type has toJson(), use it
+          value = type.nullabilitySuffix == NullabilitySuffix.question
+              ? refer(displayName).nullSafeProperty('toJson').call([])
+              : refer(displayName).property('toJson').call([]);
+        } else {
+          // Otherwise, use the value directly (it will use the representation type)
+          value = refer(displayName);
+        }
+      } else if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
         value = refer(displayName);
       } else if (_isSuperOf(protobuf.ProtobufEnum, type)) {
         value = type.nullabilitySuffix == NullabilitySuffix.question
