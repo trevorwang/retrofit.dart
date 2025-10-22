@@ -801,7 +801,10 @@ abstract class TestDynamicBody {
 
 @ShouldGenerate('''
   Future<void> ossSignNewUsingPost({required Object model}) async {
-''', contains: true)
+''', contains: true, expectedLogItems: [
+  'Object must provide a `toJson()` method which return a Map.\n'
+  'It is programmer\'s responsibility to make sure the Object is properly serialized'
+])
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class TestObjectBodyRequired {
   @POST('/api/upload/ossSignNew')
