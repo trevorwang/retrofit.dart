@@ -2505,3 +2505,46 @@ abstract class UseResultForVoid {
   @GET('https://httpbin.org/')
   Future<void> someGet();
 }
+
+// Extension type tests
+extension type QueryParam(String str) implements String {}
+
+@ShouldGenerate('''
+    final queryParameters = <String, dynamic>{r'query': query};
+''', contains: true)
+@RestApi()
+abstract class ExtensionTypeAsQuery {
+  @GET('')
+  Future<void> demo(@Query('query') QueryParam query);
+}
+
+@ShouldGenerate('''
+    final queryParameters = <String, dynamic>{r'query': query};
+''', contains: true)
+@RestApi()
+abstract class ExtensionTypeAsQueryNullable {
+  @GET('')
+  Future<void> demo(@Query('query') QueryParam? query);
+}
+
+extension type QueryParamWithToJson(String str) implements String {
+  Map<String, dynamic> toJson() => {'value': str};
+}
+
+@ShouldGenerate('''
+    final queryParameters = <String, dynamic>{r'query': query.toJson()};
+''', contains: true)
+@RestApi()
+abstract class ExtensionTypeWithToJsonAsQuery {
+  @GET('')
+  Future<void> demo(@Query('query') QueryParamWithToJson query);
+}
+
+@ShouldGenerate('''
+    final queryParameters = <String, dynamic>{r'query': query?.toJson()};
+''', contains: true)
+@RestApi()
+abstract class ExtensionTypeWithToJsonAsQueryNullable {
+  @GET('')
+  Future<void> demo(@Query('query') QueryParamWithToJson? query);
+}
