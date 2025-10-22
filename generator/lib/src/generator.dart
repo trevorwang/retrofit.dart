@@ -2607,6 +2607,35 @@ MultipartFile.fromFileSync(i.path,
           } else {
             throw Exception('Unknown error!');
           }
+        } else if (_isExtensionType(p.type)) {
+          // Handle extension types
+          if (p.type.nullabilitySuffix == NullabilitySuffix.question) {
+            blocks.add(Code('if (${p.displayName} != null) {'));
+          }
+          if (_extensionTypeHasToJson(p.type)) {
+            // If extension type has toJson(), use jsonEncode
+            blocks.add(
+              refer(dataVar).property('fields').property('add').call([
+                refer('MapEntry').newInstance([
+                  literal(fieldName),
+                  refer('jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String, dynamic>{}' : ''})'),
+                ]),
+              ]).statement,
+            );
+          } else {
+            // Otherwise, use the value directly (transparent to representation type)
+            blocks.add(
+              refer(dataVar).property('fields').property('add').call([
+                refer('MapEntry').newInstance([
+                  literal(fieldName),
+                  refer(p.displayName),
+                ]),
+              ]).statement,
+            );
+          }
+          if (p.type.nullabilitySuffix == NullabilitySuffix.question) {
+            blocks.add(const Code('}'));
+          }
         } else if (_isBasicType(p.type) || _isEnum(p.type)) {
           if (p.type.nullabilitySuffix == NullabilitySuffix.question) {
             blocks.add(Code('if (${p.displayName} != null) {'));
