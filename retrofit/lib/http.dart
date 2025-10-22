@@ -68,6 +68,7 @@ class RestApi {
     this.baseUrl,
     this.parser = Parser.JsonSerializable,
     this.callAdapter,
+    this.headers,
   });
 
   /// Set the API base URL.
@@ -95,6 +96,28 @@ class RestApi {
   /// if you don't specify the [parser]. It will be [Parser.JsonSerializable]
   final Parser parser;
   final Type? callAdapter;
+
+  /// Global headers to be applied to all requests within this API.
+  ///
+  /// These headers will be included in every request made through this API interface.
+  /// Method-level headers specified with [@Headers] will override these global headers
+  /// if they have the same key.
+  ///
+  /// Example:
+  /// ```dart
+  /// @RestApi(
+  ///   baseUrl: "https://api.example.com",
+  ///   headers: {
+  ///     "User-Agent": "MyApp/1.0.0",
+  ///     "X-Platform": "mobile",
+  ///   },
+  /// )
+  /// abstract class ApiService {
+  ///   @GET("/endpoint")
+  ///   Future<Response> getData();
+  /// }
+  /// ```
+  final Map<String, dynamic>? headers;
 }
 
 @immutable
