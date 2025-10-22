@@ -64,7 +64,25 @@ then run the generator
 ```sh
 # dart
 dart pub run build_runner build
+
+# for watch mode (recommended during development)
+dart pub run build_runner watch
 ```
+
+#### Lean Builder Support (Experimental)
+
+Retrofit now has experimental support for [lean_builder](https://pub.dev/packages/lean_builder), a faster build system for Dart. While lean_builder support is still under development, the infrastructure has been added for future use.
+
+**Important**: lean_builder is an **optional** dependency and is NOT required to use retrofit_generator. It's only needed if you want to try the experimental lean_builder support.
+
+To prepare for lean_builder support, add it to your `dev_dependencies`:
+
+```yaml
+dev_dependencies:
+  lean_builder: ^0.1.2  # Optional - only if you want to use lean_builder
+```
+
+**Note:** For now, please continue using `build_runner` as shown above. Full lean_builder integration will be available in a future release once lean_builder reaches stability.
 
 ### Use it
 
