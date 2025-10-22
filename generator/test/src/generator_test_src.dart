@@ -2227,6 +2227,48 @@ abstract class NullableDynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursi
 }
 
 @ShouldGenerate('''
+    late GenericUser<List<dynamic>> _value;
+    try {
+      _value = GenericUser<List<dynamic>>.fromJson(
+        _result.data!,
+        (json) => json is List<dynamic>
+            ? json.map<dynamic>((i) => i).toList()
+            : List.empty(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+''', contains: true)
+@RestApi()
+abstract class DynamicInnerListGenericDynamicTypeShouldBeCastedAsIs {
+  @PUT('/')
+  Future<GenericUser<List<dynamic>>> get();
+}
+
+@ShouldGenerate('''
+    late GenericUser<List<dynamic>>? _value;
+    try {
+      _value = _result.data == null
+          ? null
+          : GenericUser<List<dynamic>>.fromJson(
+              _result.data!,
+              (json) => json is List<dynamic>
+                  ? json.map<dynamic>((i) => i).toList()
+                  : List.empty(),
+            );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+''', contains: true)
+@RestApi()
+abstract class NullableDynamicInnerListGenericDynamicTypeShouldBeCastedAsIs {
+  @PUT('/')
+  Future<GenericUser<List<dynamic>>?> get();
+}
+
+@ShouldGenerate('''
     late GenericUserWithoutGenericArgumentFactories<dynamic> _value;
     try {
       _value = GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
