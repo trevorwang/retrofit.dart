@@ -1873,6 +1873,20 @@ if (T != dynamic &&
     return dartType.element3.getMethod2('toJson') != null;
   }
 
+  /// Gets the expression for serializing an enum value in FormData as a string.
+  /// Uses toJson() if available, otherwise uses .name.
+  String _getEnumValueExpression(DartType enumType, String variableName) {
+    return _hasToJson(enumType) ? '$variableName.toJson()' : '$variableName.name';
+  }
+
+  /// Gets the Reference for serializing an enum value in FormData.
+  /// Uses toJson() if available, otherwise uses .name.
+  Expression _getEnumValueReference(DartType enumType, String variableName) {
+    return _hasToJson(enumType)
+        ? refer(variableName).property('toJson').call([])
+        : refer(variableName).property('name');
+  }
+
   /// Generates the query parameters code block.
   void _generateQueries(
     MethodElement2 m,
@@ -2457,7 +2471,7 @@ MultipartFile.fromBytes(i,
                       _isExactly(BuiltList, innerType)))) {
             var value = '';
             if (innerType != null && _isEnum(innerType)) {
-              value = 'i';
+              value = _getEnumValueExpression(innerType, 'i');
             } else if (_isBasicType(innerType)) {
               value = 'i';
               if (innerType != null && !_isExactly(String, innerType)) {
@@ -2555,16 +2569,7 @@ MultipartFile.fromFileSync(i.path,
                 if (_isExactly(String, p.type))
                   refer(p.displayName)
                 else if (_isEnum(p.type))
-                  _hasToJson(p.type)
-                      ? refer(p.displayName)
-                            .property('toJson')
-                            .call([])
-                            .ifNullThen(
-                              refer(
-                                p.displayName,
-                              ).property('toString').call([]),
-                            )
-                      : refer(p.displayName).property('toString').call([])
+                  _getEnumValueReference(p.type, p.displayName)
                 else
                   refer(p.displayName).property('toString').call([]),
               ]),
