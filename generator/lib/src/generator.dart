@@ -981,7 +981,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           blocks.add(
             Code('''
 final httpResponse = HttpResponse(null, $_resultVar);
-return $_onErrorVar != null ? Future.value(httpResponse).catchError($_onErrorVar) : httpResponse;
+return $_onErrorVar != null ? Future.value(httpResponse).catchError($_onErrorVar) : Future.value(httpResponse);
 '''),
           );
         } else {
@@ -1427,7 +1427,7 @@ You should create a new class to encapsulate the response.
           blocks.add(
             Code('''
 final httpResponse = HttpResponse($_valueVar, $_resultVar);
-return $_onErrorVar != null ? Future.value(httpResponse).catchError($_onErrorVar) : httpResponse;
+return $_onErrorVar != null ? Future.value(httpResponse).catchError($_onErrorVar) : Future.value(httpResponse);
 '''),
           );
         } else {
@@ -1440,7 +1440,7 @@ $returnAsyncWrapper httpResponse;
         }
       } else {
         if (returnAsyncWrapper == 'return') {
-          blocks.add(Code('return $_onErrorVar != null ? Future.value($_valueVar).catchError($_onErrorVar) : $_valueVar;'));
+          blocks.add(Code('return $_onErrorVar != null ? Future.value($_valueVar).catchError($_onErrorVar) : Future.value($_valueVar);'));
         } else {
           blocks.add(Code('$returnAsyncWrapper $_valueVar;'));
         }
