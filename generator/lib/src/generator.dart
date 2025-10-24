@@ -113,9 +113,27 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final parser = retrofit.Parser.values.firstWhereOrNull(
       (e) => e.toString() == enumString,
     );
+    final headersMap = annotation.peek('headers')?.mapValue.map((k, v) {
+      dynamic val;
+      if (v == null) {
+        val = null;
+      } else if (v.type?.isDartCoreBool ?? false) {
+        val = v.toBoolValue();
+      } else if (v.type?.isDartCoreString ?? false) {
+        val = v.toStringValue();
+      } else if (v.type?.isDartCoreDouble ?? false) {
+        val = v.toDoubleValue();
+      } else if (v.type?.isDartCoreInt ?? false) {
+        val = v.toIntValue();
+      } else {
+        val = v.toStringValue();
+      }
+      return MapEntry(k?.toStringValue() ?? 'null', val);
+    });
     clientAnnotation = retrofit.RestApi(
       baseUrl: annotation.peek(_baseUrlVar)?.stringValue ?? '',
       parser: parser ?? retrofit.Parser.JsonSerializable,
+      headers: headersMap,
     );
     clientAnnotationConstantReader = annotation;
     final baseUrl = clientAnnotation.baseUrl;
@@ -466,8 +484,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       _isInterfaceType(x) && _typeChecker(t).isAssignableFromType(x!);
 
   /// `_typeChecker(T).isSuperTypeOf(x)`
-  bool _isSuperOf(Type t, DartType? x) =>
-      _isInterfaceType(x) && _typeChecker(t).isSuperTypeOf(x!);
+  bool _isSuperOf(Type t, DartType? x) {
+    // Object is the root of the type hierarchy, nothing can be its supertype
+    if (x?.isDartCoreObject ?? false) {
+      return false;
+    }
+    return _isInterfaceType(x) && _typeChecker(t).isSuperTypeOf(x!);
+  }
 
   /// Gets a type checker for the given type.
   TypeChecker _typeChecker(Type type) {
@@ -1513,7 +1536,7 @@ $returnAsyncWrapper httpResponse;
             mapperVal =
                 '''
 (json) => json is List<dynamic>
-      ? json.map<$genericTypeString>((i) => ${genericTypeString == 'dynamic' ? ' i as Map<String, dynamic>' : '$genericTypeString.fromJson(i as Map<String, dynamic>)'}).toList()
+      ? json.map<$genericTypeString>((i) => ${genericTypeString == 'dynamic' ? 'i' : '$genericTypeString.fromJson(i as Map<String, dynamic>)'}).toList()
       : List.empty(),
 ''';
           }
@@ -2391,9 +2414,6 @@ if (T != dynamic &&
         final contentType = r.peek('contentType')?.stringValue;
 
         if (isFileField) {
-          if (p.type.isNullable) {
-            blocks.add(Code('if (${p.displayName} != null){'));
-          }
           final fileNameValue = r.peek('fileName')?.stringValue;
           final fileName = fileNameValue != null
               ? literalString(fileNameValue)
@@ -2428,7 +2448,8 @@ if (T != dynamic &&
                 ).newInstance([literal(fieldName), uploadFileInfo]),
               ])
               .statement;
-          if (optionalFile) {
+          // Add null check if parameter is nullable OR optional
+          if (p.type.isNullable || optionalFile) {
             final condition = refer(p.displayName).notEqualTo(literalNull).code;
             blocks.addAll([
               const Code('if('),
@@ -2439,9 +2460,6 @@ if (T != dynamic &&
             ]);
           } else {
             blocks.add(returnCode);
-          }
-          if (p.type.isNullable) {
-            blocks.add(const Code('}'));
           }
         } else if (_isMultipartFile(p.type)) {
           if (p.type.isNullable) {
@@ -2771,7 +2789,17 @@ MultipartFile.fromFileSync(i.path,
 
   /// Generates the request headers.
   Map<String, Expression> _generateHeaders(MethodElement2 m) {
-    final headers = _getMethodAnnotations(m, retrofit.Headers)
+    // Start with global headers from @RestApi annotation
+    final headers = <String, Expression>{};
+    final globalHeaders = clientAnnotation.headers;
+    if (globalHeaders != null) {
+      for (final entry in globalHeaders.entries) {
+        headers[entry.key] = literal(entry.value);
+      }
+    }
+
+    // Method-level @Headers annotations override global headers
+    final methodHeaders = _getMethodAnnotations(m, retrofit.Headers)
         .map((e) => e.peek('value'))
         .map(
           (value) => value?.mapValue.map((k, v) {
@@ -2793,6 +2821,7 @@ MultipartFile.fromFileSync(i.path,
           }),
         )
         .fold<Map<String, Expression>>({}, (p, e) => p..addAll(e ?? {}));
+    headers.addAll(methodHeaders);
 
     final annotationsInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annotationsInParam.map((k, v) {

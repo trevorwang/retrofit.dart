@@ -235,6 +235,39 @@ The HTTP methods in the below sample are supported.
   Future<Task> getTasks();
 ```
 
+* Add global HTTP headers to all requests in the API
+
+You can define headers at the `@RestApi` level that will be automatically included in all requests:
+
+```dart
+  @RestApi(
+    baseUrl: 'https://api.example.com',
+    headers: {
+      'User-Agent': 'MyApp/1.0.0',
+      'X-Platform': 'mobile',
+    },
+  )
+  abstract class ApiService {
+    factory ApiService(Dio dio, {String? baseUrl}) = _ApiService;
+
+    // This request will automatically include User-Agent and X-Platform headers
+    @GET('/users')
+    Future<List<User>> getUsers();
+
+    // You can add method-specific headers that combine with global headers
+    @GET('/profile')
+    @Headers(<String, dynamic>{'Authorization': 'Bearer token'})
+    Future<User> getProfile();
+
+    // Method-level headers override global headers with the same key
+    @GET('/settings')
+    @Headers(<String, dynamic>{'X-Platform': 'web'})
+    Future<Settings> getSettings();
+  }
+```
+
+**Note:** Method-level headers (via `@Headers` or `@Header` parameter) will override global headers if they have the same key.
+
 
 
 ### Error Handling

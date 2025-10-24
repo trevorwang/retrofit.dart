@@ -800,6 +800,18 @@ abstract class TestDynamicBody {
 }
 
 @ShouldGenerate('''
+  Future<void> ossSignNewUsingPost({required Object model}) async {
+''', contains: true, expectedLogItems: [
+  'Object must provide a `toJson()` method which return a Map.\n'
+  'It is programmer\'s responsibility to make sure the Object is properly serialized'
+])
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestObjectBodyRequired {
+  @POST('/api/upload/ossSignNew')
+  Future<void> ossSignNewUsingPost({@Body() required Object model});
+}
+
+@ShouldGenerate('''
     final _data = <String, dynamic>{'user_id': userId};
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
@@ -1300,6 +1312,20 @@ abstract class TestHttpResponseArray {
       );
     }
 ''', contains: true)
+@ShouldGenerate('''
+    final _data = FormData();
+    if (file != null) {
+      _data.files.add(
+        MapEntry(
+          'file',
+          MultipartFile.fromFileSync(
+            file.path,
+            filename: file.path.split(Platform.pathSeparator).last,
+          ),
+        ),
+      );
+    }
+''', contains: true)
 @RestApi()
 abstract class TestFileList {
   @POST('/')
@@ -1310,6 +1336,9 @@ abstract class TestFileList {
 
   @POST('/')
   Future<void> testOptionalFile({@Part() File file});
+
+  @POST('/')
+  Future<void> testNullableOptionalFile({@Part() File? file});
 }
 
 // @JsonEnum()
@@ -2227,6 +2256,48 @@ abstract class NullableDynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursi
 }
 
 @ShouldGenerate('''
+    late GenericUser<List<dynamic>> _value;
+    try {
+      _value = GenericUser<List<dynamic>>.fromJson(
+        _result.data!,
+        (json) => json is List<dynamic>
+            ? json.map<dynamic>((i) => i).toList()
+            : List.empty(),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+''', contains: true)
+@RestApi()
+abstract class DynamicInnerListGenericDynamicTypeShouldBeCastedAsIs {
+  @PUT('/')
+  Future<GenericUser<List<dynamic>>> get();
+}
+
+@ShouldGenerate('''
+    late GenericUser<List<dynamic>>? _value;
+    try {
+      _value = _result.data == null
+          ? null
+          : GenericUser<List<dynamic>>.fromJson(
+              _result.data!,
+              (json) => json is List<dynamic>
+                  ? json.map<dynamic>((i) => i).toList()
+                  : List.empty(),
+            );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+''', contains: true)
+@RestApi()
+abstract class NullableDynamicInnerListGenericDynamicTypeShouldBeCastedAsIs {
+  @PUT('/')
+  Future<GenericUser<List<dynamic>>?> get();
+}
+
+@ShouldGenerate('''
     late GenericUserWithoutGenericArgumentFactories<dynamic> _value;
     try {
       _value = GenericUserWithoutGenericArgumentFactories<dynamic>.fromJson(
@@ -2547,4 +2618,93 @@ abstract class ExtensionTypeWithToJsonAsQuery {
 abstract class ExtensionTypeWithToJsonAsQueryNullable {
   @GET('')
   Future<void> demo(@Query('query') QueryParamWithToJson? query);
+}
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'User-Agent': 'MyApp/1.0.0',
+      r'X-Platform': 'mobile',
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'User-Agent': 'MyApp/1.0.0',
+    'X-Platform': 'mobile',
+  },
+)
+abstract class GlobalHeaders {
+  @GET('/list/')
+  Future<void> list();
+}
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'User-Agent': 'MyApp/1.0.0',
+      r'X-Platform': 'mobile',
+      r'Authorization': 'Bearer token',
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'User-Agent': 'MyApp/1.0.0',
+    'X-Platform': 'mobile',
+  },
+)
+abstract class GlobalHeadersWithMethodHeaders {
+  @GET('/list/')
+  @Headers(<String, dynamic>{'Authorization': 'Bearer token'})
+  Future<void> list();
+}
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'User-Agent': 'MyApp/1.0.0',
+      r'X-Platform': 'override-value',
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'User-Agent': 'MyApp/1.0.0',
+    'X-Platform': 'mobile',
+  },
+)
+abstract class GlobalHeadersOverriddenByMethodHeaders {
+  @GET('/list/')
+  @Headers(<String, dynamic>{'X-Platform': 'override-value'})
+  Future<void> list();
+}
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'X-Custom': 'value',
+      r'X-Dynamic': dynamicHeader,
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'X-Custom': 'value',
+  },
+)
+abstract class GlobalHeadersWithDynamicHeaders {
+  @GET('/list/')
+  Future<void> list(@Header('X-Dynamic') String dynamicHeader);
+}
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'X-Count': 42,
+      r'X-Enabled': true,
+      r'X-Rate': 3.14,
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'X-Count': 42,
+    'X-Enabled': true,
+    'X-Rate': 3.14,
+  },
+)
+abstract class GlobalHeadersWithDifferentTypes {
+  @GET('/list/')
+  Future<void> list();
 }
