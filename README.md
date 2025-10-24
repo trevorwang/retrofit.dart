@@ -64,7 +64,25 @@ then run the generator
 ```sh
 # dart
 dart pub run build_runner build
+
+# for watch mode (recommended during development)
+dart pub run build_runner watch
 ```
+
+#### Lean Builder Support (Experimental)
+
+Retrofit now has experimental support for [lean_builder](https://pub.dev/packages/lean_builder), a faster build system for Dart. While lean_builder support is still under development, the infrastructure has been added for future use.
+
+**Important**: lean_builder is an **optional** dependency and is NOT required to use retrofit_generator. It's only needed if you want to try the experimental lean_builder support.
+
+To prepare for lean_builder support, add it to your `dev_dependencies`:
+
+```yaml
+dev_dependencies:
+  lean_builder: ^0.1.2  # Optional - only if you want to use lean_builder
+```
+
+**Note:** For now, please continue using `build_runner` as shown above. Full lean_builder integration will be available in a future release once lean_builder reaches stability.
 
 ### Use it
 
@@ -216,6 +234,39 @@ The HTTP methods in the below sample are supported.
   })
   Future<Task> getTasks();
 ```
+
+* Add global HTTP headers to all requests in the API
+
+You can define headers at the `@RestApi` level that will be automatically included in all requests:
+
+```dart
+  @RestApi(
+    baseUrl: 'https://api.example.com',
+    headers: {
+      'User-Agent': 'MyApp/1.0.0',
+      'X-Platform': 'mobile',
+    },
+  )
+  abstract class ApiService {
+    factory ApiService(Dio dio, {String? baseUrl}) = _ApiService;
+
+    // This request will automatically include User-Agent and X-Platform headers
+    @GET('/users')
+    Future<List<User>> getUsers();
+
+    // You can add method-specific headers that combine with global headers
+    @GET('/profile')
+    @Headers(<String, dynamic>{'Authorization': 'Bearer token'})
+    Future<User> getProfile();
+
+    // Method-level headers override global headers with the same key
+    @GET('/settings')
+    @Headers(<String, dynamic>{'X-Platform': 'web'})
+    Future<Settings> getSettings();
+  }
+```
+
+**Note:** Method-level headers (via `@Headers` or `@Header` parameter) will override global headers if they have the same key.
 
 
 

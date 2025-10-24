@@ -17,7 +17,7 @@ import 'package:retrofit/retrofit.dart' as retrofit;
 import 'package:source_gen/source_gen.dart';
 
 const _analyzerIgnores =
-    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter';
+    '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main';
 
 /// Factory for the Retrofit code generator used by build_runner.
 Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
@@ -107,14 +107,34 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Generates the implementation class code as a string.
   String _implementClass(ClassElement2 element, ConstantReader annotation) {
+    // Reset hasCustomOptions for each class to avoid state leaking between classes
+    hasCustomOptions = false;
     final className = globalOptions.className ?? '_${element.name3}';
     final enumString = annotation.peek('parser')?.revive().accessor;
     final parser = retrofit.Parser.values.firstWhereOrNull(
       (e) => e.toString() == enumString,
     );
+    final headersMap = annotation.peek('headers')?.mapValue.map((k, v) {
+      dynamic val;
+      if (v == null) {
+        val = null;
+      } else if (v.type?.isDartCoreBool ?? false) {
+        val = v.toBoolValue();
+      } else if (v.type?.isDartCoreString ?? false) {
+        val = v.toStringValue();
+      } else if (v.type?.isDartCoreDouble ?? false) {
+        val = v.toDoubleValue();
+      } else if (v.type?.isDartCoreInt ?? false) {
+        val = v.toIntValue();
+      } else {
+        val = v.toStringValue();
+      }
+      return MapEntry(k?.toStringValue() ?? 'null', val);
+    });
     clientAnnotation = retrofit.RestApi(
       baseUrl: annotation.peek(_baseUrlVar)?.stringValue ?? '',
       parser: parser ?? retrofit.Parser.JsonSerializable,
+      headers: headersMap,
     );
     clientAnnotationConstantReader = annotation;
     final baseUrl = clientAnnotation.baseUrl;
@@ -479,8 +499,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       _isInterfaceType(x) && _typeChecker(t).isAssignableFromType(x!);
 
   /// `_typeChecker(T).isSuperTypeOf(x)`
-  bool _isSuperOf(Type t, DartType? x) =>
-      _isInterfaceType(x) && _typeChecker(t).isSuperTypeOf(x!);
+  bool _isSuperOf(Type t, DartType? x) {
+    // Object is the root of the type hierarchy, nothing can be its supertype
+    if (x?.isDartCoreObject ?? false) {
+      return false;
+    }
+    return _isInterfaceType(x) && _typeChecker(t).isSuperTypeOf(x!);
+  }
 
   /// Gets a type checker for the given type.
   TypeChecker _typeChecker(Type type) {
@@ -1553,7 +1578,7 @@ $returnAsyncWrapper httpResponse;
             mapperVal =
                 '''
 (json) => json is List<dynamic>
-      ? json.map<$genericTypeString>((i) => ${genericTypeString == 'dynamic' ? ' i as Map<String, dynamic>' : '$genericTypeString.fromJson(i as Map<String, dynamic>)'}).toList()
+      ? json.map<$genericTypeString>((i) => ${genericTypeString == 'dynamic' ? 'i' : '$genericTypeString.fromJson(i as Map<String, dynamic>)'}).toList()
       : List.empty(),
 ''';
           }
@@ -1911,6 +1936,20 @@ if (T != dynamic &&
       return false;
     }
     return dartType.element3.getMethod2('toJson') != null;
+  }
+
+  /// Gets the expression for serializing an enum value in FormData as a string.
+  /// Uses toJson() if available, otherwise uses .name.
+  String _getEnumValueExpression(DartType enumType, String variableName) {
+    return _hasToJson(enumType) ? '$variableName.toJson()' : '$variableName.name';
+  }
+
+  /// Gets the Reference for serializing an enum value in FormData.
+  /// Uses toJson() if available, otherwise uses .name.
+  Expression _getEnumValueReference(DartType enumType, String variableName) {
+    return _hasToJson(enumType)
+        ? refer(variableName).property('toJson').call([])
+        : refer(variableName).property('name');
   }
 
   /// Generates the query parameters code block.
@@ -2368,9 +2407,6 @@ if (T != dynamic &&
         final contentType = r.peek('contentType')?.stringValue;
 
         if (isFileField) {
-          if (p.type.isNullable) {
-            blocks.add(Code('if (${p.displayName} != null){'));
-          }
           final fileNameValue = r.peek('fileName')?.stringValue;
           final fileName = fileNameValue != null
               ? literalString(fileNameValue)
@@ -2405,7 +2441,8 @@ if (T != dynamic &&
                 ).newInstance([literal(fieldName), uploadFileInfo]),
               ])
               .statement;
-          if (optionalFile) {
+          // Add null check if parameter is nullable OR optional
+          if (p.type.isNullable || optionalFile) {
             final condition = refer(p.displayName).notEqualTo(literalNull).code;
             blocks.addAll([
               const Code('if('),
@@ -2416,9 +2453,6 @@ if (T != dynamic &&
             ]);
           } else {
             blocks.add(returnCode);
-          }
-          if (p.type.isNullable) {
-            blocks.add(const Code('}'));
           }
         } else if (_isMultipartFile(p.type)) {
           if (p.type.isNullable) {
@@ -2497,7 +2531,7 @@ MultipartFile.fromBytes(i,
                       _isExactly(BuiltList, innerType)))) {
             var value = '';
             if (innerType != null && _isEnum(innerType)) {
-              value = 'i';
+              value = _getEnumValueExpression(innerType, 'i');
             } else if (_isBasicType(innerType)) {
               value = 'i';
               if (innerType != null && !_isExactly(String, innerType)) {
@@ -2595,16 +2629,7 @@ MultipartFile.fromFileSync(i.path,
                 if (_isExactly(String, p.type))
                   refer(p.displayName)
                 else if (_isEnum(p.type))
-                  _hasToJson(p.type)
-                      ? refer(p.displayName)
-                            .property('toJson')
-                            .call([])
-                            .ifNullThen(
-                              refer(
-                                p.displayName,
-                              ).property('toString').call([]),
-                            )
-                      : refer(p.displayName).property('toString').call([])
+                  _getEnumValueReference(p.type, p.displayName)
                 else
                   refer(p.displayName).property('toString').call([]),
               ]),
@@ -2728,7 +2753,17 @@ MultipartFile.fromFileSync(i.path,
 
   /// Generates the request headers.
   Map<String, Expression> _generateHeaders(MethodElement2 m) {
-    final headers = _getMethodAnnotations(m, retrofit.Headers)
+    // Start with global headers from @RestApi annotation
+    final headers = <String, Expression>{};
+    final globalHeaders = clientAnnotation.headers;
+    if (globalHeaders != null) {
+      for (final entry in globalHeaders.entries) {
+        headers[entry.key] = literal(entry.value);
+      }
+    }
+
+    // Method-level @Headers annotations override global headers
+    final methodHeaders = _getMethodAnnotations(m, retrofit.Headers)
         .map((e) => e.peek('value'))
         .map(
           (value) => value?.mapValue.map((k, v) {
@@ -2750,6 +2785,7 @@ MultipartFile.fromFileSync(i.path,
           }),
         )
         .fold<Map<String, Expression>>({}, (p, e) => p..addAll(e ?? {}));
+    headers.addAll(methodHeaders);
 
     final annotationsInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annotationsInParam.map((k, v) {
@@ -3033,7 +3069,13 @@ MultipartFile.fromFileSync(i.path,
       case retrofit.Parser.JsonSerializable:
       case retrofit.Parser.DartJsonMapper:
         final toJson = ele.lookUpMethod2(name: 'toJson', library: ele.library2);
-        return toJson == null;
+        if (toJson != null) {
+          return false;
+        }
+        // Check if the method exists in the interface type (includes mixins)
+        // This is important for Freezed-generated classes where toJson is in a mixin
+        final method = ele.getMethod2('toJson');
+        return method == null;
       case retrofit.Parser.MapSerializable:
       case retrofit.Parser.FlutterCompute:
         return false;
