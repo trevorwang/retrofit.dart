@@ -800,6 +800,18 @@ abstract class TestDynamicBody {
 }
 
 @ShouldGenerate('''
+  Future<void> ossSignNewUsingPost({required Object model}) async {
+''', contains: true, expectedLogItems: [
+  'Object must provide a `toJson()` method which return a Map.\n'
+  'It is programmer\'s responsibility to make sure the Object is properly serialized'
+])
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestObjectBodyRequired {
+  @POST('/api/upload/ossSignNew')
+  Future<void> ossSignNewUsingPost({@Body() required Object model});
+}
+
+@ShouldGenerate('''
     final _data = <String, dynamic>{'user_id': userId};
 ''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')

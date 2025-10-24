@@ -466,8 +466,13 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       _isInterfaceType(x) && _typeChecker(t).isAssignableFromType(x!);
 
   /// `_typeChecker(T).isSuperTypeOf(x)`
-  bool _isSuperOf(Type t, DartType? x) =>
-      _isInterfaceType(x) && _typeChecker(t).isSuperTypeOf(x!);
+  bool _isSuperOf(Type t, DartType? x) {
+    // Object is the root of the type hierarchy, nothing can be its supertype
+    if (x?.isDartCoreObject ?? false) {
+      return false;
+    }
+    return _isInterfaceType(x) && _typeChecker(t).isSuperTypeOf(x!);
+  }
 
   /// Gets a type checker for the given type.
   TypeChecker _typeChecker(Type type) {
