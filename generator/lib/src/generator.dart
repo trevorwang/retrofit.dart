@@ -113,9 +113,27 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     final parser = retrofit.Parser.values.firstWhereOrNull(
       (e) => e.toString() == enumString,
     );
+    final headersMap = annotation.peek('headers')?.mapValue.map((k, v) {
+      dynamic val;
+      if (v == null) {
+        val = null;
+      } else if (v.type?.isDartCoreBool ?? false) {
+        val = v.toBoolValue();
+      } else if (v.type?.isDartCoreString ?? false) {
+        val = v.toStringValue();
+      } else if (v.type?.isDartCoreDouble ?? false) {
+        val = v.toDoubleValue();
+      } else if (v.type?.isDartCoreInt ?? false) {
+        val = v.toIntValue();
+      } else {
+        val = v.toStringValue();
+      }
+      return MapEntry(k?.toStringValue() ?? 'null', val);
+    });
     clientAnnotation = retrofit.RestApi(
       baseUrl: annotation.peek(_baseUrlVar)?.stringValue ?? '',
       parser: parser ?? retrofit.Parser.JsonSerializable,
+      headers: headersMap,
     );
     clientAnnotationConstantReader = annotation;
     final baseUrl = clientAnnotation.baseUrl;
@@ -2693,7 +2711,17 @@ MultipartFile.fromFileSync(i.path,
 
   /// Generates the request headers.
   Map<String, Expression> _generateHeaders(MethodElement2 m) {
-    final headers = _getMethodAnnotations(m, retrofit.Headers)
+    // Start with global headers from @RestApi annotation
+    final headers = <String, Expression>{};
+    final globalHeaders = clientAnnotation.headers;
+    if (globalHeaders != null) {
+      for (final entry in globalHeaders.entries) {
+        headers[entry.key] = literal(entry.value);
+      }
+    }
+
+    // Method-level @Headers annotations override global headers
+    final methodHeaders = _getMethodAnnotations(m, retrofit.Headers)
         .map((e) => e.peek('value'))
         .map(
           (value) => value?.mapValue.map((k, v) {
@@ -2715,6 +2743,7 @@ MultipartFile.fromFileSync(i.path,
           }),
         )
         .fold<Map<String, Expression>>({}, (p, e) => p..addAll(e ?? {}));
+    headers.addAll(methodHeaders);
 
     final annotationsInParam = _getAnnotations(m, retrofit.Header);
     final headersInParams = annotationsInParam.map((k, v) {

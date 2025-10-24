@@ -2576,3 +2576,92 @@ abstract class UseResultForVoid {
   @GET('https://httpbin.org/')
   Future<void> someGet();
 }
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'User-Agent': 'MyApp/1.0.0',
+      r'X-Platform': 'mobile',
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'User-Agent': 'MyApp/1.0.0',
+    'X-Platform': 'mobile',
+  },
+)
+abstract class GlobalHeaders {
+  @GET('/list/')
+  Future<void> list();
+}
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'User-Agent': 'MyApp/1.0.0',
+      r'X-Platform': 'mobile',
+      r'Authorization': 'Bearer token',
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'User-Agent': 'MyApp/1.0.0',
+    'X-Platform': 'mobile',
+  },
+)
+abstract class GlobalHeadersWithMethodHeaders {
+  @GET('/list/')
+  @Headers(<String, dynamic>{'Authorization': 'Bearer token'})
+  Future<void> list();
+}
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'User-Agent': 'MyApp/1.0.0',
+      r'X-Platform': 'override-value',
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'User-Agent': 'MyApp/1.0.0',
+    'X-Platform': 'mobile',
+  },
+)
+abstract class GlobalHeadersOverriddenByMethodHeaders {
+  @GET('/list/')
+  @Headers(<String, dynamic>{'X-Platform': 'override-value'})
+  Future<void> list();
+}
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'X-Custom': 'value',
+      r'X-Dynamic': dynamicHeader,
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'X-Custom': 'value',
+  },
+)
+abstract class GlobalHeadersWithDynamicHeaders {
+  @GET('/list/')
+  Future<void> list(@Header('X-Dynamic') String dynamicHeader);
+}
+
+@ShouldGenerate('''
+    final _headers = <String, dynamic>{
+      r'X-Count': 42,
+      r'X-Enabled': true,
+      r'X-Rate': 3.14,
+    };
+''', contains: true)
+@RestApi(
+  headers: {
+    'X-Count': 42,
+    'X-Enabled': true,
+    'X-Rate': 3.14,
+  },
+)
+abstract class GlobalHeadersWithDifferentTypes {
+  @GET('/list/')
+  Future<void> list();
+}
