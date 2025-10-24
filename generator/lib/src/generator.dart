@@ -2347,9 +2347,6 @@ if (T != dynamic &&
         final contentType = r.peek('contentType')?.stringValue;
 
         if (isFileField) {
-          if (p.type.isNullable) {
-            blocks.add(Code('if (${p.displayName} != null){'));
-          }
           final fileNameValue = r.peek('fileName')?.stringValue;
           final fileName = fileNameValue != null
               ? literalString(fileNameValue)
@@ -2384,7 +2381,8 @@ if (T != dynamic &&
                 ).newInstance([literal(fieldName), uploadFileInfo]),
               ])
               .statement;
-          if (optionalFile) {
+          // Add null check if parameter is nullable OR optional
+          if (p.type.isNullable || optionalFile) {
             final condition = refer(p.displayName).notEqualTo(literalNull).code;
             blocks.addAll([
               const Code('if('),
@@ -2395,9 +2393,6 @@ if (T != dynamic &&
             ]);
           } else {
             blocks.add(returnCode);
-          }
-          if (p.type.isNullable) {
-            blocks.add(const Code('}'));
           }
         } else if (_isMultipartFile(p.type)) {
           if (p.type.isNullable) {

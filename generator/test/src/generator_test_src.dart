@@ -1312,6 +1312,20 @@ abstract class TestHttpResponseArray {
       );
     }
 ''', contains: true)
+@ShouldGenerate('''
+    final _data = FormData();
+    if (file != null) {
+      _data.files.add(
+        MapEntry(
+          'file',
+          MultipartFile.fromFileSync(
+            file.path,
+            filename: file.path.split(Platform.pathSeparator).last,
+          ),
+        ),
+      );
+    }
+''', contains: true)
 @RestApi()
 abstract class TestFileList {
   @POST('/')
@@ -1322,6 +1336,9 @@ abstract class TestFileList {
 
   @POST('/')
   Future<void> testOptionalFile({@Part() File file});
+
+  @POST('/')
+  Future<void> testNullableOptionalFile({@Part() File? file});
 }
 
 // @JsonEnum()
