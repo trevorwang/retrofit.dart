@@ -1518,7 +1518,7 @@ $returnAsyncWrapper httpResponse;
             mapperVal =
                 '''
 (json) => json is List<dynamic>
-      ? json.map<$genericTypeString>((i) => ${genericTypeString == 'dynamic' ? ' i as Map<String, dynamic>' : '$genericTypeString.fromJson(i as Map<String, dynamic>)'}).toList()
+      ? json.map<$genericTypeString>((i) => ${genericTypeString == 'dynamic' ? 'i' : '$genericTypeString.fromJson(i as Map<String, dynamic>)'}).toList()
       : List.empty(),
 ''';
           }
