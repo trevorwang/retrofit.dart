@@ -391,7 +391,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       if (method.isAbstract) {
         methods.add(_generateApiCallMethod(method, instantiatedCallAdapter)!);
       }
-      if (callAdapter != null) {
+      if (callAdapter != null && instantiatedCallAdapter != null) {
         methods.add(
           _generateAdapterMethod(
             method,
@@ -407,9 +407,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// Generates a method implementation wrapped by CallAdapter.
   Method _generateAdapterMethod(
     MethodElement2 m,
-    InterfaceType? callAdapter,
+    InterfaceType callAdapter,
     String resultType,
   ) {
+    // Get the adapter class name - should never be null at this point
+    final adapterName = callAdapter.element3.name3;
+    if (adapterName == null) {
+      throw InvalidGenerationSourceError(
+        'CallAdapter class must have a valid name',
+        element: m,
+      );
+    }
+
     return Method((methodBuilder) {
       methodBuilder.returns = refer(
         _displayString(m.returnType, withNullability: true),
@@ -438,10 +447,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       }
       final args =
           '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
-      final adaptedCall = '${callAdapter?.element3.name3}<$resultType>().adapt(() => _${m.displayName}($args))';
-      methodBuilder.body = Code('''
-        return $_onErrorVar != null ? $adaptedCall.catchError($_onErrorVar) : $adaptedCall;
-      ''');
+      final adaptedCall = '$adapterName<$resultType>().adapt(() => _${m.displayName}($args))';
+      
+      // Only wrap with catchError if onError exists and the adapted return type is a Future
+      final adaptedReturnType = callAdapter.superclass?.typeArguments.lastOrNull as InterfaceType?;
+      final shouldWrapWithCatchError = _isDartTypeFuture(adaptedReturnType);
+      
+      if (shouldWrapWithCatchError) {
+        methodBuilder.body = Code('''
+          return $_onErrorVar != null ? $adaptedCall.catchError($_onErrorVar) : $adaptedCall;
+        ''');
+      } else {
+        methodBuilder.body = Code('return $adaptedCall;');
+      }
     });
   }
 
@@ -847,6 +865,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// Checks if the return type is Future.
   bool _isReturnTypeFuture(String type) => type.startsWith('Future<');
 
+  /// Checks if a DartType represents a Future.
+  /// More reliable than string matching as it uses the analyzer's type system.
+  bool _isDartTypeFuture(DartType? type) {
+    if (type == null) {
+      return false;
+    }
+    return type.isDartAsyncFuture;
+  }
+
   /// Generates the HTTP request code block.
   Code _generateRequest(
     MethodElement2 m,
@@ -860,9 +887,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final callAdapterOriginalReturnType =
           callAdapter.superclass?.typeArguments.firstOrNull as InterfaceType?;
       returnAsyncWrapper =
-          _isReturnTypeFuture(
-            callAdapterOriginalReturnType?.getDisplayString() ?? '',
-          )
+          _isDartTypeFuture(callAdapterOriginalReturnType)
           ? 'return'
           : 'yield';
     }
