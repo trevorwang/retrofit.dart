@@ -1,12 +1,12 @@
 ## 10.0.10
-Fix null check operator error when using Object type as @Body parameter by @Copilot in #814
-Fix duplicate null check for nullable optional File parameters in multipart requests by @Copilot in #813
-Fix List code generation to avoid incorrect Map casting by @Copilot in #811
-Add support for global headers in @RESTapi annotation by @Copilot in #812
-Fix @part annotation generating wrong variable reference for MultipartFile by @Copilot in #824
-Fix nullable typed Map parameters in @Body() annotation by @Copilot in #823
-Add test coverage for enum arrays in @part annotations by @Copilot in #822
-Fix Map value deserialization for generic types with type parameters by @Copilot in #825
+- Fix null check operator error when using Object type as @Body parameter by @Copilot in #814
+- Fix duplicate null check for nullable optional File parameters in multipart requests by @Copilot in #813
+- Fix List code generation to avoid incorrect Map casting by @Copilot in #811
+- Add support for global headers in @RESTapi annotation by @Copilot in #812
+- Fix @part annotation generating wrong variable reference for MultipartFile by @Copilot in #824
+- Fix nullable typed Map parameters in @Body() annotation by @Copilot in #823
+- Add test coverage for enum arrays in @part annotations by @Copilot in #822
+- Fix Map value deserialization for generic types with type parameters by @Copilot in #825
 
 ## 10.0.8 (Unreleased)
 
