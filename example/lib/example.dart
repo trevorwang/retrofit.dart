@@ -14,6 +14,7 @@ abstract class RestClient {
     Dio dio, {
     String? baseUrl,
     ParseErrorLogger? errorLogger,
+    Function? onError,
   }) = RestClientYmlp;
 
   @GET('/tasks/{id}')

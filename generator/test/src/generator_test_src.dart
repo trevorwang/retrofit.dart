@@ -213,20 +213,22 @@ abstract class MultipleTypedExtrasTest {
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
 class _RestClient implements RestClient {
-  _RestClient(this._dio, {this.baseUrl, this.errorLogger});
+  _RestClient(this._dio, {this.baseUrl, this.errorLogger, this.onError});
 
   final Dio _dio;
 
   String? baseUrl;
 
   final ParseErrorLogger? errorLogger;
+
+  final Function? onError;
 ''', contains: true)
 @RestApi()
 abstract class RestClient {}
 
 @ShouldGenerate('''
 class _BaseUrl implements BaseUrl {
-  _BaseUrl(this._dio, {this.baseUrl, this.errorLogger}) {
+  _BaseUrl(this._dio, {this.baseUrl, this.errorLogger, this.onError}) {
     baseUrl ??= 'http://httpbin.org/';
   }
 
@@ -235,6 +237,8 @@ class _BaseUrl implements BaseUrl {
   String? baseUrl;
 
   final ParseErrorLogger? errorLogger;
+
+  final Function? onError;
 ''', contains: true)
 @RestApi(baseUrl: 'http://httpbin.org/')
 abstract class BaseUrl {}
@@ -1464,13 +1468,15 @@ abstract class CustomOptions {
 // We check by verifying that the expected code pattern is generated without newRequestOptions
 @ShouldGenerate(r'''
 class _ServiceWithoutCustomOptions implements ServiceWithoutCustomOptions {
-  _ServiceWithoutCustomOptions(this._dio, {this.baseUrl, this.errorLogger});
+  _ServiceWithoutCustomOptions(this._dio, {this.baseUrl, this.errorLogger, this.onError});
 
   final Dio _dio;
 
   String? baseUrl;
 
   final ParseErrorLogger? errorLogger;
+
+  final Function? onError;
 
   @override
   Future<String> getData() async {
@@ -2664,4 +2670,34 @@ abstract class GlobalHeadersWithDynamicHeaders {
 abstract class GlobalHeadersWithDifferentTypes {
   @GET('/list/')
   Future<void> list();
+}
+
+// Test that onError parameter is added to constructor
+@ShouldGenerate('''
+  final Function? onError;
+''', contains: true)
+@RestApi()
+abstract class ErrorHandlerField {
+  @GET('/test')
+  Future<String> getData();
+}
+
+// Test that constructor includes onError parameter
+@ShouldGenerate('''
+    this.onError,
+''', contains: true)
+@RestApi()
+abstract class ErrorHandlerConstructor {
+  @GET('/test')
+  Future<String> getData();
+}
+
+// Test that Future methods are wrapped with catchError
+@ShouldGenerate('''
+    })().catchError(onError ?? (Object e) => throw e);
+''', contains: true)
+@RestApi()
+abstract class ErrorHandlerCatchError {
+  @GET('/test')
+  Future<String> getData();
 }
