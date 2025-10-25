@@ -2035,6 +2035,21 @@ abstract class JsonSerializableBodyShouldBeCleanTest {
 
 @ShouldGenerate(
   '''
+    final _data = <String, dynamic>{};
+    if (body != null) {
+      _data.addAll(body!);
+    }
+''',
+  contains: true,
+)
+@RestApi()
+abstract class NullableTypedMapBodyTest {
+  @POST('/test')
+  Future<dynamic> map({@Body() Map<String, String>? body});
+}
+
+@ShouldGenerate(
+  '''
     final _data = str;
     final _options = _setStreamType<void>(
 ''',

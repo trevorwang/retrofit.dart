@@ -2083,14 +2083,24 @@ if (T != dynamic &&
                   literalMap(bodyExtras, refer('String'), refer('dynamic')),
                 )
                 .statement,
-          )
-          ..add(
+          );
+        if (bodyName.type.nullabilitySuffix == NullabilitySuffix.question) {
+          blocks.add(
+            Code('if (${bodyName.displayName} != null) {'),
+          );
+          blocks.add(
             refer('$dataVar.addAll').call([
-              refer(
-                "${bodyName.displayName}${m.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String, dynamic>{}' : ''}",
-              ),
+              refer('${bodyName.displayName}!'),
             ]).statement,
           );
+          blocks.add(const Code('}'));
+        } else {
+          blocks.add(
+            refer('$dataVar.addAll').call([
+              refer(bodyName.displayName),
+            ]).statement,
+          );
+        }
         if (preventNullToAbsent == null && nullToAbsent) {
           blocks.add(Code('$dataVar.removeWhere((k, v) => v == null);'));
         }
