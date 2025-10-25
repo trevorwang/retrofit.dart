@@ -7,8 +7,10 @@ void main() async {
   final dio = Dio();
   
   // Create a custom error handler
-  void customErrorHandler(Object error) {
+  // Signature matches Future.catchError() for flexibility
+  void customErrorHandler(Object error, StackTrace stackTrace) {
     print('Custom error handler called!');
+    print('Stack trace: $stackTrace');
     
     if (error is DioException) {
       // Handle network errors
