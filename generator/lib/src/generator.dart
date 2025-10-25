@@ -1356,7 +1356,8 @@ You should create a new class to encapsulate the response.
             );
         } else {
           final fromJsonParamType = _getFromJsonParameterType(returnType);
-          final baseFetchType = fromJsonParamType ?? 'Map<String, dynamic>';
+          final baseFetchType = fromJsonParamType ?? 
+              (_isEnum(returnType) ? 'String' : 'Map<String, dynamic>');
           final fetchType = returnType.isNullable ? '$baseFetchType?' : baseFetchType;
           blocks.add(
             declareFinal(_resultVar)
