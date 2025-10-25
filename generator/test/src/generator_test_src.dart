@@ -525,6 +525,28 @@ abstract class SingleNullableMultipartFilePartTest {
 
 @ShouldGenerate('''
     final _data = FormData();
+    _data.files.add(MapEntry('some_file', someFile));
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class MultipartFilePartWithCustomNameTest {
+  @POST('/profile')
+  Future<String> setProfile(@Part(name: 'some_file') MultipartFile someFile);
+}
+
+@ShouldGenerate('''
+    final _data = FormData();
+    if (someFile != null) {
+      _data.files.add(MapEntry('some_file', someFile));
+    }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class NullableMultipartFilePartWithCustomNameTest {
+  @POST('/profile')
+  Future<String> setProfile(@Part(name: 'some_file') MultipartFile? someFile);
+}
+
+@ShouldGenerate('''
+    final _data = FormData();
     _data.files.add(
       MapEntry(
         'image',
