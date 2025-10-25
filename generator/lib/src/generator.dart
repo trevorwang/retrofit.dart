@@ -1355,9 +1355,9 @@ You should create a new class to encapsulate the response.
               ),
             );
         } else {
-          final fetchType = returnType.isNullable
-              ? 'Map<String, dynamic>?'
-              : 'Map<String, dynamic>';
+          final fromJsonParamType = _getFromJsonParameterType(returnType);
+          final baseFetchType = fromJsonParamType ?? 'Map<String, dynamic>';
+          final fetchType = returnType.isNullable ? '$baseFetchType?' : baseFetchType;
           blocks.add(
             declareFinal(_resultVar)
                 .assign(
@@ -1911,6 +1911,23 @@ if (T != dynamic &&
       return false;
     }
     return dartType.element3.getNamedConstructor2('fromJson') != null;
+  }
+
+  /// Gets the parameter type of fromJson constructor.
+  /// Returns the type of the first parameter of fromJson, or null if not found.
+  String? _getFromJsonParameterType(DartType? dartType) {
+    if (dartType is! InterfaceType) {
+      return null;
+    }
+    final fromJsonConstructor = dartType.element3.getNamedConstructor2('fromJson');
+    if (fromJsonConstructor == null) {
+      return null;
+    }
+    final parameters = fromJsonConstructor.formalParameters;
+    if (parameters.isEmpty) {
+      return null;
+    }
+    return _displayString(parameters.first.type);
   }
 
   /// Checks if the type has a toJson method.
