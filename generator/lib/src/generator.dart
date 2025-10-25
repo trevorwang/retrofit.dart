@@ -61,6 +61,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   static const _baseUrlVar = 'baseUrl';
   static const _errorLoggerVar = 'errorLogger';
+  static const _onErrorVar = 'onError';
   static const _queryParamsVar = 'queryParameters';
   static const _optionsVar = '_options';
   static const _localHeadersVar = '_headers';
@@ -150,6 +151,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           _buildDioField(),
           _buildBaseUrlField(baseUrl),
           _buildErrorLoggerFiled(),
+          _buildOnErrorField(),
         ])
         ..constructors.addAll(
           annotateClassConsts.map(
@@ -202,6 +204,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       ..modifier = FieldModifier.final$;
   });
 
+  /// Builds the onError field.
+  Field _buildOnErrorField() => Field((m) {
+    m
+      ..name = _onErrorVar
+      ..type = refer('Function?')
+      ..modifier = FieldModifier.final$;
+  });
+
   /// Generates the constructor.
   Constructor _generateConstructor(
     String? url, {
@@ -225,6 +235,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         (p) => p
           ..named = true
           ..name = _errorLoggerVar
+          ..toThis = true,
+      ),
+      Parameter(
+        (p) => p
+          ..named = true
+          ..name = _onErrorVar
           ..toThis = true,
       ),
     ]);
@@ -394,6 +410,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     InterfaceType? callAdapter,
     String resultType,
   ) {
+    final isAsync = m.returnType.isDartAsyncFuture;
+    
     return Method((methodBuilder) {
       methodBuilder.returns = refer(
         _displayString(m.returnType, withNullability: true),
@@ -422,11 +440,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       }
       final args =
           '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
-      methodBuilder.body = Code('''
+      
+      // Wrap with catchError if method returns Future
+      if (isAsync) {
+        methodBuilder.body = Code('''
+        return ${callAdapter?.element3.name3}<$resultType>().adapt(
+          () => _${m.displayName}($args),
+        ).catchError($_onErrorVar ?? (Object e) => throw e);
+      ''');
+      } else {
+        methodBuilder.body = Code('''
         return ${callAdapter?.element3.name3}<$resultType>().adapt(
           () => _${m.displayName}($args),
         );
       ''');
+      }
     });
   }
 
@@ -772,6 +800,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     }
 
     final returnType = m.returnType;
+    final isAsync = m.returnType.isDartAsyncFuture;
+    
     return Method((methodBuilder) {
       _configureMethodMetadata(
         methodBuilder,
@@ -781,7 +811,22 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       );
       _addParameters(methodBuilder, m);
       _addAnnotations(methodBuilder, returnType, false);
-      methodBuilder.body = _generateRequest(m, httpMethod, null);
+      
+      final requestBody = _generateRequest(m, httpMethod, null);
+      
+      // For Future-returning methods, wrap with catchError logic
+      if (isAsync) {
+        methodBuilder.body = Block((b) {
+          b.statements.addAll([
+            const Code('return (() async {'),
+            requestBody,
+            const Code('})()'),
+            const Code('.catchError($_onErrorVar ?? (Object e) => throw e);'),
+          ]);
+        });
+      } else {
+        methodBuilder.body = requestBody;
+      }
     });
   }
 
@@ -807,6 +852,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       );
       _addParameters(methodBuilder, m);
       _addAnnotations(methodBuilder, m.returnType, true);
+      // Private methods used by CallAdapters should not be wrapped with catchError
+      // The adapter itself handles error handling
       methodBuilder.body = _generateRequest(m, httpMethod, callAdapter);
     });
   }
