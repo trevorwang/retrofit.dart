@@ -2420,7 +2420,7 @@ if (T != dynamic &&
             refer(dataVar).property('files').property('add').call([
               refer(
                 'MapEntry',
-              ).newInstance([literal(fieldName), refer(fieldName)]),
+              ).newInstance([literal(fieldName), refer(p.displayName)]),
             ]).statement,
           );
           if (p.type.isNullable) {
