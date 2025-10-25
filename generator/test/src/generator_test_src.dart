@@ -1401,6 +1401,16 @@ _data.fields.add(MapEntry('enumValue', enumValue.name));
     _data.fields.add(MapEntry('enumValue', enumValue.toJson()));
 ''', contains: true)
 @ShouldGenerate('''
+    enumValues.forEach((i) {
+      _data.fields.add(MapEntry('enumValues', i.name));
+    });
+''', contains: true)
+@ShouldGenerate('''
+    enumValues.forEach((i) {
+      _data.fields.add(MapEntry('enumValues', i.toJson()));
+    });
+''', contains: true)
+@ShouldGenerate('''
     final _data = FormData();
     _data.fields.add(MapEntry('a', a.toString()));
     _data.fields.add(MapEntry('b', b.toString()));
@@ -1428,6 +1438,12 @@ abstract class TestModelList {
 
   @POST('/')
   Future<void> testEnumWithToJsonType(@Part() TestEnumWithToJson enumValue);
+
+  @POST('/')
+  Future<void> testEnumList(@Part() List<TestEnum> enumValues);
+
+  @POST('/')
+  Future<void> testEnumWithToJsonList(@Part() List<TestEnumWithToJson> enumValues);
 
   @POST('/')
   Future<void> testBasicType(
