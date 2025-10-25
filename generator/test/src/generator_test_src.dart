@@ -703,9 +703,15 @@ class User implements AbstractUser {
 class GenericUser<T> implements AbstractUser {
   GenericUser();
 
-  factory GenericUser.fromJson() => GenericUser<T>();
+  factory GenericUser.fromJson(
+    Map<String, dynamic> json,
+    T Function(Object? json) fromJsonT,
+  ) => GenericUser<T>();
   
-  factory GenericUser.fromMap() => GenericUser<T>();
+  factory GenericUser.fromMap(
+    Map<String, dynamic> json,
+    T Function(Object? json) fromJsonT,
+  ) => GenericUser<T>();
 
   @override
   Map<String, dynamic> toJson() => <String, dynamic>{};

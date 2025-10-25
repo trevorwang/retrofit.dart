@@ -1135,11 +1135,7 @@ $returnAsyncWrapper httpResponse;
             var future = false;
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
-                final typeArgs = type is ParameterizedType
-                    ? type.typeArguments
-                    : <DartType>[];
-                final hasGenericArgs = type != null && typeArgs.isNotEmpty && 
-                    isGenericArgumentFactories(type);
+                final hasGenericArgs = _hasGenericArguments(type);
                 final fromMapCall = hasGenericArgs
                     ? '${_displayString(type)}.fromMap(i as Map<String, dynamic>, ${_getInnerJsonSerializableMapperFn(type!)})'
                     : '${_displayString(type)}.fromMap(i as Map<String, dynamic>)';
@@ -1152,11 +1148,7 @@ $returnAsyncWrapper httpResponse;
     )
 ''');
               case retrofit.Parser.JsonSerializable:
-                final typeArgs = type is ParameterizedType
-                    ? type.typeArguments
-                    : <DartType>[];
-                final hasGenericArgs = type != null && typeArgs.isNotEmpty && 
-                    isGenericArgumentFactories(type);
+                final hasGenericArgs = _hasGenericArguments(type);
                 final fromJsonCall = hasGenericArgs
                     ? '${_displayString(type)}.fromJson(i as Map<String, dynamic>, ${_getInnerJsonSerializableMapperFn(type!)})'
                     : '${_displayString(type)}.fromJson(i as Map<String, dynamic>)';
@@ -1226,11 +1218,7 @@ You should create a new class to encapsulate the response.
             var future = false;
             switch (clientAnnotation.parser) {
               case retrofit.Parser.MapSerializable:
-                final typeArgs = secondType is ParameterizedType
-                    ? secondType.typeArguments
-                    : <DartType>[];
-                final hasGenericArgs = typeArgs.isNotEmpty && 
-                    isGenericArgumentFactories(secondType);
+                final hasGenericArgs = _hasGenericArguments(secondType);
                 final fromMapCall = hasGenericArgs
                     ? '${_displayString(secondType)}.fromMap(v as Map<String, dynamic>, ${_getInnerJsonSerializableMapperFn(secondType)})'
                     : '${_displayString(secondType)}.fromMap(v as Map<String, dynamic>)';
@@ -1238,11 +1226,7 @@ You should create a new class to encapsulate the response.
                   '(k, dynamic v) => MapEntry(k, $fromMapCall)',
                 );
               case retrofit.Parser.JsonSerializable:
-                final typeArgs = secondType is ParameterizedType
-                    ? secondType.typeArguments
-                    : <DartType>[];
-                final hasGenericArgs = typeArgs.isNotEmpty && 
-                    isGenericArgumentFactories(secondType);
+                final hasGenericArgs = _hasGenericArguments(secondType);
                 final fromJsonCall = hasGenericArgs
                     ? '${_displayString(secondType)}.fromJson(v as Map<String, dynamic>, ${_getInnerJsonSerializableMapperFn(secondType)})'
                     : '${_displayString(secondType)}.fromJson(v as Map<String, dynamic>)';
@@ -1463,6 +1447,15 @@ $returnAsyncWrapper httpResponse;
     }
 
     return Block.of(blocks);
+  }
+
+  /// Checks if a type has generic arguments and requires generic argument factories.
+  bool _hasGenericArguments(DartType? type) {
+    if (type == null) return false;
+    final typeArgs = type is ParameterizedType
+        ? type.typeArguments
+        : <DartType>[];
+    return typeArgs.isNotEmpty && isGenericArgumentFactories(type);
   }
 
   /// Checks if the type requires generic argument factories.
