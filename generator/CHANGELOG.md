@@ -1,3 +1,9 @@
+## 10.1.0
+
+- Add lean_builder as a dependency to support experimental lean_builder integration
+- Fix package validation errors for lean_builder imports
+- Prepare infrastructure for optional lean_builder support
+
 ## 10.0.10
 - Fix null check operator error when using Object type as @Body parameter by @Copilot in #814
 - Fix duplicate null check for nullable optional File parameters in multipart requests by @Copilot in #813
