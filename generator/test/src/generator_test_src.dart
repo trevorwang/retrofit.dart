@@ -725,7 +725,15 @@ class User implements AbstractUser {
 class GenericUser<T> implements AbstractUser {
   GenericUser();
 
-  factory GenericUser.fromJson() => GenericUser<T>();
+  factory GenericUser.fromJson(
+    Map<String, dynamic> json,
+    T Function(Object? json) fromJsonT,
+  ) => GenericUser<T>();
+  
+  factory GenericUser.fromMap(
+    Map<String, dynamic> json,
+    T Function(Object? json) fromJsonT,
+  ) => GenericUser<T>();
 
   @override
   Map<String, dynamic> toJson() => <String, dynamic>{};
@@ -1077,6 +1085,60 @@ abstract class TestMapBody2 {
 abstract class NullableTestMapBody2 {
   @GET('/xx')
   Future<Map<String, User>?> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, List<GenericUser<User>>> _value;
+    try {
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
+          k,
+          (v as List)
+              .map(
+                (i) => GenericUser<User>.fromJson(
+                  i as Map<String, dynamic>,
+                  (json) => User.fromJson(json as Map<String, dynamic>),
+                ),
+              )
+              .toList(),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapBodyWithGenericList {
+  @GET('/xx')
+  Future<Map<String, List<GenericUser<User>>>> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, GenericUser<User>> _value;
+    try {
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
+          k,
+          GenericUser<User>.fromJson(
+            v as Map<String, dynamic>,
+            (json) => User.fromJson(json as Map<String, dynamic>),
+          ),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapBodyWithGeneric {
+  @GET('/xx')
+  Future<Map<String, GenericUser<User>>> getResult();
 }
 
 @ShouldGenerate('''
@@ -1750,6 +1812,60 @@ abstract class MapSerializableTestMapBody2 {
 abstract class NullableMapSerializableTestMapBody2 {
   @GET('/xx')
   Future<Map<String, User>?> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, List<GenericUser<User>>> _value;
+    try {
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
+          k,
+          (v as List)
+              .map(
+                (i) => GenericUser<User>.fromMap(
+                  i as Map<String, dynamic>,
+                  (json) => User.fromJson(json as Map<String, dynamic>),
+                ),
+              )
+              .toList(),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.MapSerializable)
+abstract class MapSerializableTestMapBodyWithGenericList {
+  @GET('/xx')
+  Future<Map<String, List<GenericUser<User>>>> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, GenericUser<User>> _value;
+    try {
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
+          k,
+          GenericUser<User>.fromMap(
+            v as Map<String, dynamic>,
+            (json) => User.fromJson(json as Map<String, dynamic>),
+          ),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.MapSerializable)
+abstract class MapSerializableTestMapBodyWithGeneric {
+  @GET('/xx')
+  Future<Map<String, GenericUser<User>>> getResult();
 }
 
 @ShouldGenerate('''
