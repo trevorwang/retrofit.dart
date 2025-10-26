@@ -202,6 +202,45 @@ The HTTP methods in the below sample are supported.
   Future<String> postUrlEncodedFormData(@Field() String hello);
 ```
 
+#### Runtime Content-Type for Multipart Uploads
+
+Use `@PartMap()` to provide runtime metadata (like `contentType` and `fileName`) for multipart file uploads:
+
+```dart
+  @POST('/api/files')
+  @MultiPart()
+  Future<void> uploadFile({
+    @Part(name: 'file') required File file,
+    @PartMap() Map<String, dynamic>? metadata,
+  });
+  
+  // Usage - Upload different file types to the same endpoint
+  
+  // Upload a JPEG image
+  await client.uploadFile(
+    file: File('/path/to/image.jpg'),
+    metadata: {
+      'file_contentType': 'image/jpeg',
+      'file_fileName': 'photo.jpg',
+    },
+  );
+  
+  // Upload a PDF document
+  await client.uploadFile(
+    file: File('/path/to/document.pdf'),
+    metadata: {
+      'file_contentType': 'application/pdf',
+      'file_fileName': 'report.pdf',
+    },
+  );
+```
+
+The `@PartMap()` annotation accepts a `Map<String, dynamic>` with keys in the format:
+- `'<partName>_contentType'` - Sets the content type for the part
+- `'<partName>_fileName'` - Sets the file name for the part
+
+Values provided in `@PartMap()` override any static values set in the `@Part()` annotation.
+
 ### Get original HTTP response
 
 ```dart

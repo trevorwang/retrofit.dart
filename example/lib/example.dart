@@ -95,6 +95,48 @@ abstract class RestClient {
   @POST('http://httpbin.org/post')
   Future<void> createNewTaskFromFile(@Part() File file);
 
+  /// Example demonstrating runtime contentType for multipart uploads
+  /// using @PartMap annotation.
+  ///
+  /// This allows uploading different file types to the same endpoint
+  /// by providing the contentType at runtime rather than compile-time.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// // Upload a JPEG image
+  /// await client.uploadFileWithMetadata(
+  ///   file: File('/path/to/image.jpg'),
+  ///   metadata: {
+  ///     'file_contentType': 'image/jpeg',
+  ///     'file_fileName': 'photo.jpg',
+  ///   },
+  /// );
+  ///
+  /// // Upload a PNG image with the same method
+  /// await client.uploadFileWithMetadata(
+  ///   file: File('/path/to/image.png'),
+  ///   metadata: {
+  ///     'file_contentType': 'image/png',
+  ///     'file_fileName': 'screenshot.png',
+  ///   },
+  /// );
+  ///
+  /// // Upload a PDF document
+  /// await client.uploadFileWithMetadata(
+  ///   file: File('/path/to/document.pdf'),
+  ///   metadata: {
+  ///     'file_contentType': 'application/pdf',
+  ///     'file_fileName': 'report.pdf',
+  ///   },
+  /// );
+  /// ```
+  @POST('http://httpbin.org/post')
+  @MultiPart()
+  Future<void> uploadFileWithMetadata({
+    @Part(name: 'file') required File file,
+    @PartMap() Map<String, dynamic>? metadata,
+  });
+
   @Headers(<String, String>{'accept': 'image/jpeg'})
   @GET('http://httpbin.org/image/jpeg')
   @DioResponseType(ResponseType.bytes)
