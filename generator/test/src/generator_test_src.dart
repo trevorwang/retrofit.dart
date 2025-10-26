@@ -614,6 +614,9 @@ abstract class StreamReturnType {
 enum TestEnum { A, B }
 
 @ShouldGenerate(r'''
+    final _result = await _dio.fetch<String>(_options);
+''', contains: true)
+@ShouldGenerate(r'''
     late TestEnum _value;
     try {
       _value = TestEnum.values.firstWhere(
@@ -656,6 +659,9 @@ enum FromJsonEnum {
   final String json;
 }
 
+@ShouldGenerate(r'''
+    final _result = await _dio.fetch<String>(_options);
+''', contains: true)
 @ShouldGenerate('''
     late FromJsonEnum _value;
     try {
@@ -670,6 +676,54 @@ enum FromJsonEnum {
 abstract class EnumFromJsonReturnType {
   @GET('/')
   Future<FromJsonEnum> getTestEnum();
+}
+
+@ShouldGenerate(r'''
+    final _result = await _dio.fetch<String?>(_options);
+''', contains: true)
+@RestApi()
+abstract class NullableEnumReturnType {
+  @GET('/')
+  Future<TestEnum?> getTestEnum();
+}
+
+@ShouldGenerate(r'''
+    final _result = await _dio.fetch<String?>(_options);
+''', contains: true)
+@RestApi()
+abstract class NullableEnumFromJsonReturnType {
+  @GET('/')
+  Future<FromJsonEnum?> getTestEnum();
+}
+
+enum IntFromJsonEnum {
+  one(1),
+  two(2);
+
+  const IntFromJsonEnum(this.value);
+
+  factory IntFromJsonEnum.fromJson(int value) =>
+      values.firstWhere((e) => e.value == value);
+
+  final int value;
+}
+
+@ShouldGenerate(r'''
+    final _result = await _dio.fetch<int>(_options);
+''', contains: true)
+@RestApi()
+abstract class IntEnumFromJsonReturnType {
+  @GET('/')
+  Future<IntFromJsonEnum> getTestEnum();
+}
+
+@ShouldGenerate(r'''
+    final _result = await _dio.fetch<int?>(_options);
+''', contains: true)
+@RestApi()
+abstract class NullableIntEnumFromJsonReturnType {
+  @GET('/')
+  Future<IntFromJsonEnum?> getTestEnum();
 }
 
 enum ToJsonEnum {
