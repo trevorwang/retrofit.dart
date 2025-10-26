@@ -8,6 +8,13 @@ import 'package:retrofit_example/api_result.dart';
 
 part 'example.g.dart';
 
+// Extension type examples for query parameters
+extension type UserId(String id) implements String {}
+
+extension type CustomParam(String value) implements String {
+  String toJson() => value;
+}
+
 @RestApi(baseUrl: 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/')
 abstract class RestClient {
   factory RestClient(
@@ -261,6 +268,15 @@ abstract class RestClient {
     @Path('id') String id,
     @Path('commentId') String commentId,
     @Part() Map<String, dynamic> body,
+  );
+
+  // Extension type query parameter examples
+  @GET('/tasks')
+  Future<List<Task>> getTasksByUserId(@Query('userId') UserId userId);
+
+  @GET('/tasks')
+  Future<List<Task>> getTasksByCustomParam(
+    @Query('param') CustomParam? param,
   );
 }
 
