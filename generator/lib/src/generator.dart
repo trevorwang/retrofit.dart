@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'package:analyzer/dart/constant/value.dart';
 // TODO(Carapacik): remove this after analyzer 9.0.0 released
 // ignore_for_file: deprecated_member_use
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -1894,6 +1895,28 @@ if (T != dynamic &&
     return dartType.element3 is EnumElement2;
   }
 
+  /// Checks if the type is an extension type.
+  bool _isExtensionType(DartType? dartType) {
+    if (dartType is! InterfaceType) {
+      return false;
+    }
+    final element = dartType.element3;
+    return element is ExtensionTypeElement;
+  }
+
+  /// Gets the representation type (underlying type) of an extension type.
+  /// Returns null if the type is not an extension type.
+  DartType? _getExtensionTypeRepresentation(DartType? dartType) {
+    if (dartType is! InterfaceType) {
+      return null;
+    }
+    final element = dartType.element3;
+    if (element is! ExtensionTypeElement) {
+      return null;
+    }
+    return element.representation.type;
+  }
+
   /// Checks if the type is MultipartFile.
   bool _isMultipartFile(DartType? t) => _isAssignable(MultipartFile, t);
 
@@ -1963,7 +1986,45 @@ if (T != dynamic &&
     final queryParameters = queries.map((p, r) {
       final key = r.peek('value')?.stringValue ?? p.displayName;
       final Expression value;
-      if (_isBasicType(p.type) ||
+      
+      // Handle extension types
+      if (_isExtensionType(p.type)) {
+        final hasToJson = _hasToJson(p.type);
+        if (hasToJson) {
+          // Extension type with toJson method - use toJson
+          value = p.type.nullabilitySuffix == NullabilitySuffix.question
+              ? refer(p.displayName).nullSafeProperty('toJson').call([])
+              : refer(p.displayName).property('toJson').call([]);
+        } else {
+          // Extension type without toJson - use the underlying representation type
+          final representationType = _getExtensionTypeRepresentation(p.type);
+          if (representationType != null &&
+              (_isBasicType(representationType) ||
+                  representationType.isDartCoreList ||
+                  representationType.isDartCoreMap)) {
+            // If the representation type is basic, use the value directly
+            value = refer(p.displayName);
+          } else {
+            // Otherwise, follow the normal serialization logic for the representation type
+            switch (clientAnnotation.parser) {
+              case retrofit.Parser.JsonSerializable:
+                value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                    ? refer(p.displayName).nullSafeProperty('toJson').call([])
+                    : refer(p.displayName).property('toJson').call([]);
+              case retrofit.Parser.MapSerializable:
+                value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                    ? refer(p.displayName).nullSafeProperty('toMap').call([])
+                    : refer(p.displayName).property('toMap').call([]);
+              case retrofit.Parser.DartJsonMapper:
+                value = refer(p.displayName);
+              case retrofit.Parser.FlutterCompute:
+                value = refer(
+                  'await compute(serialize${_displayString(p.type)}, ${p.displayName})',
+                );
+            }
+          }
+        }
+      } else if (_isBasicType(p.type) ||
           p.type.isDartCoreList ||
           p.type.isDartCoreMap) {
         value = refer(p.displayName);
@@ -2016,7 +2077,45 @@ if (T != dynamic &&
       final type = p.type;
       final displayName = p.displayName;
       final Expression value;
-      if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
+      
+      // Handle extension types
+      if (_isExtensionType(type)) {
+        final hasToJson = _hasToJson(type);
+        if (hasToJson) {
+          // Extension type with toJson method - use toJson
+          value = type.nullabilitySuffix == NullabilitySuffix.question
+              ? refer(displayName).nullSafeProperty('toJson').call([])
+              : refer(displayName).property('toJson').call([]);
+        } else {
+          // Extension type without toJson - use the underlying representation type
+          final representationType = _getExtensionTypeRepresentation(type);
+          if (representationType != null &&
+              (_isBasicType(representationType) ||
+                  representationType.isDartCoreList ||
+                  representationType.isDartCoreMap)) {
+            // If the representation type is basic, use the value directly
+            value = refer(displayName);
+          } else {
+            // Otherwise, follow the normal serialization logic
+            switch (clientAnnotation.parser) {
+              case retrofit.Parser.JsonSerializable:
+                value = type.nullabilitySuffix == NullabilitySuffix.question
+                    ? refer(displayName).nullSafeProperty('toJson').call([])
+                    : refer(displayName).property('toJson').call([]);
+              case retrofit.Parser.MapSerializable:
+                value = type.nullabilitySuffix == NullabilitySuffix.question
+                    ? refer(displayName).nullSafeProperty('toMap').call([])
+                    : refer(displayName).property('toMap').call([]);
+              case retrofit.Parser.DartJsonMapper:
+                value = refer(displayName);
+              case retrofit.Parser.FlutterCompute:
+                value = refer(
+                  'await compute(serialize${_displayString(type)}, ${displayName})',
+                );
+            }
+          }
+        }
+      } else if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
         value = refer(displayName);
       } else if (_isSuperOf(protobuf.ProtobufEnum, type)) {
         value = type.nullabilitySuffix == NullabilitySuffix.question

@@ -1040,6 +1040,50 @@ abstract class TestQueryParamDateTime {
   Future<void> getTest(@Query('test') DateTime? date);
 }
 
+// Extension type that wraps String (basic type)
+extension type StringParam(String str) implements String {}
+
+@ShouldGenerate('''
+    final queryParameters = <String, dynamic>{r'query': query};
+''', contains: true)
+@RestApi()
+abstract class TestQueryParamExtensionTypeBasic {
+  @GET('/test')
+  Future<void> getTest(@Query('query') StringParam query);
+}
+
+@ShouldGenerate('''
+    final queryParameters = <String, dynamic>{r'query': query};
+''', contains: true)
+@RestApi()
+abstract class TestQueryParamExtensionTypeBasicNullable {
+  @GET('/test')
+  Future<void> getTest(@Query('query') StringParam? query);
+}
+
+// Extension type with toJson method
+extension type UserIdParam(String id) implements String {
+  String toJson() => id;
+}
+
+@ShouldGenerate('''
+    final queryParameters = <String, dynamic>{r'userId': userId.toJson()};
+''', contains: true)
+@RestApi()
+abstract class TestQueryParamExtensionTypeWithToJson {
+  @GET('/test')
+  Future<void> getTest(@Query('userId') UserIdParam userId);
+}
+
+@ShouldGenerate('''
+    final queryParameters = <String, dynamic>{r'userId': userId?.toJson()};
+''', contains: true)
+@RestApi()
+abstract class TestQueryParamExtensionTypeWithToJsonNullable {
+  @GET('/test')
+  Future<void> getTest(@Query('userId') UserIdParam? userId);
+}
+
 @ShouldGenerate(
   '''
     final _data = customObject;
