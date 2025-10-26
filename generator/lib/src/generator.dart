@@ -1,5 +1,6 @@
 import 'dart:ffi' as ffi;
 import 'dart:io' as io;
+import 'dart:typed_data' as typed_data;
 
 import 'package:analyzer/dart/constant/value.dart';
 // TODO(Carapacik): remove this after analyzer 9.0.0 released
@@ -529,6 +530,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return TypeChecker.typeNamed(type, inPackage: 'io', inSdk: true);
     }
 
+    final dartTypedDataTypes = {typed_data.Uint8List};
+    if (dartTypedDataTypes.contains(type)) {
+      return TypeChecker.typeNamed(type, inPackage: 'typed_data', inSdk: true);
+    }
+
     final dioTypes = {MultipartFile, ResponseType};
     if (dioTypes.contains(type)) {
       return TypeChecker.typeNamed(type, inPackage: 'dio');
@@ -1004,7 +1010,33 @@ $returnAsyncWrapper httpResponse;
       }
     } else {
       final innerReturnType = _getResponseInnerType(returnType);
-      if (_isExactly(List, returnType) || _isExactly(BuiltList, returnType)) {
+      if (_isUint8List(returnType)) {
+        // Handle Uint8List return type (typically used with ResponseType.bytes)
+        // Dio returns Uint8List directly when ResponseType.bytes is used,
+        // so we can avoid wasteful casting
+        blocks.add(
+          declareFinal(_resultVar)
+              .assign(
+                refer(
+                  'await $_dioVar.fetch<${_displayString(returnType, withNullability: false)}>',
+                ).call([options]),
+              )
+              .statement,
+        );
+
+        _wrapInTryCatch(
+          blocks,
+          options,
+          returnType,
+          refer(_valueVar)
+              .assign(
+                refer(
+                  '$_resultVar.data',
+                ).asNoNullIf(returnNullable: returnType.isNullable),
+              )
+              .statement,
+        );
+      } else if (_isExactly(List, returnType) || _isExactly(BuiltList, returnType)) {
         if (_isBasicType(innerReturnType)) {
           blocks.add(
             declareFinal(_resultVar)
@@ -1940,6 +1972,9 @@ if (T != dynamic &&
 
   /// Checks if the type is MultipartFile.
   bool _isMultipartFile(DartType? t) => _isAssignable(MultipartFile, t);
+
+  /// Checks if the type is Uint8List.
+  bool _isUint8List(DartType? t) => _isExactly(typed_data.Uint8List, t);
 
   /// Checks if the type is DateTime.
   bool _isDateTime(DartType? t) => _isExactly(DateTime, t);
