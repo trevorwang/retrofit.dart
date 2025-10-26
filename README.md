@@ -239,7 +239,12 @@ The `@PartMap()` annotation accepts a `Map<String, dynamic>` with keys in the fo
 - `'<partName>_contentType'` - Sets the content type for the part
 - `'<partName>_fileName'` - Sets the file name for the part
 
-Values provided in `@PartMap()` override any static values set in the `@Part()` annotation.
+**Fallback behavior:**
+- Runtime values from `@PartMap()` override static values from `@Part()` annotation
+- If `@PartMap()` value is not provided, uses static value from `@Part()` annotation
+- If neither is provided:
+  - `fileName` defaults to the file's actual name (extracted from file path)
+  - `contentType` defaults to `null` (Dio will auto-detect based on file extension)
 
 ### Get original HTTP response
 
