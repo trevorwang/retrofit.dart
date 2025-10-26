@@ -278,6 +278,17 @@ abstract class RestClient {
   Future<List<Task>> getTasksByCustomParam(
     @Query('param') CustomParam? param,
   );
+
+  // Generic type parameter examples - demonstrates the fix for issue #627
+  // Note: This works for simple types (String, int, Map, etc.) where the response
+  // data can be directly cast to T. For complex types that need deserialization,
+  // use a wrapper class with @JsonSerializable(genericArgumentFactories: true)
+  // like ApiResult<T> (see api_result.dart)
+  @GET('/generic/{id}')
+  Future<T> getGeneric<T>(@Path() String id);
+  
+  @GET('/generic-nullable/{id}')
+  Future<T?> getGenericNullable<T>(@Path() String id);
 }
 
 @JsonSerializable()
