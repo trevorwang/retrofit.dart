@@ -286,7 +286,7 @@ abstract class RestClient {
   // like ApiResult<T> (see api_result.dart)
   @GET('/generic/{id}')
   Future<T> getGeneric<T>(@Path() String id);
-  
+
   @GET('/generic-nullable/{id}')
   Future<T?> getGenericNullable<T>(@Path() String id);
 }
