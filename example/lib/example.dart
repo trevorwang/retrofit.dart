@@ -1,5 +1,6 @@
 import 'dart:convert' show jsonEncode;
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart' hide Headers;
 import 'package:json_annotation/json_annotation.dart';
@@ -99,6 +100,11 @@ abstract class RestClient {
   @GET('http://httpbin.org/image/jpeg')
   @DioResponseType(ResponseType.bytes)
   Future<List<int>> getFile();
+
+  @Headers(<String, String>{'accept': 'image/jpeg'})
+  @GET('http://httpbin.org/image/jpeg')
+  @DioResponseType(ResponseType.bytes)
+  Future<Uint8List> getFileAsUint8List();
 
   @POST('http://httpbin.org/post')
   @FormUrlEncoded()
