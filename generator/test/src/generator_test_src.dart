@@ -2932,3 +2932,71 @@ abstract class GlobalHeadersWithDifferentTypes {
   @GET('/list/')
   Future<void> list();
 }
+
+@ShouldGenerate(
+  '''
+  @override
+  Future<T> get<T>() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<T>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/test',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data as T;
+    return _value;
+  }
+''',
+  contains: true,
+  expectedLogItems: [
+    'Using a bare type parameter (T) as return type. The response data will be cast to T without deserialization. For complex types, consider using a wrapper class with @JsonSerializable(genericArgumentFactories: true). See https://github.com/trevorwang/retrofit.dart/blob/master/example/lib/api_result.dart for an example.',
+  ],
+)
+@RestApi()
+abstract class TestBareTypeParameter {
+  @GET('/test')
+  Future<T> get<T>();
+}
+
+@ShouldGenerate(
+  '''
+  @override
+  Future<T?> getNullable<T>() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<T?>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/test',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data as T?;
+    return _value;
+  }
+''',
+  contains: true,
+  expectedLogItems: [
+    'Using a bare type parameter (T?) as return type. The response data will be cast to T? without deserialization. For complex types, consider using a wrapper class with @JsonSerializable(genericArgumentFactories: true). See https://github.com/trevorwang/retrofit.dart/blob/master/example/lib/api_result.dart for an example.',
+  ],
+)
+@RestApi()
+abstract class TestBareTypeParameterNullable {
+  @GET('/test')
+  Future<T?> getNullable<T>();
+}

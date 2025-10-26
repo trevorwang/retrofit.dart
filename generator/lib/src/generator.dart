@@ -1341,6 +1341,27 @@ You should create a new class to encapsulate the response.
               ).assign(refer('await $_dioVar.fetch').call([options])).statement,
             )
             ..add(const Code('final $_valueVar = $_resultVar.data;'));
+        } else if (returnType is TypeParameterType) {
+          // Handle bare type parameters like Future<T> get<T>()
+          // Since we don't know the concrete type at code generation time,
+          // we cast the data to the type parameter
+          log.warning(
+            'Using a bare type parameter (${_displayString(returnType, withNullability: true)}) as return type. '
+            'The response data will be cast to ${_displayString(returnType, withNullability: true)} without deserialization. '
+            'For complex types, consider using a wrapper class with @JsonSerializable(genericArgumentFactories: true). '
+            'See https://github.com/trevorwang/retrofit.dart/blob/master/example/lib/api_result.dart for an example.',
+          );
+          blocks
+            ..add(
+              declareFinal(
+                _resultVar,
+              ).assign(refer('await $_dioVar.fetch').call([options])).statement,
+            )
+            ..add(
+              Code(
+                'final $_valueVar = $_resultVar.data as ${_displayString(returnType, withNullability: true)};',
+              ),
+            );
         } else if (_isSuperOf(protobuf.GeneratedMessage, returnType)) {
           blocks
             ..add(
@@ -1688,7 +1709,7 @@ $returnAsyncWrapper httpResponse;
       final sendProgress = args.remove(_onSendProgress);
       final receiveProgress = args.remove(_onReceiveProgress);
 
-      final type = refer(_displayString(_getResponseType(m.returnType)));
+      final type = refer(_displayString(_getResponseType(m.returnType), withNullability: true));
 
       final composeArguments = <String, Expression>{
         _queryParamsVar: queryParams,
