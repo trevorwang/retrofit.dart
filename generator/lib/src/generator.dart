@@ -1964,11 +1964,12 @@ if (T != dynamic &&
     if (dartType is! InterfaceType) {
       return null;
     }
-    final element = dartType.element3;
-    if (element is! ExtensionTypeElement) {
-      return null;
+
+    if (dartType.element3 case ExtensionTypeElement element) {
+      return element.representation.type;
     }
-    return element.representation.type;
+
+    return null;
   }
 
   /// Checks if the type is MultipartFile.
@@ -2167,7 +2168,7 @@ if (T != dynamic &&
                 value = refer(displayName);
               case retrofit.Parser.FlutterCompute:
                 value = refer(
-                  'await compute(serialize${_displayString(type)}, ${displayName})',
+                  'await compute(serialize${_displayString(type)}, $displayName)',
                 );
             }
           }
@@ -2276,7 +2277,7 @@ if (T != dynamic &&
           annotation!.reader.peek('nullToAbsent')?.boolValue ?? false;
       if (_isAssignable(Map, bodyName.type)) {
         blocks
-          ..add(
+          .add(
             declareFinal(dataVar)
                 .assign(
                   literalMap(bodyExtras, refer('String'), refer('dynamic')),
