@@ -1,4 +1,4 @@
-## 4.7.3
+## 4.8.0
 - Add global headers support to @RestApi annotation
 - This version is required for retrofit_generator 10.1.0+
 
