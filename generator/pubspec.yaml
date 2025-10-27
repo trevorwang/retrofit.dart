@@ -21,7 +21,7 @@ dependencies:
   dio: ^5.8.0
   lean_builder: ^0.1.2
   protobuf: ^5.0.0
-  retrofit: ^4.8.0
+  retrofit: ^4.9.0
   source_gen: '>=3.1.0 <5.0.0'
 
 dev_dependencies:

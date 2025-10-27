@@ -54,7 +54,7 @@ When lean_builder support is ready, your `pubspec.yaml` will include:
 
 ```yaml
 dependencies:
-  retrofit: ^4.6.0
+  retrofit: ^4.9.0
   dio: ^5.0.0
   json_annotation: ^4.9.0
   retrofit_generator: ^10.0.0  # For use in codegen folder
