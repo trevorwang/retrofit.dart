@@ -3015,6 +3015,8 @@ abstract class PartMapWithListIntTest {
     @Part(name: 'data') required List<int> data,
     @PartMap() Map<String, dynamic>? meta,
   });
+}
+
 @ShouldGenerate(
   '''
   @override
