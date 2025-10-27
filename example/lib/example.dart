@@ -1,5 +1,6 @@
 import 'dart:convert' show jsonEncode;
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart' hide Headers;
 import 'package:json_annotation/json_annotation.dart';
@@ -141,6 +142,11 @@ abstract class RestClient {
   @GET('http://httpbin.org/image/jpeg')
   @DioResponseType(ResponseType.bytes)
   Future<List<int>> getFile();
+
+  @Headers(<String, String>{'accept': 'image/jpeg'})
+  @GET('http://httpbin.org/image/jpeg')
+  @DioResponseType(ResponseType.bytes)
+  Future<Uint8List> getFileAsUint8List();
 
   @POST('http://httpbin.org/post')
   @FormUrlEncoded()
@@ -320,6 +326,17 @@ abstract class RestClient {
   Future<List<Task>> getTasksByCustomParam(
     @Query('param') CustomParam? param,
   );
+
+  // Generic type parameter examples - demonstrates the fix for issue #627
+  // Note: This works for simple types (String, int, Map, etc.) where the response
+  // data can be directly cast to T. For complex types that need deserialization,
+  // use a wrapper class with @JsonSerializable(genericArgumentFactories: true)
+  // like ApiResult<T> (see api_result.dart)
+  @GET('/generic/{id}')
+  Future<T> getGeneric<T>(@Path() String id);
+
+  @GET('/generic-nullable/{id}')
+  Future<T?> getGenericNullable<T>(@Path() String id);
 }
 
 @JsonSerializable()

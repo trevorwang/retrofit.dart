@@ -1,5 +1,6 @@
 import 'dart:ffi' as ffi;
 import 'dart:io' as io;
+import 'dart:typed_data' as typed_data;
 
 import 'package:analyzer/dart/constant/value.dart';
 // TODO(Carapacik): remove this after analyzer 9.0.0 released
@@ -529,6 +530,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       return TypeChecker.typeNamed(type, inPackage: 'io', inSdk: true);
     }
 
+    final dartTypedDataTypes = {typed_data.Uint8List};
+    if (dartTypedDataTypes.contains(type)) {
+      return TypeChecker.typeNamed(type, inPackage: 'typed_data', inSdk: true);
+    }
+
     final dioTypes = {MultipartFile, ResponseType};
     if (dioTypes.contains(type)) {
       return TypeChecker.typeNamed(type, inPackage: 'dio');
@@ -1005,7 +1011,33 @@ $returnAsyncWrapper httpResponse;
       }
     } else {
       final innerReturnType = _getResponseInnerType(returnType);
-      if (_isExactly(List, returnType) || _isExactly(BuiltList, returnType)) {
+      if (_isUint8List(returnType)) {
+        // Handle Uint8List return type (typically used with ResponseType.bytes)
+        // Dio returns Uint8List directly when ResponseType.bytes is used,
+        // so we can avoid wasteful casting
+        blocks.add(
+          declareFinal(_resultVar)
+              .assign(
+                refer(
+                  'await $_dioVar.fetch<${_displayString(returnType, withNullability: false)}>',
+                ).call([options]),
+              )
+              .statement,
+        );
+
+        _wrapInTryCatch(
+          blocks,
+          options,
+          returnType,
+          refer(_valueVar)
+              .assign(
+                refer(
+                  '$_resultVar.data',
+                ).asNoNullIf(returnNullable: returnType.isNullable),
+              )
+              .statement,
+        );
+      } else if (_isExactly(List, returnType) || _isExactly(BuiltList, returnType)) {
         if (_isBasicType(innerReturnType)) {
           blocks.add(
             declareFinal(_resultVar)
@@ -1342,6 +1374,27 @@ You should create a new class to encapsulate the response.
               ).assign(refer('await $_dioVar.fetch').call([options])).statement,
             )
             ..add(const Code('final $_valueVar = $_resultVar.data;'));
+        } else if (returnType is TypeParameterType) {
+          // Handle bare type parameters like Future<T> get<T>()
+          // Since we don't know the concrete type at code generation time,
+          // we cast the data to the type parameter
+          log.warning(
+            'Using a bare type parameter (${_displayString(returnType, withNullability: true)}) as return type. '
+            'The response data will be cast to ${_displayString(returnType, withNullability: true)} without deserialization. '
+            'For complex types, consider using a wrapper class with @JsonSerializable(genericArgumentFactories: true). '
+            'See https://github.com/trevorwang/retrofit.dart/blob/master/example/lib/api_result.dart for an example.',
+          );
+          blocks
+            ..add(
+              declareFinal(
+                _resultVar,
+              ).assign(refer('await $_dioVar.fetch').call([options])).statement,
+            )
+            ..add(
+              Code(
+                'final $_valueVar = $_resultVar.data as ${_displayString(returnType, withNullability: true)};',
+              ),
+            );
         } else if (_isSuperOf(protobuf.GeneratedMessage, returnType)) {
           blocks
             ..add(
@@ -1689,7 +1742,7 @@ $returnAsyncWrapper httpResponse;
       final sendProgress = args.remove(_onSendProgress);
       final receiveProgress = args.remove(_onReceiveProgress);
 
-      final type = refer(_displayString(_getResponseType(m.returnType)));
+      final type = refer(_displayString(_getResponseType(m.returnType), withNullability: true));
 
       final composeArguments = <String, Expression>{
         _queryParamsVar: queryParams,
@@ -1920,6 +1973,9 @@ if (T != dynamic &&
 
   /// Checks if the type is MultipartFile.
   bool _isMultipartFile(DartType? t) => _isAssignable(MultipartFile, t);
+
+  /// Checks if the type is Uint8List.
+  bool _isUint8List(DartType? t) => _isExactly(typed_data.Uint8List, t);
 
   /// Checks if the type is DateTime.
   bool _isDateTime(DartType? t) => _isExactly(DateTime, t);
