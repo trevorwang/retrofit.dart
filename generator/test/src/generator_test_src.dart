@@ -2933,6 +2933,90 @@ abstract class GlobalHeadersWithDifferentTypes {
   Future<void> list();
 }
 
+@ShouldGenerate('''
+    final _file_fileName =
+        (partMetadata?['file_fileName'] as String?) ??
+        file.path.split(Platform.pathSeparator).last;
+    final DioMediaType? _file_contentType =
+        (partMetadata?['file_contentType'] as String?) != null
+        ? DioMediaType.parse(partMetadata!['file_contentType'] as String)
+        : null;
+    _data.files.add(
+      MapEntry(
+        'file',
+        MultipartFile.fromFileSync(
+          file.path,
+          filename: _file_fileName,
+          contentType: _file_contentType,
+        ),
+      ),
+    );
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class PartMapWithFileTest {
+  @POST('/upload')
+  @MultiPart()
+  Future<String> uploadFile({
+    @Part(name: 'file') required File file,
+    @PartMap() Map<String, dynamic>? partMetadata,
+  });
+}
+
+@ShouldGenerate('''
+    final _file_fileName =
+        (partMeta?['file_fileName'] as String?) ?? 'default.txt';
+    final _file_contentType = (partMeta?['file_contentType'] as String?) != null
+        ? DioMediaType.parse(partMeta!['file_contentType'] as String)
+        : DioMediaType.parse('text/plain');
+    _data.files.add(
+      MapEntry(
+        'file',
+        MultipartFile.fromFileSync(
+          file.path,
+          filename: _file_fileName,
+          contentType: _file_contentType,
+        ),
+      ),
+    );
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class PartMapWithFileAndStaticDefaultsTest {
+  @POST('/upload')
+  @MultiPart()
+  Future<String> uploadFile({
+    @Part(name: 'file', fileName: 'default.txt', contentType: 'text/plain')
+    required File file,
+    @PartMap() Map<String, dynamic>? partMeta,
+  });
+}
+
+@ShouldGenerate('''
+    final _data_fileName = meta?['data_fileName'] as String?;
+    final DioMediaType? _data_contentType =
+        (meta?['data_contentType'] as String?) != null
+        ? DioMediaType.parse(meta!['data_contentType'] as String)
+        : null;
+    _data.files.add(
+      MapEntry(
+        'data',
+        MultipartFile.fromBytes(
+          data,
+          filename: _data_fileName,
+          contentType: _data_contentType,
+        ),
+      ),
+    );
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class PartMapWithListIntTest {
+  @POST('/upload')
+  @MultiPart()
+  Future<String> uploadData({
+    @Part(name: 'data') required List<int> data,
+    @PartMap() Map<String, dynamic>? meta,
+  });
+}
+
 @ShouldGenerate(
   '''
   @override
