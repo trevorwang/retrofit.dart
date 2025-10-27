@@ -17,7 +17,7 @@ Add the generator to your dev dependencies
 
 ```yaml
 dependencies:
-  retrofit: ^4.6.0
+  retrofit: ^4.9.0
   logger: ^2.6.0  # for logging purpose
   json_annotation: ^4.9.0
 
