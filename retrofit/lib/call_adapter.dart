@@ -3,12 +3,12 @@
 abstract class CallAdapter<R, T> {
   /// Adapts the given [call] function to return type [T].
   ///
-  /// This method transforms the original call (which returns [R]) into 
-  /// a new format (returning [T]). Implementations typically wrap the 
+  /// This method transforms the original call (which returns [R]) into
+  /// a new format (returning [T]). Implementations typically wrap the
   /// result in error handling, logging, or other cross-cutting concerns.
   ///
   /// * [call] - A function that executes the original API call
-  /// 
+  ///
   /// Returns the adapted result of type [T].
   T adapt(R Function() call);
 }

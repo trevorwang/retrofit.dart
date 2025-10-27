@@ -1,7 +1,6 @@
 import 'package:test/test.dart';
 import 'package:retrofit/http.dart';
 
-
 void main() {
   group('HttpMethod', () {
     test('contains standard HTTP methods', () {
@@ -17,10 +16,10 @@ void main() {
 
   group('Parser', () {
     test('enum values', () {
-  expect(Parser.values, contains(Parser.JsonSerializable));
-  expect(Parser.values, contains(Parser.MapSerializable));
-  expect(Parser.values, contains(Parser.DartJsonMapper));
-  expect(Parser.values, contains(Parser.FlutterCompute));
+      expect(Parser.values, contains(Parser.JsonSerializable));
+      expect(Parser.values, contains(Parser.MapSerializable));
+      expect(Parser.values, contains(Parser.DartJsonMapper));
+      expect(Parser.values, contains(Parser.FlutterCompute));
     });
   });
 
@@ -32,7 +31,10 @@ void main() {
       expect(api.callAdapter, isNull);
     });
     test('custom values', () {
-      const api = RestApi(baseUrl: 'http://foo/', parser: Parser.MapSerializable, callAdapter: int);
+      const api = RestApi(
+          baseUrl: 'http://foo/',
+          parser: Parser.MapSerializable,
+          callAdapter: int);
       expect(api.baseUrl, 'http://foo/');
       expect(api.parser, Parser.MapSerializable);
       expect(api.callAdapter, int);
@@ -99,7 +101,8 @@ void main() {
       expect(const MultiPart().mime, 'multipart/form-data');
     });
     test('Part', () {
-      final part = Part(name: 'file', fileName: 'a.txt', contentType: 'text/plain');
+      final part =
+          Part(name: 'file', fileName: 'a.txt', contentType: 'text/plain');
       expect(part.name, 'file');
       expect(part.fileName, 'a.txt');
       expect(part.contentType, 'text/plain');

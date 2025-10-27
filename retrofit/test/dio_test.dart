@@ -1,4 +1,3 @@
-
 import 'package:test/test.dart';
 import 'package:retrofit/dio.dart';
 import 'package:dio/dio.dart';
@@ -52,7 +51,8 @@ void main() {
     });
 
     test('HttpResponse stores data and response', () {
-      final fakeResponse = Response(requestOptions: RequestOptions(path: '/foo'));
+      final fakeResponse =
+          Response(requestOptions: RequestOptions(path: '/foo'));
       final httpResponse = HttpResponse<String>('data', fakeResponse);
       expect(httpResponse.data, 'data');
       expect(httpResponse.response, fakeResponse);

@@ -43,7 +43,7 @@ class Extras {
 }
 
 /// Annotation for cancelling the request.
-/// When applied to a parameter, allows the method to accept a [CancelToken] 
+/// When applied to a parameter, allows the method to accept a [CancelToken]
 /// that can be used to cancel the HTTP request.
 @immutable
 class CancelRequest {
@@ -51,7 +51,7 @@ class CancelRequest {
 }
 
 /// Annotation for tracking download progress.
-/// When applied to a parameter, allows the method to accept a callback 
+/// When applied to a parameter, allows the method to accept a callback
 /// function that will be invoked with progress updates during data reception.
 @immutable
 class ReceiveProgress {
@@ -59,7 +59,7 @@ class ReceiveProgress {
 }
 
 /// Annotation for tracking upload progress.
-/// When applied to a parameter, allows the method to accept a callback 
+/// When applied to a parameter, allows the method to accept a callback
 /// function that will be invoked with progress updates during data transmission.
 @immutable
 class SendProgress {
@@ -67,7 +67,7 @@ class SendProgress {
 }
 
 /// Annotation to specify the response type for Dio requests.
-/// 
+///
 /// This allows you to control how Dio processes the response data.
 @immutable
 class DioResponseType {
@@ -85,7 +85,7 @@ class DioResponseType {
 
 /// Wrapper class that combines response data with the raw Dio response.
 ///
-/// This is useful when you need access to both the parsed response data 
+/// This is useful when you need access to both the parsed response data
 /// and the original HTTP response metadata (headers, status code, etc.).
 class HttpResponse<T> {
   /// Creates a new [HttpResponse] with the specified [data] and [response].
@@ -99,7 +99,7 @@ class HttpResponse<T> {
 }
 
 /// Annotation for passing Dio options to individual requests.
-/// 
+///
 /// When applied to a parameter, allows passing custom [Options] to configure
 /// request-specific settings like timeout, headers, or response type.
 @immutable
