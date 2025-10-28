@@ -6,17 +6,13 @@
   "author": "Trevor Wang <trevor.wang@qq.com>",
   "license": "MIT",
   "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^8.0.0",
-    "all-contributors-cli": "^6.20.0",
-    "husky": "^4.2.3"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "all-contributors-cli": "^6.26.1",
+    "husky": "^9.1.7"
   },
   "scripts": {
+    "prepare": "husky",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate"
   }
