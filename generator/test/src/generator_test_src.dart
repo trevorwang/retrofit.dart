@@ -1827,6 +1827,23 @@ abstract class JsonMapperTestMapBody2 {
 }
 
 @ShouldGenerate('''
+    late Map<String, dynamic> _value;
+    try {
+      _value = _result.data!.cast<String, dynamic>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartJsonMapper)
+abstract class JsonMapperTestMapBodyDynamic {
+  @GET('/xx')
+  Future<Map<String, dynamic>> getResult();
+}
+
+@ShouldGenerate('''
     late User _value;
     try {
       _value = User.fromMap(_result.data!);
@@ -1949,6 +1966,23 @@ abstract class NullableMapSerializableTestMapBody {
 abstract class MapSerializableTestMapBody2 {
   @GET('/xx')
   Future<Map<String, User>> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, dynamic> _value;
+    try {
+      _value = _result.data!.cast<String, dynamic>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.MapSerializable)
+abstract class MapSerializableTestMapBodyDynamic {
+  @GET('/xx')
+  Future<Map<String, dynamic>> getResult();
 }
 
 @ShouldGenerate('''
