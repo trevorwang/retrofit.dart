@@ -1296,6 +1296,45 @@ abstract class TestMapBodyListDynamic {
 }
 
 @ShouldGenerate('''
+    late Map<String, String> _value;
+    try {
+      _value = _result.data!.cast<String, String>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapBodyString {
+  @GET('/xx')
+  Future<Map<String, String>> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, List<String>> _value;
+    try {
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
+          k,
+          (v as List).cast<String>(),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapBodyListString {
+  @GET('/xx')
+  Future<Map<String, List<String>>> getResult();
+}
+
+@ShouldGenerate('''
     late List<String> _value;
     try {
       _value = _result.data!.cast<String>();
