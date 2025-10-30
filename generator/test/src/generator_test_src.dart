@@ -1240,6 +1240,62 @@ abstract class TestMapBodyWithGeneric {
 }
 
 @ShouldGenerate('''
+    late Map<String, dynamic> _value;
+    try {
+      _value = _result.data!.cast<String, dynamic>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapBodyDynamic {
+  @GET('/xx')
+  Future<Map<String, dynamic>> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, dynamic>? _value;
+    try {
+      _value = _result.data?.cast<String, dynamic>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class NullableTestMapBodyDynamic {
+  @GET('/xx')
+  Future<Map<String, dynamic>?> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, List<dynamic>> _value;
+    try {
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
+          k,
+          (v as List).cast<dynamic>(),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapBodyListDynamic {
+  @GET('/xx')
+  Future<Map<String, List<dynamic>>> getResult();
+}
+
+@ShouldGenerate('''
     late List<String> _value;
     try {
       _value = _result.data!.cast<String>();

@@ -1165,72 +1165,9 @@ $returnAsyncWrapper httpResponse;
           if (_isExactly(List, secondType) ||
               _isExactly(BuiltList, secondType)) {
             final type = _getResponseType(secondType);
-            final Reference mapperCode;
-            var future = false;
-            switch (clientAnnotation.parser) {
-              case retrofit.Parser.MapSerializable:
-                final hasGenericArgs = _hasGenericArguments(type);
-                final fromMapCall = hasGenericArgs
-                    ? '${_displayString(type)}.fromMap(i as Map<String, dynamic>, ${_getInnerJsonSerializableMapperFn(type!)})'
-                    : '${_displayString(type)}.fromMap(i as Map<String, dynamic>)';
-                mapperCode = refer('''
-(k, dynamic v) =>
-    MapEntry(
-      k, (v as List)
-        .map((i) => $fromMapCall)
-        .toList()
-    )
-''');
-              case retrofit.Parser.JsonSerializable:
-                final hasGenericArgs = _hasGenericArguments(type);
-                final fromJsonCall = hasGenericArgs
-                    ? '${_displayString(type)}.fromJson(i as Map<String, dynamic>, ${_getInnerJsonSerializableMapperFn(type!)})'
-                    : '${_displayString(type)}.fromJson(i as Map<String, dynamic>)';
-                mapperCode = refer('''
-(k, dynamic v) =>
-    MapEntry(
-      k, (v as List)
-        .map((i) => $fromJsonCall)
-        .toList()
-    )
-''');
-              case retrofit.Parser.DartJsonMapper:
-                mapperCode = refer('''
-(k, dynamic v) =>
-    MapEntry(
-      k, (v as List)
-        .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i as Map<String, dynamic>)!)
-        .toList()
-    )
-''');
-              case retrofit.Parser.FlutterCompute:
-                log.warning('''
-Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
-You should create a new class to encapsulate the response.
-''');
-                future = true;
-                mapperCode = refer(
-                  '(e) async => MapEntry( e.key, await compute(deserialize${_displayString(type)}List, (e.value as List).cast<Map<String, dynamic>>()))',
-                );
-            }
-            if (future) {
-              _wrapInTryCatch(
-                blocks,
-                options,
-                returnType,
-                refer(_valueVar)
-                    .assign(
-                      refer('Map.fromEntries').call([
-                        refer('await Future.wait').call([
-                          refer(
-                            '$_resultVar.data!.entries.map',
-                          ).call([mapperCode]),
-                        ]),
-                      ]),
-                    )
-                    .statement,
-              );
-            } else {
+            // Handle basic types and dynamic within List
+            if (_isBasicType(type) || type is DynamicType) {
+              final typeStr = _displayString(type);
               _wrapInTryCatch(
                 blocks,
                 options,
@@ -1242,12 +1179,99 @@ You should create a new class to encapsulate the response.
                             thisNullable: returnType.isNullable,
                             name: 'map',
                           )
-                          .call([mapperCode]),
+                          .call([
+                            refer(
+                              '(k, dynamic v) => MapEntry(k, (v as List).cast<$typeStr>())',
+                            ),
+                          ]),
                     )
                     .statement,
               );
+            } else {
+              final Reference mapperCode;
+              var future = false;
+              switch (clientAnnotation.parser) {
+                case retrofit.Parser.MapSerializable:
+                  final hasGenericArgs = _hasGenericArguments(type);
+                  final fromMapCall = hasGenericArgs
+                      ? '${_displayString(type)}.fromMap(i as Map<String, dynamic>, ${_getInnerJsonSerializableMapperFn(type!)})'
+                      : '${_displayString(type)}.fromMap(i as Map<String, dynamic>)';
+                  mapperCode = refer('''
+(k, dynamic v) =>
+    MapEntry(
+      k, (v as List)
+        .map((i) => $fromMapCall)
+        .toList()
+    )
+''');
+                case retrofit.Parser.JsonSerializable:
+                  final hasGenericArgs = _hasGenericArguments(type);
+                  final fromJsonCall = hasGenericArgs
+                      ? '${_displayString(type)}.fromJson(i as Map<String, dynamic>, ${_getInnerJsonSerializableMapperFn(type!)})'
+                      : '${_displayString(type)}.fromJson(i as Map<String, dynamic>)';
+                  mapperCode = refer('''
+(k, dynamic v) =>
+    MapEntry(
+      k, (v as List)
+        .map((i) => $fromJsonCall)
+        .toList()
+    )
+''');
+                case retrofit.Parser.DartJsonMapper:
+                  mapperCode = refer('''
+(k, dynamic v) =>
+    MapEntry(
+      k, (v as List)
+        .map((i) => JsonMapper.fromMap<${_displayString(type)}>(i as Map<String, dynamic>)!)
+        .toList()
+    )
+''');
+                case retrofit.Parser.FlutterCompute:
+                  log.warning('''
+Return types should not be a map when running `Parser.FlutterCompute`, as spawning an isolate per entry is extremely intensive.
+You should create a new class to encapsulate the response.
+''');
+                  future = true;
+                  mapperCode = refer(
+                    '(e) async => MapEntry( e.key, await compute(deserialize${_displayString(type)}List, (e.value as List).cast<Map<String, dynamic>>()))',
+                  );
+              }
+              if (future) {
+                _wrapInTryCatch(
+                  blocks,
+                  options,
+                  returnType,
+                  refer(_valueVar)
+                      .assign(
+                        refer('Map.fromEntries').call([
+                          refer('await Future.wait').call([
+                            refer(
+                              '$_resultVar.data!.entries.map',
+                            ).call([mapperCode]),
+                          ]),
+                        ]),
+                      )
+                      .statement,
+                );
+              } else {
+                _wrapInTryCatch(
+                  blocks,
+                  options,
+                  returnType,
+                  refer(_valueVar)
+                      .assign(
+                        refer('$_resultVar.data')
+                            .propertyIf(
+                              thisNullable: returnType.isNullable,
+                              name: 'map',
+                            )
+                            .call([mapperCode]),
+                      )
+                      .statement,
+                );
+              }
             }
-          } else if (!_isBasicType(secondType)) {
+          } else if (!_isBasicType(secondType) && secondType is! DynamicType) {
             final Reference mapperCode;
             var future = false;
             switch (clientAnnotation.parser) {
