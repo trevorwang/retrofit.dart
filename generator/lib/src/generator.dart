@@ -1168,6 +1168,13 @@ $returnAsyncWrapper httpResponse;
             // Handle basic types and dynamic within List
             if (_isBasicType(type) || type is DynamicType) {
               final typeStr = _displayString(type);
+              final mapperCode = refer('''
+(k, dynamic v) =>
+    MapEntry(
+      k,
+      (v as List).cast<$typeStr>(),
+    )
+''');
               _wrapInTryCatch(
                 blocks,
                 options,
@@ -1179,11 +1186,7 @@ $returnAsyncWrapper httpResponse;
                             thisNullable: returnType.isNullable,
                             name: 'map',
                           )
-                          .call([
-                            refer(
-                              '(k, dynamic v) => MapEntry(k, (v as List).cast<$typeStr>())',
-                            ),
-                          ]),
+                          .call([mapperCode]),
                     )
                     .statement,
               );
