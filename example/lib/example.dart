@@ -138,6 +138,23 @@ abstract class RestClient {
     @PartMap() Map<String, dynamic>? metadata,
   });
 
+  /// Example of uploading multiple files with dynamic field names.
+  ///
+  /// This is useful when you need to send files with indexed names like
+  /// `image[0]`, `image[1]`, etc., or when field names are determined at runtime.
+  ///
+  /// Usage:
+  /// ```dart
+  /// await client.uploadMultipleFiles({
+  ///   'image[0]': File('/path/to/photo1.jpg'),
+  ///   'image[1]': File('/path/to/photo2.jpg'),
+  ///   'document': File('/path/to/report.pdf'),
+  /// });
+  /// ```
+  @POST('http://httpbin.org/post')
+  @MultiPart()
+  Future<void> uploadMultipleFiles(@Part() Map<String, File> files);
+
   @Headers(<String, String>{'accept': 'image/jpeg'})
   @GET('http://httpbin.org/image/jpeg')
   @DioResponseType(ResponseType.bytes)
