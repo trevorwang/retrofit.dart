@@ -3018,6 +3018,69 @@ abstract class PartMapWithListIntTest {
 }
 
 @ShouldGenerate(
+  r'''
+    files.forEach((key, value) {
+      _data.files.add(
+        MapEntry(
+          key,
+          MultipartFile.fromFileSync(
+            value.path,
+            filename: value.path.split(Platform.pathSeparator).last,
+          ),
+        ),
+      );
+    });
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class PartWithMapStringFileTest {
+  @POST('/upload')
+  @MultiPart()
+  Future<String> uploadFiles(@Part() Map<String, File> files);
+}
+
+@ShouldGenerate(
+  r'''
+    if (files != null) {
+      files.forEach((key, value) {
+        _data.files.add(
+          MapEntry(
+            key,
+            MultipartFile.fromFileSync(
+              value.path,
+              filename: value.path.split(Platform.pathSeparator).last,
+            ),
+          ),
+        );
+      });
+    }
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class PartWithNullableMapStringFileTest {
+  @POST('/upload')
+  @MultiPart()
+  Future<String> uploadFiles(@Part() Map<String, File>? files);
+}
+
+@ShouldGenerate(
+  r'''
+    files.forEach((key, value) {
+      _data.files.add(MapEntry(key, value));
+    });
+''',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class PartWithMapStringMultipartFileTest {
+  @POST('/upload')
+  @MultiPart()
+  Future<String> uploadFiles(@Part() Map<String, MultipartFile> files);
+}
+
+@ShouldGenerate(
   '''
   @override
   Future<T> get<T>() async {

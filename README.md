@@ -246,6 +246,33 @@ The `@PartMap()` annotation accepts a `Map<String, dynamic>` with keys in the fo
   - `fileName` defaults to the file's actual name (extracted from file path)
   - `contentType` defaults to `null` (Dio will auto-detect based on file extension)
 
+#### Dynamic Field Names for Multiple Files
+
+Use `@Part()` with `Map<String, File>` to upload multiple files with dynamic field names:
+
+```dart
+  @POST('/api/files')
+  @MultiPart()
+  Future<void> uploadFiles(@Part() Map<String, File> files);
+  
+  // Usage - Upload multiple files with custom field names
+  await client.uploadFiles({
+    'image[0]': File('/path/to/photo1.jpg'),
+    'image[1]': File('/path/to/photo2.jpg'),
+    'document': File('/path/to/report.pdf'),
+  });
+```
+
+This feature also supports:
+- `Map<String, MultipartFile>` - For files already wrapped in MultipartFile
+- `Map<String, List<int>>` - For raw byte data
+- Nullable maps: `Map<String, File>?`
+
+**Use cases:**
+- Uploading arrays of files where each file needs a unique indexed name (e.g., `image[0]`, `image[1]`)
+- Uploading files to endpoints that require specific field names determined at runtime
+- Sending multiple files of different types in a single request
+
 ### Get original HTTP response
 
 ```dart

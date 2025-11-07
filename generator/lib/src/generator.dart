@@ -2548,16 +2548,80 @@ if (T != dynamic &&
     final parts = _getAnnotations(m, retrofit.Part);
     if (parts.isNotEmpty) {
       if (parts.length == 1 && parts.keys.first.type.isDartCoreMap) {
-        blocks.add(
-          declareFinal(dataVar)
-              .assign(
-                refer('FormData').newInstanceNamed('fromMap', [
-                  CodeExpression(Code(parts.keys.first.displayName)),
-                ]),
-              )
-              .statement,
-        );
-        return;
+        final mapParam = parts.keys.first;
+        final mapValueType = _genericListOf(mapParam.type)?[1];
+        
+        // Check if Map value type is File, MultipartFile, or List<int>
+        final isFileMap = mapValueType != null && _isAssignable(io.File, mapValueType);
+        final isMultipartFileMap = mapValueType != null && _isMultipartFile(mapValueType);
+        final isByteListMap = mapValueType != null && _displayString(mapValueType) == 'List<int>';
+        
+        if (isFileMap || isMultipartFileMap || isByteListMap) {
+          // Handle Map<String, File>, Map<String, MultipartFile>, or Map<String, List<int>>
+          blocks.add(
+            declareFinal(dataVar).assign(refer('FormData').newInstance([])).statement,
+          );
+          
+          final nullableCheck = mapParam.type.nullabilitySuffix == NullabilitySuffix.question;
+          
+          if (nullableCheck) {
+            blocks.add(Code('if (${mapParam.displayName} != null) {'));
+          }
+          
+          if (isFileMap) {
+            // Generate code for Map<String, File>
+            blocks.add(Code('''
+    ${mapParam.displayName}.forEach((key, value) {
+      $dataVar.files.add(
+        MapEntry(
+          key,
+          MultipartFile.fromFileSync(
+            value.path,
+            filename: value.path.split(Platform.pathSeparator).last,
+          ),
+        ),
+      );
+    });
+'''));
+          } else if (isMultipartFileMap) {
+            // Generate code for Map<String, MultipartFile>
+            blocks.add(Code('''
+    ${mapParam.displayName}.forEach((key, value) {
+      $dataVar.files.add(MapEntry(key, value));
+    });
+'''));
+          } else if (isByteListMap) {
+            // Generate code for Map<String, List<int>>
+            blocks.add(Code('''
+    ${mapParam.displayName}.forEach((key, value) {
+      $dataVar.files.add(
+        MapEntry(
+          key,
+          MultipartFile.fromBytes(value),
+        ),
+      );
+    });
+'''));
+          }
+          
+          if (nullableCheck) {
+            blocks.add(const Code('}'));
+          }
+          
+          return;
+        } else {
+          // Default behavior for Map<String, dynamic> - use FormData.fromMap
+          blocks.add(
+            declareFinal(dataVar)
+                .assign(
+                  refer('FormData').newInstanceNamed('fromMap', [
+                    CodeExpression(Code(mapParam.displayName)),
+                  ]),
+                )
+                .statement,
+          );
+          return;
+        }
       }
 
       blocks.add(
