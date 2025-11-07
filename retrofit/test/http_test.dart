@@ -19,6 +19,7 @@ void main() {
       expect(Parser.values, contains(Parser.JsonSerializable));
       expect(Parser.values, contains(Parser.MapSerializable));
       expect(Parser.values, contains(Parser.DartJsonMapper));
+      expect(Parser.values, contains(Parser.DartMappable));
       expect(Parser.values, contains(Parser.FlutterCompute));
     });
   });
