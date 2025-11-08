@@ -17,7 +17,8 @@ import 'package:retrofit/retrofit.dart' as retrofit;
 /// @LeanGenerator.shared() annotation, which marks it as a shared part builder
 /// (similar to build_runner's shared part builders).
 @LeanGenerator.shared()
-class RetrofitLeanGenerator extends GeneratorForAnnotatedClass<retrofit.RestApi> {
+class RetrofitLeanGenerator
+    extends GeneratorForAnnotatedClass<retrofit.RestApi> {
   RetrofitLeanGenerator();
 
   @override
@@ -33,7 +34,7 @@ class RetrofitLeanGenerator extends GeneratorForAnnotatedClass<retrofit.RestApi>
     // For now, this serves as a placeholder for future lean_builder support.
     // Users should continue using build_runner for code generation:
     //   dart pub run build_runner build
-    
+
     throw UnsupportedError(
       'Lean Builder support for retrofit_generator is not yet fully implemented.\n'
       'The retrofit_generator package currently works with build_runner.\n\n'

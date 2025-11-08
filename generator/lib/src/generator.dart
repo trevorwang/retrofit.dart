@@ -1037,7 +1037,8 @@ $returnAsyncWrapper httpResponse;
               )
               .statement,
         );
-      } else if (_isExactly(List, returnType) || _isExactly(BuiltList, returnType)) {
+      } else if (_isExactly(List, returnType) ||
+          _isExactly(BuiltList, returnType)) {
         if (_isBasicType(innerReturnType)) {
           blocks.add(
             declareFinal(_resultVar)
@@ -1332,8 +1333,12 @@ You should create a new class to encapsulate the response.
                           name: 'cast',
                         )
                         .call([], {}, [
-                          refer(_displayString(firstType)),
-                          refer(_displayString(secondType)),
+                          refer(
+                            _displayString(firstType, withNullability: true),
+                          ),
+                          refer(
+                            _displayString(secondType, withNullability: true),
+                          ),
                         ]),
                   )
                   .statement,
@@ -1411,9 +1416,12 @@ You should create a new class to encapsulate the response.
             );
         } else {
           final fromJsonParamType = _getFromJsonParameterType(returnType);
-          final baseFetchType = fromJsonParamType ?? 
+          final baseFetchType =
+              fromJsonParamType ??
               (_isEnum(returnType) ? 'String' : 'Map<String, dynamic>');
-          final fetchType = returnType.isNullable ? '$baseFetchType?' : baseFetchType;
+          final fetchType = returnType.isNullable
+              ? '$baseFetchType?'
+              : baseFetchType;
           blocks.add(
             declareFinal(_resultVar)
                 .assign(
@@ -1742,7 +1750,9 @@ $returnAsyncWrapper httpResponse;
       final sendProgress = args.remove(_onSendProgress);
       final receiveProgress = args.remove(_onReceiveProgress);
 
-      final type = refer(_displayString(_getResponseType(m.returnType), withNullability: true));
+      final type = refer(
+        _displayString(_getResponseType(m.returnType), withNullability: true),
+      );
 
       final composeArguments = <String, Expression>{
         _queryParamsVar: queryParams,
@@ -2001,7 +2011,9 @@ if (T != dynamic &&
     if (dartType is! InterfaceType) {
       return null;
     }
-    final fromJsonConstructor = dartType.element3.getNamedConstructor2('fromJson');
+    final fromJsonConstructor = dartType.element3.getNamedConstructor2(
+      'fromJson',
+    );
     if (fromJsonConstructor == null) {
       return null;
     }
@@ -2023,7 +2035,9 @@ if (T != dynamic &&
   /// Gets the expression for serializing an enum value in FormData as a string.
   /// Uses toJson() if available, otherwise uses .name.
   String _getEnumValueExpression(DartType enumType, String variableName) {
-    return _hasToJson(enumType) ? '$variableName.toJson()' : '$variableName.name';
+    return _hasToJson(enumType)
+        ? '$variableName.toJson()'
+        : '$variableName.name';
   }
 
   /// Gets the Reference for serializing an enum value in FormData.
@@ -2044,7 +2058,7 @@ if (T != dynamic &&
     final queryParameters = queries.map((p, r) {
       final key = r.peek('value')?.stringValue ?? p.displayName;
       final Expression value;
-      
+
       // Handle extension types
       if (_isExtensionType(p.type)) {
         final hasToJson = _hasToJson(p.type);
@@ -2135,7 +2149,7 @@ if (T != dynamic &&
       final type = p.type;
       final displayName = p.displayName;
       final Expression value;
-      
+
       // Handle extension types
       if (_isExtensionType(type)) {
         final hasToJson = _hasToJson(type);
@@ -2173,7 +2187,9 @@ if (T != dynamic &&
             }
           }
         }
-      } else if (_isBasicType(type) || type.isDartCoreList || type.isDartCoreMap) {
+      } else if (_isBasicType(type) ||
+          type.isDartCoreList ||
+          type.isDartCoreMap) {
         value = refer(displayName);
       } else if (_isSuperOf(protobuf.ProtobufEnum, type)) {
         value = type.nullabilitySuffix == NullabilitySuffix.question
@@ -2276,29 +2292,24 @@ if (T != dynamic &&
       final nullToAbsent =
           annotation!.reader.peek('nullToAbsent')?.boolValue ?? false;
       if (_isAssignable(Map, bodyName.type)) {
-        blocks
-          .add(
-            declareFinal(dataVar)
-                .assign(
-                  literalMap(bodyExtras, refer('String'), refer('dynamic')),
-                )
-                .statement,
-          );
+        blocks.add(
+          declareFinal(dataVar)
+              .assign(literalMap(bodyExtras, refer('String'), refer('dynamic')))
+              .statement,
+        );
         if (bodyName.type.nullabilitySuffix == NullabilitySuffix.question) {
+          blocks.add(Code('if (${bodyName.displayName} != null) {'));
           blocks.add(
-            Code('if (${bodyName.displayName} != null) {'),
-          );
-          blocks.add(
-            refer('$dataVar.addAll').call([
-              refer('${bodyName.displayName}!'),
-            ]).statement,
+            refer(
+              '$dataVar.addAll',
+            ).call([refer('${bodyName.displayName}!')]).statement,
           );
           blocks.add(const Code('}'));
         } else {
           blocks.add(
-            refer('$dataVar.addAll').call([
-              refer(bodyName.displayName),
-            ]).statement,
+            refer(
+              '$dataVar.addAll',
+            ).call([refer(bodyName.displayName)]).statement,
           );
         }
         if (preventNullToAbsent == null && nullToAbsent) {
@@ -2550,27 +2561,34 @@ if (T != dynamic &&
       if (parts.length == 1 && parts.keys.first.type.isDartCoreMap) {
         final mapParam = parts.keys.first;
         final mapValueType = _genericListOf(mapParam.type)?[1];
-        
+
         // Check if Map value type is File, MultipartFile, or List<int>
-        final isFileMap = mapValueType != null && _isAssignable(io.File, mapValueType);
-        final isMultipartFileMap = mapValueType != null && _isMultipartFile(mapValueType);
-        final isByteListMap = mapValueType != null && _displayString(mapValueType) == 'List<int>';
-        
+        final isFileMap =
+            mapValueType != null && _isAssignable(io.File, mapValueType);
+        final isMultipartFileMap =
+            mapValueType != null && _isMultipartFile(mapValueType);
+        final isByteListMap =
+            mapValueType != null && _displayString(mapValueType) == 'List<int>';
+
         if (isFileMap || isMultipartFileMap || isByteListMap) {
           // Handle Map<String, File>, Map<String, MultipartFile>, or Map<String, List<int>>
           blocks.add(
-            declareFinal(dataVar).assign(refer('FormData').newInstance([])).statement,
+            declareFinal(
+              dataVar,
+            ).assign(refer('FormData').newInstance([])).statement,
           );
-          
-          final nullableCheck = mapParam.type.nullabilitySuffix == NullabilitySuffix.question;
-          
+
+          final nullableCheck =
+              mapParam.type.nullabilitySuffix == NullabilitySuffix.question;
+
           if (nullableCheck) {
             blocks.add(Code('if (${mapParam.displayName} != null) {'));
           }
-          
+
           if (isFileMap) {
             // Generate code for Map<String, File>
-            blocks.add(Code('''
+            blocks.add(
+              Code('''
     ${mapParam.displayName}.forEach((key, value) {
       $dataVar.files.add(
         MapEntry(
@@ -2582,17 +2600,21 @@ if (T != dynamic &&
         ),
       );
     });
-'''));
+'''),
+            );
           } else if (isMultipartFileMap) {
             // Generate code for Map<String, MultipartFile>
-            blocks.add(Code('''
+            blocks.add(
+              Code('''
     ${mapParam.displayName}.forEach((key, value) {
       $dataVar.files.add(MapEntry(key, value));
     });
-'''));
+'''),
+            );
           } else if (isByteListMap) {
             // Generate code for Map<String, List<int>>
-            blocks.add(Code('''
+            blocks.add(
+              Code('''
     ${mapParam.displayName}.forEach((key, value) {
       $dataVar.files.add(
         MapEntry(
@@ -2601,13 +2623,14 @@ if (T != dynamic &&
         ),
       );
     });
-'''));
+'''),
+            );
           }
-          
+
           if (nullableCheck) {
             blocks.add(const Code('}'));
           }
-          
+
           return;
         } else {
           // Default behavior for Map<String, dynamic> - use FormData.fromMap
@@ -2644,35 +2667,43 @@ if (T != dynamic &&
 
         if (isFileField) {
           final fileNameValue = r.peek('fileName')?.stringValue;
-          
+
           // Build the code for creating MultipartFile with runtime metadata support
           if (partMapParam != null) {
             // Generate variables for runtime values
             final fileNameVar = '_${fieldName}_fileName';
             final contentTypeVar = '_${fieldName}_contentType';
-            
+
             // Generate code to extract runtime fileName
             if (fileNameValue != null) {
-              blocks.add(Code(
-                "final $fileNameVar = (${partMapParam.displayName}?['${fieldName}_fileName'] as String?) ?? ${literalString(fileNameValue)};",
-              ));
+              blocks.add(
+                Code(
+                  "final $fileNameVar = (${partMapParam.displayName}?['${fieldName}_fileName'] as String?) ?? ${literalString(fileNameValue)};",
+                ),
+              );
             } else {
-              blocks.add(Code(
-                "final $fileNameVar = (${partMapParam.displayName}?['${fieldName}_fileName'] as String?) ?? ${p.displayName}.path.split(Platform.pathSeparator).last;",
-              ));
+              blocks.add(
+                Code(
+                  "final $fileNameVar = (${partMapParam.displayName}?['${fieldName}_fileName'] as String?) ?? ${p.displayName}.path.split(Platform.pathSeparator).last;",
+                ),
+              );
             }
-            
+
             // Generate code to extract runtime contentType
             if (contentType != null) {
-              blocks.add(Code(
-                "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
-              ));
+              blocks.add(
+                Code(
+                  "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
+                ),
+              );
             } else {
-              blocks.add(Code(
-                "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
-              ));
+              blocks.add(
+                Code(
+                  "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
+                ),
+              );
             }
-            
+
             // Build MultipartFile with runtime values
             final uploadFileInfo = refer('$MultipartFile.fromFileSync').call(
               [refer(p.displayName).property('path')],
@@ -2697,9 +2728,11 @@ if (T != dynamic &&
                   ).newInstance([literal(fieldName), uploadFileInfo]),
                 ])
                 .statement;
-            
+
             if (p.type.isNullable || optionalFile) {
-              final condition = refer(p.displayName).notEqualTo(literalNull).code;
+              final condition = refer(
+                p.displayName,
+              ).notEqualTo(literalNull).code;
               blocks.addAll([
                 const Code('if('),
                 condition,
@@ -2745,9 +2778,11 @@ if (T != dynamic &&
                   ).newInstance([literal(fieldName), uploadFileInfo]),
                 ])
                 .statement;
-            
+
             if (p.type.isNullable || optionalFile) {
-              final condition = refer(p.displayName).notEqualTo(literalNull).code;
+              final condition = refer(
+                p.displayName,
+              ).notEqualTo(literalNull).code;
               blocks.addAll([
                 const Code('if('),
                 condition,
@@ -2780,34 +2815,42 @@ if (T != dynamic &&
                   ?.isOptional ??
               false;
           final fileName = r.peek('fileName')?.stringValue;
-          
+
           if (partMapParam != null) {
             // Support runtime metadata for List<int>
             final fileNameVar = '_${fieldName}_fileName';
             final contentTypeVar = '_${fieldName}_contentType';
-            
+
             // Generate code to extract runtime fileName
             if (fileName != null) {
-              blocks.add(Code(
-                "final $fileNameVar = (${partMapParam.displayName}?['${fieldName}_fileName'] as String?) ?? ${literal(fileName)};",
-              ));
+              blocks.add(
+                Code(
+                  "final $fileNameVar = (${partMapParam.displayName}?['${fieldName}_fileName'] as String?) ?? ${literal(fileName)};",
+                ),
+              );
             } else {
-              blocks.add(Code(
-                "final $fileNameVar = ${partMapParam.displayName}?['${fieldName}_fileName'] as String?;",
-              ));
+              blocks.add(
+                Code(
+                  "final $fileNameVar = ${partMapParam.displayName}?['${fieldName}_fileName'] as String?;",
+                ),
+              );
             }
-            
+
             // Generate code to extract runtime contentType
             if (contentType != null) {
-              blocks.add(Code(
-                "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
-              ));
+              blocks.add(
+                Code(
+                  "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
+                ),
+              );
             } else {
-              blocks.add(Code(
-                "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
-              ));
+              blocks.add(
+                Code(
+                  "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
+                ),
+              );
             }
-            
+
             final returnCode =
                 refer(dataVar).property('files').property('add').call([
                   refer('''
@@ -2820,7 +2863,9 @@ contentType: $contentTypeVar,
 '''),
                 ]).statement;
             if (optionalFile) {
-              final condition = refer(p.displayName).notEqualTo(literalNull).code;
+              final condition = refer(
+                p.displayName,
+              ).notEqualTo(literalNull).code;
               blocks.addAll([
                 const Code('if('),
                 condition,
@@ -2849,7 +2894,9 @@ filename:${literal(fileName)},
 '''),
                 ]).statement;
             if (optionalFile) {
-              final condition = refer(p.displayName).notEqualTo(literalNull).code;
+              final condition = refer(
+                p.displayName,
+              ).notEqualTo(literalNull).code;
               blocks.addAll([
                 const Code('if('),
                 condition,
@@ -2866,32 +2913,40 @@ filename:${literal(fileName)},
 
           if (_displayString(innerType) == 'List<int>') {
             final fileName = r.peek('fileName')?.stringValue;
-            
+
             if (partMapParam != null) {
               // Support runtime metadata for List<List<int>>
               final fileNameVar = '_${fieldName}_fileName';
               final contentTypeVar = '_${fieldName}_contentType';
-              
+
               if (fileName != null) {
-                blocks.add(Code(
-                  "final $fileNameVar = (${partMapParam.displayName}?['${fieldName}_fileName'] as String?) ?? ${literal(fileName)};",
-                ));
+                blocks.add(
+                  Code(
+                    "final $fileNameVar = (${partMapParam.displayName}?['${fieldName}_fileName'] as String?) ?? ${literal(fileName)};",
+                  ),
+                );
               } else {
-                blocks.add(Code(
-                  "final $fileNameVar = ${partMapParam.displayName}?['${fieldName}_fileName'] as String?;",
-                ));
+                blocks.add(
+                  Code(
+                    "final $fileNameVar = ${partMapParam.displayName}?['${fieldName}_fileName'] as String?;",
+                  ),
+                );
               }
-              
+
               if (contentType != null) {
-                blocks.add(Code(
-                  "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
-                ));
+                blocks.add(
+                  Code(
+                    "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
+                  ),
+                );
               } else {
-                blocks.add(Code(
-                  "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
-                ));
+                blocks.add(
+                  Code(
+                    "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
+                  ),
+                );
               }
-              
+
               blocks.add(
                 refer(dataVar).property('files').property('addAll').call([
                   refer('''
@@ -2955,17 +3010,21 @@ ${p.displayName}$nullableInfix.forEach((i){
             if (partMapParam != null) {
               // Support runtime metadata for List<File>
               final contentTypeVar = '_${fieldName}_contentType';
-              
+
               if (contentType != null) {
-                blocks.add(Code(
-                  "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
-                ));
+                blocks.add(
+                  Code(
+                    "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
+                  ),
+                );
               } else {
-                blocks.add(Code(
-                  "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
-                ));
+                blocks.add(
+                  Code(
+                    "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
+                  ),
+                );
               }
-              
+
               if (p.type.isNullable) {
                 blocks.add(Code('if (${p.displayName} != null) {'));
               }
@@ -3103,35 +3162,37 @@ MultipartFile.fromFileSync(i.path,
               if (partMapParam != null) {
                 // Support runtime metadata for class types with contentType
                 final contentTypeVar = '_${fieldName}_contentType';
-                
+
                 if (contentType != null) {
-                  blocks.add(Code(
-                    "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
-                  ));
+                  blocks.add(
+                    Code(
+                      "final $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : DioMediaType.parse(${literal(contentType)});",
+                    ),
+                  );
                 } else {
-                  blocks.add(Code(
-                    "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
-                  ));
+                  blocks.add(
+                    Code(
+                      "final DioMediaType? $contentTypeVar = (${partMapParam.displayName}?['${fieldName}_contentType'] as String?) != null ? DioMediaType.parse(${partMapParam.displayName}!['${fieldName}_contentType'] as String) : null;",
+                    ),
+                  );
                 }
-                
-                blocks.add(Code(
-                  "if ($contentTypeVar != null) {",
-                ));
-                
+
+                blocks.add(Code("if ($contentTypeVar != null) {"));
+
                 final uploadFileInfo = refer('$MultipartFile.fromString').call(
                   [
                     refer(
                       "jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String, dynamic>{}' : ''})",
                     ),
                   ],
-                  {
-                    'contentType': refer(contentTypeVar),
-                  },
+                  {'contentType': refer(contentTypeVar)},
                 );
 
                 final optionalFile =
                     m.formalParameters
-                        .firstWhereOrNull((pp) => pp.displayName == p.displayName)
+                        .firstWhereOrNull(
+                          (pp) => pp.displayName == p.displayName,
+                        )
                         ?.isOptional ??
                     false;
 
@@ -3144,7 +3205,7 @@ MultipartFile.fromFileSync(i.path,
                       ).newInstance([literal(fieldName), uploadFileInfo]),
                     ])
                     .statement;
-                
+
                 if (optionalFile) {
                   final condition = refer(
                     p.displayName,
@@ -3159,7 +3220,7 @@ MultipartFile.fromFileSync(i.path,
                 } else {
                   blocks.add(returnCode);
                 }
-                
+
                 blocks.add(const Code('} else {'));
                 blocks.add(
                   refer(dataVar).property('fields').property('add').call([
@@ -3190,7 +3251,9 @@ MultipartFile.fromFileSync(i.path,
 
                 final optionalFile =
                     m.formalParameters
-                        .firstWhereOrNull((pp) => pp.displayName == p.displayName)
+                        .firstWhereOrNull(
+                          (pp) => pp.displayName == p.displayName,
+                        )
                         ?.isOptional ??
                     false;
 
