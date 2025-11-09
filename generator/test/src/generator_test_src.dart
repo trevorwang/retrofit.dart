@@ -783,7 +783,7 @@ class GenericUser<T> implements AbstractUser {
     Map<String, dynamic> json,
     T Function(Object? json) fromJsonT,
   ) => GenericUser<T>();
-  
+
   factory GenericUser.fromMap(
     Map<String, dynamic> json,
     T Function(Object? json) fromJsonT,
@@ -883,12 +883,16 @@ abstract class TestDynamicBody {
   Future<String> createUser({@Body() dynamic user});
 }
 
-@ShouldGenerate('''
+@ShouldGenerate(
+  '''
   Future<void> ossSignNewUsingPost({required Object model}) async {
-''', contains: true, expectedLogItems: [
-  'Object must provide a `toJson()` method which return a Map.\n'
-  'It is programmer\'s responsibility to make sure the Object is properly serialized'
-])
+''',
+  contains: true,
+  expectedLogItems: [
+    'Object must provide a `toJson()` method which return a Map.\n'
+        'It is programmer\'s responsibility to make sure the Object is properly serialized',
+  ],
+)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class TestObjectBodyRequired {
   @POST('/api/upload/ossSignNew')
@@ -1603,7 +1607,9 @@ abstract class TestModelList {
   Future<void> testEnumList(@Part() List<TestEnum> enumValues);
 
   @POST('/')
-  Future<void> testEnumWithToJsonList(@Part() List<TestEnumWithToJson> enumValues);
+  Future<void> testEnumWithToJsonList(
+    @Part() List<TestEnumWithToJson> enumValues,
+  );
 
   @POST('/')
   Future<void> testBasicType(
@@ -2263,15 +2269,12 @@ abstract class JsonSerializableBodyShouldBeCleanTest {
   Future<void> update(@Body(nullToAbsent: true) User obj);
 }
 
-@ShouldGenerate(
-  '''
+@ShouldGenerate('''
     final _data = <String, dynamic>{};
     if (body != null) {
       _data.addAll(body!);
     }
-''',
-  contains: true,
-)
+''', contains: true)
 @RestApi()
 abstract class NullableTypedMapBodyTest {
   @POST('/test')
@@ -2850,12 +2853,7 @@ abstract class UseResultForVoid {
       r'X-Platform': 'mobile',
     };
 ''', contains: true)
-@RestApi(
-  headers: {
-    'User-Agent': 'MyApp/1.0.0',
-    'X-Platform': 'mobile',
-  },
-)
+@RestApi(headers: {'User-Agent': 'MyApp/1.0.0', 'X-Platform': 'mobile'})
 abstract class GlobalHeaders {
   @GET('/list/')
   Future<void> list();
@@ -2868,12 +2866,7 @@ abstract class GlobalHeaders {
       r'Authorization': 'Bearer token',
     };
 ''', contains: true)
-@RestApi(
-  headers: {
-    'User-Agent': 'MyApp/1.0.0',
-    'X-Platform': 'mobile',
-  },
-)
+@RestApi(headers: {'User-Agent': 'MyApp/1.0.0', 'X-Platform': 'mobile'})
 abstract class GlobalHeadersWithMethodHeaders {
   @GET('/list/')
   @Headers(<String, dynamic>{'Authorization': 'Bearer token'})
@@ -2886,12 +2879,7 @@ abstract class GlobalHeadersWithMethodHeaders {
       r'X-Platform': 'override-value',
     };
 ''', contains: true)
-@RestApi(
-  headers: {
-    'User-Agent': 'MyApp/1.0.0',
-    'X-Platform': 'mobile',
-  },
-)
+@RestApi(headers: {'User-Agent': 'MyApp/1.0.0', 'X-Platform': 'mobile'})
 abstract class GlobalHeadersOverriddenByMethodHeaders {
   @GET('/list/')
   @Headers(<String, dynamic>{'X-Platform': 'override-value'})
@@ -2904,11 +2892,7 @@ abstract class GlobalHeadersOverriddenByMethodHeaders {
       r'X-Dynamic': dynamicHeader,
     };
 ''', contains: true)
-@RestApi(
-  headers: {
-    'X-Custom': 'value',
-  },
-)
+@RestApi(headers: {'X-Custom': 'value'})
 abstract class GlobalHeadersWithDynamicHeaders {
   @GET('/list/')
   Future<void> list(@Header('X-Dynamic') String dynamicHeader);
@@ -2921,13 +2905,7 @@ abstract class GlobalHeadersWithDynamicHeaders {
       r'X-Rate': 3.14,
     };
 ''', contains: true)
-@RestApi(
-  headers: {
-    'X-Count': 42,
-    'X-Enabled': true,
-    'X-Rate': 3.14,
-  },
-)
+@RestApi(headers: {'X-Count': 42, 'X-Enabled': true, 'X-Rate': 3.14})
 abstract class GlobalHeadersWithDifferentTypes {
   @GET('/list/')
   Future<void> list();
@@ -3017,8 +2995,7 @@ abstract class PartMapWithListIntTest {
   });
 }
 
-@ShouldGenerate(
-  r'''
+@ShouldGenerate(r'''
     files.forEach((key, value) {
       _data.files.add(
         MapEntry(
@@ -3030,9 +3007,7 @@ abstract class PartMapWithListIntTest {
         ),
       );
     });
-''',
-  contains: true,
-)
+''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class PartWithMapStringFileTest {
   @POST('/upload')
@@ -3040,8 +3015,7 @@ abstract class PartWithMapStringFileTest {
   Future<String> uploadFiles(@Part() Map<String, File> files);
 }
 
-@ShouldGenerate(
-  r'''
+@ShouldGenerate(r'''
     if (files != null) {
       files.forEach((key, value) {
         _data.files.add(
@@ -3055,9 +3029,7 @@ abstract class PartWithMapStringFileTest {
         );
       });
     }
-''',
-  contains: true,
-)
+''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class PartWithNullableMapStringFileTest {
   @POST('/upload')
@@ -3065,19 +3037,80 @@ abstract class PartWithNullableMapStringFileTest {
   Future<String> uploadFiles(@Part() Map<String, File>? files);
 }
 
-@ShouldGenerate(
-  r'''
+@ShouldGenerate(r'''
     files.forEach((key, value) {
       _data.files.add(MapEntry(key, value));
     });
-''',
-  contains: true,
-)
+''', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/')
 abstract class PartWithMapStringMultipartFileTest {
   @POST('/upload')
   @MultiPart()
   Future<String> uploadFiles(@Part() Map<String, MultipartFile> files);
+}
+
+@ShouldGenerate('''
+    late Map<String, String?> _value;
+    try {
+      _value = _result.data!.cast<String, String?>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapWithNullableBasicType {
+  @GET('/test')
+  Future<Map<String, String?>> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, String?>? _value;
+    try {
+      _value = _result.data?.cast<String, String?>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class NullableTestMapWithNullableBasicType {
+  @GET('/test')
+  Future<Map<String, String?>?> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, int?> _value;
+    try {
+      _value = _result.data!.cast<String, int?>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapWithNullableInt {
+  @GET('/test')
+  Future<Map<String, int?>> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, bool?> _value;
+    try {
+      _value = _result.data!.cast<String, bool?>();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapWithNullableBool {
+  @GET('/test')
+  Future<Map<String, bool?>> getResult();
 }
 
 @ShouldGenerate(
