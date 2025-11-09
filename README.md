@@ -139,6 +139,49 @@ enum Status {
 Future<List<Task>> getTasksByStatus(@Path() Status status);
 ```
 
+#### Using dart_mappable
+
+You can use [dart_mappable](https://pub.dev/packages/dart_mappable) for type conversion by setting the parser to `Parser.DartMappable`:
+
+```dart
+@RestApi(
+  baseUrl: 'https://api.example.com',
+  parser: Parser.DartMappable,
+)
+abstract class ApiService {
+  factory ApiService(Dio dio) = _ApiService;
+
+  @GET('/tasks')
+  Future<List<Task>> getTasks();
+}
+
+@MappableClass()
+class Task with TaskMappable {
+  const Task({this.id, this.name});
+
+  final String? id;
+  final String? name;
+}
+```
+
+Don't forget to add the required dependencies:
+
+```yaml
+dependencies:
+  dart_mappable: ^4.2.0
+
+dev_dependencies:
+  dart_mappable_builder: ^4.2.0
+```
+
+And generate the code:
+
+```sh
+dart run build_runner build
+```
+
+For a complete example, see the [example_dartmappable](https://github.com/trevorwang/retrofit.dart/tree/master/example_dartmappable) directory.
+
 #### Typed extras
 If you want to add static extra to all requests.
 

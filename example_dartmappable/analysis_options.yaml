@@ -1,0 +1,10 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.mapper.dart"
+  
+linter:
+  rules:
+    - avoid_print

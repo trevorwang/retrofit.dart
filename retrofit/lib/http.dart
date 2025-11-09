@@ -26,6 +26,10 @@ enum Parser {
   /// For more detail, please visit 'https://github.com/k-paxian/dart-json-mapper'
   DartJsonMapper,
 
+  /// Each model class must add annotation '@MappableClass()'
+  /// For more detail, please visit 'https://github.com/schultek/dart_mappable'
+  DartMappable,
+
   /// Parse on a separate isolate using `compute` (Flutter only).
   ///
   /// Each model class must define a top-level function, taking the form
