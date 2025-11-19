@@ -1,7 +1,8 @@
 ## Unreleased
 
-- Update analyzer dependency to ^9.0.0
-  - Note: Due to transitive dependencies not yet supporting analyzer 9.0.0, users may need to add dependency_overrides in their pubspec.yaml for development work
+- Extend analyzer dependency range to support analyzer 9.0.0 ('>=7.7.1 <10.0.0')
+  - Note: Full analyzer 9.0.0 API migration is pending. For now, the package declares compatibility
+    but may require dependency_overrides to resolve to analyzer 8.x until all dependencies are updated
 
 ## 10.1.0
 
