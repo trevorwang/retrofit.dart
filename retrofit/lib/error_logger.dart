@@ -7,5 +7,6 @@ abstract class ParseErrorLogger {
   /// - [error] is the error that occurred.
   /// - [stackTrace] is the stack trace of the error.
   /// - [options] are the options that were used to make the request.
-  void logError(Object error, StackTrace stackTrace, RequestOptions options);
+  /// - [response] is the response that was received.
+  void logError(Object error, StackTrace stackTrace, RequestOptions options, Response response);
 }
