@@ -1,3 +1,8 @@
+## Unreleased
+
+- Update analyzer dependency to ^9.0.0
+  - Note: Due to transitive dependencies not yet supporting analyzer 9.0.0, users may need to add dependency_overrides in their pubspec.yaml for development work
+
 ## 10.1.0
 
 - Add lean_builder as a dependency to support experimental lean_builder integration
