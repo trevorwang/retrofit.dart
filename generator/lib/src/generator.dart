@@ -22,12 +22,21 @@ const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main';
 
 /// Factory for the Retrofit code generator used by build_runner.
-Builder generatorFactoryBuilder(BuilderOptions options) => SharedPartBuilder(
-  [RetrofitGenerator(RetrofitOptions.fromOptions(options))],
-  'retrofit',
-  formatOutput: (code, version) =>
-      '// dart format off\n\n${DartFormatter(languageVersion: version).format(code)}\n// dart format on\n',
-);
+Builder generatorFactoryBuilder(BuilderOptions options) {
+  final retrofitOptions = RetrofitOptions.fromOptions(options);
+  return SharedPartBuilder(
+    [RetrofitGenerator(retrofitOptions)],
+    'retrofit',
+    formatOutput: (code, version) {
+      final formattedCode = DartFormatter(languageVersion: version).format(code);
+      // Only add format suppressing comments if format_output is true (default)
+      if (retrofitOptions.formatOutput ?? true) {
+        return '// dart format off\n\n$formattedCode\n// dart format on\n';
+      }
+      return formattedCode;
+    },
+  );
+}
 
 /// Global configuration options for the Retrofit generator.
 class RetrofitOptions {
@@ -36,6 +45,7 @@ class RetrofitOptions {
     this.emptyRequestBody,
     this.className,
     this.useResult,
+    this.formatOutput,
   });
 
   RetrofitOptions.fromOptions([BuilderOptions? options])
@@ -47,12 +57,15 @@ class RetrofitOptions {
           'true',
       className = options?.config['class-name']?.toString(),
       useResult =
-          (options?.config['use_result']?.toString() ?? 'false') == 'true';
+          (options?.config['use_result']?.toString() ?? 'false') == 'true',
+      formatOutput =
+          (options?.config['format_output']?.toString() ?? 'true') == 'true';
 
   final bool? autoCastResponse;
   final bool? emptyRequestBody;
   final String? className;
   final bool? useResult;
+  final bool? formatOutput;
 }
 
 /// Main generator that processes @RestApi annotation and generates implementation code.

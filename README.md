@@ -59,6 +59,39 @@ class Task {
 }
 ```
 
+### Configuration
+
+You can customize the code generation behavior by creating a `build.yaml` file in your project root:
+
+```yaml
+targets:
+  $default:
+    builders:
+      retrofit_generator:
+        options:
+          # Control whether to add '// dart format off/on' comments (default: true)
+          format_output: true
+          # Enable automatic response type casting (default: true)
+          auto_cast_response: true
+          # Generate empty request body for methods without parameters (default: false)
+          empty_request_body: false
+          # Enable useResult annotation for methods (default: false)
+          use_result: false
+```
+
+#### format_output
+
+By default, retrofit_generator wraps the generated code with `// dart format off` and `// dart format on` comments to preserve the formatting. If you're combining retrofit with other generators (like riverpod) and need more control over formatting, you can disable this:
+
+```yaml
+targets:
+  $default:
+    builders:
+      retrofit_generator:
+        options:
+          format_output: false
+```
+
 then run the generator
 
 ```sh
