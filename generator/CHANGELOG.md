@@ -4,6 +4,9 @@
 - Note: Full analyzer 9.0.0 API migration is pending. For now, the package declares compatibility
     but may require dependency_overrides to resolve to analyzer 8.x until all dependencies are updated
 - Add Response parameter to logError response data parsing callback
+- Add `format_output` builder option to control generation of `// dart format off/on` comments (default: `true`)
+  - Set `format_output: false` in `build.yaml` to omit format suppressing comments
+  - This allows combining retrofit with other generators (like riverpod) in a more predictable way
 
 ## 10.1.0
 
