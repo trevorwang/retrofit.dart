@@ -1,8 +1,9 @@
-## Unreleased
+## 10.2.0
 
 - Extend analyzer dependency range to support analyzer 9.0.0 ('>=7.7.1 <10.0.0')
-  - Note: Full analyzer 9.0.0 API migration is pending. For now, the package declares compatibility
+- Note: Full analyzer 9.0.0 API migration is pending. For now, the package declares compatibility
     but may require dependency_overrides to resolve to analyzer 8.x until all dependencies are updated
+- Add Response parameter to logError response data parsing callback
 
 ## 10.1.0
 

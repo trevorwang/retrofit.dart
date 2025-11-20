@@ -3689,7 +3689,9 @@ MultipartFile.fromFileSync(i.path,
       const Code('try {'),
       child,
       const Code('} on Object catch (e, s) {'),
-      const Code('$_errorLoggerVar?.logError(e, s, $_optionsVar);'),
+      const Code(
+        '$_errorLoggerVar?.logError(e, s, $_optionsVar, $_resultVar);',
+      ),
       const Code('rethrow;'),
       const Code('}'),
     ]);

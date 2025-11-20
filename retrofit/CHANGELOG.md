@@ -1,3 +1,6 @@
+## 4.9.1 (Unreleased)
+- Add Response parameter to ParseErrorLogger callback
+
 ## 4.9.0
 - Version bump to 4.9.0
 

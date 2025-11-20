@@ -81,7 +81,7 @@ class MockCallAdapter3<T> extends CallAdapter<Future<T>, Flow<T>> {
     try {
       _value = User.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -568,7 +568,7 @@ abstract class UploadFileInfoPartTest {
     try {
       _value = User.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -584,7 +584,7 @@ abstract class GenericCast {
     try {
       _value = _result.data == null ? null : User.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -600,7 +600,7 @@ abstract class NullableGenericCast {
     try {
       _value = User.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     yield _value;
@@ -626,7 +626,7 @@ enum TestEnum { A, B }
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -667,7 +667,7 @@ enum FromJsonEnum {
     try {
       _value = FromJsonEnum.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -826,7 +826,7 @@ Map<String, dynamic> serializeUser(User object) => object.toJson();
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -842,7 +842,7 @@ abstract class GenericCastBasicType {
     try {
       _value = _result.data;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1115,7 +1115,7 @@ abstract class TestCustomObjectBody {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1139,7 +1139,7 @@ abstract class TestMapBody {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1158,7 +1158,7 @@ abstract class NullableTestMapBody {
         (k, dynamic v) => MapEntry(k, User.fromJson(v as Map<String, dynamic>)),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1177,7 +1177,7 @@ abstract class TestMapBody2 {
         (k, dynamic v) => MapEntry(k, User.fromJson(v as Map<String, dynamic>)),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1206,7 +1206,7 @@ abstract class NullableTestMapBody2 {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1231,7 +1231,7 @@ abstract class TestMapBodyWithGenericList {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1248,7 +1248,7 @@ abstract class TestMapBodyWithGeneric {
     try {
       _value = _result.data!.cast<String>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1264,7 +1264,7 @@ abstract class TestBasicListString {
     try {
       _value = _result.data?.cast<String>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1280,7 +1280,7 @@ abstract class NullableTestBasicListString {
     try {
       _value = _result.data!.cast<bool>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1296,7 +1296,7 @@ abstract class TestBasicListBool {
     try {
       _value = _result.data?.cast<bool>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1312,7 +1312,7 @@ abstract class NullableTestBasicListBool {
     try {
       _value = _result.data!.cast<int>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1328,7 +1328,7 @@ abstract class TestBasicListInt {
     try {
       _value = _result.data?.cast<int>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1344,7 +1344,7 @@ abstract class NullableTestBasicListInt {
     try {
       _value = _result.data!.cast<double>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1360,7 +1360,7 @@ abstract class TestBasicListDouble {
     try {
       _value = _result.data?.cast<double>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1442,7 +1442,7 @@ abstract class TestHttpResponseObject {
     try {
       _value = _result.data!.cast<String>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     final httpResponse = HttpResponse(_value, _result);
@@ -1690,7 +1690,7 @@ abstract class ServiceWithoutCustomOptions {
     try {
       _value = JsonMapper.fromMap<User>(_result.data!)!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1707,7 +1707,7 @@ abstract class JsonMapperGenericCast {
           ? null
           : JsonMapper.fromMap<User>(_result.data!)!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1726,7 +1726,7 @@ abstract class NullableJsonMapperGenericCast {
           )
           .toList();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1748,7 +1748,7 @@ abstract class JsonMapperTestListBody {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1766,7 +1766,7 @@ abstract class JsonMapperTestMapBody {
             MapEntry(k, JsonMapper.fromMap<User>(v as Map<String, dynamic>)!),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1781,7 +1781,7 @@ abstract class JsonMapperTestMapBody2 {
     try {
       _value = User.fromMap(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1796,7 +1796,7 @@ abstract class MapSerializableGenericCast {
     try {
       _value = _result.data == null ? null : User.fromMap(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1813,7 +1813,7 @@ abstract class NullableMapSerializableGenericCast {
           .map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
           .toList();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1830,7 +1830,7 @@ abstract class MapSerializableTestListBody {
           ?.map((dynamic i) => User.fromMap(i as Map<String, dynamic>))
           .toList();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1852,7 +1852,7 @@ abstract class NullableMapSerializableTestListBody {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1874,7 +1874,7 @@ abstract class MapSerializableTestMapBody {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1891,7 +1891,7 @@ abstract class NullableMapSerializableTestMapBody {
         (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1908,7 +1908,7 @@ abstract class MapSerializableTestMapBody2 {
         (k, dynamic v) => MapEntry(k, User.fromMap(v as Map<String, dynamic>)),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1935,7 +1935,7 @@ abstract class NullableMapSerializableTestMapBody2 {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1960,7 +1960,7 @@ abstract class MapSerializableTestMapBodyWithGenericList {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -1976,7 +1976,7 @@ abstract class MapSerializableTestMapBodyWithGeneric {
     try {
       _value = await compute(deserializeUser, _result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -1993,7 +1993,7 @@ abstract class ComputeGenericCast {
           ? null
           : await compute(deserializeUser, _result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2010,7 +2010,7 @@ abstract class NullableComputeGenericCast {
         _result.data!.cast<Map<String, dynamic>>(),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2030,7 +2030,7 @@ abstract class ComputeTestListBody {
               _result.data!.cast<Map<String, dynamic>>(),
             );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
   ''', contains: true)
@@ -2058,7 +2058,7 @@ abstract class NullableComputeTestListBody {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''',
@@ -2094,7 +2094,7 @@ abstract class ComputeTestMapBody {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''',
@@ -2127,7 +2127,7 @@ abstract class NullableComputeTestMapBody {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''',
@@ -2165,7 +2165,7 @@ abstract class ComputeTestMapBody2 {
               ),
             );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''',
@@ -2325,7 +2325,7 @@ abstract class ListBodyShouldNotBeCleanTest {
         (json) => json as dynamic,
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2347,7 +2347,7 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsDynamic {
             : List.empty(),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2373,7 +2373,7 @@ abstract class DynamicInnerListGenericTypeShouldBeCastedRecursively {
                   : List.empty(),
             );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2391,7 +2391,7 @@ abstract class NullableDynamicInnerListGenericTypeShouldBeCastedRecursively {
         (json) => User.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2412,7 +2412,7 @@ abstract class DynamicInnerGenericTypeShouldBeCastedAsMap {
         ),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2432,7 +2432,7 @@ abstract class NestGenericTypeShouldBeCastedRecursively {
               (json) => User.fromJson(json as Map<String, dynamic>),
             );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2451,7 +2451,7 @@ abstract class NullableDynamicInnerGenericTypeShouldBeCastedAsMap {
             json == null ? null : User.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2473,7 +2473,7 @@ abstract class DynamicNullableInnerGenericTypeShouldBeCastedAsMap {
                   : User.fromJson(json as Map<String, dynamic>),
             );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2493,7 +2493,7 @@ abstract class NullableDynamicNullableInnerGenericTypeShouldBeCastedAsMap {
             : List.empty(),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2515,7 +2515,7 @@ abstract class DynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursively {
                   : List.empty(),
             );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2535,7 +2535,7 @@ abstract class NullableDynamicInnerListGenericPrimitiveTypeShouldBeCastedRecursi
             : List.empty(),
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2557,7 +2557,7 @@ abstract class DynamicInnerListGenericDynamicTypeShouldBeCastedAsIs {
                   : List.empty(),
             );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2574,7 +2574,7 @@ abstract class NullableDynamicInnerListGenericDynamicTypeShouldBeCastedAsIs {
         _result.data!,
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -2593,7 +2593,7 @@ abstract class DynamicInnerGenericTypeShouldBeWithoutGenericArgumentType {
               _result.data!,
             );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
 ''', contains: true)
@@ -3054,7 +3054,7 @@ abstract class PartWithMapStringMultipartFileTest {
     try {
       _value = _result.data!.cast<String, String?>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -3070,7 +3070,7 @@ abstract class TestMapWithNullableBasicType {
     try {
       _value = _result.data?.cast<String, String?>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -3086,7 +3086,7 @@ abstract class NullableTestMapWithNullableBasicType {
     try {
       _value = _result.data!.cast<String, int?>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
@@ -3102,7 +3102,7 @@ abstract class TestMapWithNullableInt {
     try {
       _value = _result.data!.cast<String, bool?>();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, _result);
       rethrow;
     }
     return _value;
