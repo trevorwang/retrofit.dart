@@ -3,10 +3,7 @@ import 'dart:io' as io;
 import 'dart:typed_data' as typed_data;
 
 import 'package:analyzer/dart/constant/value.dart';
-// TODO(Carapacik): remove this after analyzer 9.0.0 released
-// ignore_for_file: deprecated_member_use
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
@@ -92,11 +89,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// Processes classes annotated with @RestApi and generates implementation.
   @override
   String generateForAnnotatedElement(
-    Element2 element,
+    Element element,
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    if (element is! ClassElement2) {
+    if (element is! ClassElement) {
       final name = element.displayName;
       throw InvalidGenerationSourceError(
         'Generator cannot target `$name`.',
@@ -107,10 +104,10 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   /// Generates the implementation class code as a string.
-  String _implementClass(ClassElement2 element, ConstantReader annotation) {
+  String _implementClass(ClassElement element, ConstantReader annotation) {
     // Reset hasCustomOptions for each class to avoid state leaking between classes
     hasCustomOptions = false;
-    final className = globalOptions.className ?? '_${element.name3}';
+    final className = globalOptions.className ?? '_${element.name}';
     final enumString = annotation.peek('parser')?.revive().accessor;
     final parser = retrofit.Parser.values.firstWhereOrNull(
       (e) => e.toString() == enumString,
@@ -139,14 +136,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     );
     clientAnnotationConstantReader = annotation;
     final baseUrl = clientAnnotation.baseUrl;
-    final annotateClassConsts = element.constructors2.where(
+    final annotateClassConsts = element.constructors.where(
       (c) => !c.isFactory && !c.isDefaultConstructor,
     );
     final classBuilder = Class((c) {
       c
         ..name = className
         ..types.addAll(
-          element.typeParameters2.map((e) => e.name3).nonNulls.map(refer),
+          element.typeParameters.map((e) => e.name).nonNulls.map(refer),
         )
         ..fields.addAll([
           _buildDioField(),
@@ -207,7 +204,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// Generates the constructor.
   Constructor _generateConstructor(
     String? url, {
-    ConstructorElement2? superClassConst,
+    ConstructorElement? superClassConst,
   }) => Constructor((c) {
     c.requiredParameters.add(
       Parameter(
@@ -232,9 +229,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     ]);
     if (superClassConst != null) {
       var superConstName = 'super';
-      if (superClassConst.name3?.isNotEmpty ?? false) {
-        superConstName += '.${superClassConst.name3}';
-        c.name = superClassConst.name3;
+      if (superClassConst.name?.isNotEmpty ?? false) {
+        superConstName += '.${superClassConst.name}';
+        c.name = superClassConst.name;
       }
       final constParams = superClassConst.formalParameters;
       for (final element in constParams) {
@@ -242,8 +239,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           c.requiredParameters.add(
             Parameter((p) {
               p.type = refer(_displayString(element.type));
-              if (element.name3 != null) {
-                p.name = element.name3!;
+              if (element.name != null) {
+                p.name = element.name!;
               }
             }),
           );
@@ -253,15 +250,15 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               p
                 ..named = element.isNamed
                 ..type = refer(_displayString(element.type));
-              if (element.name3 != null) {
-                p.name = element.name3!;
+              if (element.name != null) {
+                p.name = element.name!;
               }
             }),
           );
         }
       }
       final paramList = constParams.map(
-        (e) => '${e.isNamed ? '${e.name3}: ' : ''}${e.name3}',
+        (e) => '${e.isNamed ? '${e.name}: ' : ''}${e.name}',
       );
       c.initializers.add(Code('$superConstName(${paramList.join(',')})'));
     }
@@ -296,7 +293,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// retrieve CallAdapter from method annotation or class annotation
   /// Gets the CallAdapter annotation from method or class.
-  ConstantReader? getCallAdapterInterface(MethodElement2 m) {
+  ConstantReader? getCallAdapterInterface(MethodElement m) {
     final requestCallAdapterAnnotation = _typeChecker(
       retrofit.UseCallAdapter,
     ).firstAnnotationOf(m).toConstantReader();
@@ -351,11 +348,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   // parse methods in the Api class
   /// Parses methods in the API class and generates implementations.
-  Iterable<Method> _parseMethods(ClassElement2 element) {
+  Iterable<Method> _parseMethods(ClassElement element) {
     final methods = <Method>[];
     final methodMembers = [
-      ...element.methods2,
-      ...element.mixins.expand((i) => i.methods2),
+      ...element.methods,
+      ...element.mixins.expand((i) => i.methods),
     ];
     for (final method in methodMembers) {
       final callAdapter = getCallAdapterInterface(method);
@@ -369,7 +366,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         resultTypeInString,
       );
       final instantiatedCallAdapter = typeArg != null
-          ? (callAdapter?.typeValue as InterfaceType?)?.element3.instantiate(
+          ? (callAdapter?.typeValue as InterfaceType?)?.element.instantiate(
               typeArguments: [typeArg],
               nullabilitySuffix: NullabilitySuffix.none,
             )
@@ -392,7 +389,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Generates a method implementation wrapped by CallAdapter.
   Method _generateAdapterMethod(
-    MethodElement2 m,
+    MethodElement m,
     InterfaceType? callAdapter,
     String resultType,
   ) {
@@ -425,7 +422,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       final args =
           '${positionalArgs.map((e) => '$e,').join()} ${namedArgs.map((e) => '$e,').join()}';
       methodBuilder.body = Code('''
-        return ${callAdapter?.element3.name3}<$resultType>().adapt(
+        return ${callAdapter?.element.name}<$resultType>().adapt(
           () => _${m.displayName}($args),
         );
       ''');
@@ -434,7 +431,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Generates method parameters.
   Iterable<Parameter> _generateParameters(
-    MethodElement2 m,
+    MethodElement m,
     bool Function(FormalParameterElement) filter, {
     bool optional = false,
   }) {
@@ -449,18 +446,18 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
               ..defaultTo = optional && it.defaultValueCode != null
                   ? Code(it.defaultValueCode!)
                   : null;
-            if (it.name3 != null) {
-              p.name = it.name3!;
+            if (it.name != null) {
+              p.name = it.name!;
             }
           }),
         );
   }
 
   /// Generates a type name with generic parameters.
-  String _generateTypeParameterizedName(TypeParameterizedElement2 element) =>
+  String _generateTypeParameterizedName(TypeParameterizedElement element) =>
       element.displayName +
-      (element.typeParameters2.isNotEmpty
-          ? '<${element.typeParameters2.join(',')}>'
+      (element.typeParameters.isNotEmpty
+          ? '<${element.typeParameters.join(',')}>'
           : '');
 
   final _methodsAnnotations = const {
@@ -588,7 +585,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   /// Gets the HTTP annotation on the method.
-  ConstantReader? _getMethodAnnotation(MethodElement2 method) {
+  ConstantReader? _getMethodAnnotation(MethodElement method) {
     for (final type in _methodsAnnotations) {
       final annotation = _getMethodAnnotationByType(method, type);
       if (annotation != null) {
@@ -599,7 +596,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   /// Gets the annotation of the specified type on the method.
-  ConstantReader? _getMethodAnnotationByType(MethodElement2 method, Type type) {
+  ConstantReader? _getMethodAnnotationByType(MethodElement method, Type type) {
     final annotation = _typeChecker(
       type,
     ).firstAnnotationOf(method, throwOnUnresolved: false);
@@ -610,17 +607,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   /// Gets the cache annotation on the method.
-  ConstantReader? _getCacheAnnotation(MethodElement2 method) =>
+  ConstantReader? _getCacheAnnotation(MethodElement method) =>
       _getMethodAnnotationByType(method, retrofit.CacheControl);
 
   /// Gets the Content-Type annotation on the method.
-  ConstantReader? _getContentTypeAnnotation(MethodElement2 method) {
+  ConstantReader? _getContentTypeAnnotation(MethodElement method) {
     final multipart = _getMultipartAnnotation(method);
     final formUrlEncoded = _getFormUrlEncodedAnnotation(method);
 
     if (multipart != null && formUrlEncoded != null) {
       throw InvalidGenerationSourceError(
-        'Two content-type annotation on one request ${method.name3}',
+        'Two content-type annotation on one request ${method.name}',
       );
     }
 
@@ -628,20 +625,20 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   /// Gets the MultiPart annotation on the method.
-  ConstantReader? _getMultipartAnnotation(MethodElement2 method) =>
+  ConstantReader? _getMultipartAnnotation(MethodElement method) =>
       _getMethodAnnotationByType(method, retrofit.MultiPart);
 
   /// Gets the FormUrlEncoded annotation on the method.
-  ConstantReader? _getFormUrlEncodedAnnotation(MethodElement2 method) =>
+  ConstantReader? _getFormUrlEncodedAnnotation(MethodElement method) =>
       _getMethodAnnotationByType(method, retrofit.FormUrlEncoded);
 
   /// Gets the ResponseType annotation on the method.
-  ConstantReader? _getResponseTypeAnnotation(MethodElement2 method) =>
+  ConstantReader? _getResponseTypeAnnotation(MethodElement method) =>
       _getMethodAnnotationByType(method, retrofit.DioResponseType);
 
   /// Gets all annotations of the specified type on the method.
   Iterable<ConstantReader> _getMethodAnnotations(
-    MethodElement2 method,
+    MethodElement method,
     Type type,
   ) => _typeChecker(
     type,
@@ -649,7 +646,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Gets the specified type annotation on method parameters.
   Map<FormalParameterElement, ConstantReader> _getAnnotations(
-    MethodElement2 m,
+    MethodElement m,
     Type type,
   ) {
     final annotation = <FormalParameterElement, ConstantReader>{};
@@ -664,7 +661,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Gets the specified type annotation on a single method parameter.
   ({FormalParameterElement element, ConstantReader reader})? _getAnnotation(
-    MethodElement2 m,
+    MethodElement m,
     Type type,
   ) {
     for (final p in m.formalParameters) {
@@ -721,21 +718,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   /// Configures method metadata.
   void _configureMethodMetadata(
     MethodBuilder mm,
-    MethodElement2 m,
+    MethodElement m,
     String returnType,
     bool hasCallAdapter,
   ) {
     mm
       ..returns = refer(returnType)
       ..name = hasCallAdapter ? '_${m.displayName}' : m.displayName
-      ..types.addAll(m.typeParameters2.map((e) => e.name3).nonNulls.map(refer))
+      ..types.addAll(m.typeParameters.map((e) => e.name).nonNulls.map(refer))
       ..modifier = _isReturnTypeFuture(returnType)
           ? MethodModifier.async
           : MethodModifier.asyncStar;
   }
 
   /// Adds method parameters.
-  void _addParameters(MethodBuilder mm, MethodElement2 m) {
+  void _addParameters(MethodBuilder mm, MethodElement m) {
     mm.requiredParameters.addAll(
       _generateParameters(m, (it) => it.isRequiredPositional),
     );
@@ -767,7 +764,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   // generate the method that makes the http request
   /// Generates the API call method implementation.
-  Method? _generateApiCallMethod(MethodElement2 m, InterfaceType? callAdapter) {
+  Method? _generateApiCallMethod(MethodElement m, InterfaceType? callAdapter) {
     final hasCallAdapter = callAdapter != null;
 
     if (hasCallAdapter) {
@@ -795,7 +792,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Generates the private API call method implementation (with CallAdapter).
   Method? _generatePrivateApiCallMethod(
-    MethodElement2 m,
+    MethodElement m,
     InterfaceType? callAdapter,
   ) {
     final callAdapterOriginalReturnType =
@@ -820,14 +817,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   }
 
   /// Generates the request path expression.
-  Expression _generatePath(MethodElement2 m, ConstantReader method) {
+  Expression _generatePath(MethodElement m, ConstantReader method) {
     final paths = _getAnnotations(m, retrofit.Path);
     var definePath = method.peek('path')?.stringValue;
     paths.forEach((k, v) {
       final value = v.peek('value')?.stringValue ?? k.displayName;
       definePath = definePath?.replaceAll(
         '{$value}',
-        "\${${k.displayName}${k.type.element3?.kind == ElementKind.ENUM
+        "\${${k.displayName}${k.type.element?.kind == ElementKind.ENUM
             ? _hasToJson(k.type)
                   ? '.toJson()'
                   : ''
@@ -842,7 +839,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   /// Generates the HTTP request code block.
   Code _generateRequest(
-    MethodElement2 m,
+    MethodElement m,
     ConstantReader httpMethod,
     InterfaceType? callAdapter,
   ) {
@@ -1019,7 +1016,7 @@ $returnAsyncWrapper httpResponse;
           declareFinal(_resultVar)
               .assign(
                 refer(
-                  'await $_dioVar.fetch<${_displayString(returnType, withNullability: false)}>',
+                  'await $_dioVar.fetch<${_displayString(returnType)}>',
                 ).call([options]),
               )
               .statement,
@@ -1536,7 +1533,9 @@ $returnAsyncWrapper httpResponse;
 
   /// Checks if a type has generic arguments and requires generic argument factories.
   bool _hasGenericArguments(DartType? type) {
-    if (type == null) return false;
+    if (type == null) {
+      return false;
+    }
     final typeArgs = type is ParameterizedType
         ? type.typeArguments
         : <DartType>[];
@@ -1545,9 +1544,9 @@ $returnAsyncWrapper httpResponse;
 
   /// Checks if the type requires generic argument factories.
   bool isGenericArgumentFactories(DartType? dartType) {
-    final metaData = dartType?.element3?.firstFragment is ClassFragment
-        ? (dartType!.element3!.firstFragment as ClassFragment)
-              .metadata2
+    final metaData = dartType?.element?.firstFragment is ClassFragment
+        ? (dartType!.element!.firstFragment as ClassFragment)
+              .metadata
               .annotations
         : null;
     if (metaData == null || dartType == null) {
@@ -1578,22 +1577,22 @@ $returnAsyncWrapper httpResponse;
     if (dartType == null) {
       return false;
     }
-    final element = dartType.element3;
-    if (element is! InterfaceElement2) {
+    final element = dartType.element;
+    if (element is! InterfaceElement) {
       return false;
     }
 
-    final typeParameters = element.typeParameters2;
+    final typeParameters = element.typeParameters;
     if (typeParameters.isEmpty) {
       return false;
     }
 
-    final constructors = element.constructors2;
+    final constructors = element.constructors;
     if (constructors.isEmpty) {
       return false;
     }
     final fromJson = constructors.firstWhereOrNull(
-      (constructor) => constructor.name3 == 'fromJson',
+      (constructor) => constructor.name == 'fromJson',
     );
 
     if (fromJson == null || fromJson.formalParameters.length == 1) {
@@ -1754,7 +1753,7 @@ $returnAsyncWrapper httpResponse;
 
   /// Parses the request Options.
   Expression _parseOptions(
-    MethodElement2 m,
+    MethodElement m,
     Map<String, Expression> namedArguments,
     List<Code> blocks,
     Map<String, Expression> extraOptions,
@@ -1974,10 +1973,10 @@ if (T != dynamic &&
 
   /// Checks if the type is an enum.
   bool _isEnum(DartType? dartType) {
-    if (dartType == null || dartType.element3 == null) {
+    if (dartType == null || dartType.element == null) {
       return false;
     }
-    return dartType.element3 is EnumElement2;
+    return dartType.element is EnumElement;
   }
 
   /// Checks if the type is an extension type.
@@ -1985,7 +1984,7 @@ if (T != dynamic &&
     if (dartType is! InterfaceType) {
       return false;
     }
-    final element = dartType.element3;
+    final element = dartType.element;
     return element is ExtensionTypeElement;
   }
 
@@ -1996,7 +1995,7 @@ if (T != dynamic &&
       return null;
     }
 
-    if (dartType.element3 case ExtensionTypeElement element) {
+    if (dartType.element case final ExtensionTypeElement element) {
       return element.representation.type;
     }
 
@@ -2023,7 +2022,7 @@ if (T != dynamic &&
     if (dartType is! InterfaceType) {
       return false;
     }
-    return dartType.element3.getNamedConstructor2('fromJson') != null;
+    return dartType.element.getNamedConstructor('fromJson') != null;
   }
 
   /// Gets the parameter type of fromJson constructor.
@@ -2032,7 +2031,7 @@ if (T != dynamic &&
     if (dartType is! InterfaceType) {
       return null;
     }
-    final fromJsonConstructor = dartType.element3.getNamedConstructor2(
+    final fromJsonConstructor = dartType.element.getNamedConstructor(
       'fromJson',
     );
     if (fromJsonConstructor == null) {
@@ -2050,9 +2049,13 @@ if (T != dynamic &&
     if (dartType is! InterfaceType) {
       return false;
     }
-    // Use lookUpMethod2 to check the class hierarchy including mixins
+    // Use lookUpMethod to check the class hierarchy including mixins
     // This is important for Freezed-generated classes where toJson is in a mixin
-    return dartType.element3.lookUpMethod2(name: 'toJson', library: dartType.element3.library2) != null;
+    return dartType.element.lookUpMethod(
+          name: 'toJson',
+          library: dartType.element.library,
+        ) !=
+        null;
   }
 
   /// Gets the expression for serializing an enum value in FormData as a string.
@@ -2073,7 +2076,7 @@ if (T != dynamic &&
 
   /// Generates the query parameters code block.
   void _generateQueries(
-    MethodElement2 m,
+    MethodElement m,
     List<Code> blocks,
     String queryParamsVar,
   ) {
@@ -2282,7 +2285,7 @@ if (T != dynamic &&
   void _generateRequestBody(
     List<Code> blocks,
     String dataVar,
-    MethodElement2 m,
+    MethodElement m,
   ) {
     final noBody = _getMethodAnnotationByType(m, retrofit.NoBody);
     if (noBody != null) {
@@ -2337,13 +2340,14 @@ if (T != dynamic &&
               .statement,
         );
         if (bodyName.type.nullabilitySuffix == NullabilitySuffix.question) {
-          blocks.add(Code('if (${bodyName.displayName} != null) {'));
-          blocks.add(
-            refer(
-              '$dataVar.addAll',
-            ).call([refer('${bodyName.displayName}!')]).statement,
-          );
-          blocks.add(const Code('}'));
+          blocks
+            ..add(Code('if (${bodyName.displayName} != null) {'))
+            ..add(
+              refer(
+                '$dataVar.addAll',
+              ).call([refer('${bodyName.displayName}!')]).statement,
+            )
+            ..add(const Code('}'));
         } else {
           blocks.add(
             refer(
@@ -2417,10 +2421,10 @@ if (T != dynamic &&
             dataVar,
           ).assign(refer('${bodyName.displayName}.openRead()')).statement,
         );
-      } else if (bodyName.type.element3 is ClassElement2) {
-        final ele = bodyName.type.element3! as ClassElement2;
+      } else if (bodyName.type.element is ClassElement) {
+        final ele = bodyName.type.element! as ClassElement;
         if (clientAnnotation.parser == retrofit.Parser.MapSerializable) {
-          final toMap = ele.lookUpMethod2(name: 'toMap', library: ele.library2);
+          final toMap = ele.lookUpMethod(name: 'toMap', library: ele.library);
           if (toMap == null) {
             log.warning(
               '${_displayString(bodyName.type)} must provide a `toMap()` method which return a Map.\n'
@@ -2462,7 +2466,7 @@ if (T != dynamic &&
               ).assign(refer(bodyName.displayName)).statement,
             );
           } else if (_missingSerialize(
-            ele.enclosingElement2.firstFragment,
+            ele.enclosingElement.firstFragment,
             bodyName.type,
           )) {
             log.warning(
@@ -3138,8 +3142,8 @@ MultipartFile.fromFileSync(i.path,
             if (p.type.isNullable) {
               blocks.add(const Code('}'));
             }
-          } else if (innerType?.element3 is ClassElement2) {
-            final ele = innerType!.element3! as ClassElement2;
+          } else if (innerType?.element is ClassElement) {
+            final ele = innerType!.element! as ClassElement;
             if (_missingToJson(ele)) {
               if (_isDateTime(p.type)) {
                 final expr = [
@@ -3196,8 +3200,8 @@ MultipartFile.fromFileSync(i.path,
               ]),
             ]).statement,
           );
-        } else if (p.type.element3 is ClassElement2) {
-          final ele = p.type.element3! as ClassElement2;
+        } else if (p.type.element is ClassElement) {
+          final ele = p.type.element! as ClassElement;
           if (_missingToJson(ele)) {
             if (_isDateTime(p.type)) {
               final expr = [
@@ -3232,7 +3236,7 @@ MultipartFile.fromFileSync(i.path,
                   );
                 }
 
-                blocks.add(Code("if ($contentTypeVar != null) {"));
+                blocks.add(Code('if ($contentTypeVar != null) {'));
 
                 final uploadFileInfo = refer('$MultipartFile.fromString').call(
                   [
@@ -3276,18 +3280,19 @@ MultipartFile.fromFileSync(i.path,
                   blocks.add(returnCode);
                 }
 
-                blocks.add(const Code('} else {'));
-                blocks.add(
-                  refer(dataVar).property('fields').property('add').call([
-                    refer('MapEntry').newInstance([
-                      literal(fieldName),
-                      refer(
-                        'jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String, dynamic>{}' : ''})',
-                      ),
-                    ]),
-                  ]).statement,
-                );
-                blocks.add(const Code('}'));
+                blocks
+                  ..add(const Code('} else {'))
+                  ..add(
+                    refer(dataVar).property('fields').property('add').call([
+                      refer('MapEntry').newInstance([
+                        literal(fieldName),
+                        refer(
+                          'jsonEncode(${p.displayName}${p.type.nullabilitySuffix == NullabilitySuffix.question ? ' ?? <String, dynamic>{}' : ''})',
+                        ),
+                      ]),
+                    ]).statement,
+                  )
+                  ..add(const Code('}'));
               } else {
                 // No PartMap - use original static approach
                 final uploadFileInfo = refer('$MultipartFile.fromString').call(
@@ -3300,7 +3305,7 @@ MultipartFile.fromFileSync(i.path,
                     'contentType': refer(
                       'DioMediaType',
                       'package:dio/dio.dart',
-                    ).property('parse').call([literal(contentType!)]),
+                    ).property('parse').call([literal(contentType)]),
                   },
                 );
 
@@ -3380,7 +3385,7 @@ MultipartFile.fromFileSync(i.path,
   }
 
   /// Generates the request headers.
-  Map<String, Expression> _generateHeaders(MethodElement2 m) {
+  Map<String, Expression> _generateHeaders(MethodElement m) {
     // Start with global headers from @RestApi annotation
     final headers = <String, Expression>{};
     final globalHeaders = clientAnnotation.headers;
@@ -3445,7 +3450,7 @@ MultipartFile.fromFileSync(i.path,
   }
 
   /// Generates cache-related request headers.
-  Map<String, Expression> _generateCache(MethodElement2 m) {
+  Map<String, Expression> _generateCache(MethodElement m) {
     final cache = _getCacheAnnotation(m);
     final result = <String, Expression>{};
     if (cache != null && cache.toString() != '') {
@@ -3503,7 +3508,7 @@ MultipartFile.fromFileSync(i.path,
       return value?.stringValue;
     }
     if (value?.objectValue.isEnum ?? false) {
-      return value?.objectValue.variable2?.displayName;
+      return value?.objectValue.variable?.displayName;
     }
     if (value?.isList ?? false) {
       return value?.listValue
@@ -3528,9 +3533,9 @@ MultipartFile.fromFileSync(i.path,
       final fields = <String, Object?>{};
       final type = value!.objectValue.type;
       if (type is InterfaceType) {
-        for (final field in type.element3.fields2) {
+        for (final field in type.element.fields) {
           if (!field.isStatic) {
-            final name = field.name3;
+            final name = field.name;
             if (name == null) {
               continue;
             }
@@ -3545,15 +3550,15 @@ MultipartFile.fromFileSync(i.path,
   }
 
   /// Gets the TypedExtras annotation on the method.
-  Map<String, Object> _getMapFromTypedExtras(MethodElement2 m) {
+  Map<String, Object> _getMapFromTypedExtras(MethodElement m) {
     final annotations = _getMethodAnnotations(m, retrofit.TypedExtras);
     final allTypedExtras = <String, Object>{};
 
     for (final annotation in annotations) {
-      final fields = annotation.objectValue.type?.element3?.children2
-          .whereType<FieldElement2>();
-      for (final field in (fields ?? <FieldElement2>[])) {
-        final name = field.name3;
+      final fields = annotation.objectValue.type?.element?.children
+          .whereType<FieldElement>();
+      for (final field in (fields ?? <FieldElement>[])) {
+        final name = field.name;
         if (name == null) {
           continue;
         }
@@ -3604,7 +3609,7 @@ MultipartFile.fromFileSync(i.path,
 
   /// Generates code block for Extra annotation.
   void _generateExtra(
-    MethodElement2 m,
+    MethodElement m,
     List<Code> blocks,
     String localExtraVar,
   ) {
@@ -3696,13 +3701,13 @@ MultipartFile.fromFileSync(i.path,
   }
 
   /// Checks if the class is missing a toJson method.
-  bool _missingToJson(ClassElement2 ele) {
+  bool _missingToJson(ClassElement ele) {
     switch (clientAnnotation.parser) {
       case retrofit.Parser.JsonSerializable:
       case retrofit.Parser.DartJsonMapper:
-        // Use lookUpMethod2 to check the class hierarchy including mixins
+        // Use lookUpMethod to check the class hierarchy including mixins
         // This is important for Freezed-generated classes where toJson is in a mixin
-        final toJson = ele.lookUpMethod2(name: 'toJson', library: ele.library2);
+        final toJson = ele.lookUpMethod(name: 'toJson', library: ele.library);
         return toJson == null;
       case retrofit.Parser.MapSerializable:
       case retrofit.Parser.DartMappable:
@@ -3720,9 +3725,9 @@ MultipartFile.fromFileSync(i.path,
       case retrofit.Parser.DartMappable:
         return false;
       case retrofit.Parser.FlutterCompute:
-        return !ele.functions2.any(
+        return !ele.functions.any(
           (element) =>
-              element.name2 == 'serialize${_displayString(type)}' &&
+              element.name == 'serialize${_displayString(type)}' &&
               element.formalParameters.length == 1 &&
               _displayString(element.formalParameters[0].element.type) ==
                   _displayString(type),
@@ -3906,7 +3911,7 @@ extension _DartTypeX on DartType {
 }
 
 extension _DartObjectX on DartObject? {
-  bool get isEnum => this?.type?.element3?.kind.name == 'ENUM';
+  bool get isEnum => this?.type?.element?.kind.name == 'ENUM';
 
   ConstantReader? toConstantReader() {
     if (this == null) {

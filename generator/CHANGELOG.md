@@ -1,3 +1,7 @@
+## 10.2.1
+
+- Support analyzer `'>=8.0.0 <10.0.0'` and update deprecated methods
+
 ## 10.2.0
 
 - Extend analyzer dependency range to support analyzer 9.0.0 ('>=7.7.1 <10.0.0')
