@@ -2050,7 +2050,9 @@ if (T != dynamic &&
     if (dartType is! InterfaceType) {
       return false;
     }
-    return dartType.element3.getMethod2('toJson') != null;
+    // Use lookUpMethod2 to check the class hierarchy including mixins
+    // This is important for Freezed-generated classes where toJson is in a mixin
+    return dartType.element3.lookUpMethod2(name: 'toJson', library: dartType.element3.library2) != null;
   }
 
   /// Gets the expression for serializing an enum value in FormData as a string.
@@ -3698,14 +3700,10 @@ MultipartFile.fromFileSync(i.path,
     switch (clientAnnotation.parser) {
       case retrofit.Parser.JsonSerializable:
       case retrofit.Parser.DartJsonMapper:
-        final toJson = ele.lookUpMethod2(name: 'toJson', library: ele.library2);
-        if (toJson != null) {
-          return false;
-        }
-        // Check if the method exists in the interface type (includes mixins)
+        // Use lookUpMethod2 to check the class hierarchy including mixins
         // This is important for Freezed-generated classes where toJson is in a mixin
-        final method = ele.getMethod2('toJson');
-        return method == null;
+        final toJson = ele.lookUpMethod2(name: 'toJson', library: ele.library2);
+        return toJson == null;
       case retrofit.Parser.MapSerializable:
       case retrofit.Parser.DartMappable:
       case retrofit.Parser.FlutterCompute:
