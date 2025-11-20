@@ -1,0 +1,26 @@
+name: retrofit_example_dartmappable
+description: retrofit example with dart_mappable
+version: 1.0.0+1
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  dart_mappable: ^4.2.0
+  dio: ^5.7.0
+  http_parser: ^4.0.2
+  json_annotation: ^4.9.0
+  logger: ^2.4.0
+  retrofit:
+
+dev_dependencies:
+  build_runner: ^2.4.0
+  dart_mappable_builder: ^4.2.0
+  lints: ^4.0.0
+  retrofit_generator:
+  test: ^1.25.0
+
+dependency_overrides:
+  retrofit:
+    path: ../retrofit
+  retrofit_generator:
+    path: ../generator
