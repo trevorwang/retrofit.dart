@@ -22,9 +22,11 @@ class RetrofitLeanGenerator
   RetrofitLeanGenerator();
 
   @override
-  FutureOr<String?> generateForClass(BuildStep buildStep,
-      ClassElement classElement,
-      ElementAnnotation annotation,) async {
+  FutureOr<String?> generateForClass(
+    BuildStep buildStep,
+    ClassElement classElement,
+    ElementAnnotation annotation,
+  ) async {
     // The retrofit generator is currently optimized for build_runner/source_gen.
     // Full lean_builder support requires adapting the codebase to use lean_builder's
     // analyzer abstractions instead of source_gen's API.
@@ -35,11 +37,11 @@ class RetrofitLeanGenerator
 
     throw UnsupportedError(
       'Lean Builder support for retrofit_generator is not yet fully implemented.\n'
-          'The retrofit_generator package currently works with build_runner.\n\n'
-          'To generate code, please use:\n'
-          '  dart pub run build_runner build\n\n'
-          'For more information, see: https://github.com/trevorwang/retrofit.dart\n\n'
-          'Lean Builder support is planned for a future release once lean_builder reaches stable.',
+      'The retrofit_generator package currently works with build_runner.\n\n'
+      'To generate code, please use:\n'
+      '  dart pub run build_runner build\n\n'
+      'For more information, see: https://github.com/trevorwang/retrofit.dart\n\n'
+      'Lean Builder support is planned for a future release once lean_builder reaches stable.',
     );
   }
 }
