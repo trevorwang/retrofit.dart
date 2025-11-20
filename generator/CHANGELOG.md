@@ -1,3 +1,6 @@
+## 10.1.1 (Unreleased)
+- Add Response parameter to logError response data parsing callback
+
 ## 10.1.0
 
 - Add lean_builder as a dependency to support experimental lean_builder integration
