@@ -386,7 +386,7 @@ You can define headers at the `@RestApi` level that will be automatically includ
 
 ### Error Handling
 
-`catchError(Object)` should be used for capturing the exception and failed response. You can get the detailed response info from `DioError.response`.
+`catchError(Object)` can be used for capturing the exception and failed response. You can get the detailed response info from `DioError.response`.
 
 ```dart
 client.getTask('2').then((it) {
@@ -404,6 +404,46 @@ client.getTask('2').then((it) {
   }
 });
 ```
+
+
+Errors can also be caught and handled at the client level using CallAdapters. For example:
+
+```dart
+class ErrorAdapter<T> extends CallAdapter<Future<T>, Future<T>> {
+  @override
+  Future<T> adapt(Future<T> Function() call) {
+    try {
+      return call();
+    } catch (exception) {
+      // Handle the exception and throw whatever exception you want
+      throw MyCustomException();
+    }
+  }
+}
+
+@RestApi(callAdapter: ErrorAdapter)
+abstract class RestClient {
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+  @GET('/user')
+  Future<User> getUser();
+}
+```
+
+If you need to handle errors individually per API method instead of at the client level:
+
+``` dart
+@RestApi()
+abstract class RestClient {
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+  @GET('/user')
+  @UseCallAdapter(ErrorAdapter)
+  Future<User> getUser();
+}
+```
+
+
 
 ### Relative API baseUrl
 
