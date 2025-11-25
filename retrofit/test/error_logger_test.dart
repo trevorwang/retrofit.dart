@@ -9,7 +9,7 @@ class TestLogger extends ParseErrorLogger {
   Response? lastResponse;
 
   @override
-  void logError(Object error, StackTrace stackTrace, RequestOptions options, Response response) {
+  void logError(Object error, StackTrace stackTrace, RequestOptions options, {Response? response}) {
     lastError = error;
     lastStack = stackTrace;
     lastOptions = options;
@@ -23,10 +23,21 @@ void main() {
     final options = RequestOptions(path: '/foo');
     final response = Response(requestOptions: options, statusCode: 200);
     final stack = StackTrace.current;
-    logger.logError('err', stack, options, response);
+    logger.logError('err', stack, options, response: response);
     expect(logger.lastError, 'err');
     expect(logger.lastStack, stack);
     expect(logger.lastOptions, options);
     expect(logger.lastResponse, response);
+  });
+
+  test('ParseErrorLogger logs error without response (backward compatibility)', () {
+    final logger = TestLogger();
+    final options = RequestOptions(path: '/foo');
+    final stack = StackTrace.current;
+    logger.logError('err', stack, options);
+    expect(logger.lastError, 'err');
+    expect(logger.lastStack, stack);
+    expect(logger.lastOptions, options);
+    expect(logger.lastResponse, isNull);
   });
 }

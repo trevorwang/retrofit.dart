@@ -44,7 +44,7 @@ class _ApiService implements ApiService {
           .map((dynamic i) => TaskMapper.fromMap(i as Map<String, dynamic>))
           .toList();
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -71,7 +71,7 @@ class _ApiService implements ApiService {
     try {
       _value = TaskMapper.fromMap(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -99,7 +99,7 @@ class _ApiService implements ApiService {
     try {
       _value = TaskMapper.fromMap(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -127,7 +127,7 @@ class _ApiService implements ApiService {
     try {
       _value = TaskMapper.fromMap(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;

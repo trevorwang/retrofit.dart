@@ -1,5 +1,7 @@
 ## 4.9.1 (Unreleased)
-- Add Response parameter to ParseErrorLogger callback
+- Make Response parameter in ParseErrorLogger callback optional for backward compatibility
+  - The `response` parameter in `logError` is now a named optional parameter `{Response? response}`
+  - This allows existing implementations without the response parameter to continue working
 
 ## 4.9.0
 - Version bump to 4.9.0
