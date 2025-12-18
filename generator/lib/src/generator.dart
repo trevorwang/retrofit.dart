@@ -3217,15 +3217,25 @@ MultipartFile.fromFileSync(i.path,
           final ele = p.type.element! as ClassElement;
           if (_missingToJson(ele)) {
             if (_isDateTime(p.type)) {
-              final expr = [
-                if (p.type.nullabilitySuffix == NullabilitySuffix.question)
-                  refer(
-                    p.displayName,
-                  ).nullSafeProperty('toIso8601String').call([])
-                else
-                  refer(p.displayName).property('toIso8601String').call([]),
-              ];
-              refer(dataVar).property('fields').property('add').call(expr);
+              if (p.type.nullabilitySuffix == NullabilitySuffix.question) {
+                blocks.add(Code('if (${p.displayName} != null) {'));
+              }
+              blocks.add(
+                refer(dataVar).property('fields').property('add').call([
+                  refer('MapEntry').newInstance([
+                    literal(fieldName),
+                    if (_isExactly(String, p.type))
+                      refer(p.displayName)
+                    else if (_isEnum(p.type))
+                      _getEnumValueReference(p.type, p.displayName)
+                    else
+                      refer(p.displayName).property('toString').call([]),
+                  ]),
+                ]).statement,
+              );
+              if (p.type.nullabilitySuffix == NullabilitySuffix.question) {
+                blocks.add(const Code('}'));
+              }
             } else {
               throw Exception('toJson() method have to add to ${p.type}');
             }
