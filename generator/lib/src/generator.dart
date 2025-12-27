@@ -940,13 +940,14 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
     extraOptions[_baseUrlVar] = refer(_baseUrlVar);
 
-    final responseType = _getResponseTypeAnnotation(m);
-    if (responseType != null) {
-      final v = responseType.peek('responseType')?.objectValue;
+    final responseTypeAnnotation = _getResponseTypeAnnotation(m);
+    ResponseType? parsedResponseType;
+    if (responseTypeAnnotation != null) {
+      final v = responseTypeAnnotation.peek('responseType')?.objectValue;
       log.info('ResponseType  :  ${v?.getField('index')?.toIntValue()}');
       final rsType = ResponseType.values.firstWhere(
         (it) =>
-            responseType
+            responseTypeAnnotation
                 .peek('responseType')
                 ?.objectValue
                 .getField('index')
@@ -958,7 +959,21 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
         },
       );
 
+      parsedResponseType = rsType;
       extraOptions['responseType'] = refer(rsType.toString());
+
+      // Validate that ResponseType.stream requires Stream<Uint8List> or Stream<String> return type
+      if (rsType == ResponseType.stream) {
+        if (!_isValidStreamResponseType(m.returnType)) {
+          throw InvalidGenerationSourceError(
+            'When using @DioResponseType(ResponseType.stream), the return type must be Stream<Uint8List> or Stream<String>. '
+            'Got: ${_displayString(m.returnType)}',
+            element: m,
+            todo:
+                'Change the return type to Stream<Uint8List> or Stream<String> when using ResponseType.stream',
+          );
+        }
+      }
     }
     final namedArguments = <String, Expression>{};
     namedArguments[_queryParamsVar] = refer(_queryParamsVar);
@@ -1021,6 +1036,34 @@ $returnAsyncWrapper httpResponse;
           refer(
             'await $_dioVar.fetch',
           ).call([options], {}, [refer('void')]).statement,
+        );
+      }
+    } else if (parsedResponseType == ResponseType.stream &&
+        _isValidStreamResponseType(m.returnType)) {
+      // Handle Stream<Uint8List> or Stream<String> return type with ResponseType.stream
+      // Dio returns ResponseBody when ResponseType.stream is used,
+      // we extract the stream from it
+      blocks.add(
+        declareFinal(_resultVar)
+            .assign(refer('await $_dioVar.fetch<ResponseBody>').call([options]))
+            .statement,
+      );
+
+      if (_isStreamOfString(m.returnType)) {
+        // For Stream<String>, decode the bytes to strings using utf8.decode
+        blocks.add(
+          Code('''
+final $_valueVar = $_resultVar.data!.stream.map(utf8.decode);
+$returnAsyncWrapper* $_valueVar;
+'''),
+        );
+      } else {
+        // For Stream<Uint8List>, return the raw stream
+        blocks.add(
+          Code('''
+final $_valueVar = $_resultVar.data!.stream;
+$returnAsyncWrapper* $_valueVar;
+'''),
         );
       }
     } else {
@@ -2024,6 +2067,26 @@ if (T != dynamic &&
 
   /// Checks if the type is Uint8List.
   bool _isUint8List(DartType? t) => _isExactly(typed_data.Uint8List, t);
+
+  /// Checks if the type is Stream<Uint8List>.
+  bool _isStreamOfUint8List(DartType? t) {
+    if (t == null || !_isExactly(Stream, t)) return false;
+    final innerType = _genericOf(t);
+    return _isUint8List(innerType);
+  }
+
+  /// Checks if the type is Stream<String>.
+  bool _isStreamOfString(DartType? t) {
+    if (t == null || !_isExactly(Stream, t)) return false;
+    final innerType = _genericOf(t);
+    return _isExactly(String, innerType);
+  }
+
+  /// Checks if the type is a valid stream type for ResponseType.stream.
+  /// Valid types are Stream<Uint8List> or Stream<String>.
+  bool _isValidStreamResponseType(DartType? t) {
+    return _isStreamOfUint8List(t) || _isStreamOfString(t);
+  }
 
   /// Checks if the type is DateTime.
   bool _isDateTime(DartType? t) => _isExactly(DateTime, t);

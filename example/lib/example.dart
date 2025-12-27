@@ -1,4 +1,4 @@
-import 'dart:convert' show jsonEncode;
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -164,6 +164,15 @@ abstract class RestClient {
   @GET('http://httpbin.org/image/jpeg')
   @DioResponseType(ResponseType.bytes)
   Future<Uint8List> getFileAsUint8List();
+
+  @Headers(<String, String>{'accept': 'image/jpeg'})
+  @GET('http://httpbin.org/image/jpeg')
+  @DioResponseType(ResponseType.stream)
+  Stream<Uint8List> getFileStream();
+
+  @GET('http://httpbin.org/stream/5')
+  @DioResponseType(ResponseType.stream)
+  Stream<String> getServerSentEvents();
 
   @POST('http://httpbin.org/post')
   @FormUrlEncoded()
