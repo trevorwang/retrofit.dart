@@ -1,3 +1,9 @@
+## 10.2.3
+
+- Update retrofit dependency to ^4.9.1 to ensure DartMappable parser support is available
+  - This fixes the "Member not found: 'DartMappable'" compilation error
+  - Users must use retrofit 4.9.1 or later with this version
+
 ## 10.2.1
 
 - Support analyzer `'>=8.0.0 <10.0.0'` and update deprecated methods
