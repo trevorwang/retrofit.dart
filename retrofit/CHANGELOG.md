@@ -1,4 +1,7 @@
 ## 4.9.1 (Unreleased)
+- Add `Parser.DartMappable` support for dart_mappable 4.x compatibility
+  - Enables use of `dart_mappable` >= 4.0.0 for type conversion
+  - Use `@MappableClass()` annotation and set `parser: Parser.DartMappable` in `@RestApi`
 - Make Response parameter in ParseErrorLogger callback optional for backward compatibility
   - The `response` parameter in `logError` is now a named optional parameter `{Response? response}`
   - This allows existing implementations without the response parameter to continue working

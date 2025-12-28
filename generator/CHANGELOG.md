@@ -1,3 +1,8 @@
+## 10.2.2
+
+- Update retrofit dependency to ^4.9.1 to ensure Parser.DartMappable is available
+- Fix compatibility issue with dart_mappable >= 4.0.0
+
 ## 10.2.1
 
 - Support analyzer `'>=8.0.0 <10.0.0'` and update deprecated methods
