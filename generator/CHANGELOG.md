@@ -4,8 +4,9 @@
 
 ## 10.2.1
 
-- **Fix analyzer 9.0.0 compatibility**: Remove deprecated Element2 API usage that caused build failures with analyzer 9.0.0
-- Support analyzer `'>=8.0.0 <10.0.0'` and migrate from deprecated analyzer APIs
+- **Fix analyzer 9.x compatibility**: Remove deprecated Element2 API usage that caused build failures with analyzer 9.0+
+- Support analyzer `'>=8.0.0 <10.0.0'` (supports all 8.x and 9.x versions)
+- Migrate from deprecated analyzer Element2 APIs to stable Element APIs
 
 ## 10.2.0
 
