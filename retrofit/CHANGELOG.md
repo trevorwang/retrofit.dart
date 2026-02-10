@@ -1,8 +1,7 @@
+## 4.9.2
+- Add DartMappable parser support for dart_mappable package integration
+
 ## 4.9.1
-- Publish `Parser.DartMappable` enum value for dart_mappable 4.x compatibility
-  - Makes the DartMappable parser available in published package for use with `dart_mappable` >= 4.0.0
-  - Use `@MappableClass()` annotation and set `parser: Parser.DartMappable` in `@RestApi`
-  - This fixes "Member not found: 'DartMappable'" error when using retrofit_generator with dart_mappable 4.x
 - Make Response parameter in ParseErrorLogger callback optional for backward compatibility
   - The `response` parameter in `logError` is now a named optional parameter `{Response? response}`
   - This allows existing implementations without the response parameter to continue working
