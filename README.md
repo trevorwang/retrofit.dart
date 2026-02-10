@@ -358,6 +358,62 @@ This feature also supports:
   @GET('/tasks')
   Future<HttpResponse<List<Task>>> getTasks();
 ```
+
+### Streaming and Server-Sent Events (SSE)
+
+Retrofit supports streaming responses using `@DioResponseType(ResponseType.stream)`. When using this annotation, the return type **must** be either `Stream<Uint8List>` (for raw bytes) or `Stream<String>` (for text).
+
+```dart
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:dio/dio.dart' hide Headers;
+import 'package:retrofit/retrofit.dart';
+
+@RestApi(baseUrl: 'https://api.example.com')
+abstract class RestClient {
+  factory RestClient(Dio dio, {String? baseUrl}) = _RestClient;
+
+  // For binary data (images, files, etc.)
+  @GET('/download/file')
+  @DioResponseType(ResponseType.stream)
+  Stream<Uint8List> downloadFile();
+
+  // For text data (SSE, NDJSON, etc.)
+  @GET('/events')
+  @DioResponseType(ResponseType.stream)
+  Stream<String> getServerSentEvents();
+}
+```
+
+**Note:** When using `Stream<String>`, make sure to import `dart:convert` in your source file.
+
+#### Server-Sent Events (SSE)
+
+For SSE support, you can use the [simple_sse](https://pub.dev/packages/simple_sse) package to parse the stream:
+
+```yaml
+dependencies:
+  simple_sse: ^2.0.0
+```
+
+```dart
+import 'package:simple_sse/simple_sse.dart';
+
+final client = RestClient(dio);
+
+// Get the string stream and transform it to SSE events
+final eventStream = client
+    .getServerSentEvents()
+    .transform(const LineSplitter())
+    .transform(const SseEventTransformer());
+
+await for (final event in eventStream) {
+  print('Event: ${event.event}');
+  print('Data: ${event.data}');
+  print('ID: ${event.id}');
+}
+```
+
 ### HTTP Header
 
 * Add a HTTP header from the parameter of the method

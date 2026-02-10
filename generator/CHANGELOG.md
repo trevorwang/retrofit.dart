@@ -1,3 +1,7 @@
+## 10.2.3
+
+- Allow `analyzer` 10.0.0
+
 ## 10.2.2
 
 - Fix multipart datetime code generation (#874)
