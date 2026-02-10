@@ -2068,22 +2068,26 @@ if (T != dynamic &&
   /// Checks if the type is Uint8List.
   bool _isUint8List(DartType? t) => _isExactly(typed_data.Uint8List, t);
 
-  /// Checks if the type is Stream<Uint8List>.
+  /// Checks if the type is `Stream<Uint8List>`.
   bool _isStreamOfUint8List(DartType? t) {
-    if (t == null || !_isExactly(Stream, t)) return false;
+    if (t == null || !_isExactly(Stream, t)) {
+      return false;
+    }
     final innerType = _genericOf(t);
     return _isUint8List(innerType);
   }
 
-  /// Checks if the type is Stream<String>.
+  /// Checks if the type is `Stream<String>`.
   bool _isStreamOfString(DartType? t) {
-    if (t == null || !_isExactly(Stream, t)) return false;
+    if (t == null || !_isExactly(Stream, t)) {
+      return false;
+    }
     final innerType = _genericOf(t);
     return _isExactly(String, innerType);
   }
 
   /// Checks if the type is a valid stream type for ResponseType.stream.
-  /// Valid types are Stream<Uint8List> or Stream<String>.
+  /// Valid types are `Stream<Uint8List>` or `Stream<String>`.
   bool _isValidStreamResponseType(DartType? t) {
     return _isStreamOfUint8List(t) || _isStreamOfString(t);
   }

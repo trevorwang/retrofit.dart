@@ -1,3 +1,6 @@
+## 4.9.2
+- Add DartMappable parser support for dart_mappable package integration
+
 ## 4.9.1
 - Make Response parameter in ParseErrorLogger callback optional for backward compatibility
   - The `response` parameter in `logError` is now a named optional parameter `{Response? response}`
