@@ -3,10 +3,17 @@
 - Update retrofit dependency to ^4.9.1 to ensure DartMappable parser support is available
   - This fixes the "Member not found: 'DartMappable'" compilation error
   - Users must use retrofit 4.9.1 or later with this version
+- Allow `analyzer` 10.0.0
+
+## 10.2.2
+
+- Fix multipart datetime code generation (#874)
 
 ## 10.2.1
 
-- Support analyzer `'>=8.0.0 <10.0.0'` and update deprecated methods
+- **Fix analyzer 9.x compatibility**: Remove deprecated Element2 API usage that caused build failures with analyzer 9.0+
+- Support analyzer `'>=8.0.0 <10.0.0'` (supports all 8.x and 9.x versions)
+- Migrate from deprecated analyzer Element2 APIs to stable Element APIs
 
 ## 10.2.0
 

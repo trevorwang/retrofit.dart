@@ -1,7 +1,7 @@
-## 4.9.1
+## 4.9.2
 - Add DartMappable parser support for dart_mappable package integration
-  - Each model class must add annotation `@MappableClass()`
-  - For more detail, please visit 'https://github.com/schultek/dart_mappable'
+
+## 4.9.1
 - Make Response parameter in ParseErrorLogger callback optional for backward compatibility
   - The `response` parameter in `logError` is now a named optional parameter `{Response? response}`
   - This allows existing implementations without the response parameter to continue working
