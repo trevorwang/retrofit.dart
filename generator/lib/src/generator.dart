@@ -1182,7 +1182,7 @@ $returnAsyncWrapper* $_valueVar;
                 );
               case retrofit.Parser.DartMappable:
                 mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}Mapper.fromMap(i as $castType)',
+                  '(dynamic i) => ${_dartMappableMapper(innerReturnType)}.fromMap(i as $castType)',
                 );
               case retrofit.Parser.FlutterCompute:
                 throw Exception('Unreachable code');
@@ -1270,7 +1270,7 @@ $returnAsyncWrapper* $_valueVar;
 (k, dynamic v) =>
     MapEntry(
       k, (v as List)
-        .map((i) => ${_displayString(type)}Mapper.fromMap(i as Map<String, dynamic>))
+        .map((i) => ${_dartMappableMapper(type)}.fromMap(i as Map<String, dynamic>))
         .toList()
     )
 ''');
@@ -1345,7 +1345,7 @@ You should create a new class to encapsulate the response.
                 );
               case retrofit.Parser.DartMappable:
                 mapperCode = refer(
-                  '(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}Mapper.fromMap(v as Map<String, dynamic>))',
+                  '(k, dynamic v) => MapEntry(k, ${_dartMappableMapper(secondType)}.fromMap(v as Map<String, dynamic>))',
                 );
               case retrofit.Parser.FlutterCompute:
                 log.warning('''
@@ -1554,7 +1554,7 @@ You should create a new class to encapsulate the response.
               );
             case retrofit.Parser.DartMappable:
               mapperCode = refer(
-                '${_displayString(returnType)}Mapper.fromMap($_resultVar.data!)',
+                '${_dartMappableMapper(returnType)}.fromMap($_resultVar.data!)',
               );
             case retrofit.Parser.FlutterCompute:
               mapperCode = refer(
@@ -3985,6 +3985,16 @@ String _displayString(DartType? e, {bool withNullability = false}) {
       return e!.getDisplayString();
     }
   }
+}
+
+/// Returns the DartMappable mapper class name for a type, correctly placing
+/// "Mapper" between the base class name and its type arguments.
+/// e.g. `ApiResponse<LoginDataModel>` → `ApiResponseMapper<LoginDataModel>`
+String _dartMappableMapper(DartType? type) {
+  final s = _displayString(type);
+  final idx = s.indexOf('<');
+  if (idx == -1) return '${s}Mapper';
+  return '${s.substring(0, idx)}Mapper${s.substring(idx)}';
 }
 
 extension _DartTypeX on DartType {
