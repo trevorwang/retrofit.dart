@@ -477,7 +477,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           ? '<${element.typeParameters.join(',')}>'
           : '');
 
-  final _methodsAnnotations = const {
+  final Set<Type> _methodsAnnotations = const {
     retrofit.GET,
     retrofit.POST,
     retrofit.DELETE,
