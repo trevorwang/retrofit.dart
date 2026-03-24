@@ -3224,7 +3224,9 @@ abstract class TestResponseTypeStreamString {
 }
 
 @ShouldThrow(
-  'When using @DioResponseType(ResponseType.stream), the return type must be Stream<Uint8List> or Stream<String>. Got: Future<String>',
+  'When using @DioResponseType(ResponseType.stream), the return type must be '
+  'Stream<Uint8List>, Stream<String>, Future<HttpResponse<Stream<Uint8List>>>, '
+  'Future<HttpResponse<Stream<String>>>, or Future<HttpResponse<dynamic>>. Got: Future<String>',
   element: false,
   expectedLogItems: ['ResponseType  :  1'],
 )
@@ -3236,7 +3238,9 @@ abstract class TestResponseTypeStreamInvalidReturnType {
 }
 
 @ShouldThrow(
-  'When using @DioResponseType(ResponseType.stream), the return type must be Stream<Uint8List> or Stream<String>. Got: Stream<int>',
+  'When using @DioResponseType(ResponseType.stream), the return type must be '
+  'Stream<Uint8List>, Stream<String>, Future<HttpResponse<Stream<Uint8List>>>, '
+  'Future<HttpResponse<Stream<String>>>, or Future<HttpResponse<dynamic>>. Got: Stream<int>',
   element: false,
   expectedLogItems: ['ResponseType  :  1'],
 )
@@ -3246,3 +3250,55 @@ abstract class TestResponseTypeStreamInvalidReturnTypeStreamInt {
   @DioResponseType(ResponseType.stream)
   Stream<int> downloadFile();
 }
+
+@ShouldGenerate(
+  '''
+    final _result = await _dio.fetch<ResponseBody>(_options);
+    final _value = _result.data!.stream;
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+''',
+  contains: true,
+  expectedLogItems: ['ResponseType  :  1'],
+)
+@RestApi()
+abstract class TestResponseTypeStreamHttpResponse {
+  @GET('/api/download/{id}')
+  @DioResponseType(ResponseType.stream)
+  Future<HttpResponse<dynamic>> getFile(@Path('id') int fileId);
+}
+
+@ShouldGenerate(
+  '''
+    final _result = await _dio.fetch<ResponseBody>(_options);
+    final _value = _result.data!.stream;
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+''',
+  contains: true,
+  expectedLogItems: ['ResponseType  :  1'],
+)
+@RestApi()
+abstract class TestResponseTypeStreamHttpResponseUint8List {
+  @GET('/download')
+  @DioResponseType(ResponseType.stream)
+  Future<HttpResponse<Stream<Uint8List>>> downloadFile();
+}
+
+@ShouldGenerate(
+  '''
+    final _result = await _dio.fetch<ResponseBody>(_options);
+    final _value = _result.data!.stream.map(utf8.decode);
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+''',
+  contains: true,
+  expectedLogItems: ['ResponseType  :  1'],
+)
+@RestApi()
+abstract class TestResponseTypeStreamHttpResponseString {
+  @GET('/events')
+  @DioResponseType(ResponseType.stream)
+  Future<HttpResponse<Stream<String>>> getServerEvents();
+}
+

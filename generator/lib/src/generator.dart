@@ -962,15 +962,19 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
       parsedResponseType = rsType;
       extraOptions['responseType'] = refer(rsType.toString());
 
-      // Validate that ResponseType.stream requires Stream<Uint8List> or Stream<String> return type
+      // Validate that ResponseType.stream requires Stream<Uint8List>, Stream<String>,
+      // or Future<HttpResponse<...>> with a compatible inner type.
       if (rsType == ResponseType.stream) {
-        if (!_isValidStreamResponseType(m.returnType)) {
+        if (!_isValidStreamResponseType(m.returnType) &&
+            !_isValidStreamHttpResponseReturnType(m.returnType)) {
           throw InvalidGenerationSourceError(
-            'When using @DioResponseType(ResponseType.stream), the return type must be Stream<Uint8List> or Stream<String>. '
+            'When using @DioResponseType(ResponseType.stream), the return type must be '
+            'Stream<Uint8List>, Stream<String>, Future<HttpResponse<Stream<Uint8List>>>, '
+            'Future<HttpResponse<Stream<String>>>, or Future<HttpResponse<dynamic>>. '
             'Got: ${_displayString(m.returnType)}',
             element: m,
             todo:
-                'Change the return type to Stream<Uint8List> or Stream<String> when using ResponseType.stream',
+                'Change the return type to Stream<Uint8List>, Stream<String>, or Future<HttpResponse<Stream<Uint8List>>> when using ResponseType.stream',
           );
         }
       }
@@ -1036,6 +1040,37 @@ $returnAsyncWrapper httpResponse;
           refer(
             'await $_dioVar.fetch',
           ).call([options], {}, [refer('void')]).statement,
+        );
+      }
+    } else if (parsedResponseType == ResponseType.stream &&
+        isWrappedWithHttpResponseWrapper) {
+      // Handle Future<HttpResponse<...>> with ResponseType.stream.
+      // returnType here is the inner type of HttpResponse (e.g., Stream<Uint8List>,
+      // Stream<String>, or dynamic). We fetch the ResponseBody and wrap the stream
+      // in HttpResponse so callers can access response headers alongside the stream.
+      blocks.add(
+        declareFinal(_resultVar)
+            .assign(refer('await $_dioVar.fetch<ResponseBody>').call([options]))
+            .statement,
+      );
+
+      if (returnType != null && _isStreamOfString(returnType)) {
+        // For HttpResponse<Stream<String>>, decode the bytes to strings
+        blocks.add(
+          Code('''
+final $_valueVar = $_resultVar.data!.stream.map(utf8.decode);
+final httpResponse = HttpResponse($_valueVar, $_resultVar);
+$returnAsyncWrapper httpResponse;
+'''),
+        );
+      } else {
+        // For HttpResponse<Stream<Uint8List>> or HttpResponse<dynamic>
+        blocks.add(
+          Code('''
+final $_valueVar = $_resultVar.data!.stream;
+final httpResponse = HttpResponse($_valueVar, $_resultVar);
+$returnAsyncWrapper httpResponse;
+'''),
         );
       }
     } else if (parsedResponseType == ResponseType.stream &&
@@ -2090,6 +2125,21 @@ if (T != dynamic &&
   /// Valid types are `Stream<Uint8List>` or `Stream<String>`.
   bool _isValidStreamResponseType(DartType? t) {
     return _isStreamOfUint8List(t) || _isStreamOfString(t);
+  }
+
+  /// Checks if the type is a valid `Future<HttpResponse<...>>` wrapping for
+  /// `ResponseType.stream`. Valid inner types are `Stream<Uint8List>`,
+  /// `Stream<String>`, or `dynamic`.
+  bool _isValidStreamHttpResponseReturnType(DartType? t) {
+    if (t == null) return false;
+    final inner = _genericOf(t); // HttpResponse<...>
+    if (inner == null || !_isExactly(retrofit.HttpResponse, inner)) {
+      return false;
+    }
+    final innerInner = _genericOf(inner); // Stream<...> or dynamic
+    return innerInner == null ||
+        innerInner is DynamicType ||
+        _isValidStreamResponseType(innerInner);
   }
 
   /// Checks if the type is DateTime.
