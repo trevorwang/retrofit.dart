@@ -1,3 +1,7 @@
+## 10.2.4
+
+- Allow analyzer: '>=8.4.1 <13.0.0'
+
 ## 10.2.3
 
 - Allow `analyzer` 10.0.0
