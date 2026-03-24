@@ -23,7 +23,11 @@ for PKG in ${PKGS}; do
     dartanalyzer) echo
       echo -e '\033[1mTASK: dartanalyzer\033[22m'
       echo -e 'dartanalyzer .'
-      dart analyze . || EXIT_CODE=$?
+      dart analyze .
+      TASK_EXIT_CODE=$?
+      if [[ $EXIT_CODE == 0 && $TASK_EXIT_CODE != 0 ]]; then
+        EXIT_CODE=$TASK_EXIT_CODE
+      fi
       ;;
     *) echo -e "\033[31mNot expecting TASK '${TASK}'. Error!\033[0m"
       EXIT_CODE=1
