@@ -3808,11 +3808,6 @@ MultipartFile.fromFileSync(i.path,
   /// Checks if the type is missing a serialize method.
   bool _missingSerialize(LibraryFragment ele, DartType type) {
     switch (clientAnnotation.parser) {
-      case retrofit.Parser.JsonSerializable:
-      case retrofit.Parser.DartJsonMapper:
-      case retrofit.Parser.MapSerializable:
-      case retrofit.Parser.DartMappable:
-        return false;
       case retrofit.Parser.FlutterCompute:
         return !ele.functions.any(
           (element) =>
@@ -3821,6 +3816,13 @@ MultipartFile.fromFileSync(i.path,
               _displayString(element.formalParameters[0].element.type) ==
                   _displayString(type),
         );
+      case retrofit.Parser.JsonSerializable:
+      case retrofit.Parser.DartJsonMapper:
+      case retrofit.Parser.MapSerializable:
+      case retrofit.Parser.DartMappable:
+        return false;
+      case _:
+        return false;
     }
   }
 
