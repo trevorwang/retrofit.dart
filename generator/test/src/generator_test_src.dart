@@ -1997,6 +1997,93 @@ abstract class MapSerializableTestMapBodyWithGeneric {
 }
 
 @ShouldGenerate('''
+    late User _value;
+    try {
+      _value = UserMapper.fromMap(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableGenericCast {
+  @POST('/xx')
+  Future<User> getUser();
+}
+
+@ShouldGenerate('''
+    late GenericUser<User> _value;
+    try {
+      _value = GenericUserMapper.fromMap<User>(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableGenericTypeCast {
+  @POST('/xx')
+  Future<GenericUser<User>> getUser();
+}
+
+@ShouldGenerate('''
+    late List<User> _value;
+    try {
+      _value = _result.data!
+          .map((dynamic i) => UserMapper.fromMap(i as Map<String, dynamic>))
+          .toList();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableListBody {
+  @GET('/xx')
+  Future<List<User>> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, User> _value;
+    try {
+      _value = _result.data!.map(
+        (k, dynamic v) =>
+            MapEntry(k, UserMapper.fromMap(v as Map<String, dynamic>)),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableMapBody {
+  @GET('/xx')
+  Future<Map<String, User>> getResult();
+}
+
+@ShouldGenerate('''
+    late Map<String, List<User>> _value;
+    try {
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
+          k,
+          (v as List)
+              .map((i) => UserMapper.fromMap(i as Map<String, dynamic>))
+              .toList(),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableMapListBody {
+  @GET('/xx')
+  Future<Map<String, List<User>>> getResult();
+}
+
+@ShouldGenerate('''
     try {
       _value = await compute(deserializeUser, _result.data!);
     } on Object catch (e, s) {
