@@ -102,6 +102,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
 
   ConstantReader? clientAnnotationConstantReader;
 
+  /// The class element currently being processed.
+  late ClassElement _classElement;
+
   @override
   /// Processes classes annotated with @RestApi and generates implementation.
   @override
@@ -124,6 +127,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
   String _implementClass(ClassElement element, ConstantReader annotation) {
     // Reset hasCustomOptions for each class to avoid state leaking between classes
     hasCustomOptions = false;
+    _classElement = element;
     final className = globalOptions.className ?? '_${element.name}';
     final enumString = annotation.peek('parser')?.revive().accessor;
     final parser = retrofit.Parser.values.firstWhereOrNull(
@@ -2095,6 +2099,30 @@ if (T != dynamic &&
   /// Checks if the type is DateTime.
   bool _isDateTime(DartType? t) => _isExactly(DateTime, t);
 
+  /// Checks if there is an extension method providing [toJson] for [DateTime]
+  /// that is visible in the library of the currently processed class.
+  ///
+  /// This is used to prefer a user-defined `toJson` extension over the default
+  /// [DateTime.toIso8601String] fallback.
+  bool _hasToJsonExtensionForDateTime() {
+    final library = _classElement.library;
+    // Check extensions defined directly in the current library.
+    for (final ext in library.extensions) {
+      if (_isDateTime(ext.extendedType) && ext.getMethod('toJson') != null) {
+        return true;
+      }
+    }
+    // Check extensions exported from directly imported libraries.
+    for (final importedLibrary in library.importedLibraries) {
+      for (final ext in importedLibrary.extensions) {
+        if (_isDateTime(ext.extendedType) && ext.getMethod('toJson') != null) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   /// Checks if the inner type of the return type is a basic type.
   bool _isBasicInnerType(DartType returnType) {
     final innerType = _genericOf(returnType);
@@ -2222,11 +2250,19 @@ if (T != dynamic &&
         switch (clientAnnotation.parser) {
           case retrofit.Parser.JsonSerializable:
             if (_isDateTime(p.type)) {
-              value = p.type.nullabilitySuffix == NullabilitySuffix.question
-                  ? refer(
-                      p.displayName,
-                    ).nullSafeProperty('toIso8601String').call([])
-                  : refer(p.displayName).property('toIso8601String').call([]);
+              if (_hasToJsonExtensionForDateTime()) {
+                value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                    ? refer(
+                        p.displayName,
+                      ).nullSafeProperty('toJson').call([])
+                    : refer(p.displayName).property('toJson').call([]);
+              } else {
+                value = p.type.nullabilitySuffix == NullabilitySuffix.question
+                    ? refer(
+                        p.displayName,
+                      ).nullSafeProperty('toIso8601String').call([])
+                    : refer(p.displayName).property('toIso8601String').call([]);
+              }
             } else if (_isEnum(p.type) && !_hasToJson(p.type)) {
               value = p.type.nullabilitySuffix == NullabilitySuffix.question
                   ? refer(p.displayName)
@@ -3230,13 +3266,16 @@ MultipartFile.fromFileSync(i.path,
             final ele = innerType!.element! as ClassElement;
             if (_missingToJson(ele)) {
               if (_isDateTime(p.type)) {
+                final propertyName = _hasToJsonExtensionForDateTime()
+                    ? 'toJson'
+                    : 'toIso8601String';
                 final expr = [
                   if (p.type.nullabilitySuffix == NullabilitySuffix.question)
                     refer(
                       p.displayName,
-                    ).nullSafeProperty('toIso8601String').call([])
+                    ).nullSafeProperty(propertyName).call([])
                   else
-                    refer(p.displayName).property('toIso8601String').call([]),
+                    refer(p.displayName).property(propertyName).call([]),
                 ];
                 refer(dataVar).property('fields').property('add').call(expr);
               } else {
@@ -3288,6 +3327,9 @@ MultipartFile.fromFileSync(i.path,
           final ele = p.type.element! as ClassElement;
           if (_missingToJson(ele)) {
             if (_isDateTime(p.type)) {
+              final propertyName = _hasToJsonExtensionForDateTime()
+                  ? 'toJson'
+                  : 'toIso8601String';
               if (p.type.nullabilitySuffix == NullabilitySuffix.question) {
                 blocks.add(Code('if (${p.displayName} != null) {'));
               }
@@ -3295,7 +3337,7 @@ MultipartFile.fromFileSync(i.path,
                 refer(dataVar).property('fields').property('add').call([
                   refer('MapEntry').newInstance([
                     literal(fieldName),
-                    refer(p.displayName).property('toIso8601String').call([]),
+                    refer(p.displayName).property(propertyName).call([]),
                   ]),
                 ]).statement,
               );
