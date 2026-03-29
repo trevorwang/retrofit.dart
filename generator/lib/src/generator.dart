@@ -1182,7 +1182,7 @@ $returnAsyncWrapper* $_valueVar;
                 );
               case retrofit.Parser.DartMappable:
                 mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}Mapper.fromMap(i as $castType)',
+                  '(dynamic i) => ${_dartMappableFromMapString(innerReturnType, 'i as $castType')}',
                 );
               case retrofit.Parser.FlutterCompute:
                 throw Exception('Unreachable code');
@@ -1270,7 +1270,7 @@ $returnAsyncWrapper* $_valueVar;
 (k, dynamic v) =>
     MapEntry(
       k, (v as List)
-        .map((i) => ${_displayString(type)}Mapper.fromMap(i as Map<String, dynamic>))
+        .map((i) => ${_dartMappableFromMapString(type, 'i as Map<String, dynamic>')})
         .toList()
     )
 ''');
@@ -1345,7 +1345,7 @@ You should create a new class to encapsulate the response.
                 );
               case retrofit.Parser.DartMappable:
                 mapperCode = refer(
-                  '(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}Mapper.fromMap(v as Map<String, dynamic>))',
+                  '(k, dynamic v) => MapEntry(k, ${_dartMappableFromMapString(secondType, 'v as Map<String, dynamic>')})',
                 );
               case retrofit.Parser.FlutterCompute:
                 log.warning('''
@@ -1554,7 +1554,7 @@ You should create a new class to encapsulate the response.
               );
             case retrofit.Parser.DartMappable:
               mapperCode = refer(
-                '${_displayString(returnType)}Mapper.fromMap($_resultVar.data!)',
+                _dartMappableFromMapString(returnType, '$_resultVar.data!'),
               );
             case retrofit.Parser.FlutterCompute:
               mapperCode = refer(
@@ -3969,6 +3969,20 @@ String revivedLiteral(Object object, {DartEmitter? dartEmitter}) {
   }
 
   return '$instantiation($args $kwargs)';
+}
+
+/// Returns the DartMappable `fromMap` call string for [type].
+///
+/// Handles generic types correctly by placing type arguments after
+/// `Mapper.fromMap`, e.g. `ApiResponseMapper.fromMap<LoginDataModel>(data)`
+/// instead of the invalid `ApiResponse<LoginDataModel>Mapper.fromMap(data)`.
+String _dartMappableFromMapString(DartType? type, String dataArg) {
+  if (type is ParameterizedType && type.typeArguments.isNotEmpty) {
+    final baseName = type.element?.name ?? _displayString(type);
+    final typeArgs = type.typeArguments.map(_displayString).join(', ');
+    return '${baseName}Mapper.fromMap<$typeArgs>($dataArg)';
+  }
+  return '${_displayString(type)}Mapper.fromMap($dataArg)';
 }
 
 String _displayString(DartType? e, {bool withNullability = false}) {
