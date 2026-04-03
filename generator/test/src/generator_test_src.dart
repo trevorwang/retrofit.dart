@@ -3214,7 +3214,10 @@ abstract class TestBareTypeParameterNullable {
     yield* _value;
 ''',
   contains: true,
-  expectedLogItems: ['ResponseType  :  1'],
+  expectedLogItems: [
+    'ResponseType  :  1',
+    '\x1B[33mMethod getServerEvents returns Stream<String> and uses utf8.decode. Ensure your API class file imports dart:convert: import \'dart:convert\';\x1B[0m',
+  ],
 )
 @RestApi()
 abstract class TestResponseTypeStreamString {
