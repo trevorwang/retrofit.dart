@@ -3249,3 +3249,60 @@ abstract class TestResponseTypeStreamInvalidReturnTypeStreamInt {
   @DioResponseType(ResponseType.stream)
   Stream<int> downloadFile();
 }
+
+@ShouldGenerate(
+  '''
+    final _extra = <String, dynamic>{
+      'platform': 'mobile',
+      'appVersion': '1.0.0',
+    };
+''',
+  contains: true,
+)
+@RestApi(extra: {'platform': 'mobile', 'appVersion': '1.0.0'})
+abstract class GlobalRestApiExtra {
+  @GET('/list/')
+  Future<void> list();
+}
+
+@ShouldGenerate('''
+    final _extra = <String, dynamic>{'platform': 'mobile', 'requestId': '123'};
+''', contains: true)
+@RestApi(extra: {'platform': 'mobile'})
+abstract class GlobalRestApiExtraWithMethodExtra {
+  @GET('/list/')
+  @Extra({'requestId': '123'})
+  Future<void> list();
+}
+
+@ShouldGenerate(
+  '''
+    final _extra = <String, dynamic>{
+      'platform': 'desktop',
+      'appVersion': '2.0.0',
+    };
+''',
+  contains: true,
+)
+@RestApi(extra: {'platform': 'mobile', 'appVersion': '2.0.0'})
+abstract class GlobalRestApiExtraOverriddenByMethodExtra {
+  @GET('/list/')
+  @Extra({'platform': 'desktop'})
+  Future<void> list();
+}
+
+@ShouldGenerate(
+  '''
+    final _extra = <String, dynamic>{
+      'count': 42,
+      'enabled': true,
+      'rate': 3.14,
+    };
+''',
+  contains: true,
+)
+@RestApi(extra: {'count': 42, 'enabled': true, 'rate': 3.14})
+abstract class GlobalRestApiExtraWithDifferentTypes {
+  @GET('/list/')
+  Future<void> list();
+}

@@ -3701,46 +3701,75 @@ MultipartFile.fromFileSync(i.path,
     }
   }
 
+  /// Extracts a value from a [DartObject] for use in generated extra map code.
+  Object _extractExtraValue(DartObject? v) =>
+      v?.toBoolValue() ??
+      v?.toDoubleValue() ??
+      v?.toIntValue() ??
+      v?.toStringValue() ??
+      v?.toListValue() ??
+      v?.toMapValue() ??
+      v?.toSetValue() ??
+      v?.toSymbolValue() ??
+      (v?.toTypeValue() ??
+          (v != null ? Code(revivedLiteral(v)) : const Code('null')));
+
+  /// Converts a [Map<DartObject?, DartObject?>] (from annotation `mapValue`)
+  /// into a [Map<String, Object>] suitable for use in [literalMap].
+  Map<String, Object> _dartObjectMapToExtraMap(
+    Map<DartObject?, DartObject?> map,
+    MethodElement m,
+  ) {
+    return map.map(
+      (k, v) => MapEntry(
+        k?.toStringValue() ??
+            (throw InvalidGenerationSourceError(
+              'Invalid key for extra Map, only `String` keys are supported',
+              element: m,
+              todo: 'Make sure all keys are of string type',
+            )),
+        _extractExtraValue(v),
+      ),
+    );
+  }
+
   /// Generates code block for Extra annotation.
+  ///
+  /// Global extras from [@RestApi] are merged first, then method-level [@Extra]
+  /// annotations are applied on top. When the same key exists in both, the
+  /// method-level value takes precedence.
   void _generateExtra(
     MethodElement m,
     List<Code> blocks,
     String localExtraVar,
   ) {
+    // Global extras from @RestApi annotation (lower priority)
+    final globalExtraMap =
+        clientAnnotationConstantReader?.peek('extra')?.mapValue;
+    final globalExtras = globalExtraMap != null
+        ? _dartObjectMapToExtraMap(globalExtraMap, m)
+        : <String, Object>{};
+
+    // Method-level extras from @Extra annotations (higher priority)
+    final methodExtras = _getMethodAnnotations(m, retrofit.Extra)
+        .map((e) => e.peek('data'))
+        .map((data) => data?.mapValue)
+        .map((map) => map != null ? _dartObjectMapToExtraMap(map, m) : null)
+        .fold<Map<String, Object>>({}, (p, e) {
+          return p..addAll(e ?? {});
+        })
+      ..addAll(_getMapFromTypedExtras(m));
+
+    // Merge: global first, then method-level overrides conflicting keys
+    final mergedExtras = <String, Object>{}
+      ..addAll(globalExtras)
+      ..addAll(methodExtras);
+
     blocks.add(
       declareFinal(localExtraVar)
           .assign(
             literalMap(
-              _getMethodAnnotations(m, retrofit.Extra)
-                  .map((e) => e.peek('data'))
-                  .map(
-                    (data) => data?.mapValue.map(
-                      (k, v) => MapEntry(
-                        k?.toStringValue() ??
-                            (throw InvalidGenerationSourceError(
-                              'Invalid key for extra Map, only `String` keys are supported',
-                              element: m,
-                              todo: 'Make sure all keys are of string type',
-                            )),
-                        v?.toBoolValue() ??
-                            v?.toDoubleValue() ??
-                            v?.toIntValue() ??
-                            v?.toStringValue() ??
-                            v?.toListValue() ??
-                            v?.toMapValue() ??
-                            v?.toSetValue() ??
-                            v?.toSymbolValue() ??
-                            (v?.toTypeValue() ??
-                                (v != null
-                                    ? Code(revivedLiteral(v))
-                                    : const Code('null'))),
-                      ),
-                    ),
-                  )
-                  .fold<Map<String, Object>>({}, (p, e) {
-                    return p..addAll(e ?? {});
-                  })
-                ..addAll(_getMapFromTypedExtras(m)),
+              mergedExtras,
               refer('String'),
               refer('dynamic'),
             ),
