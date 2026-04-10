@@ -1490,7 +1490,7 @@ You should create a new class to encapsulate the response.
             )
             ..add(
               Code(
-                'final $_valueVar = await compute(${_displayString(returnType)}.fromBuffer, $_resultVar.data!);',
+                'final $_valueVar = ${_displayString(returnType)}.fromBuffer($_resultVar.data!);',
               ),
             );
         } else {
