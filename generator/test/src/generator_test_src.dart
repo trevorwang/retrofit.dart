@@ -2697,7 +2697,7 @@ abstract class CombineBaseUrls {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<List<int>>(_options);
-    final _value = await compute(Result.fromBuffer, _result.data!);
+    final _value = Result.fromBuffer(_result.data!);
 ''', contains: true)
 @RestApi()
 abstract class ProtoSupportParserJsonSerializable {
@@ -2729,7 +2729,7 @@ abstract class ProtoSupportParserJsonSerializable {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<List<int>>(_options);
-    final _value = await compute(Result.fromBuffer, _result.data!);
+    final _value = Result.fromBuffer(_result.data!);
 ''', contains: true)
 @RestApi(parser: Parser.DartJsonMapper)
 abstract class ProtoSupportParserDartJsonMapper {
@@ -2761,7 +2761,7 @@ abstract class ProtoSupportParserDartJsonMapper {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<List<int>>(_options);
-    final _value = await compute(Result.fromBuffer, _result.data!);
+    final _value = Result.fromBuffer(_result.data!);
 ''', contains: true)
 @RestApi(parser: Parser.MapSerializable)
 abstract class ProtoSupportParserMapSerializable {
@@ -2793,7 +2793,7 @@ abstract class ProtoSupportParserMapSerializable {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<List<int>>(_options);
-    final _value = await compute(Result.fromBuffer, _result.data!);
+    final _value = Result.fromBuffer(_result.data!);
 ''', contains: true)
 @RestApi(parser: Parser.FlutterCompute)
 abstract class ProtoSupportParserFlutterCompute {
