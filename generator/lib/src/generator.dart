@@ -2148,19 +2148,19 @@ if (T != dynamic &&
   }
 
   /// Gets the expression for serializing an enum value in FormData as a string.
-  /// Uses toJson() if available, otherwise uses .name.
+  /// Uses toJson() if available, otherwise uses toString().
   String _getEnumValueExpression(DartType enumType, String variableName) {
     return _hasToJson(enumType)
         ? '$variableName.toJson()'
-        : '$variableName.name';
+        : '$variableName.toString()';
   }
 
   /// Gets the Reference for serializing an enum value in FormData.
-  /// Uses toJson() if available, otherwise uses .name.
+  /// Uses toJson() if available, otherwise uses toString().
   Expression _getEnumValueReference(DartType enumType, String variableName) {
     return _hasToJson(enumType)
         ? refer(variableName).property('toJson').call([])
-        : refer(variableName).property('name');
+        : refer(variableName).property('toString').call([]);
   }
 
   /// Generates the query parameters code block.
