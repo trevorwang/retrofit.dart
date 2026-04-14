@@ -1038,12 +1038,25 @@ class CustomObject {
 }
 
 @ShouldGenerate('''
-    final queryParameters = <String, dynamic>{r'test': date?.toIso8601String()};
+    final queryParameters = <String, dynamic>{r'test': date?.toJson()};
 ''', contains: true)
 @RestApi()
 abstract class TestQueryParamDateTime {
   @GET('/test')
   Future<void> getTest(@Query('test') DateTime? date);
+}
+
+extension DateTimeToJson on DateTime {
+  String toJson() => toIso8601String();
+}
+
+@ShouldGenerate('''
+    final queryParameters = <String, dynamic>{r'test': date.toJson()};
+''', contains: true)
+@RestApi()
+abstract class TestQueryParamDateTimeNonNullableWithToJson {
+  @GET('/test')
+  Future<void> getTest(@Query('test') DateTime date);
 }
 
 // Extension type that wraps String (basic type)
