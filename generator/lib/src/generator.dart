@@ -1187,7 +1187,7 @@ $returnAsyncWrapper* $_valueVar;
                 );
               case retrofit.Parser.DartMappable:
                 mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}Mapper.fromMap(i as $castType)',
+                  '(dynamic i) => ${_dartMappableMapperClass(innerReturnType)}.fromMap${_dartMappableTypeArgs(innerReturnType)}(i as $castType)',
                 );
               case retrofit.Parser.FlutterCompute:
                 throw Exception('Unreachable code');
@@ -1275,7 +1275,7 @@ $returnAsyncWrapper* $_valueVar;
 (k, dynamic v) =>
     MapEntry(
       k, (v as List)
-        .map((i) => ${_displayString(type)}Mapper.fromMap(i as Map<String, dynamic>))
+        .map((i) => ${_dartMappableMapperClass(type)}.fromMap${_dartMappableTypeArgs(type)}(i as Map<String, dynamic>))
         .toList()
     )
 ''');
@@ -1350,7 +1350,7 @@ You should create a new class to encapsulate the response.
                 );
               case retrofit.Parser.DartMappable:
                 mapperCode = refer(
-                  '(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}Mapper.fromMap(v as Map<String, dynamic>))',
+                  '(k, dynamic v) => MapEntry(k, ${_dartMappableMapperClass(secondType)}.fromMap${_dartMappableTypeArgs(secondType)}(v as Map<String, dynamic>))',
                 );
               case retrofit.Parser.FlutterCompute:
                 log.warning('''
@@ -1559,7 +1559,7 @@ You should create a new class to encapsulate the response.
               );
             case retrofit.Parser.DartMappable:
               mapperCode = refer(
-                '${_displayString(returnType)}Mapper.fromMap($_resultVar.data!)',
+                '${_dartMappableMapperClass(returnType)}.fromMap${_dartMappableTypeArgs(returnType)}($_resultVar.data!)',
               );
             case retrofit.Parser.FlutterCompute:
               mapperCode = refer(
@@ -3990,6 +3990,24 @@ String _displayString(DartType? e, {bool withNullability = false}) {
       return e!.getDisplayString();
     }
   }
+}
+
+/// Returns the base mapper class name (without type arguments).
+/// e.g. `ApiResponse<LoginDataModel>` → `ApiResponseMapper`
+/// e.g. `UserModel` → `UserModelMapper`
+String _dartMappableMapperClass(DartType? type) {
+  final s = _displayString(type);
+  final idx = s.indexOf('<');
+  return idx == -1 ? '${s}Mapper' : '${s.substring(0, idx)}Mapper';
+}
+
+/// Returns the type arguments string for use on a method call, or empty string.
+/// e.g. `ApiResponse<LoginDataModel>` → `<LoginDataModel>`
+/// e.g. `UserModel` → ``
+String _dartMappableTypeArgs(DartType? type) {
+  final s = _displayString(type);
+  final idx = s.indexOf('<');
+  return idx == -1 ? '' : s.substring(idx);
 }
 
 extension _DartTypeX on DartType {
