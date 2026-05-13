@@ -1741,7 +1741,9 @@ $returnAsyncWrapper httpResponse;
         return mappedVal;
       }
     } else {
-      if (_displayString(dartType) == 'dynamic' || _isBasicType(dartType)) {
+      if (_displayString(dartType) == 'dynamic' ||
+          _isBasicType(dartType) ||
+          dartType is TypeParameterType) {
         return '(json) => json as ${_displayString(dartType, withNullability: dartType.isNullable)},';
       } else {
         if (_displayString(dartType) == 'void') {
