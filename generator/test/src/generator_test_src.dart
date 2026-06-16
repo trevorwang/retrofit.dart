@@ -1268,6 +1268,31 @@ abstract class TestMapBodyWithGeneric {
 }
 
 @ShouldGenerate('''
+    late Map<String, GenericUser<T>> _value;
+    try {
+      _value = _result.data!.map(
+        (k, dynamic v) => MapEntry(
+          k,
+          GenericUser<T>.fromJson(
+            v as Map<String, dynamic>,
+            (json) => json as T,
+          ),
+        ),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestMapBodyWithGenericTypeParameter<T> {
+  @GET('/xx')
+  Future<Map<String, GenericUser<T>>> getResult();
+}
+
+@ShouldGenerate('''
     late List<String> _value;
     try {
       _value = _result.data!.cast<String>();
