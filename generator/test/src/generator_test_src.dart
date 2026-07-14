@@ -3018,6 +3018,68 @@ abstract class PartMapWithFileAndStaticDefaultsTest {
 }
 
 @ShouldGenerate('''
+    if (file != null) {
+      final _file_fileName =
+          (partMetadata?['file_fileName'] as String?) ??
+          file.path.split(Platform.pathSeparator).last;
+      final DioMediaType? _file_contentType =
+          (partMetadata?['file_contentType'] as String?) != null
+          ? DioMediaType.parse(partMetadata!['file_contentType'] as String)
+          : null;
+      _data.files.add(
+        MapEntry(
+          'file',
+          MultipartFile.fromFileSync(
+            file.path,
+            filename: _file_fileName,
+            contentType: _file_contentType,
+          ),
+        ),
+      );
+    }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class PartMapWithNullableFileTest {
+  @POST('/upload')
+  @MultiPart()
+  Future<String> uploadFile({
+    @Part(name: 'file') File? file,
+    @PartMap() Map<String, dynamic>? partMetadata,
+  });
+}
+
+@ShouldGenerate('''
+    if (file != null) {
+      final _file_fileName =
+          (partMeta?['file_fileName'] as String?) ?? 'default.txt';
+      final _file_contentType =
+          (partMeta?['file_contentType'] as String?) != null
+          ? DioMediaType.parse(partMeta!['file_contentType'] as String)
+          : DioMediaType.parse('text/plain');
+      _data.files.add(
+        MapEntry(
+          'file',
+          MultipartFile.fromFileSync(
+            file.path,
+            filename: _file_fileName,
+            contentType: _file_contentType,
+          ),
+        ),
+      );
+    }
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class PartMapWithNullableFileAndStaticDefaultsTest {
+  @POST('/upload')
+  @MultiPart()
+  Future<String> uploadFile({
+    @Part(name: 'file', fileName: 'default.txt', contentType: 'text/plain')
+    File? file,
+    @PartMap() Map<String, dynamic>? partMeta,
+  });
+}
+
+@ShouldGenerate('''
     final _data_fileName = meta?['data_fileName'] as String?;
     final DioMediaType? _data_contentType =
         (meta?['data_contentType'] as String?) != null
