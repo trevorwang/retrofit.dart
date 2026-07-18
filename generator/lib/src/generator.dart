@@ -1045,7 +1045,7 @@ $returnAsyncWrapper httpResponse;
       // we extract the stream from it
       blocks.add(
         declareFinal(_resultVar)
-            .assign(refer('await $_dioVar.fetch<ResponseBody>').call([options]))
+            .assign(refer('$_dioVar.fetch<ResponseBody>').call([options]))
             .statement,
       );
 
@@ -1058,7 +1058,9 @@ $returnAsyncWrapper httpResponse;
         );
         blocks.add(
           Code('''
-final $_valueVar = $_resultVar.data!.stream.map(utf8.decode);
+final $_valueVar = $_resultVar.asStream().asyncExpand(
+  (response) => response.data!.stream.map(utf8.decode),
+);
 $returnAsyncWrapper* $_valueVar;
 '''),
         );
@@ -1066,7 +1068,9 @@ $returnAsyncWrapper* $_valueVar;
         // For Stream<Uint8List>, return the raw stream
         blocks.add(
           Code('''
-final $_valueVar = $_resultVar.data!.stream;
+final $_valueVar = $_resultVar.asStream().asyncExpand(
+  (response) => response.data!.stream,
+);
 $returnAsyncWrapper* $_valueVar;
 '''),
         );
