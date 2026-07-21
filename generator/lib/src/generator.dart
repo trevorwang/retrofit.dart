@@ -2824,6 +2824,22 @@ if (T != dynamic &&
             final fileNameVar = '_${fieldName}_fileName';
             final contentTypeVar = '_${fieldName}_contentType';
 
+            final optionalFile =
+                m.formalParameters
+                    .firstWhereOrNull((pp) => pp.displayName == p.displayName)
+                    ?.isOptional ??
+                false;
+
+            // The helper variables below read the part parameter, so for a
+            // nullable part they must be declared inside the null check.
+            final needsNullCheck = p.type.isNullable || optionalFile;
+            if (needsNullCheck) {
+              final condition = refer(
+                p.displayName,
+              ).notEqualTo(literalNull).code;
+              blocks.addAll([const Code('if('), condition, const Code(') {')]);
+            }
+
             // Generate code to extract runtime fileName
             if (fileNameValue != null) {
               blocks.add(
@@ -2863,35 +2879,16 @@ if (T != dynamic &&
               },
             );
 
-            final optionalFile =
-                m.formalParameters
-                    .firstWhereOrNull((pp) => pp.displayName == p.displayName)
-                    ?.isOptional ??
-                false;
+            blocks.add(
+              refer(dataVar).property('files').property('add').call([
+                refer(
+                  'MapEntry',
+                ).newInstance([literal(fieldName), uploadFileInfo]),
+              ]).statement,
+            );
 
-            final returnCode = refer(dataVar)
-                .property('files')
-                .property('add')
-                .call([
-                  refer(
-                    'MapEntry',
-                  ).newInstance([literal(fieldName), uploadFileInfo]),
-                ])
-                .statement;
-
-            if (p.type.isNullable || optionalFile) {
-              final condition = refer(
-                p.displayName,
-              ).notEqualTo(literalNull).code;
-              blocks.addAll([
-                const Code('if('),
-                condition,
-                const Code(') {'),
-                returnCode,
-                const Code('}'),
-              ]);
-            } else {
-              blocks.add(returnCode);
+            if (needsNullCheck) {
+              blocks.add(const Code('}'));
             }
           } else {
             // No PartMap - use original static approach
