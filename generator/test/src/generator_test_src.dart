@@ -1112,8 +1112,10 @@ abstract class TestQueryParamExtensionTypeWithToJsonNullable {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<ResponseBody>(_options);
-    final _value = _result.data!.stream;
+    final _result = _dio.fetch<ResponseBody>(_options);
+    final _value = _result.asStream().asyncExpand(
+      (response) => response.data!.stream,
+    );
     yield* _value;
   }
 ''',
@@ -3296,8 +3298,10 @@ abstract class TestBareTypeParameterNullable {
 
 @ShouldGenerate(
   '''
-    final _result = await _dio.fetch<ResponseBody>(_options);
-    final _value = _result.data!.stream.map(utf8.decode);
+    final _result = _dio.fetch<ResponseBody>(_options);
+    final _value = _result.asStream().asyncExpand(
+      (response) => response.data!.stream.map(utf8.decode),
+    );
     yield* _value;
 ''',
   contains: true,
