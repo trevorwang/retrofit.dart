@@ -73,6 +73,7 @@ class RestApi {
     this.parser = Parser.JsonSerializable,
     this.callAdapter,
     this.headers,
+    this.extra,
   });
 
   /// Set the API base URL.
@@ -122,6 +123,37 @@ class RestApi {
   /// }
   /// ```
   final Map<String, dynamic>? headers;
+
+  /// Global extra data to be applied to all requests within this API.
+  ///
+  /// These extra fields will be included in every request made through this
+  /// API interface. Method-level extra data specified with [@Extra] will be
+  /// merged on top of these global extra fields. If the same key exists in
+  /// both the global [extra] and a method-level [@Extra], the method-level
+  /// value takes precedence.
+  ///
+  /// Example:
+  /// ```dart
+  /// @RestApi(
+  ///   baseUrl: "https://api.example.com",
+  ///   extra: {
+  ///     "platform": "mobile",
+  ///     "appVersion": "1.0.0",
+  ///   },
+  /// )
+  /// abstract class ApiService {
+  ///   // This request will have extra: {"platform": "mobile", "appVersion": "1.0.0"}
+  ///   @GET("/users")
+  ///   Future<List<User>> getUsers();
+  ///
+  ///   // This request will have extra: {"platform": "desktop", "appVersion": "1.0.0"}
+  ///   // because the method-level extra overrides the global "platform" key
+  ///   @GET("/admin")
+  ///   @Extra({"platform": "desktop"})
+  ///   Future<Response> getAdmin();
+  /// }
+  /// ```
+  final Map<String, dynamic>? extra;
 }
 
 @immutable

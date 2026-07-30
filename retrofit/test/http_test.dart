@@ -30,12 +30,14 @@ void main() {
       expect(api.baseUrl, isNull);
       expect(api.parser, Parser.JsonSerializable);
       expect(api.callAdapter, isNull);
+      expect(api.headers, isNull);
+      expect(api.extra, isNull);
     });
     test('custom values', () {
       const api = RestApi(
-          baseUrl: 'http://foo/',
-          parser: Parser.MapSerializable,
-          callAdapter: int);
+        baseUrl: 'http://foo/',
+        parser: Parser.MapSerializable,
+        callAdapter: int);
       expect(api.baseUrl, 'http://foo/');
       expect(api.parser, Parser.MapSerializable);
       expect(api.callAdapter, int);
