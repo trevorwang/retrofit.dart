@@ -1471,6 +1471,24 @@ abstract class TestOptionsMethod {
 }
 
 @ShouldGenerate('''
+      Options(method: 'QUERY', headers: _headers, extra: _extra)
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestQueryMethod {
+  @QUERY('/')
+  Future<String> testQueryMethod();
+}
+
+@ShouldGenerate('''
+      Options(method: 'QUERY', headers: _headers, extra: _extra)
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestQueryMethodWithBody {
+  @QUERY('/search')
+  Future<String> testQueryMethodWithBody(@Body() Map<String, dynamic> query);
+}
+
+@ShouldGenerate('''
     final httpResponse = HttpResponse(null, _result);
 ''', contains: true)
 @RestApi()

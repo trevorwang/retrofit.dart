@@ -10,6 +10,7 @@ class HttpMethod {
   static const String DELETE = 'DELETE';
   static const String HEAD = 'HEAD';
   static const String OPTIONS = 'OPTIONS';
+  static const String QUERY = 'QUERY';
 }
 
 /// Define how to parse response json
@@ -192,6 +193,12 @@ class HEAD extends Method {
 @immutable
 class OPTIONS extends Method {
   const OPTIONS(String path) : super(HttpMethod.OPTIONS, path);
+}
+
+/// Make a `QUERY` request (RFC 10008)
+@immutable
+class QUERY extends Method {
+  const QUERY(String path) : super(HttpMethod.QUERY, path);
 }
 
 /// Adds headers specified in the [value] map.

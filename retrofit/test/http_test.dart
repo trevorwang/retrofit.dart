@@ -11,6 +11,7 @@ void main() {
       expect(HttpMethod.DELETE, 'DELETE');
       expect(HttpMethod.HEAD, 'HEAD');
       expect(HttpMethod.OPTIONS, 'OPTIONS');
+      expect(HttpMethod.QUERY, 'QUERY');
     });
   });
 
@@ -43,7 +44,7 @@ void main() {
   });
 
   group('Method annotations', () {
-    test('GET/POST/PATCH/PUT/DELETE/HEAD/OPTIONS', () {
+    test('GET/POST/PATCH/PUT/DELETE/HEAD/OPTIONS/QUERY', () {
       expect(const GET('/foo').method, 'GET');
       expect(const POST('/foo').method, 'POST');
       expect(const PATCH('/foo').method, 'PATCH');
@@ -51,6 +52,7 @@ void main() {
       expect(const DELETE('/foo').method, 'DELETE');
       expect(const HEAD('/foo').method, 'HEAD');
       expect(const OPTIONS('/foo').method, 'OPTIONS');
+      expect(const QUERY('/foo').method, 'QUERY');
     });
     test('Method path', () {
       expect(const GET('/bar').path, '/bar');
