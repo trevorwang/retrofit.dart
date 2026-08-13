@@ -3358,3 +3358,39 @@ abstract class TestResponseTypeStreamInvalidReturnTypeStreamInt {
   @DioResponseType(ResponseType.stream)
   Stream<int> downloadFile();
 }
+
+// Freezed + json_serializable declare fromJson in source. toJson lives in the
+// generated mixin / private impl, which retrofit_generator may not see yet.
+class FreezedJsonModel {
+  const FreezedJsonModel();
+
+  // ignore: avoid_unused_constructor_parameters
+  factory FreezedJsonModel.fromJson(Map<String, dynamic> json) =>
+      const FreezedJsonModel();
+}
+
+@ShouldGenerate('''
+    final _data = <String, dynamic>{};
+    _data.addAll(model.toJson());
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestFreezedJsonModelBody {
+  @POST('/models')
+  Future<void> create(@Body() FreezedJsonModel model);
+}
+
+abstract class AbstractToJsonModel {
+  const AbstractToJsonModel();
+
+  Map<String, dynamic> toJson();
+}
+
+@ShouldGenerate('''
+    final _data = <String, dynamic>{};
+    _data.addAll(model.toJson());
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class TestAbstractToJsonModelBody {
+  @POST('/models')
+  Future<void> create(@Body() AbstractToJsonModel model);
+}

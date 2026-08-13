@@ -2144,13 +2144,39 @@ if (T != dynamic &&
     if (dartType is! InterfaceType) {
       return false;
     }
-    // Use lookUpMethod to check the class hierarchy including mixins
-    // This is important for Freezed-generated classes where toJson is in a mixin
-    return dartType.element.lookUpMethod(
-          name: 'toJson',
-          library: dartType.element.library,
-        ) !=
-        null;
+    return _declaresToJson(dartType.element);
+  }
+
+  /// True when [element] has `toJson`, including mixin / abstract / generated
+  /// methods. A source `fromJson` factory is enough: json_serializable and
+  /// Freezed generate `toJson` in parts that build_runner may hide from us.
+  bool _declaresToJson(InterfaceElement element) {
+    if (element.lookUpMethod(name: 'toJson', library: element.library) !=
+        null) {
+      return true;
+    }
+    if (element.getMethod('toJson') != null) {
+      return true;
+    }
+    if (element is ClassElement) {
+      if (element.getNamedConstructor('fromJson') != null) {
+        return true;
+      }
+      for (final constructor in element.constructors) {
+        final redirected =
+            constructor.redirectedConstructor?.returnType.element;
+        if (redirected is InterfaceElement &&
+            (redirected.getMethod('toJson') != null ||
+                redirected.lookUpMethod(
+                      name: 'toJson',
+                      library: redirected.library,
+                    ) !=
+                    null)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /// Gets the expression for serializing an enum value in FormData as a string.
@@ -3802,10 +3828,7 @@ MultipartFile.fromFileSync(i.path,
     switch (clientAnnotation.parser) {
       case retrofit.Parser.JsonSerializable:
       case retrofit.Parser.DartJsonMapper:
-        // Use lookUpMethod to check the class hierarchy including mixins
-        // This is important for Freezed-generated classes where toJson is in a mixin
-        final toJson = ele.lookUpMethod(name: 'toJson', library: ele.library);
-        return toJson == null;
+        return !_declaresToJson(ele);
       case retrofit.Parser.MapSerializable:
       case retrofit.Parser.DartMappable:
       case retrofit.Parser.FlutterCompute:
