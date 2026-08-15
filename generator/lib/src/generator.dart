@@ -2587,18 +2587,54 @@ if (T != dynamic &&
               ).assign(refer(bodyName.displayName)).statement,
             );
           } else if (_missingSerialize(
-            ele.enclosingElement.firstFragment,
-            bodyName.type,
-          )) {
-            log.warning(
-              '${_displayString(bodyName.type)} must provide a `serialize${_displayString(bodyName.type)}()` method which returns a Map.\n'
-              "It is programmer's responsibility to make sure the ${_displayString(bodyName.type)} is properly serialized",
-            );
-            blocks.add(
-              declareFinal(
-                dataVar,
-              ).assign(refer(bodyName.displayName)).statement,
-            );
+                ele.enclosingElement.firstFragment,
+                bodyName.type,
+              ) &&
+              _missingSerialize(m.library.firstFragment, bodyName.type)) {
+            if (_declaresToJson(ele)) {
+              final nullable =
+                  bodyName.type.nullabilitySuffix ==
+                  NullabilitySuffix.question;
+              final toJsonExpr = nullable
+                  ? '${bodyName.displayName}?.toJson() ?? <String, dynamic>{}'
+                  : '${bodyName.displayName}.toJson()';
+              if (bodyExtras.isEmpty && expandBodyExtras.isEmpty) {
+                blocks.add(
+                  declareFinal(dataVar).assign(refer(toJsonExpr)).statement,
+                );
+              } else {
+                blocks.add(
+                  declareFinal(dataVar)
+                      .assign(
+                        literalMap(
+                          bodyExtras,
+                          refer('String'),
+                          refer('dynamic'),
+                        ),
+                      )
+                      .statement,
+                );
+                for (final item in expandBodyExtras.entries) {
+                  _generateParameterElement(item.key, blocks, dataVar);
+                }
+                blocks.add(
+                  refer('$dataVar.addAll').call([refer(toJsonExpr)]).statement,
+                );
+              }
+              if (preventNullToAbsent == null && nullToAbsent) {
+                blocks.add(Code('$dataVar.removeWhere((k, v) => v == null);'));
+              }
+            } else {
+              log.warning(
+                '${_displayString(bodyName.type)} must provide a `serialize${_displayString(bodyName.type)}()` method which returns a Map.\n'
+                "It is programmer's responsibility to make sure the ${_displayString(bodyName.type)} is properly serialized",
+              );
+              blocks.add(
+                declareFinal(
+                  dataVar,
+                ).assign(refer(bodyName.displayName)).statement,
+              );
+            }
           } else {
             blocks.add(
               declareFinal(dataVar)

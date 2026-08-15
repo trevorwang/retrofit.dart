@@ -2283,6 +2283,21 @@ abstract class TestComputeObjectBody {
   Future<void> getResult(@Body() User user);
 }
 
+class SmsCodeRequest {
+  const SmsCodeRequest();
+
+  Map<String, dynamic> toJson() => <String, dynamic>{};
+}
+
+@ShouldGenerate('''
+    final _data = smsCodeRequest.toJson();
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.FlutterCompute)
+abstract class TestComputeObjectBodyWithoutSerializeFn {
+  @POST('/user/sendCode')
+  Future<void> sendSmsCode(@Body() SmsCodeRequest smsCodeRequest);
+}
+
 @ShouldGenerate('''
     final _data = await compute(serializeUserList, users);
 ''', contains: true)
