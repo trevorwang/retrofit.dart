@@ -1050,16 +1050,16 @@ $returnAsyncWrapper httpResponse;
       );
 
       if (_isStreamOfString(m.returnType)) {
-        // For Stream<String>, decode the bytes to strings using utf8.decode
+        // For Stream<String>, decode the bytes to strings using utf8.decoder.bind
         // Note: Requires 'import dart:convert;' in the main API file (not in .g file as it's a part)
         log.warning(
-          '\u001b[33mMethod ${m.displayName} returns Stream<String> and uses utf8.decode. '
+          '\u001b[33mMethod ${m.displayName} returns Stream<String> and uses utf8.decoder.bind. '
           'Ensure your API class file imports dart:convert: import \'dart:convert\';\u001b[0m',
         );
         blocks.add(
           Code('''
 final $_valueVar = $_resultVar.asStream().asyncExpand(
-  (response) => response.data!.stream.map(utf8.decode),
+  (response) => utf8.decoder.bind(response.data!.stream),
 );
 $returnAsyncWrapper* $_valueVar;
 '''),

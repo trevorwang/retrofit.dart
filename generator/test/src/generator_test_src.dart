@@ -3318,14 +3318,14 @@ abstract class TestBareTypeParameterNullable {
   '''
     final _result = _dio.fetch<ResponseBody>(_options);
     final _value = _result.asStream().asyncExpand(
-      (response) => response.data!.stream.map(utf8.decode),
+      (response) => utf8.decoder.bind(response.data!.stream),
     );
     yield* _value;
 ''',
   contains: true,
   expectedLogItems: [
     'ResponseType  :  1',
-    '\x1B[33mMethod getServerEvents returns Stream<String> and uses utf8.decode. Ensure your API class file imports dart:convert: import \'dart:convert\';\x1B[0m',
+    '\x1B[33mMethod getServerEvents returns Stream<String> and uses utf8.decoder.bind. Ensure your API class file imports dart:convert: import \'dart:convert\';\x1B[0m',
   ],
 )
 @RestApi()
