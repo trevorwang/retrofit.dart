@@ -1,3 +1,7 @@
+## 10.3.0
+
+- Support `analyzer` versions `>=13.3.0 <15.0.0`.
+
 ## 10.2.6
 
 - Allow `analyzer` 13.0.0.
@@ -92,7 +96,7 @@
 
 - Migrate enum value name resolve from `.name` to `.toString()`
   `.name` is pretty limited to in terms of adjusting the value. Having resolve through `.toString()`
-  gives you high level of flexibility on changing the resulting request value. Another improvement
+  gives you highly level of flexibility on changing the resulting request value. Another improvement
   that this fix synchronizes the way of resolving values for individual enum values and for the list
   of entities. Previously individual values where resolved through `.name` and list of enums via `.toString`
   deeper inside `dio` client

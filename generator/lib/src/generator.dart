@@ -1054,7 +1054,7 @@ $returnAsyncWrapper httpResponse;
         // Note: Requires 'import dart:convert;' in the main API file (not in .g file as it's a part)
         log.warning(
           '\u001b[33mMethod ${m.displayName} returns Stream<String> and uses utf8.decoder.bind. '
-          'Ensure your API class file imports dart:convert: import \'dart:convert\';\u001b[0m',
+          "Ensure your API class file imports dart:convert: import 'dart:convert';\u001b[0m",
         );
         blocks.add(
           Code('''
@@ -2593,8 +2593,7 @@ if (T != dynamic &&
               _missingSerialize(m.library.firstFragment, bodyName.type)) {
             if (_declaresToJson(ele)) {
               final nullable =
-                  bodyName.type.nullabilitySuffix ==
-                  NullabilitySuffix.question;
+                  bodyName.type.nullabilitySuffix == NullabilitySuffix.question;
               final toJsonExpr = nullable
                   ? '${bodyName.displayName}?.toJson() ?? <String, dynamic>{}'
                   : '${bodyName.displayName}.toJson()';
