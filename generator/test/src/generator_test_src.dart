@@ -1860,6 +1860,59 @@ abstract class MapSerializableGenericCast {
   Future<User> getUser();
 }
 
+typedef UserRecord = ();
+
+@ShouldGenerate(
+  '      _value = UserRecordMapper.fromMap(_result.data!);',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableRecordReturnType {
+  @GET('/xx')
+  Future<UserRecord> getResult();
+}
+
+@ShouldGenerate(
+  '    late UserRecord? _value;',
+  contains: true,
+)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableNullableRecordReturnType {
+  @GET('/xx')
+  Future<UserRecord?> getResult();
+}
+
+@ShouldGenerate('''
+      _value = _result.data!
+          .map(
+            (dynamic i) => UserRecordMapper.fromMap(i as Map<String, dynamic>),
+          )
+          .toList();
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableRecordListReturnType {
+  @GET('/xx')
+  Future<List<UserRecord>> getResult();
+}
+
+@ShouldGenerate('''
+    final _data = body.toMap();
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableRecordBody {
+  @POST('/xx')
+  Future<void> postResult(@Body() UserRecord body);
+}
+
+@ShouldGenerate('''
+    final _data = body?.toMap() ?? <String, dynamic>{};
+''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableNullableRecordBody {
+  @POST('/xx')
+  Future<void> postResult(@Body() UserRecord? body);
+}
+
 @ShouldGenerate('''
     late User? _value;
     try {

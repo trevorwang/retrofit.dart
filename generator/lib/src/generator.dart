@@ -5,6 +5,7 @@ import 'dart:typed_data' as typed_data;
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
+import 'package:analyzer/dart/element/type.dart' as analyzer_type;
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:built_collection/built_collection.dart';
@@ -2724,6 +2725,34 @@ if (T != dynamic &&
             }
           }
         }
+      } else if (bodyName.type is analyzer_type.RecordType) {
+        switch (clientAnnotation.parser) {
+          case retrofit.Parser.DartMappable:
+            if (bodyName.type.nullabilitySuffix != NullabilitySuffix.question) {
+              blocks.add(
+                declareFinal(
+                  dataVar,
+                ).assign(refer('${bodyName.displayName}.toMap()')).statement,
+              );
+            } else {
+              blocks.add(
+                declareFinal(dataVar)
+                    .assign(
+                      refer(
+                        '${bodyName.displayName}?.toMap() ?? <String, dynamic>{}',
+                      ),
+                    )
+                    .statement,
+              );
+            }
+          case retrofit.Parser.JsonSerializable:
+          case retrofit.Parser.DartJsonMapper:
+          case retrofit.Parser.MapSerializable:
+          case retrofit.Parser.FlutterCompute:
+            throw UnsupportedError(
+              'Record types are not supported with the selected parser: ${clientAnnotation.parser}.',
+            );
+        }
       } else {
         /// @Body annotations with no type are assigned as is
         blocks.add(
@@ -4038,6 +4067,16 @@ String revivedLiteral(Object object, {DartEmitter? dartEmitter}) {
 }
 
 String _displayString(DartType? e, {bool withNullability = false}) {
+  if (e is analyzer_type.RecordType) {
+    final name = e.alias?.element.name;
+    if (name != null) {
+      if (withNullability && e.isNullable) {
+        return '$name?';
+      } else {
+        return name;
+      }
+    }
+  }
   try {
     if (!withNullability) {
       return e!.toStringNonNullable();
