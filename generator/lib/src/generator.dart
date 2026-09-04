@@ -1003,7 +1003,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
           .statement,
     );
 
-    final options = refer(_optionsVar).expression;
+    final options = refer(_optionsVar);
 
     final wrappedReturnType = _getResponseType(
       callAdapter != null
