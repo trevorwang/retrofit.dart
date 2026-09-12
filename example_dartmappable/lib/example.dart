@@ -1,10 +1,19 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:dio/dio.dart' hide Headers;
-import 'package:retrofit/retrofit.dart';
+import 'package:retrofit/retrofit.dart' hide Field;
 
 part 'example.mapper.dart';
 part 'example.g.dart';
 
+// Note: The parser can be specified per-class with `parser: Parser.DartMappable`,
+// or globally configured in `build.yaml` so you don't need to specify it on every class:
+//
+// targets:
+//   $default:
+//     builders:
+//       retrofit_generator:
+//         options:
+//           parser: dart_mappable
 @RestApi(
   baseUrl: 'https://5d42a6e2bc64f90014a56ca0.mockapi.io/api/v1/',
   parser: Parser.DartMappable,

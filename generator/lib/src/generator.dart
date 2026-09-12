@@ -49,6 +49,7 @@ class RetrofitOptions {
     this.className,
     this.useResult,
     this.formatOutput,
+    this.parser,
   });
 
   RetrofitOptions.fromOptions([BuilderOptions? options])
@@ -62,13 +63,33 @@ class RetrofitOptions {
       useResult =
           (options?.config['use_result']?.toString() ?? 'false') == 'true',
       formatOutput =
-          (options?.config['format_output']?.toString() ?? 'true') == 'true';
+          (options?.config['format_output']?.toString() ?? 'true') == 'true',
+      parser = _parseParser(options?.config['parser']?.toString());
 
   final bool? autoCastResponse;
   final bool? emptyRequestBody;
   final String? className;
   final bool? useResult;
   final bool? formatOutput;
+  final retrofit.Parser? parser;
+
+  static retrofit.Parser? _parseParser(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
+    final normalized = value.trim().replaceAll('_', '').toLowerCase();
+    for (final parser in retrofit.Parser.values) {
+      if (parser.name.toLowerCase() == normalized) {
+        return parser;
+      }
+    }
+    throw ArgumentError.value(
+      value,
+      'parser',
+      'Unsupported parser option. Supported values: '
+          '${retrofit.Parser.values.map((e) => e.name).join(', ')} (or snake_case)',
+    );
+  }
 }
 
 /// Main generator that processes @RestApi annotation and generates implementation code.
@@ -127,10 +148,17 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     // Reset hasCustomOptions for each class to avoid state leaking between classes
     hasCustomOptions = false;
     final className = globalOptions.className ?? '_${element.name}';
-    final enumString = annotation.peek('parser')?.revive().accessor;
-    final parser = retrofit.Parser.values.firstWhereOrNull(
-      (e) => e.toString() == enumString,
+    final hasAnnotationParser = annotation.revive().namedArguments.containsKey(
+      'parser',
     );
+    final enumString = hasAnnotationParser
+        ? annotation.peek('parser')?.revive().accessor
+        : null;
+    final parser = enumString == null
+        ? null
+        : retrofit.Parser.values.firstWhereOrNull(
+            (e) => e.toString() == enumString,
+          );
     final headersMap = annotation.peek('headers')?.mapValue.map((k, v) {
       dynamic val;
       if (v == null) {
@@ -150,7 +178,8 @@ class RetrofitGenerator extends GeneratorForAnnotation<retrofit.RestApi> {
     });
     clientAnnotation = retrofit.RestApi(
       baseUrl: annotation.peek(_baseUrlVar)?.stringValue ?? '',
-      parser: parser ?? retrofit.Parser.JsonSerializable,
+      parser:
+          parser ?? globalOptions.parser ?? retrofit.Parser.JsonSerializable,
       headers: headersMap,
     );
     clientAnnotationConstantReader = annotation;
@@ -1193,7 +1222,7 @@ $returnAsyncWrapper* $_valueVar;
                 );
               case retrofit.Parser.DartMappable:
                 mapperCode = refer(
-                  '(dynamic i) => ${_displayString(innerReturnType)}Mapper.fromMap(i as $castType)',
+                  '(dynamic i) => ${_dartMappableFromMap(innerReturnType, 'i as $castType')}',
                 );
               case retrofit.Parser.FlutterCompute:
                 throw Exception('Unreachable code');
@@ -1281,7 +1310,7 @@ $returnAsyncWrapper* $_valueVar;
 (k, dynamic v) =>
     MapEntry(
       k, (v as List)
-        .map((i) => ${_displayString(type)}Mapper.fromMap(i as Map<String, dynamic>))
+        .map((i) => ${_dartMappableFromMap(type, 'i as Map<String, dynamic>')})
         .toList()
     )
 ''');
@@ -1356,7 +1385,7 @@ You should create a new class to encapsulate the response.
                 );
               case retrofit.Parser.DartMappable:
                 mapperCode = refer(
-                  '(k, dynamic v) => MapEntry(k, ${_displayString(secondType)}Mapper.fromMap(v as Map<String, dynamic>))',
+                  '(k, dynamic v) => MapEntry(k, ${_dartMappableFromMap(secondType, 'v as Map<String, dynamic>')})',
                 );
               case retrofit.Parser.FlutterCompute:
                 log.warning('''
@@ -1565,7 +1594,7 @@ You should create a new class to encapsulate the response.
               );
             case retrofit.Parser.DartMappable:
               mapperCode = refer(
-                '${_displayString(returnType)}Mapper.fromMap($_resultVar.data!)',
+                _dartMappableFromMap(returnType, '$_resultVar.data!'),
               );
             case retrofit.Parser.FlutterCompute:
               mapperCode = refer(
@@ -4091,6 +4120,20 @@ String _displayString(DartType? e, {bool withNullability = false}) {
       return e!.getDisplayString();
     }
   }
+}
+
+String _dartMappableFromMap(DartType? type, String argument) {
+  final display = _displayString(type);
+  final cleanDisplay = display.endsWith('?')
+      ? display.substring(0, display.length - 1)
+      : display;
+  final firstAngle = cleanDisplay.indexOf('<');
+  if (firstAngle != -1 && cleanDisplay.endsWith('>')) {
+    final className = cleanDisplay.substring(0, firstAngle);
+    final typeArgs = cleanDisplay.substring(firstAngle);
+    return '${className}Mapper.fromMap$typeArgs($argument)';
+  }
+  return '${cleanDisplay}Mapper.fromMap($argument)';
 }
 
 extension _DartTypeX on DartType {

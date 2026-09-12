@@ -18,6 +18,9 @@ Future<void> main() async {
     defaultConfiguration: ['default'],
     additionalGenerators: {
       'use_result': RetrofitGenerator(RetrofitOptions(useResult: true)),
+      'dart_mappable_global': RetrofitGenerator(
+        RetrofitOptions(parser: http.Parser.DartMappable),
+      ),
     },
   );
 }

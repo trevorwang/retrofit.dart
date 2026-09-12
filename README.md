@@ -77,6 +77,22 @@ targets:
           empty_request_body: false
           # Enable useResult annotation for methods (default: false)
           use_result: false
+          # Global parser for type conversion (default: json_serializable)
+          # Supported values: dart_mappable, json_serializable, map_serializable, flutter_compute, dart_json_mapper
+          parser: dart_mappable
+```
+
+#### parser
+
+Set the default serialization parser across all `@RestApi()` classes without needing to annotate each one individually. Class-level `@RestApi(parser: ...)` annotations take precedence over this global setting.
+
+```yaml
+targets:
+  $default:
+    builders:
+      retrofit_generator:
+        options:
+          parser: dart_mappable # or json_serializable, map_serializable, flutter_compute, dart_json_mapper
 ```
 
 #### format_output
