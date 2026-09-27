@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      retrofit_generator:
+        options:
+          # Global parser for type conversion (default: json_serializable)
+          # Supported values: dart_mappable, json_serializable, map_serializable, flutter_compute, dart_json_mapper
+          parser: dart_mappable

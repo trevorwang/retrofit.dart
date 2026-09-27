@@ -1,3 +1,9 @@
+## 10.3.1
+
+- Add global `parser` option via `build.yaml`.
+- Fix `DartMappable` deserialization for generic return types (`BaseResult<T>`).
+- Broaden `analyzer` constraint to `>=8.4.1 <15.0.0` to restore compatibility with Flutter SDK (`meta: 1.18.0`).
+
 ## 10.3.0
 
 - Support `analyzer` versions `>=13.3.0 <15.0.0`.

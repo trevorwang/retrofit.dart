@@ -24,7 +24,9 @@ Future<void> main(List<String> args) async {
   });
 
   // Create a new task
-  client.createTask(const Task(avatar: '2222.png', name: 'new task')).then((it) {
+  client
+      .createTask(const Task(avatar: '2222.png', name: 'new task'))
+      .then((it) {
     logger.i(it.toMap());
   });
 

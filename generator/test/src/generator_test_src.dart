@@ -1873,10 +1873,7 @@ abstract class DartMappableRecordReturnType {
   Future<UserRecord> getResult();
 }
 
-@ShouldGenerate(
-  '    late UserRecord? _value;',
-  contains: true,
-)
+@ShouldGenerate('    late UserRecord? _value;', contains: true)
 @RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
 abstract class DartMappableNullableRecordReturnType {
   @GET('/xx')
@@ -3462,4 +3459,63 @@ abstract class AbstractToJsonModel {
 abstract class TestAbstractToJsonModelBody {
   @POST('/models')
   Future<void> create(@Body() AbstractToJsonModel model);
+}
+
+@ShouldGenerate(
+  '''
+      _value = UserRecordMapper.fromMap(_result.data!);
+  ''',
+  contains: true,
+  configurations: ['dart_mappable_global'],
+)
+@RestApi(baseUrl: 'https://httpbin.org/')
+abstract class GlobalParserDartMappableTest {
+  @GET('/xx')
+  Future<UserRecord> getResult();
+}
+
+@ShouldGenerate(
+  '''
+      _value = User.fromJson(_result.data!);
+  ''',
+  contains: true,
+  configurations: ['dart_mappable_global'],
+)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.JsonSerializable)
+abstract class GlobalParserOverrideTest {
+  @GET('/xx')
+  Future<User> getUser();
+}
+
+class BaseResult<T> {
+  final T? data;
+  BaseResult(this.data);
+}
+
+@ShouldGenerate('''
+      _value = BaseResultMapper.fromMap<dynamic>(_result.data!);
+  ''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableGenericReturnType {
+  @POST('/sales')
+  Future<BaseResult<dynamic>> createSale(@Body() Map<String, dynamic> body);
+}
+
+@ShouldGenerate('''
+      _value = BaseResultMapper.fromMap<User>(_result.data!);
+  ''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableGenericTypedReturnType {
+  @GET('/sale')
+  Future<BaseResult<User>> getSale();
+}
+
+@ShouldGenerate('''
+            (dynamic i) =>
+                BaseResultMapper.fromMap<dynamic>(i as Map<String, dynamic>),
+  ''', contains: true)
+@RestApi(baseUrl: 'https://httpbin.org/', parser: Parser.DartMappable)
+abstract class DartMappableGenericListReturnType {
+  @GET('/sales')
+  Future<List<BaseResult<dynamic>>> getSales();
 }

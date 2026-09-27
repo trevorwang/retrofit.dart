@@ -2,6 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 // ignore_for_file: type=lint
+// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -117,24 +118,24 @@ class _TaskCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Task, $Out>
     Object? name = $none,
     Object? avatar = $none,
     Object? createdAt = $none,
-  }) => $apply(
-    FieldCopyWithData({
-      if (id != $none) #id: id,
-      if (name != $none) #name: name,
-      if (avatar != $none) #avatar: avatar,
-      if (createdAt != $none) #createdAt: createdAt,
-    }),
-  );
+  }) =>
+      $apply(
+        FieldCopyWithData({
+          if (id != $none) #id: id,
+          if (name != $none) #name: name,
+          if (avatar != $none) #avatar: avatar,
+          if (createdAt != $none) #createdAt: createdAt,
+        }),
+      );
   @override
   Task $make(CopyWithData data) => Task(
-    id: data.get(#id, or: $value.id),
-    name: data.get(#name, or: $value.name),
-    avatar: data.get(#avatar, or: $value.avatar),
-    createdAt: data.get(#createdAt, or: $value.createdAt),
-  );
+        id: data.get(#id, or: $value.id),
+        name: data.get(#name, or: $value.name),
+        avatar: data.get(#avatar, or: $value.avatar),
+        createdAt: data.get(#createdAt, or: $value.createdAt),
+      );
 
   @override
   TaskCopyWith<$R2, Task, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
       _TaskCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
-
