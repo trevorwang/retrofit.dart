@@ -1,3 +1,7 @@
+## 10.3.2
+
+- Support `build` versions `>=4.0.2 <6.0.0`.
+
 ## 10.3.1
 
 - Add global `parser` option via `build.yaml`.
