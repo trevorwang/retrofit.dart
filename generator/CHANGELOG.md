@@ -1,3 +1,7 @@
+## 10.3.3
+
+- Support `built_collection` versions `>=5.1.1 <7.0.0`.
+
 ## 10.3.2
 
 - Support `build` versions `>=4.0.2 <6.0.0`.
