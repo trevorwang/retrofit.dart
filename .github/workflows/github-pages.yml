@@ -14,8 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build docs
+        env:
+          GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: |
           cd retrofit
+          sed -i "s/GA_MEASUREMENT_ID/${GA_MEASUREMENT_ID}/g" doc_header.html
           dart doc
           mv doc/api ../public
       - name: GitHub Pages
