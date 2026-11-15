@@ -9,6 +9,12 @@
 
 retrofit.dart is a type conversion [dio](https://github.com/flutterchina/dio/) client generator using [source_gen](https://github.com/dart-lang/source_gen) and inspired by [Chopper](https://github.com/lejard-h/chopper) and [Retrofit](https://github.com/square/retrofit).
 
+The API documentation is deployed from `master` with GitHub Actions. Set the Pages
+source to **GitHub Actions** and configure the `GA_MEASUREMENT_ID` Actions variable
+with the Google Tag Manager container ID (for example, `GTM-NCZCFMDG`) in the
+`github-pages` environment (or at repository level). Run the deployment workflow
+manually after changing the ID to publish the updated tag.
+
 ## Usage
 
 ### Generator

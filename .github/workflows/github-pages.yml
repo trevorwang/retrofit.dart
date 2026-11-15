@@ -4,26 +4,45 @@ on:
   push:
     branches:
       - master
-      - release/*
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    container:
-      image: dart:stable
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: actions/configure-pages@v5
       - name: Build docs
         env:
           GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: |
+          if [[ ! "$GA_MEASUREMENT_ID" =~ ^GTM-[A-Za-z0-9]+$ ]]; then
+            echo "::error::Set GA_MEASUREMENT_ID to a valid Google Tag Manager container ID in the github-pages environment or repository variables."
+            exit 1
+          fi
           cd retrofit
           sed -i "s/GA_MEASUREMENT_ID/${GA_MEASUREMENT_ID}/g" doc_header.html
           dart doc
-          mv doc/api ../public
-      - name: GitHub Pages
-        uses: crazy-max/ghaction-github-pages@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          build_dir: public
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: retrofit/doc/api
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
